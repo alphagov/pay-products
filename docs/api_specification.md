@@ -29,7 +29,7 @@ Content-Type: application/json
 | `pay_api_token`          |    X     | valid api token for the gateway account of above service which this product takes payments for |  |
 | `description`            |    X     | Description of the product. This will be passed as the `description` when creating the charge | |
 | `price`                  |    X     | Price for the product in pence. This will be passed as the  `amount` when creating charge    | |
-| `return_url`             |          | Where to redirect to upon completion of a payment. If not provided, `pay-apps` will generate a default url to itself when creating a charge | |
+| `return_url`             |          | (https only) where to redirect to upon completion of a payment. If not provided, `pay-apps` will generate a default url to itself when creating a charge | |
 | `app_external_id`        |          | (optional) external id of the app the product should be linked to. if not provided, this will generate a `System Generated` app and link the product to it | |
 
 ### Response example
@@ -102,6 +102,60 @@ Content-Type: application/json
          "method" : "POST"
     }]
 }
+```
+#### Response field description 
+same as above(docs/api_specification.md#post-v1apiproducts)
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## GET /v1/api/products?externalServiceId={serviceId}
+
+This endpoint retrieves list of products that belongs to the specified service id.
+
+```
+GET /v1/api/products?externalServiceId=hf7487483cn487er8n8y78tr8
+Authorization: Bearer API_TOKEN
+```  
+
+### Response example
+
+```
+200 OK
+Content-Type: application/json
+    [{
+        "external_product_id": "874h5c87834659q345698495",
+        "description":         "Description 1",
+        "price":               9999,
+        "return_url" :         "https://some.valid.url/"
+        "links": [
+        {
+            "href": "https://govukpay-apps.cloudapps.digital/v1/api/products/874h5c87834659q345698495",
+            "rel" : "self",
+            "method" : "GET"
+        },
+        {
+             "href": "https://govukpay-apps-ui.cloudapps.digital/pay/874h5c87834659q345698495",
+             "rel" : "pay",
+             "method" : "POST"
+        }]
+    },
+    {
+        "external_product_id": "h6347634cwb67wii7b6ciueroytw",
+        "description":         "Description 2",
+        "price":               1050,
+        "return_url" :         "https://some.valid.url/"
+        "links": [
+        {
+            "href": "https://govukpay-apps.cloudapps.digital/v1/api/products/h6347634cwb67wii7b6ciueroytw",
+            "rel" : "self",
+            "method" : "GET"
+        },
+        {
+             "href": "https://govukpay-apps-ui.cloudapps.digital/pay/h6347634cwb67wii7b6ciueroytw",
+             "rel" : "pay",
+             "method" : "POST"
+        }]
+    }]
 ```
 #### Response field description 
 same as above(docs/api_specification.md#post-v1apiproducts)

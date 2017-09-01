@@ -1,4 +1,4 @@
-package uk.gov.pay.apps;
+package uk.gov.pay.apps.config;
 
 import io.dropwizard.Configuration;
 import com.fasterxml.jackson.annotation.JsonProperty;

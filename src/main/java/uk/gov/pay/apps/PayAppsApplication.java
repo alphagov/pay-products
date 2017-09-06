@@ -7,7 +7,6 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import uk.gov.pay.apps.config.PayAppsConfiguration;
 import uk.gov.pay.apps.healthchecks.Ping;
-import uk.gov.pay.apps.resources.HelloResource;
 
 public class PayAppsApplication extends Application<PayAppsConfiguration> {
     private static final boolean NON_STRICT_VARIABLE_SUBSTITUTOR = false;
@@ -30,7 +29,6 @@ public class PayAppsApplication extends Application<PayAppsConfiguration> {
     public void run(final PayAppsConfiguration configuration,
                     final Environment environment) {
         environment.healthChecks().register("ping", new Ping());
-        environment.jersey().register(new HelloResource());
     }
 
     public static void main(final String[] args) throws Exception {

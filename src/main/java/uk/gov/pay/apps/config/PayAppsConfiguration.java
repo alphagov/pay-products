@@ -1,10 +1,11 @@
 package uk.gov.pay.apps.config;
 
 import io.dropwizard.Configuration;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.hibernate.validator.constraints.*;
-import javax.validation.constraints.*;
 
 public class PayAppsConfiguration extends Configuration {
-    // TODO: implement service configuration
+
+    public String getVcapServices() {
+        String vcapServices = System.getenv("VCAP_SERVICES");
+        return vcapServices;
+    }
 }

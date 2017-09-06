@@ -1,5 +1,5 @@
 ---
 applications:
 - name: govukpay-apps
-  memory: 256M
+  memory: 1G
   instances: 1

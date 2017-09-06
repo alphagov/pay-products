@@ -10,6 +10,7 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import uk.gov.pay.apps.config.PayAppsConfiguration;
 import uk.gov.pay.apps.healthchecks.Ping;
+import uk.gov.pay.apps.resources.HealthCheckResource;
 import uk.gov.pay.apps.util.TrustingSSLSocketFactory;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -40,6 +41,8 @@ public class PayAppsApplication extends Application<PayAppsConfiguration> {
                     final Environment environment) {
         environment.healthChecks().register("ping", new Ping());
         initialiseMetrics(configuration, environment);
+
+        environment.jersey().register(new HealthCheckResource(environment));
 
         setGlobalProxies();
     }

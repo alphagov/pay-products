@@ -1,0 +1,11 @@
+logging:
+  level: INFO
+  appenders:
+    - type: console
+      threshold: ALL
+      timeZone: UTC
+      target: stdout
+      logFormat: "[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n"
+
+graphiteHost: ${METRICS_HOST:-localhost}
+graphitePort: ${METRICS_PORT:-8092}

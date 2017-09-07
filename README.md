@@ -2,6 +2,10 @@
 
 Products integrating with GOV.UK Pay in Java(Dropwizard)
 
+This microservice manages products (things that a Government Service would like to take payments for).
+
+These products are integrated with GOVUK.Pay so that a user can make payments using a provided URL. 
+
 ## Environment Variables
 
 | Variable | Default | Purpose |

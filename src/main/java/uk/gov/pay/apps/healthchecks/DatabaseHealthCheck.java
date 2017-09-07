@@ -3,8 +3,7 @@ package uk.gov.pay.apps.healthchecks;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheck;
-import io.dropwizard.setup.Environment;
-import uk.gov.pay.apps.config.PayAppsConfiguration;
+import io.dropwizard.db.DataSourceFactory;
 
 import javax.inject.Inject;
 import java.sql.*;
@@ -43,11 +42,11 @@ public class DatabaseHealthCheck extends HealthCheck {
     }
 
     @Inject
-    public DatabaseHealthCheck(PayAppsConfiguration configuration, Environment environment) {
-        this.dbUrl = configuration.getDataSourceFactory().getUrl();
-        this.dbUser = configuration.getDataSourceFactory().getUser();
-        this.dbPassword = configuration.getDataSourceFactory().getPassword();
-        initialiseMetrics(environment.metrics());
+    public DatabaseHealthCheck(DataSourceFactory dataSourceFactory, MetricRegistry metricRegistry) {
+        this.dbUrl = dataSourceFactory.getUrl();
+        this.dbUser = dataSourceFactory.getUser();
+        this.dbPassword = dataSourceFactory.getPassword();
+        initialiseMetrics(metricRegistry);
     }
 
     private void initialiseMetrics(MetricRegistry metricRegistry) {

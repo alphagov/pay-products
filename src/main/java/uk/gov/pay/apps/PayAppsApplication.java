@@ -3,6 +3,8 @@ package uk.gov.pay.apps;
 import com.codahale.metrics.graphite.GraphiteReporter;
 import com.codahale.metrics.graphite.GraphiteSender;
 import com.codahale.metrics.graphite.GraphiteUDP;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import io.dropwizard.Application;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
@@ -11,6 +13,7 @@ import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import uk.gov.pay.apps.config.PayAppsConfiguration;
+import uk.gov.pay.apps.config.ProductsModule;
 import uk.gov.pay.apps.healthchecks.DatabaseHealthCheck;
 import uk.gov.pay.apps.healthchecks.Ping;
 import uk.gov.pay.apps.resources.HealthCheckResource;
@@ -49,10 +52,12 @@ public class PayAppsApplication extends Application<PayAppsConfiguration> {
     @Override
     public void run(final PayAppsConfiguration configuration,
                     final Environment environment) {
+        final Injector injector = Guice.createInjector(new ProductsModule(configuration, environment));
+
         initialiseMetrics(configuration, environment);
         environment.healthChecks().register("ping", new Ping());
-        environment.healthChecks().register("database", new DatabaseHealthCheck(configuration, environment));
-        environment.jersey().register(new HealthCheckResource(environment));
+        environment.healthChecks().register("database", injector.getInstance(DatabaseHealthCheck.class));
+        environment.jersey().register(injector.getInstance(HealthCheckResource.class));
 
         setGlobalProxies();
     }

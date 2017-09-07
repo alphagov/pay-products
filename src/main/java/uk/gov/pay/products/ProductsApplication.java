@@ -12,6 +12,7 @@ import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import uk.gov.pay.products.config.PersistenceServiceInitialiser;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.config.ProductsModule;
 import uk.gov.pay.products.healthchecks.DatabaseHealthCheck;
@@ -53,6 +54,7 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
     public void run(final ProductsConfiguration configuration,
                     final Environment environment) {
         final Injector injector = Guice.createInjector(new ProductsModule(configuration, environment));
+        injector.getInstance(PersistenceServiceInitialiser.class);
 
         initialiseMetrics(configuration, environment);
         environment.healthChecks().register("ping", new Ping());

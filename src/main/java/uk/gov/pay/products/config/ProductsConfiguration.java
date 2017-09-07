@@ -13,9 +13,14 @@ public class ProductsConfiguration extends Configuration {
     private String graphiteHost;
     @NotNull
     private String graphitePort;
+
     @Valid
     @NotNull
     private DataSourceFactory dataSourceFactory;
+
+    @Valid
+    @NotNull
+    private JPAConfiguration jpaConfiguration;
 
     public String getVcapServices() {
         String vcapServices = System.getenv("VCAP_SERVICES");
@@ -33,5 +38,10 @@ public class ProductsConfiguration extends Configuration {
     @JsonProperty("database")
     public DataSourceFactory getDataSourceFactory() {
         return dataSourceFactory;
+    }
+
+    @JsonProperty("jpa")
+    public JPAConfiguration getJpaConfiguration() {
+        return jpaConfiguration;
     }
 }

@@ -15,6 +15,7 @@ import io.dropwizard.setup.Environment;
 import uk.gov.pay.products.config.PersistenceServiceInitialiser;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.config.ProductsModule;
+import uk.gov.pay.products.filters.LoggingFilter;
 import uk.gov.pay.products.healthchecks.DatabaseHealthCheck;
 import uk.gov.pay.products.healthchecks.Ping;
 import uk.gov.pay.products.resources.HealthCheckResource;
@@ -24,10 +25,14 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 import java.util.concurrent.TimeUnit;
 
+import static java.util.EnumSet.of;
+import static javax.servlet.DispatcherType.REQUEST;
+
 public class ProductsApplication extends Application<ProductsConfiguration> {
     private static final boolean NON_STRICT_VARIABLE_SUBSTITUTOR = false;
     private static final String SERVICE_METRICS_NODE = "pay-products";
     private static final int GRAPHITE_SENDING_PERIOD_SECONDS = 10;
+    private static final String API_VERSION_PATH = "/v1";
 
     @Override
     public String getName() {
@@ -57,6 +62,8 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
         injector.getInstance(PersistenceServiceInitialiser.class);
 
         initialiseMetrics(configuration, environment);
+        environment.servlets().addFilter("LoggingFilter", new LoggingFilter())
+                .addMappingForUrlPatterns(of(REQUEST), true, API_VERSION_PATH + "/*");
         environment.healthChecks().register("ping", new Ping());
         environment.healthChecks().register("database", injector.getInstance(DatabaseHealthCheck.class));
         environment.jersey().register(injector.getInstance(HealthCheckResource.class));

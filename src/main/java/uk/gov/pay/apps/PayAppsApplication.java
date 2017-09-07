@@ -6,9 +6,12 @@ import com.codahale.metrics.graphite.GraphiteUDP;
 import io.dropwizard.Application;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
+import io.dropwizard.db.DataSourceFactory;
+import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import uk.gov.pay.apps.config.PayAppsConfiguration;
+import uk.gov.pay.apps.healthchecks.DatabaseHealthCheck;
 import uk.gov.pay.apps.healthchecks.Ping;
 import uk.gov.pay.apps.resources.HealthCheckResource;
 import uk.gov.pay.apps.util.TrustingSSLSocketFactory;
@@ -34,14 +37,21 @@ public class PayAppsApplication extends Application<PayAppsConfiguration> {
                         new EnvironmentVariableSubstitutor(NON_STRICT_VARIABLE_SUBSTITUTOR)
                 )
         );
+
+        bootstrap.addBundle(new MigrationsBundle<PayAppsConfiguration>() {
+            @Override
+            public DataSourceFactory getDataSourceFactory(PayAppsConfiguration configuration) {
+                return configuration.getDataSourceFactory();
+            }
+        });
     }
 
     @Override
     public void run(final PayAppsConfiguration configuration,
                     final Environment environment) {
-        environment.healthChecks().register("ping", new Ping());
         initialiseMetrics(configuration, environment);
-
+        environment.healthChecks().register("ping", new Ping());
+        environment.healthChecks().register("database", new DatabaseHealthCheck(configuration, environment));
         environment.jersey().register(new HealthCheckResource(environment));
 
         setGlobalProxies();

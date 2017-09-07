@@ -1,4 +1,4 @@
-package uk.gov.pay.apps.resources;
+package uk.gov.pay.products.resources;
 
 import com.codahale.metrics.health.HealthCheck;
 import com.fasterxml.jackson.core.JsonProcessingException;

@@ -1,4 +1,4 @@
-package uk.gov.pay.apps.config;
+package uk.gov.pay.products.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
@@ -7,7 +7,7 @@ import io.dropwizard.db.DataSourceFactory;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-public class PayAppsConfiguration extends Configuration {
+public class ProductsConfiguration extends Configuration {
 
     @NotNull
     private String graphiteHost;

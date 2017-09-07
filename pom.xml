@@ -8,7 +8,7 @@
         <maven>3.0.0</maven>
     </prerequisites>
     <groupId>uk.gov.pay</groupId>
-    <artifactId>pay-apps</artifactId>
+    <artifactId>pay-products</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -17,7 +17,7 @@
         <dropwizard.version>1.1.4</dropwizard.version>
         <eclipselink.version>2.6.4</eclipselink.version>
         <guice.version>4.1.0</guice.version>
-        <mainClass>uk.gov.pay.apps.PayAppsApplication</mainClass>
+        <mainClass>uk.gov.pay.products.ProductsApplication</mainClass>
     </properties>
 
     <dependencyManagement>

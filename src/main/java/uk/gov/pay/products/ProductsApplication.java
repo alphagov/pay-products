@@ -1,4 +1,4 @@
-package uk.gov.pay.apps;
+package uk.gov.pay.products;
 
 import com.codahale.metrics.graphite.GraphiteReporter;
 import com.codahale.metrics.graphite.GraphiteSender;
@@ -12,45 +12,45 @@ import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import uk.gov.pay.apps.config.PayAppsConfiguration;
-import uk.gov.pay.apps.config.ProductsModule;
-import uk.gov.pay.apps.healthchecks.DatabaseHealthCheck;
-import uk.gov.pay.apps.healthchecks.Ping;
-import uk.gov.pay.apps.resources.HealthCheckResource;
-import uk.gov.pay.apps.util.TrustingSSLSocketFactory;
+import uk.gov.pay.products.config.ProductsConfiguration;
+import uk.gov.pay.products.config.ProductsModule;
+import uk.gov.pay.products.healthchecks.DatabaseHealthCheck;
+import uk.gov.pay.products.healthchecks.Ping;
+import uk.gov.pay.products.resources.HealthCheckResource;
+import uk.gov.pay.products.util.TrustingSSLSocketFactory;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 import java.util.concurrent.TimeUnit;
 
-public class PayAppsApplication extends Application<PayAppsConfiguration> {
+public class ProductsApplication extends Application<ProductsConfiguration> {
     private static final boolean NON_STRICT_VARIABLE_SUBSTITUTOR = false;
-    private static final String SERVICE_METRICS_NODE = "pay-apps";
+    private static final String SERVICE_METRICS_NODE = "pay-products";
     private static final int GRAPHITE_SENDING_PERIOD_SECONDS = 10;
 
     @Override
     public String getName() {
-        return "PayApps";
+        return "Products";
     }
 
     @Override
-    public void initialize(final Bootstrap<PayAppsConfiguration> bootstrap) {
+    public void initialize(final Bootstrap<ProductsConfiguration> bootstrap) {
         bootstrap.setConfigurationSourceProvider(
                 new SubstitutingSourceProvider(bootstrap.getConfigurationSourceProvider(),
                         new EnvironmentVariableSubstitutor(NON_STRICT_VARIABLE_SUBSTITUTOR)
                 )
         );
 
-        bootstrap.addBundle(new MigrationsBundle<PayAppsConfiguration>() {
+        bootstrap.addBundle(new MigrationsBundle<ProductsConfiguration>() {
             @Override
-            public DataSourceFactory getDataSourceFactory(PayAppsConfiguration configuration) {
+            public DataSourceFactory getDataSourceFactory(ProductsConfiguration configuration) {
                 return configuration.getDataSourceFactory();
             }
         });
     }
 
     @Override
-    public void run(final PayAppsConfiguration configuration,
+    public void run(final ProductsConfiguration configuration,
                     final Environment environment) {
         final Injector injector = Guice.createInjector(new ProductsModule(configuration, environment));
 
@@ -67,7 +67,7 @@ public class PayAppsApplication extends Application<PayAppsConfiguration> {
         HttpsURLConnection.setDefaultSSLSocketFactory(socketFactory);
     }
 
-    private void initialiseMetrics(PayAppsConfiguration configuration, Environment environment) {
+    private void initialiseMetrics(ProductsConfiguration configuration, Environment environment) {
         GraphiteSender graphiteUDP = new GraphiteUDP(configuration.getGraphiteHost(), Integer.valueOf(configuration.getGraphitePort()));
         GraphiteReporter.forRegistry(environment.metrics())
                 .prefixedWith(SERVICE_METRICS_NODE)
@@ -77,6 +77,6 @@ public class PayAppsApplication extends Application<PayAppsConfiguration> {
     }
 
     public static void main(final String[] args) throws Exception {
-        new PayAppsApplication().run(args);
+        new ProductsApplication().run(args);
     }
 }

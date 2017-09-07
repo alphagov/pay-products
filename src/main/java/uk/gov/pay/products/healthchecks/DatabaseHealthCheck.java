@@ -1,4 +1,4 @@
-package uk.gov.pay.apps.healthchecks;
+package uk.gov.pay.products.healthchecks;
 
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;

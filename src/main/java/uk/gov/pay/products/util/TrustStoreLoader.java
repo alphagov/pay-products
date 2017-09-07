@@ -1,4 +1,4 @@
-package uk.gov.pay.apps.util;
+package uk.gov.pay.products.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

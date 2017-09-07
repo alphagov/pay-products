@@ -1,12 +1,12 @@
-# pay-apps
+# pay-products
 
-Apps integrating with GOV.UK Pay in Java(Dropwizard)
+Products integrating with GOV.UK Pay in Java(Dropwizard)
 
 ## Environment Variables
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `APPS_UI_URL` | - | base url of the apps ui micro service |
+| `PRODUCTS_UI_URL` | - | base url of the products ui micro service |
 | `API_KEY`     | - | API Key for request authentication |
 | `API_KEY2`    | - | Alternate API Key for request authentication |
 

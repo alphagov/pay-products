@@ -2,7 +2,7 @@
 
 ## POST /v1/api/products
 
-This endpoint creates a new product in pay-apps.
+This endpoint creates a new product in pay-products.
 
 ### Request example
 
@@ -29,7 +29,7 @@ Content-Type: application/json
 | `pay_api_token`          |    X     | valid api token for the gateway account of above service which this product takes payments for |  |
 | `description`            |    X     | Description of the product. This will be passed as the `description` when creating the charge | |
 | `price`                  |    X     | Price for the product in pence. This will be passed as the  `amount` when creating charge    | |
-| `return_url`             |          | (https only) where to redirect to upon completion of a payment. If not provided, `pay-apps` will generate a default url to itself when creating a charge | |
+| `return_url`             |          | (https only) where to redirect to upon completion of a payment. If not provided, `pay-products` will generate a default url to itself when creating a charge | |
 | `app_external_id`        |          | (optional) external id of the app the product should be linked to. if not provided, this will generate a `System Generated` app and link the product to it | |
 
 ### Response example
@@ -45,12 +45,12 @@ Content-Type: application/json
     "return_url" :         "https://some.valid.url/"
     "links": [
     {
-        "href": "https://govukpay-apps.cloudapps.digital/v1/api/products/874h5c87834659q345698495",
+        "href": "https://govukpay-products.cloudapps.digital/v1/api/products/874h5c87834659q345698495",
         "rel" : "self",
         "method" : "GET"
     },
     {
-         "href": "https://govukpay-apps-ui.cloudapps.digital/pay/874h5c87834659q345698495",
+         "href": "https://govukpay-products-ui.cloudapps.digital/pay/874h5c87834659q345698495",
          "rel" : "pay",
          "method" : "POST"
     }]
@@ -67,7 +67,7 @@ Content-Type: application/json
 | `price`                  | X              | Price for the product in pence      |
 | `return_url`             |                | return url provided. _(not be available if it was not provided)_   |
 | `links.self`             | X              | self GET link to the product. |
-| `links.pay`              | X              | The link in `pay-apps-ui` where a charge for this product will be generated and redirected to GOV.UK Pay |
+| `links.pay`              | X              | The link in `pay-products-ui` where a charge for this product will be generated and redirected to GOV.UK Pay |
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -92,12 +92,12 @@ Content-Type: application/json
     "return_url" :         "https://some.valid.url/"
     "links": [
     {
-        "href": "https://govukpay-apps.cloudapps.digital/v1/api/products/874h5c87834659q345698495",
+        "href": "https://govukpay-products.cloudapps.digital/v1/api/products/874h5c87834659q345698495",
         "rel" : "self",
         "method" : "GET"
     },
     {
-         "href": "https://govukpay-apps-ui.cloudapps.digital/pay/874h5c87834659q345698495",
+         "href": "https://govukpay-products-ui.cloudapps.digital/pay/874h5c87834659q345698495",
          "rel" : "pay",
          "method" : "POST"
     }]
@@ -129,12 +129,12 @@ Content-Type: application/json
         "return_url" :         "https://some.valid.url/"
         "links": [
         {
-            "href": "https://govukpay-apps.cloudapps.digital/v1/api/products/874h5c87834659q345698495",
+            "href": "https://govukpay-products.cloudapps.digital/v1/api/products/874h5c87834659q345698495",
             "rel" : "self",
             "method" : "GET"
         },
         {
-             "href": "https://govukpay-apps-ui.cloudapps.digital/pay/874h5c87834659q345698495",
+             "href": "https://govukpay-products-ui.cloudapps.digital/pay/874h5c87834659q345698495",
              "rel" : "pay",
              "method" : "POST"
         }]
@@ -146,12 +146,12 @@ Content-Type: application/json
         "return_url" :         "https://some.valid.url/"
         "links": [
         {
-            "href": "https://govukpay-apps.cloudapps.digital/v1/api/products/h6347634cwb67wii7b6ciueroytw",
+            "href": "https://govukpay-products.cloudapps.digital/v1/api/products/h6347634cwb67wii7b6ciueroytw",
             "rel" : "self",
             "method" : "GET"
         },
         {
-             "href": "https://govukpay-apps-ui.cloudapps.digital/pay/h6347634cwb67wii7b6ciueroytw",
+             "href": "https://govukpay-products-ui.cloudapps.digital/pay/h6347634cwb67wii7b6ciueroytw",
              "rel" : "pay",
              "method" : "POST"
         }]

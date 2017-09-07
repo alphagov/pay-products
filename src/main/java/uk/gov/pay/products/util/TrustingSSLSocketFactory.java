@@ -1,4 +1,4 @@
-package uk.gov.pay.apps.util;
+package uk.gov.pay.products.util;
 
 import org.postgresql.ssl.WrappedFactory;
 

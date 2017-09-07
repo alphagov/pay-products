@@ -1,8 +1,9 @@
-package uk.gov.pay.apps.resources;
+package uk.gov.pay.products.resources;
 
 import com.codahale.metrics.health.HealthCheck;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableMap;
+import com.google.inject.Inject;
 import io.dropwizard.setup.Environment;
 
 import javax.ws.rs.GET;
@@ -25,7 +26,7 @@ public class HealthCheckResource {
 
     private Environment environment;
 
-//    @Inject
+    @Inject
     public HealthCheckResource(Environment environment) {
         this.environment = environment;
     }

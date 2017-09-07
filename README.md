@@ -1,12 +1,16 @@
-# pay-apps
+# pay-products
 
-Apps integrating with GOV.UK Pay in Java(Dropwizard)
+Products integrating with GOV.UK Pay in Java(Dropwizard)
+
+This microservice manages products (things that a Government Service would like to take payments for).
+
+These products are integrated with GOVUK.Pay so that a user can make payments using a provided URL. 
 
 ## Environment Variables
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `APPS_UI_URL` | - | base url of the apps ui micro service |
+| `PRODUCTS_UI_URL` | - | base url of the products ui micro service |
 | `API_KEY`     | - | API Key for request authentication |
 | `API_KEY2`    | - | Alternate API Key for request authentication |
 

@@ -17,6 +17,7 @@ import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.config.ProductsModule;
 import uk.gov.pay.products.filters.LoggingFilter;
 import uk.gov.pay.products.healthchecks.DatabaseHealthCheck;
+import uk.gov.pay.products.healthchecks.DependentResourceWaitCommand;
 import uk.gov.pay.products.healthchecks.Ping;
 import uk.gov.pay.products.resources.HealthCheckResource;
 import uk.gov.pay.products.util.TrustingSSLSocketFactory;
@@ -53,6 +54,9 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
                 return configuration.getDataSourceFactory();
             }
         });
+
+        bootstrap.addCommand(new DependentResourceWaitCommand());
+
     }
 
     @Override

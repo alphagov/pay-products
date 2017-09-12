@@ -8,16 +8,12 @@ import com.google.inject.Injector;
 import io.dropwizard.Application;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
-import io.dropwizard.db.DataSourceFactory;
-import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import uk.gov.pay.products.config.PersistenceServiceInitialiser;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.config.ProductsModule;
 import uk.gov.pay.products.filters.LoggingFilter;
-import uk.gov.pay.products.healthchecks.DatabaseHealthCheck;
-import uk.gov.pay.products.healthchecks.DependentResourceWaitCommand;
 import uk.gov.pay.products.healthchecks.Ping;
 import uk.gov.pay.products.resources.HealthCheckResource;
 import uk.gov.pay.products.util.TrustingSSLSocketFactory;
@@ -47,15 +43,15 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
                         new EnvironmentVariableSubstitutor(NON_STRICT_VARIABLE_SUBSTITUTOR)
                 )
         );
+// TODO: enable when DB is ready
+//        bootstrap.addBundle(new MigrationsBundle<ProductsConfiguration>() {
+//            @Override
+//            public DataSourceFactory getDataSourceFactory(ProductsConfiguration configuration) {
+//                return configuration.getDataSourceFactory();
+//            }
+//        });
 
-        bootstrap.addBundle(new MigrationsBundle<ProductsConfiguration>() {
-            @Override
-            public DataSourceFactory getDataSourceFactory(ProductsConfiguration configuration) {
-                return configuration.getDataSourceFactory();
-            }
-        });
-
-        bootstrap.addCommand(new DependentResourceWaitCommand());
+//        bootstrap.addCommand(new DependentResourceWaitCommand());
 
     }
 
@@ -69,7 +65,8 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
         environment.servlets().addFilter("LoggingFilter", new LoggingFilter())
                 .addMappingForUrlPatterns(of(REQUEST), true, API_VERSION_PATH + "/*");
         environment.healthChecks().register("ping", new Ping());
-        environment.healthChecks().register("database", injector.getInstance(DatabaseHealthCheck.class));
+        // TODO: enable when DB is ready
+//        environment.healthChecks().register("database", injector.getInstance(DatabaseHealthCheck.class));
         environment.jersey().register(injector.getInstance(HealthCheckResource.class));
 
         setGlobalProxies();

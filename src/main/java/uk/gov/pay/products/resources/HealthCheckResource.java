@@ -2,9 +2,12 @@ package uk.gov.pay.products.resources;
 
 import com.codahale.metrics.health.HealthCheck;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import io.dropwizard.setup.Environment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -23,6 +26,9 @@ public class HealthCheckResource {
     private static final String HEALTHCHECK = "healthcheck";
     private static final String HEALTHY = "healthy";
     private static final String MESSAGE = "message";
+
+    private static Logger logger = LoggerFactory.getLogger(HealthCheckResource.class);
+    private static ObjectMapper mapper = new ObjectMapper();
 
     private Environment environment;
 
@@ -44,15 +50,18 @@ public class HealthCheckResource {
                 .filter(HealthCheck.Result::isHealthy)
                 .count();
 
-        if(healthy) {
-            return Response.ok().entity(response).build();
+        if (healthy) {
+            logger.info("Healthcheck OK: {}", mapper.writeValueAsString(response));
+            return Response.ok().build();
         }
+
+        logger.error("Healthcheck ERROR: {}", mapper.writeValueAsString(response));
         return status(503).entity(response).build();
     }
 
     private Map<String, Map<String, Object>> getResponse(SortedMap<String, HealthCheck.Result> results) {
         Map<String, Map<String, Object>> response = new HashMap<>();
-        for (SortedMap.Entry<String, HealthCheck.Result> entry : results.entrySet() ) {
+        for (SortedMap.Entry<String, HealthCheck.Result> entry : results.entrySet()) {
             response.put(entry.getKey(), ImmutableMap.of(
                     HEALTHY, entry.getValue().isHealthy(),
                     MESSAGE, isBlank(entry.getValue().getMessage()) ? "Healthy" : entry.getValue().getMessage()));

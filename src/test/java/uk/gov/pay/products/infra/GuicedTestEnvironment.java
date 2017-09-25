@@ -3,8 +3,10 @@ package uk.gov.pay.products.infra;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Singleton;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.jpa.JpaPersistModule;
+import uk.gov.pay.products.persistence.dao.CatalogueDao;
 
 public class GuicedTestEnvironment {
 
@@ -36,6 +38,7 @@ public class GuicedTestEnvironment {
 
         @Override
         protected void configure() {
+            bind(CatalogueDao.class).in(Singleton.class);
         }
     }
 }

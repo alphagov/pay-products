@@ -17,6 +17,8 @@ These products are integrated with GOVUK.Pay so that a user can make payments us
 ## API Specification
 
 The [API Specification](docs/api_specification.md) provides more detail on the paths and operations including examples.
+
+The JSON naming convention follows Hypertext Application Language (HAL).
  
 ### API NAMESPACE
 

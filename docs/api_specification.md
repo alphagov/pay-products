@@ -12,12 +12,13 @@ Authorization: Bearer API_TOKEN
 Content-Type: application/json
 
 {
-    "external_service_id" :  "d76tt83563thcert8urihgiuer",
-    "pay_api_token" :        "5meusgv5ufclsbvde78mdf35bfdhnhm1307euq94kcf0lcqcqrovbjovib",
-    "description" :          "Description of the product",
-    "price" :                1050,
-    "return_url" :           "https://some.valid.url/"   
-    "app_external_id" :      "748bwiirlwTjsfbdjgturedfkg"   
+    "external_service_id" :     "d76tt83563thcert8urihgiuer",
+    "pay_api_token" :           "5meusgv5ufclsbvde78mdf35bfdhnhm1307euq94kcf0lcqcqrovbjovib",
+    "name" :                    "A name for the product",
+    "description" :             "Description of the product",
+    "price" :                   1050,
+    "return_url" :              "https://some.valid.url/"   
+    "catalogue_external_id" :   "748bwiirlwTjsfbdjgturedfkg"   
 }
 ```
 
@@ -27,10 +28,11 @@ Content-Type: application/json
 | ------------------------ |:--------:| ---------------------------------------------------------------- |----------------------|
 | `external_service_id`    |    X     | external service id of the Service as identified by adminusers.  |   |
 | `pay_api_token`          |    X     | valid api token for the gateway account of above service which this product takes payments for |  |
-| `description`            |    X     | Description of the product. This will be passed as the `description` when creating the charge | |
+| `name`                   |    X     | Name of the product. This will be passed as the `name` when creating the charge | |
 | `price`                  |    X     | Price for the product in pence. This will be passed as the  `amount` when creating charge    | |
+| `description`            |          | Description of the product. This will be passed as the `description` when creating the charge | |
 | `return_url`             |          | (https only) where to redirect to upon completion of a payment. If not provided, `pay-products` will generate a default url to itself when creating a charge | |
-| `app_external_id`        |          | (optional) external id of the app the product should be linked to. if not provided, this will generate a `System Generated` app and link the product to it | |
+| `catalogue_external_id`  |          | (optional) external id of the catalogue the product should be linked to. if not provided, this will generate a `System Generated` catalogue and link the product to it | |
 
 ### Response example
 
@@ -43,7 +45,7 @@ Content-Type: application/json
     "description":         "Description of the product",
     "price":               1050,
     "return_url" :         "https://some.valid.url/"
-    "links": [
+    "_links": [
     {
         "href": "https://govukpay-products.cloudapps.digital/v1/api/products/874h5c87834659q345698495",
         "rel" : "self",
@@ -66,8 +68,8 @@ Content-Type: application/json
 | `description`            | X              | Description of the product |
 | `price`                  | X              | Price for the product in pence      |
 | `return_url`             |                | return url provided. _(not be available if it was not provided)_   |
-| `links.self`             | X              | self GET link to the product. |
-| `links.pay`              | X              | The link in `pay-products-ui` where a charge for this product will be generated and redirected to GOV.UK Pay |
+| `_links.self`            | X              | self GET link to the product. |
+| `_links.pay`             | X              | The link in `pay-products-ui` where a charge for this product will be generated and redirected to GOV.UK Pay |
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -90,7 +92,7 @@ Content-Type: application/json
     "description":         "Description of the product",
     "price":               1050,
     "return_url" :         "https://some.valid.url/"
-    "links": [
+    "_links": [
     {
         "href": "https://govukpay-products.cloudapps.digital/v1/api/products/874h5c87834659q345698495",
         "rel" : "self",
@@ -127,7 +129,7 @@ Content-Type: application/json
         "description":         "Description 1",
         "price":               9999,
         "return_url" :         "https://some.valid.url/"
-        "links": [
+        "_links": [
         {
             "href": "https://govukpay-products.cloudapps.digital/v1/api/products/874h5c87834659q345698495",
             "rel" : "self",
@@ -144,7 +146,7 @@ Content-Type: application/json
         "description":         "Description 2",
         "price":               1050,
         "return_url" :         "https://some.valid.url/"
-        "links": [
+        "_links": [
         {
             "href": "https://govukpay-products.cloudapps.digital/v1/api/products/h6347634cwb67wii7b6ciueroytw",
             "rel" : "self",

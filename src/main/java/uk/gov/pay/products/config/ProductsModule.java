@@ -2,9 +2,15 @@ package uk.gov.pay.products.config;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.inject.AbstractModule;
+import com.google.inject.Singleton;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.persist.jpa.JpaPersistModule;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.setup.Environment;
+import uk.gov.pay.products.service.LinksBuilder;
+import uk.gov.pay.products.service.ProductsFactory;
+import uk.gov.pay.products.validations.ProductRequestValidator;
+import uk.gov.pay.products.validations.RequestValidations;
 
 import java.util.Properties;
 
@@ -23,9 +29,12 @@ public class ProductsModule extends AbstractModule {
         bind(DataSourceFactory.class).toInstance(configuration.getDataSourceFactory());
         bind(MetricRegistry.class).toInstance(environment.metrics());
         bind(Environment.class).toInstance(environment);
+        bind(RequestValidations.class).in(Singleton.class);
+        bind(ProductRequestValidator.class).in(Singleton.class);
+        bind(LinksBuilder.class).toInstance(new LinksBuilder(configuration.getBaseUrl(), configuration.getProductsUIUrl()));
 
         install(jpaModule(configuration));
-
+        install(new FactoryModuleBuilder().build(ProductsFactory.class));
     }
 
     private JpaPersistModule jpaModule(ProductsConfiguration configuration) {
@@ -42,7 +51,7 @@ public class ProductsModule extends AbstractModule {
         properties.put("eclipselink.query-results-cache", jpaConfiguration.getCacheSharedDefault());
         properties.put("eclipselink.cache.shared.default", jpaConfiguration.getCacheSharedDefault());
         properties.put("eclipselink.ddl-generation.output-mode", jpaConfiguration.getDdlGenerationOutputMode());
-        properties.put("eclipselink.session.customizer", "uk.gov.pay.products.app.config.ProductsSessionCustomiser");
+        properties.put("eclipselink.session.customizer", "uk.gov.pay.products.config.ProductsSessionCustomiser");
 
         final JpaPersistModule jpaModule = new JpaPersistModule("ProductsUnit");
         jpaModule.properties(properties);

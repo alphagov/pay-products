@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.products.fixtures.CatalogueEntityFixture;
 import uk.gov.pay.products.persistence.entity.CatalogueEntity;
+import uk.gov.pay.products.util.ProductStatus;
 
 import java.util.Optional;
 
@@ -29,7 +30,7 @@ public class CatalogueDaoTest extends DaoTestBase {
         CatalogueEntity catalogueEntity = CatalogueEntityFixture.aCatalogueEntity()
                 .withExternalId(externalId)
                 .withName("test catalogue")
-                .withStatus("active")
+                .withStatus(ProductStatus.ACTIVE)
                 .build();
 
         catalogueDao.persist(catalogueEntity);

@@ -7,9 +7,9 @@ CREATE TABLE products (
     external_id VARCHAR(32) NOT NULL UNIQUE DEFAULT replace(uuid_generate_v4()::VARCHAR,'-',''),
     name VARCHAR(255) NOT NULL,
     description TEXT NULL,
-    api_key VARCHAR(255) NOT NULL,
+    pay_api_token VARCHAR(255) NOT NULL,
     price BIGINT NOT NULL,
-    status VARCHAR(32) NOT NULL DEFAULT 'active',
+    status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE',
     date_created TIMESTAMP WITH TIME ZONE DEFAULT (now() AT TIME ZONE 'utc') NOT NULL,
     version INTEGER DEFAULT 0 NOT NULL
 );

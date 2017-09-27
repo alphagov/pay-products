@@ -1,6 +1,7 @@
 package uk.gov.pay.products.fixtures;
 
 import uk.gov.pay.products.persistence.entity.CatalogueEntity;
+import uk.gov.pay.products.util.ProductStatus;
 
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
@@ -9,7 +10,7 @@ public class CatalogueEntityFixture {
     private String externalId = randomUuid();
     private String externalServiceId = "default external service id";
     private String name = "default name";
-    private String status = "active";
+    private ProductStatus status = ProductStatus.ACTIVE;
 
     private CatalogueEntityFixture() {
     }
@@ -38,7 +39,7 @@ public class CatalogueEntityFixture {
         return this;
     }
 
-    public CatalogueEntityFixture withStatus(String status) {
+    public CatalogueEntityFixture withStatus(ProductStatus status) {
         this.status = status;
         return this;
     }

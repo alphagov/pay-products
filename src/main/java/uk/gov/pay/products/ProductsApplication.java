@@ -20,6 +20,7 @@ import uk.gov.pay.products.healthchecks.DatabaseHealthCheck;
 import uk.gov.pay.products.healthchecks.DependentResourceWaitCommand;
 import uk.gov.pay.products.healthchecks.Ping;
 import uk.gov.pay.products.resources.HealthCheckResource;
+import uk.gov.pay.products.resources.ProductResource;
 import uk.gov.pay.products.util.TrustingSSLSocketFactory;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -70,6 +71,7 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
         environment.healthChecks().register("ping", new Ping());
         environment.healthChecks().register("database", injector.getInstance(DatabaseHealthCheck.class));
         environment.jersey().register(injector.getInstance(HealthCheckResource.class));
+        environment.jersey().register(injector.getInstance(ProductResource.class));
 
         setGlobalProxies();
     }

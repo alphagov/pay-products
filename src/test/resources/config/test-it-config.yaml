@@ -57,3 +57,6 @@ jpa:
   ddlGenerationOutputMode: database
   queryResultsCache: false
   cacheSharedDefault: false
+
+baseUrl: ${BASE_URL:-http://localhost:8080}
+productsUIUrl: "https://localhost:8080/v1/api/products-ui/"

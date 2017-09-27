@@ -22,6 +22,12 @@ public class ProductsConfiguration extends Configuration {
     @NotNull
     private JPAConfiguration jpaConfiguration;
 
+    @NotNull
+    private String baseUrl;
+
+    @NotNull
+    private String productsUIUrl;
+
     public String getVcapServices() {
         String vcapServices = System.getenv("VCAP_SERVICES");
         return vcapServices;
@@ -43,5 +49,13 @@ public class ProductsConfiguration extends Configuration {
     @JsonProperty("jpa")
     public JPAConfiguration getJpaConfiguration() {
         return jpaConfiguration;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public String getProductsUIUrl() {
+        return productsUIUrl;
     }
 }

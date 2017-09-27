@@ -1,6 +1,10 @@
 package uk.gov.pay.products.persistence.entity;
 
+import uk.gov.pay.products.model.Product;
+import uk.gov.pay.products.util.ProductStatus;
+
 import javax.persistence.*;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Entity
@@ -16,18 +20,19 @@ public class ProductEntity extends AbstractEntity {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "api_key")
-    private String apiKey;
+    @Column(name = "pay_api_token")
+    private String payApiToken;
 
     @Column(name = "price")
     private Long price;
 
     @Column(name = "status")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ProductStatus status = ProductStatus.ACTIVE;
 
     @Column(name = "date_created")
     @Convert(converter = UTCDateTimeConverter.class)
-    private ZonedDateTime dateCreated;
+    private ZonedDateTime dateCreated = ZonedDateTime.now(ZoneId.of("UTC"));
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "catalogue_id", updatable = false)
@@ -60,12 +65,12 @@ public class ProductEntity extends AbstractEntity {
         this.description = description;
     }
 
-    public String getApiKey() {
-        return apiKey;
+    public String getPayApiToken() {
+        return payApiToken;
     }
 
-    public void setApiKey(String apiKey) {
-        this.apiKey = apiKey;
+    public void setPayApiToken(String payApiToken) {
+        this.payApiToken = payApiToken;
     }
 
     public Long getPrice() {
@@ -76,11 +81,11 @@ public class ProductEntity extends AbstractEntity {
         this.price = price;
     }
 
-    public String getStatus() {
+    public ProductStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ProductStatus status) {
         this.status = status;
     }
 
@@ -98,5 +103,30 @@ public class ProductEntity extends AbstractEntity {
 
     public void setCatalogueEntity(CatalogueEntity catalogueEntity) {
         this.catalogueEntity = catalogueEntity;
+    }
+
+    public static ProductEntity from(Product product) {
+        ProductEntity productEntity = new ProductEntity();
+
+        productEntity.setStatus(product.getStatus());
+        productEntity.setPrice(product.getPrice());
+        productEntity.setName(product.getName());
+        productEntity.setPayApiToken(product.getPayApiToken());
+        productEntity.setExternalId(product.getExternalId());
+
+        return productEntity;
+    }
+
+    public Product toProduct() {
+        return new Product(
+                this.externalId,
+                this.catalogueEntity.getExternalServiceId(),
+                this.name,
+                this.description,
+                this.payApiToken,
+                this.price,
+                this.status,
+                this.catalogueEntity.getExternalId());
+
     }
 }

@@ -1,5 +1,7 @@
 package uk.gov.pay.products.persistence.entity;
 
+import uk.gov.pay.products.util.ProductStatus;
+
 import javax.persistence.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -17,10 +19,11 @@ public class CatalogueEntity extends AbstractEntity {
     private String externalServiceId;
 
     @Column(name = "name")
-    private String name;
+    private String name = "System generated";
 
     @Column(name = "status")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ProductStatus status = ProductStatus.ACTIVE;
 
     @Column(name = "date_created")
     @Convert(converter = UTCDateTimeConverter.class)
@@ -57,12 +60,12 @@ public class CatalogueEntity extends AbstractEntity {
         this.name = name;
     }
 
-    public String getStatus() {
+    public ProductStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setStatus(ProductStatus productStatus) {
+        this.status = productStatus;
     }
 
     public ZonedDateTime getDateCreated() {

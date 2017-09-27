@@ -2,6 +2,7 @@ package uk.gov.pay.products.fixtures;
 
 import uk.gov.pay.products.persistence.entity.CatalogueEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
+import uk.gov.pay.products.util.ProductStatus;
 
 import java.time.ZonedDateTime;
 
@@ -13,7 +14,7 @@ public class ProductEntityFixture {
     private String apiKey = "default api key";
     private String name = "default name";
     private Long price = 100L;
-    private String status = "active";
+    private ProductStatus status = ProductStatus.ACTIVE;
     private String externalId = randomUuid();
     private ZonedDateTime dateCreated = ZonedDateTime.now();
     private CatalogueEntity catalogueEntity;
@@ -24,7 +25,7 @@ public class ProductEntityFixture {
 
     public ProductEntity build() {
         ProductEntity product = new ProductEntity();
-        product.setApiKey(apiKey);
+        product.setPayApiToken(apiKey);
         product.setDateCreated(dateCreated);
         product.setDescription(description);
         product.setName(name);

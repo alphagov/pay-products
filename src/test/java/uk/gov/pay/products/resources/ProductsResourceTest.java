@@ -54,7 +54,7 @@ public class ProductsResourceTest extends IntegrationTest {
         System.out.println(response.extract().path("_links").toString());
 
         String productsUrl = "http://localhost:8080/v1/api/products/";
-        String productsUIUrl = "https://localhost:8080/v1/api/products-ui/";
+        String productsUIUrl = "http://localhost:3000/pay/";
         response
                 .body("_links", hasSize(2))
                 .body("_links[0].href", matchesPattern(productsUrl + externalId))

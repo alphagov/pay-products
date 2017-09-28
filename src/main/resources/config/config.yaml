@@ -59,4 +59,4 @@ jpa:
   cacheSharedDefault: false
 
 baseUrl: ${BASE_URL:-http://localhost:8080}
-productsUIUrl: "https://localhost:8080/v1/api/products-ui/"
+productsUiPayUrl: ${PRODUCTSUI_PAY_URL:-http://localhost:3000/pay}

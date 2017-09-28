@@ -25,6 +25,7 @@ public class Product {
     private static final String DESCRIPTION = "description";
     private static final String STATUS = "status";
     private static final String CATALOGUE_EXTERNAL_ID = "catalogue_external_id";
+    private static final String RETURN_URL = "return_url";
 
     private String externalId;
     private String externalServiceId;
@@ -35,6 +36,7 @@ public class Product {
     private ProductStatus status;
     private String catalogueExternalId;
     private List<Link> links = new ArrayList<>();
+    private String returnUrl;
 
     public Product(
             @JsonProperty(EXTERNAL_ID) String externalId,
@@ -44,7 +46,9 @@ public class Product {
             @JsonProperty(FIELD_PAY_API_TOKEN) String payApiToken,
             @JsonProperty(FIELD_PRICE) Long price,
             @JsonProperty(STATUS) ProductStatus status,
-            @JsonProperty(CATALOGUE_EXTERNAL_ID) String catalogueExternalId) {
+            @JsonProperty(CATALOGUE_EXTERNAL_ID) String catalogueExternalId,
+            @JsonProperty(RETURN_URL) String returnUrl)
+    {
         this.externalId = externalId;
         this.externalServiceId = externalServiceId;
         this.name = name;
@@ -53,6 +57,7 @@ public class Product {
         this.price = price;
         this.status = status;
         this.catalogueExternalId = catalogueExternalId;
+        this.returnUrl = returnUrl;
     }
 
     public static Product from(JsonNode jsonPayload) {
@@ -60,8 +65,11 @@ public class Product {
         String paiApiToken = (jsonPayload.get(FIELD_PAY_API_TOKEN) != null) ? jsonPayload.get(FIELD_PAY_API_TOKEN).asText() : null;
         String name = (jsonPayload.get(FIELD_NAME) != null) ? jsonPayload.get(FIELD_NAME).asText() : null;
         Long price = (jsonPayload.get(FIELD_PRICE) != null) ? jsonPayload.get(FIELD_PRICE).asLong() : null;
+        String description = (jsonPayload.get(DESCRIPTION) != null) ? jsonPayload.get(DESCRIPTION).asText() : null;
+        String returnUrl = (jsonPayload.get(RETURN_URL) != null) ? jsonPayload.get(RETURN_URL).asText() : null;
 
-        return new Product(randomUuid(), externalServiceId, name, null, paiApiToken, price, ProductStatus.ACTIVE, null);
+        return new Product(randomUuid(), externalServiceId, name, description, paiApiToken,
+                price, ProductStatus.ACTIVE, null, returnUrl);
     }
 
     public String getExternalServiceId() {
@@ -103,5 +111,9 @@ public class Product {
     @JsonProperty("_links")
     public List<Link> getLinks() {
         return links;
+    }
+
+    public String getReturnUrl() {
+        return returnUrl;
     }
 }

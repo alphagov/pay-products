@@ -11,7 +11,8 @@ CREATE TABLE products (
     price BIGINT NOT NULL,
     status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE',
     date_created TIMESTAMP WITH TIME ZONE DEFAULT (now() AT TIME ZONE 'utc') NOT NULL,
-    version INTEGER DEFAULT 0 NOT NULL
+    version INTEGER DEFAULT 0 NOT NULL,
+    return_url VARCHAR(255)
 );
 --rollback drop table products;
 

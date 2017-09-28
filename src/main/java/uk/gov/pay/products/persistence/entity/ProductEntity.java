@@ -38,6 +38,9 @@ public class ProductEntity extends AbstractEntity {
     @JoinColumn(name = "catalogue_id", updatable = false)
     private CatalogueEntity catalogueEntity;
 
+    @Column(name = "return_url")
+    private String returnUrl;
+
     public ProductEntity() {
     }
 
@@ -113,6 +116,8 @@ public class ProductEntity extends AbstractEntity {
         productEntity.setName(product.getName());
         productEntity.setPayApiToken(product.getPayApiToken());
         productEntity.setExternalId(product.getExternalId());
+        productEntity.setDescription(product.getDescription());
+        productEntity.setReturnUrl(product.getReturnUrl());
 
         return productEntity;
     }
@@ -126,7 +131,15 @@ public class ProductEntity extends AbstractEntity {
                 this.payApiToken,
                 this.price,
                 this.status,
-                this.catalogueEntity.getExternalId());
+                this.catalogueEntity.getExternalId(),
+                this.returnUrl);
+    }
 
+    public String getReturnUrl() {
+        return returnUrl;
+    }
+
+    public void setReturnUrl(String returnUrl) {
+        this.returnUrl = returnUrl;
     }
 }

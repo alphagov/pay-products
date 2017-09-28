@@ -26,7 +26,7 @@ public class ProductsConfiguration extends Configuration {
     private String baseUrl;
 
     @NotNull
-    private String productsUiPayUrl;
+    private String frontendUrl;
 
     public String getVcapServices() {
         String vcapServices = System.getenv("VCAP_SERVICES");
@@ -55,7 +55,7 @@ public class ProductsConfiguration extends Configuration {
         return baseUrl;
     }
 
-    public String getProductsUiPayUrl() {
-        return productsUiPayUrl;
+    public String getFrontendUrl() {
+        return frontendUrl;
     }
 }

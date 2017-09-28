@@ -18,7 +18,6 @@ Content-Type: application/json
     "description" :             "Description of the product",
     "price" :                   1050,
     "return_url" :              "https://some.valid.url/"   
-    "catalogue_external_id" :   "748bwiirlwTjsfbdjgturedfkg"   
 }
 ```
 
@@ -32,7 +31,6 @@ Content-Type: application/json
 | `price`                  |    X     | Price for the product in pence. This will be passed as the  `amount` when creating charge    | |
 | `description`            |          | Description of the product. This will be passed as the `description` when creating the charge | |
 | `return_url`             |          | (https only) where to redirect to upon completion of a payment. If not provided, `pay-products` will generate a default url to itself when creating a charge | |
-| `catalogue_external_id`  |          | (optional) external id of the catalogue the product should be linked to. if not provided, this will generate a `System Generated` catalogue and link the product to it | |
 
 ### Response example
 
@@ -44,7 +42,8 @@ Content-Type: application/json
     "external_service_id" :  "d76tt83563thcert8urihgiuer",
     "description":         "Description of the product",
     "price":               1050,
-    "return_url" :         "https://some.valid.url/"
+    "return_url" :         "https://some.valid.url/",
+    "catalogue_external_id" :   "748bwiirlwTjsfbdjgturedfkg",   
     "_links": [
     {
         "href": "https://govukpay-products.cloudapps.digital/v1/api/products/874h5c87834659q345698495",
@@ -70,6 +69,7 @@ Content-Type: application/json
 | `return_url`             |                | return url provided. _(not be available if it was not provided)_   |
 | `_links.self`            | X              | self GET link to the product. |
 | `_links.pay`             | X              | The link in `pay-products-ui` where a charge for this product will be generated and redirected to GOV.UK Pay |
+| `catalogue_external_id`  | X              | External id of the catalogue the product was linked to. |
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 

@@ -31,7 +31,7 @@ public class ProductsModule extends AbstractModule {
         bind(Environment.class).toInstance(environment);
         bind(RequestValidations.class).in(Singleton.class);
         bind(ProductRequestValidator.class).in(Singleton.class);
-        bind(LinksBuilder.class).toInstance(new LinksBuilder(configuration.getBaseUrl(), configuration.getFrontendUrl()));
+        bind(LinksBuilder.class).toInstance(new LinksBuilder(configuration.getBaseUrl(), configuration.getProductsUiPayUrl()));
 
         install(jpaModule(configuration));
         install(new FactoryModuleBuilder().build(ProductsFactory.class));

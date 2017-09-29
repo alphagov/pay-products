@@ -1,6 +1,5 @@
 package uk.gov.pay.products.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import uk.gov.pay.products.model.Product;
@@ -13,18 +12,16 @@ import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 public class ProductsCreator {
 
     private final ProductDao productDao;
-    private final LinksBuilder linksBuilder;
+    private final LinksDecorator linksDecorator;
 
     @Inject
-    public ProductsCreator(ProductDao productDao, LinksBuilder linksBuilder) {
+    public ProductsCreator(ProductDao productDao, LinksDecorator linksDecorator) {
         this.productDao = productDao;
-        this.linksBuilder = linksBuilder;
+        this.linksDecorator = linksDecorator;
     }
 
     @Transactional
-    public Product doCreate(JsonNode payload) {
-        Product product = Product.from(payload);
-
+    public Product doCreate(Product product) {
         CatalogueEntity catalogueEntity = new CatalogueEntity();
         catalogueEntity.setExternalId(randomUuid());
         catalogueEntity.setExternalServiceId(product.getExternalServiceId());
@@ -35,6 +32,6 @@ public class ProductsCreator {
 
         productDao.persist(productEntity);
 
-        return linksBuilder.decorate(productEntity.toProduct());
+        return linksDecorator.decorate(productEntity.toProduct());
     }
 }

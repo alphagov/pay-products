@@ -41,7 +41,7 @@ public class ProductResource {
         return requestValidator.validateCreateRequest(payload)
                 .map(errors -> Response.status(Status.BAD_REQUEST).entity(errors).build())
                 .orElseGet(() -> {
-                    Product product = productsFactory.productsCreator().doCreate(payload);
+                    Product product = productsFactory.productsCreator().doCreate(Product.from(payload));
                     return Response.status(Status.CREATED).entity(product).build();
                 });
 

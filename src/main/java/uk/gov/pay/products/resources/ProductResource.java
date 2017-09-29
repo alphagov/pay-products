@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.model.Product;
+import uk.gov.pay.products.service.ProductFinder;
 import uk.gov.pay.products.service.ProductsFactory;
 import uk.gov.pay.products.validations.ProductRequestValidator;
 
@@ -13,10 +14,12 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.Response.Status.*;
 import static uk.gov.pay.products.resources.ProductResource.PRODUCTS_RESOURCE;
 
 @Path(PRODUCTS_RESOURCE)
@@ -27,11 +30,14 @@ public class ProductResource {
 
     private final ProductRequestValidator requestValidator;
     private final ProductsFactory productsFactory;
+    private final ProductFinder productFinder;
+
 
     @Inject
-    public ProductResource(ProductRequestValidator requestValidator, ProductsFactory productsFactory) {
+    public ProductResource(ProductRequestValidator requestValidator, ProductsFactory productsFactory, ProductFinder productFinder) {
         this.requestValidator = requestValidator;
         this.productsFactory = productsFactory;
+        this.productFinder = productFinder;
     }
 
     @POST
@@ -49,4 +55,18 @@ public class ProductResource {
 
     }
 
+    @GET
+    @Path("/{productExternalId}")
+    @Produces(APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
+    public Response findProduct(@PathParam("productExternalId") String productExternalId) {
+        logger.info("Find a product with externalId - [ {} ]", productExternalId);
+        return requestValidator.validateFindRequest(productExternalId)
+                .map(errors -> Response.status(BAD_REQUEST).entity(errors).build())
+                .orElseGet(() -> productFinder.findByExternalId(productExternalId)
+                        .map(product ->
+                                Response.status(OK).entity(product).build())
+                        .orElseGet(() ->
+                                Response.status(NOT_FOUND).build()));
+    }
 }

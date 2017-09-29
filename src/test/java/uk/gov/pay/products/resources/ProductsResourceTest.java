@@ -3,14 +3,21 @@ package uk.gov.pay.products.resources;
 import com.google.common.collect.ImmutableMap;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Test;
+import uk.gov.pay.products.fixtures.ProductEntityFixture;
+import uk.gov.pay.products.persistence.entity.CatalogueEntity;
+import uk.gov.pay.products.persistence.entity.ProductEntity;
 
 import javax.ws.rs.HttpMethod;
 import java.io.Serializable;
 
+import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
+import static uk.gov.pay.products.fixtures.CatalogueEntityFixture.aCatalogueEntity;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 public class ProductsResourceTest extends IntegrationTest {
@@ -148,5 +155,57 @@ public class ProductsResourceTest extends IntegrationTest {
                 .post("/v1/api/products")
                 .then()
                 .statusCode(400);
+    }
+
+    @Test
+    public void givenAnExistingExternalProductId_shouldFindAndReturnProduct() throws Exception {
+        String externalId = randomUuid();
+        CatalogueEntity aCatalogueEntity = aCatalogueEntity().build();
+
+        ProductEntity product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withCatalogue(aCatalogueEntity)
+                .build();
+
+        databaseHelper.addProduct(product);
+
+        ValidatableResponse response = givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products/%s", externalId))
+                .then()
+                .statusCode(200);
+
+        Integer intPrice = response.extract().path(PRICE);
+        Long price = new Long(intPrice);
+        assertThat(price, equalTo(product.getPrice()));
+
+        response
+                .body(NAME, is(product.getName()))
+                .body(EXTERNAL_ID, matchesPattern("^[0-9a-z]{32}$"))
+                .body(DESCRIPTION, is(product.getDescription()))
+                .body(RETURN_URL, is(product.getReturnUrl()));
+
+        System.out.println(response.extract().path("_links").toString());
+
+        String productsUrl = "http://localhost:8080/v1/api/products/";
+        String productsUIUrl = "http://localhost:3000/pay/";
+        response
+                .body("_links", hasSize(2))
+                .body("_links[0].href", matchesPattern(productsUrl + externalId))
+                .body("_links[0].method", is(HttpMethod.GET))
+                .body("_links[0].rel", is("self"))
+                .body("_links[1].href", matchesPattern(productsUIUrl + externalId))
+                .body("_links[1].method", is(HttpMethod.POST))
+                .body("_links[1].rel", is("pay"));
+    }
+
+    @Test
+    public void givenANonExistingExternalProductId_shouldReturn404() throws Exception {
+        givenSetup()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products/%s", randomUuid()))
+                .then()
+                .statusCode(404);
     }
 }

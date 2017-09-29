@@ -7,6 +7,8 @@ import uk.gov.pay.products.util.Errors;
 import java.util.List;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 public class ProductRequestValidator {
     private final RequestValidations requestValidations;
     private static final String FIELD_EXTERNAL_SERVICE_ID = "external_service_id";
@@ -29,5 +31,12 @@ public class ProductRequestValidator {
                 FIELD_PRICE);
 
         return errors.map(Errors::from);
+    }
+
+    public Optional<Errors> validateFindRequest(String externalId) {
+        if (isBlank(externalId)) {
+            return Optional.of(Errors.from("External product id id must not be empty"));
+        }
+        return Optional.empty();
     }
 }

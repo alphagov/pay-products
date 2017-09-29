@@ -125,13 +125,13 @@ public class ProductEntity extends AbstractEntity {
     public Product toProduct() {
         return new Product(
                 this.externalId,
-                this.catalogueEntity.getExternalServiceId(),
+                this.catalogueEntity != null ? this.catalogueEntity.getExternalServiceId() : null,
                 this.name,
                 this.description,
                 this.payApiToken,
                 this.price,
                 this.status,
-                this.catalogueEntity.getExternalId(),
+                this.catalogueEntity != null ? this.catalogueEntity.getExternalId() : null,
                 this.returnUrl);
     }
 

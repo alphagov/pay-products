@@ -10,12 +10,12 @@ import static javax.ws.rs.HttpMethod.POST;
 import static javax.ws.rs.core.UriBuilder.fromUri;
 import static uk.gov.pay.products.resources.ProductResource.PRODUCTS_RESOURCE;
 
-public class LinksBuilder {
+public class LinksDecorator {
 
     private final String productsBaseUrl;
     private final String productsUIUrl;
 
-    public LinksBuilder(String productsBaseUrl, String productsUIUrl) {
+    public LinksDecorator(String productsBaseUrl, String productsUIUrl) {
         this.productsBaseUrl = productsBaseUrl;
         this.productsUIUrl = productsUIUrl;
     }

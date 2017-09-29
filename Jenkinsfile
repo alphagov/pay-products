@@ -40,5 +40,13 @@ pipeline {
         }
       }
     }
+    stage('Deploy') {
+      when {
+        branch 'master'
+      }
+      steps {
+        deployPaas("products", "test", null, true)
+      }
+    }
   }
 }

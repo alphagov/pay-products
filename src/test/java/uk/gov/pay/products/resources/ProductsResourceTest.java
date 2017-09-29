@@ -37,7 +37,7 @@ public class ProductsResourceTest extends IntegrationTest {
                 NAME, name,
                 PRICE, price);
 
-        ValidatableResponse response = givenSetup()
+        ValidatableResponse response = givenAuthenticatedSetup()
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .body(mapper.writeValueAsString(payload))
@@ -87,7 +87,7 @@ public class ProductsResourceTest extends IntegrationTest {
                 .put(RETURN_URL, returnUrl)
                 .build();
 
-        ValidatableResponse response = givenSetup()
+        ValidatableResponse response = givenAuthenticatedSetup()
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .body(mapper.writeValueAsString(payload))
@@ -122,7 +122,7 @@ public class ProductsResourceTest extends IntegrationTest {
 
     @Test
     public void shouldError_whenSavingAProduct_withMandatoryFieldsMissing() throws Exception {
-        givenSetup()
+        givenAuthenticatedSetup()
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .body(mapper.writeValueAsString("{}"))

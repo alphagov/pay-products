@@ -28,6 +28,9 @@ public class ProductsConfiguration extends Configuration {
     @NotNull
     private String productsUiPayUrl;
 
+    private String apiToken;
+    private String apiToken2;
+
     public String getVcapServices() {
         String vcapServices = System.getenv("VCAP_SERVICES");
         return vcapServices;
@@ -57,5 +60,13 @@ public class ProductsConfiguration extends Configuration {
 
     public String getProductsUiPayUrl() {
         return productsUiPayUrl;
+    }
+
+    public String getApiToken() {
+        return apiToken;
+    }
+
+    public String getApiToken2() {
+        return apiToken2;
     }
 }

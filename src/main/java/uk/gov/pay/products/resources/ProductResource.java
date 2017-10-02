@@ -9,14 +9,13 @@ import uk.gov.pay.products.service.ProductsFactory;
 import uk.gov.pay.products.validations.ProductRequestValidator;
 
 import javax.annotation.security.PermitAll;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.OK;
 import static uk.gov.pay.products.resources.ProductResource.PRODUCTS_RESOURCE;
 
 @Path(PRODUCTS_RESOURCE)
@@ -27,6 +26,7 @@ public class ProductResource {
 
     private final ProductRequestValidator requestValidator;
     private final ProductsFactory productsFactory;
+
 
     @Inject
     public ProductResource(ProductRequestValidator requestValidator, ProductsFactory productsFactory) {
@@ -49,4 +49,17 @@ public class ProductResource {
 
     }
 
+    @GET
+    @Path("/{productExternalId}")
+    @Produces(APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
+    @PermitAll
+    public Response findProduct(@PathParam("productExternalId") String productExternalId) {
+        logger.info("Find a product with externalId - [ {} ]", productExternalId);
+        return productsFactory.productsFinder().findByExternalId(productExternalId)
+                .map(product ->
+                        Response.status(OK).entity(product).build())
+                .orElseGet(() ->
+                        Response.status(NOT_FOUND).build());
+    }
 }

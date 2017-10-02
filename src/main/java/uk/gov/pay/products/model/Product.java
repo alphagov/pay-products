@@ -1,6 +1,7 @@
 package uk.gov.pay.products.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -84,6 +85,7 @@ public class Product {
         return description;
     }
 
+    @JsonIgnore
     public String getPayApiToken() {
         return payApiToken;
     }

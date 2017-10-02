@@ -2,7 +2,6 @@ package uk.gov.pay.products.persistence.dao;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.google.inject.persist.Transactional;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 
 import javax.persistence.EntityManager;
@@ -15,7 +14,6 @@ public class ProductDao extends JpaDao<ProductEntity> {
         super(entityManager, ProductEntity.class);
     }
 
-    @Transactional
     public Optional<ProductEntity> findByExternalId(String externalId) {
         String query = "SELECT product FROM ProductEntity product " +
                 "WHERE product.externalId = :externalId";

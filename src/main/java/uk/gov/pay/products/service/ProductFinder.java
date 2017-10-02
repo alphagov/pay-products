@@ -1,6 +1,7 @@
 package uk.gov.pay.products.service;
 
 import com.google.inject.Inject;
+import com.google.inject.persist.Transactional;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.dao.ProductDao;
 
@@ -16,6 +17,7 @@ public class ProductFinder {
         this.linksDecorator = linksDecorator;
     }
 
+    @Transactional
     public Optional<Product> findByExternalId(String externalId) {
         return productDao.findByExternalId(externalId)
                 .map(productEntity -> linksDecorator.decorate(productEntity.toProduct()));

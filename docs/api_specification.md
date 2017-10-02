@@ -181,16 +181,30 @@ Authorization: Bearer API_TOKEN
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------- 
 
-## POST /v1/api/products/{productId}/items
+## POST /v1/api/charges
 
-Creates a new instance of a product that will take a payment
+Creates a new instance of a `Charge`. A `Charge` is an instance of a `Product` that will be paid.
+It requires a payload with `external_product_id` and `price_override`.
 
 ### Request example
 
 ```
-POST /v1/api/products/874h5c87834659q345698495/items
+POST /v1/api/charges
 Authorization: Bearer API_TOKEN
+Content-Type: application/json
+
+{
+    "external_product_id" :     "d76tt83563thcert8urihgiuer",
+    "price_override" :          1250
+}
 ```
+
+#### Request field description
+
+| Field                    | required | Description                                   |
+| ------------------------ |:--------:| --------------------------------------------- |
+| `external_product_id`    | X        | External Product id. This assumes that there is already an existing `Product` |
+| `price_override`         |          | If there is a value for this Json property, then the Charge will be created with it, otherwise it will use the `price` set in the initial `Product` |
 
 ### Response example
 
@@ -200,7 +214,7 @@ Content-Type: application/json
 {
     "external_item_id" :    "8cnq3084y98e4n89jeaior1",
     "description" :         "Description of the product",
-    "amount":               1050,
+    "amount":               1250,
     "external_product_id" : "874h5c87834659q345698495"
 }
 ```

@@ -14,11 +14,13 @@ pipeline {
 
   environment {
     DOCKER_HOST = "unix:///var/run/docker.sock"
+    AWS_DEFAULT_REGION = "eu-west-1"
   }
 
   stages {
     stage('Maven Build') {
       steps {
+        sh 'docker pull govukpay/postgres:9.4.4'
         sh 'mvn clean package'
       }
     }

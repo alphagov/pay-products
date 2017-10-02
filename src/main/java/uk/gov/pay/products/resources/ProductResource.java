@@ -61,12 +61,10 @@ public class ProductResource {
     @Consumes(APPLICATION_JSON)
     public Response findProduct(@PathParam("productExternalId") String productExternalId) {
         logger.info("Find a product with externalId - [ {} ]", productExternalId);
-        return requestValidator.validateFindRequest(productExternalId)
-                .map(errors -> Response.status(BAD_REQUEST).entity(errors).build())
-                .orElseGet(() -> productFinder.findByExternalId(productExternalId)
-                        .map(product ->
-                                Response.status(OK).entity(product).build())
-                        .orElseGet(() ->
-                                Response.status(NOT_FOUND).build()));
+        return productFinder.findByExternalId(productExternalId)
+                .map(product ->
+                        Response.status(OK).entity(product).build())
+                .orElseGet(() ->
+                        Response.status(NOT_FOUND).build());
     }
 }

@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Test;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
+import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.entity.CatalogueEntity;
-import uk.gov.pay.products.persistence.entity.ProductEntity;
 
 import javax.ws.rs.HttpMethod;
 import java.io.Serializable;
@@ -18,6 +18,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static uk.gov.pay.products.fixtures.CatalogueEntityFixture.aCatalogueEntity;
+import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 public class ProductsResourceTest extends IntegrationTest {
@@ -162,12 +163,14 @@ public class ProductsResourceTest extends IntegrationTest {
         String externalId = randomUuid();
         CatalogueEntity aCatalogueEntity = aCatalogueEntity().build();
 
-        ProductEntity product = ProductEntityFixture.aProductEntity()
+        Product product = ProductEntityFixture.aProductEntity()
                 .withExternalId(externalId)
                 .withCatalogue(aCatalogueEntity)
-                .build();
+                .build()
+                .toProduct();
 
-        databaseHelper.addProduct(product);
+        int catalogueId = randomInt();
+        databaseHelper.addProduct(product, catalogueId);
 
         ValidatableResponse response = givenSetup()
                 .when()

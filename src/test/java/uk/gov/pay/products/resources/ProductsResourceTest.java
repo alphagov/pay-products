@@ -172,7 +172,7 @@ public class ProductsResourceTest extends IntegrationTest {
         int catalogueId = randomInt();
         databaseHelper.addProduct(product, catalogueId);
 
-        ValidatableResponse response = givenSetup()
+        ValidatableResponse response = givenAuthenticatedSetup()
                 .when()
                 .accept(APPLICATION_JSON)
                 .get(format("/v1/api/products/%s", externalId))
@@ -205,10 +205,19 @@ public class ProductsResourceTest extends IntegrationTest {
 
     @Test
     public void givenANonExistingExternalProductId_shouldReturn404() throws Exception {
-        givenSetup()
+        givenAuthenticatedSetup()
                 .accept(APPLICATION_JSON)
                 .get(format("/v1/api/products/%s", randomUuid()))
                 .then()
                 .statusCode(404);
+    }
+
+    @Test
+    public void givenANotAuthenticatedRequest_shouldReturn401() throws Exception {
+        givenSetup()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products/%s", randomUuid()))
+                .then()
+                .statusCode(401);
     }
 }

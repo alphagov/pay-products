@@ -59,6 +59,7 @@ public class ProductResource {
     @Path("/{productExternalId}")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
+    @PermitAll
     public Response findProduct(@PathParam("productExternalId") String productExternalId) {
         logger.info("Find a product with externalId - [ {} ]", productExternalId);
         return productFinder.findByExternalId(productExternalId)

@@ -16,8 +16,8 @@ public class TokenAuthenticator implements Authenticator<String, Token> {
 
     public TokenAuthenticator(ProductsConfiguration configuration) {
         ImmutableList.Builder<String> listBuilder = ImmutableList.builder();
-        addIfNotNull(listBuilder, configuration.getApiToken());
-        addIfNotNull(listBuilder, configuration.getApiToken2());
+        addIfNotNull(listBuilder, configuration.getProductsApiToken());
+        addIfNotNull(listBuilder, configuration.getProductsApiToken2());
         validOAuthTokens = listBuilder.build();
     }
 

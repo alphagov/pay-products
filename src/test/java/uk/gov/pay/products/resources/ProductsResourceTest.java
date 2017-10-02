@@ -24,6 +24,25 @@ public class ProductsResourceTest extends IntegrationTest {
     private static final String RETURN_URL = "return_url";
 
     @Test
+    public void shouldFail_whenSavingAProduct_withInCorrectAuthToken() throws Exception {
+        ImmutableMap<String, ? extends Serializable> payload = ImmutableMap.of(
+                "external_service_id", randomUuid(),
+                "pay_api_token", randomUuid(),
+                "name", "a-name",
+                "price", 1234);
+
+        givenSetup()
+                .contentType(APPLICATION_JSON)
+                .header("Authorization", "Bearer invalid-api-key")
+                .accept(APPLICATION_JSON)
+                .body(mapper.writeValueAsString(payload))
+                .post("/v1/api/products")
+                .then()
+                .statusCode(401);
+
+    }
+
+    @Test
     public void shouldSuccess_whenSavingAValidProduct_withMinimumMandatoryFields() throws Exception {
 
         String externalServiceId = randomUuid();

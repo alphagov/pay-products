@@ -20,8 +20,8 @@ public class TokenAuthenticatorTest {
 
     @Before
     public void before() throws Exception {
-        when(configuration.getApiToken()).thenReturn("api-token-1");
-        when(configuration.getApiToken2()).thenReturn("api-token-2");
+        when(configuration.getProductsApiToken()).thenReturn("api-token-1");
+        when(configuration.getProductsApiToken2()).thenReturn("api-token-2");
         tokenAuthenticator = new TokenAuthenticator(configuration);
     }
 

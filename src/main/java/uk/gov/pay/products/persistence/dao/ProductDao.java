@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
+import uk.gov.pay.products.util.ProductStatus;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -29,11 +30,13 @@ public class ProductDao extends JpaDao<ProductEntity> {
 
     public List<Product> findByExternalServiceId(String externalServiceId) {
         String query = "SELECT product FROM ProductEntity product " +
-                "WHERE product.catalogueEntity.externalServiceId = :externalServiceId";
+                "WHERE product.catalogueEntity.externalServiceId = :externalServiceId " +
+                "AND product.status = :status";
 
         return entityManager.get()
                 .createQuery(query, ProductEntity.class)
                 .setParameter("externalServiceId", externalServiceId)
+                .setParameter("status", ProductStatus.ACTIVE)
                 .getResultList().stream()
                 .map(ProductEntity::toProduct)
                 .collect(Collectors.toList());

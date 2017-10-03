@@ -39,6 +39,8 @@ public class ChargeCreator {
         chargeEntity.setPrice(charge.getPrice() == null ? productEntity.getPrice() : charge.getPrice());
         chargeDao.persist(chargeEntity);
 
+        //todo: hook PAY API here to initiate a payment
+
         return Optional.of(chargeEntity.toCharge());
     }
 }

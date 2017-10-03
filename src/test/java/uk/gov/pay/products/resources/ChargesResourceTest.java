@@ -8,24 +8,30 @@ import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.entity.CatalogueEntity;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.isEmptyString;
 import static uk.gov.pay.products.fixtures.CatalogueEntityFixture.aCatalogueEntity;
+import static uk.gov.pay.products.util.ChargeJsonField.*;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 public class ChargesResourceTest extends IntegrationTest {
-    private static final String EXTERNAL_SERVICE_ID = "external_service_id";
-    private static final String EXTERNAL_PRODUCT_ID = "external_product_id";
-    private static final String NAME = "name";
     private static final String CHARGES_PATH = "/v1/api/charges";
 
     @Test
     public void givenAnExternalProductId_shouldCreateANewCharge() throws Exception {
         String externalId = randomUuid();
+        Long price = 559L;
+        String description = "Test description";
+
         CatalogueEntity aCatalogueEntity = aCatalogueEntity().build();
 
         Product product = ProductEntityFixture.aProductEntity()
                 .withExternalId(externalId)
                 .withCatalogue(aCatalogueEntity)
+                .withPrice(price)
+                .withDescription(description)
                 .build()
                 .toProduct();
 
@@ -33,7 +39,7 @@ public class ChargesResourceTest extends IntegrationTest {
         databaseHelper.addProduct(product, catalogueId);
 
         ImmutableMap<Object, Object> payload = ImmutableMap.builder()
-                .put(EXTERNAL_PRODUCT_ID, product.getExternalId())
+                .put(PRODUCT_EXTERNAL_ID, product.getExternalId())
                 .build();
 
         ValidatableResponse response = givenAuthenticatedSetup()
@@ -42,18 +48,21 @@ public class ChargesResourceTest extends IntegrationTest {
                 .body(mapper.writeValueAsString(payload))
                 .post(CHARGES_PATH)
                 .then()
-                .statusCode(201);
+                .statusCode(200);
 
-//        response
-//                .body(NAME, is(name))
-//                .body(EXTERNAL_SERVICE_ID, is(externalServiceId));
-
+        response
+                .body(CHARGE_EXTERNAL_ID, is(not(isEmptyString())))
+                .body(PRODUCT_EXTERNAL_ID, is(externalId))
+                .body(AMOUNT, is(559))
+                .body(DESCRIPTION, is(description));
     }
 
     @Test
     public void givenEmptyPayload_whenCreateNewCharge_shouldReturn400() throws Exception {
         givenAuthenticatedSetup()
+                .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
+                .body(mapper.writeValueAsString("{}"))
                 .post(CHARGES_PATH)
                 .then()
                 .statusCode(400);

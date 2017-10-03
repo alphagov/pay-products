@@ -60,4 +60,14 @@ public class ProductEntityFixture {
         this.status = status;
         return this;
     }
+
+    public ProductEntityFixture withPrice(Long price) {
+        this.price = price;
+        return this;
+    }
+
+    public ProductEntityFixture withDescription(String description) {
+        this.description = description;
+        return this;
+    }
 }

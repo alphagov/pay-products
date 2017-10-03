@@ -85,10 +85,10 @@ public class ChargeEntity extends AbstractEntity {
 
     public Charge toCharge() {
         return new Charge(
-                externalId,
-                productExternalId,
-                price,
-                description
+                this.externalId,
+                this.productExternalId,
+                this.price,
+                this.description
         );
     }
 

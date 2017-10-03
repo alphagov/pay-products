@@ -4,19 +4,38 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class Charge {
-    public static final String EXTERNAL_PRODUCT_ID = "external_product_id";
-    public static final String PRICE_OVERRIDE = "price_override";
-    private String externalProductId;
-    private Long price;
 
-    public Charge(@JsonProperty(EXTERNAL_PRODUCT_ID) String externalProductId,
-                  @JsonProperty(PRICE_OVERRIDE) Long price) {
-        this.externalProductId = externalProductId;
+    private static final String PRODUCT_EXTERNAL_ID = "product_external_id";
+    private static final String PRICE_OVERRIDE = "price_override";
+    private static final String CHARGE_EXTERNAL_ID = "charge_external_id";
+    private static final String DESCRIPTION = "description";
+
+    private String externalId;
+    private String productExternalId;
+    private Long price;
+    private String description;
+
+    public Charge(
+            @JsonProperty(CHARGE_EXTERNAL_ID) String externalId,
+            @JsonProperty(PRODUCT_EXTERNAL_ID) String productExternalId,
+            @JsonProperty(PRICE_OVERRIDE) Long price,
+            @JsonProperty(DESCRIPTION) String description) {
+        this.externalId = externalId;
+        this.productExternalId = productExternalId;
         this.price = price;
+        this.description = description;
     }
 
-    public String getExternalProductId() {
-        return externalProductId;
+    public Charge(@JsonProperty(PRODUCT_EXTERNAL_ID) String productExternalId,
+                  @JsonProperty(PRICE_OVERRIDE) Long price) {
+        this(null,
+                productExternalId,
+                price,
+                null);
+    }
+
+    public String getProductExternalId() {
+        return productExternalId;
     }
 
     public Long getPrice() {
@@ -24,9 +43,19 @@ public class Charge {
     }
 
     public static Charge fromPayload(JsonNode jsonPayload) {
-        String externalproductid = (jsonPayload.get(EXTERNAL_PRODUCT_ID) != null) ? jsonPayload.get(EXTERNAL_PRODUCT_ID).asText() : null;
-        Long price = (jsonPayload.get(PRICE_OVERRIDE) != null) ? jsonPayload.get(PRICE_OVERRIDE).asLong() : null;
+        String productExternalId = (jsonPayload.get(PRODUCT_EXTERNAL_ID) != null) ?
+                jsonPayload.get(PRODUCT_EXTERNAL_ID).asText() : null;
+        Long priceOverride = (jsonPayload.get(PRICE_OVERRIDE) != null) ?
+                jsonPayload.get(PRICE_OVERRIDE).asLong() : null;
 
-        return new Charge(externalproductid, price);
+        return new Charge(productExternalId, priceOverride);
+    }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

@@ -7,6 +7,7 @@ import com.google.inject.Singleton;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.jpa.JpaPersistModule;
 import uk.gov.pay.products.persistence.dao.CatalogueDao;
+import uk.gov.pay.products.persistence.dao.ChargeDao;
 import uk.gov.pay.products.persistence.dao.ProductDao;
 
 public class GuicedTestEnvironment {
@@ -41,6 +42,7 @@ public class GuicedTestEnvironment {
         protected void configure() {
             bind(CatalogueDao.class).in(Singleton.class);
             bind(ProductDao.class).in(Singleton.class);
+            bind(ChargeDao.class).in(Singleton.class);
         }
     }
 }

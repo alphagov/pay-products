@@ -203,7 +203,7 @@ Content-Type: application/json
 
 | Field                    | required | Description                                   |
 | ------------------------ |:--------:| --------------------------------------------- |
-| `external_product_id`    | X        | External Product id. This assumes that there is already an existing `Product` |
+| `product_external_id`    | X        | Product external id. This assumes that there is already an existing `Product` |
 | `price_override`         |          | If there is a value for this Json property, then the Charge will be created with it, otherwise it will use the `price` set in the initial `Product` |
 
 ### Response example
@@ -212,10 +212,10 @@ Content-Type: application/json
 201 OK
 Content-Type: application/json
 {
-    "external_item_id" :    "8cnq3084y98e4n89jeaior1",
+    "charge_external_id" :  "8cnq3084y98e4n89jeaior1",
     "description" :         "Description of the product",
     "amount":               1250,
-    "external_product_id" : "874h5c87834659q345698495"
+    "product_external_id" : "874h5c87834659q345698495"
 }
 ```
 
@@ -223,7 +223,7 @@ Content-Type: application/json
 
 | Field                    | always present | Description                                   |
 | ------------------------ |:--------------:| --------------------------------------------- |
-| `external_item_id`       | X              | external item id. This will be passed as the `reference` when creating a charge   |
-| `description`            | X              | Description of the item which will be passed as `description` when creating a charge. By default this will be the same as belonging product description |
-| `amount`                 | X              | amount of the item which will be passes as `amount` when creation a charge. By default this will be the same as product price   |
-| `external_product_id`    | X              | external id of the product item belongs to          |
+| `charge_external_id`     | X              | Charge external id. This will be passed as the `reference` when creating a charge   |
+| `description`            | X              | Description of the charge which will be passed as `description` when creating a charge. By default this will be the same as belonging product description |
+| `amount`                 | X              | Amount of the charge which will be passes as `amount` when creating a charge. By default this will be the same as product price   |
+| `product_external_id`    | X              | External id of the product this charge belongs to |

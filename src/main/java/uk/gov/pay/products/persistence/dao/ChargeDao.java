@@ -10,7 +10,6 @@ import java.util.Optional;
 public class ChargeDao extends JpaDao<ChargeEntity> {
 
     @Inject
-
     public ChargeDao(Provider<EntityManager> entityManager) {
         super(entityManager, ChargeEntity.class);
     }

@@ -1,12 +1,11 @@
 package uk.gov.pay.products.fixtures;
 
 import uk.gov.pay.products.persistence.entity.ChargeEntity;
-import uk.gov.pay.products.persistence.entity.ProductEntity;
 
 public class ChargeEntityFixture {
 
     private String externalId;
-    private ProductEntity productEntity;
+    private String productExternalId;
     private Long price;
 
     public ChargeEntityFixture() {
@@ -16,7 +15,7 @@ public class ChargeEntityFixture {
         ChargeEntity chargeEntity = new ChargeEntity();
         chargeEntity.setExternalId(externalId);
         chargeEntity.setPrice(price);
-        chargeEntity.setProductEntity(productEntity);
+        chargeEntity.setProductExternalId(productExternalId);
 
         return chargeEntity;
     }
@@ -35,8 +34,8 @@ public class ChargeEntityFixture {
         return this;
     }
 
-    public ChargeEntityFixture withProduct(ProductEntity productEntity) {
-        this.productEntity = productEntity;
+    public ChargeEntityFixture withProductExternalId(String productExternalId) {
+        this.productExternalId = productExternalId;
         return this;
     }
 }

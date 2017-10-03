@@ -1,5 +1,6 @@
 package uk.gov.pay.products.persistence.entity;
 
+import uk.gov.pay.products.model.Charge;
 import uk.gov.pay.products.util.ChargeStatus;
 
 import javax.persistence.*;
@@ -24,9 +25,11 @@ public class ChargeEntity extends AbstractEntity {
     @Column(name = "price")
     private Long price;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id", updatable = false)
-    private ProductEntity productEntity;
+    @Column(name = "product_external_id")
+    private String productExternalId;
+
+    @Column(name = "description")
+    private String description;
 
     public ChargeEntity() {
     }
@@ -63,11 +66,37 @@ public class ChargeEntity extends AbstractEntity {
         this.price = price;
     }
 
-    public ProductEntity getProductEntity() {
-        return productEntity;
+
+
+    public String getDescription() {
+        return description;
     }
 
-    public void setProductEntity(ProductEntity productEntity) {
-        this.productEntity = productEntity;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public static ChargeEntity from(Charge charge) {
+        ChargeEntity chargeEntity = new ChargeEntity();
+        chargeEntity.setProductExternalId(charge.getProductExternalId());
+        chargeEntity.setPrice(charge.getPrice());
+        return chargeEntity;
+    }
+
+    public Charge toCharge() {
+        return new Charge(
+                externalId,
+                productExternalId,
+                price,
+                description
+        );
+    }
+
+    public String getProductExternalId() {
+        return productExternalId;
+    }
+
+    public void setProductExternalId(String productExternalId) {
+        this.productExternalId = productExternalId;
     }
 }

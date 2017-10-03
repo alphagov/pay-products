@@ -37,7 +37,7 @@ public class ChargeDaoTest extends DaoTestBase {
         ChargeEntity aChargeEntity = ChargeEntityFixture.aChargeEntity()
                 .withExternalId(externalId)
                 .withPrice(price)
-                .withProduct(productEntity)
+                .withProductExternalId(productEntity.getExternalId())
                 .build();
 
         chargeDao.persist(aChargeEntity);

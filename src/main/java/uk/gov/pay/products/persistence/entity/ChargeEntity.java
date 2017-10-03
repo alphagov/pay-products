@@ -1,6 +1,6 @@
 package uk.gov.pay.products.persistence.entity;
 
-import uk.gov.pay.products.util.ProductStatus;
+import uk.gov.pay.products.util.ChargeStatus;
 
 import javax.persistence.*;
 import java.time.ZoneId;
@@ -19,7 +19,7 @@ public class ChargeEntity extends AbstractEntity {
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private ProductStatus status = ProductStatus.CREATED;
+    private ChargeStatus status = ChargeStatus.CREATED;
 
     @Column(name = "price")
     private Long price;
@@ -47,11 +47,11 @@ public class ChargeEntity extends AbstractEntity {
         this.dateCreated = dateCreated;
     }
 
-    public ProductStatus getStatus() {
+    public ChargeStatus getStatus() {
         return status;
     }
 
-    public void setStatus(ProductStatus status) {
+    public void setStatus(ChargeStatus status) {
         this.status = status;
     }
 

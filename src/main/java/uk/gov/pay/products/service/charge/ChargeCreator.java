@@ -36,7 +36,6 @@ public class ChargeCreator {
         ChargeEntity chargeEntity = ChargeEntity.from(charge);
         chargeEntity.setExternalId(randomUuid());
         chargeEntity.setProductExternalId(productEntity.getExternalId());
-        chargeEntity.setDescription(productEntity.getDescription());
         chargeEntity.setPrice(charge.getPrice() == null ? productEntity.getPrice() : charge.getPrice());
         chargeDao.persist(chargeEntity);
 

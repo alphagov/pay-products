@@ -20,18 +20,15 @@ public class Charge {
     private String productExternalId;
     @JsonProperty(AMOUNT)
     private Long price;
-    @JsonProperty(DESCRIPTION)
-    private String description;
 
-    public Charge(String externalId, String productExternalId, Long price, String description) {
+    public Charge(String externalId, String productExternalId, Long price) {
         this.externalId = externalId;
         this.productExternalId = productExternalId;
         this.price = price;
-        this.description = description;
     }
 
     public Charge(String productExternalId, Long price) {
-        this(null, productExternalId, price, null);
+        this(null, productExternalId, price);
     }
 
     public String getProductExternalId() {
@@ -53,9 +50,5 @@ public class Charge {
 
     public String getExternalId() {
         return externalId;
-    }
-
-    public String getDescription() {
-        return description;
     }
 }

@@ -53,8 +53,7 @@ public class ChargesResourceTest extends IntegrationTest {
         response
                 .body(CHARGE_EXTERNAL_ID, is(not(isEmptyString())))
                 .body(PRODUCT_EXTERNAL_ID, is(externalId))
-                .body(AMOUNT, is(559))
-                .body(DESCRIPTION, is(description));
+                .body(AMOUNT, is(559));
     }
 
     @Test

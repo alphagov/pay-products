@@ -8,8 +8,7 @@ CREATE TABLE charges (
     price BIGINT NOT NULL,
     date_created TIMESTAMP WITH TIME ZONE DEFAULT (now() AT TIME ZONE 'utc') NOT NULL,
     status VARCHAR(32) NOT NULL,
-    version INTEGER DEFAULT 0 NOT NULL,
-    description TEXT NULL
+    version INTEGER DEFAULT 0 NOT NULL
 );
 --rollback drop table charges;
 

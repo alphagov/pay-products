@@ -28,9 +28,6 @@ public class ChargeEntity extends AbstractEntity {
     @Column(name = "product_external_id")
     private String productExternalId;
 
-    @Column(name = "description")
-    private String description;
-
     public ChargeEntity() {
     }
 
@@ -66,14 +63,19 @@ public class ChargeEntity extends AbstractEntity {
         this.price = price;
     }
 
-
-
-    public String getDescription() {
-        return description;
+    public String getProductExternalId() {
+        return productExternalId;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setProductExternalId(String productExternalId) {
+        this.productExternalId = productExternalId;
+    }
+
+    public Charge toCharge() {
+        return new Charge(
+                this.externalId,
+                this.productExternalId,
+                this.price);
     }
 
     public static ChargeEntity from(Charge charge) {
@@ -81,22 +83,5 @@ public class ChargeEntity extends AbstractEntity {
         chargeEntity.setProductExternalId(charge.getProductExternalId());
         chargeEntity.setPrice(charge.getPrice());
         return chargeEntity;
-    }
-
-    public Charge toCharge() {
-        return new Charge(
-                this.externalId,
-                this.productExternalId,
-                this.price,
-                this.description
-        );
-    }
-
-    public String getProductExternalId() {
-        return productExternalId;
-    }
-
-    public void setProductExternalId(String productExternalId) {
-        this.productExternalId = productExternalId;
     }
 }

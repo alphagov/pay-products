@@ -71,12 +71,10 @@ public class ChargeCreatorTest {
     @Test
     public void shouldSuccess_whenProvidedProductExists_andPriceOverride() throws Exception {
         Long priceOverride = 1050L;
-        String productDescription = "Test description";
 
         Charge basicCharge = new Charge(externalProductId, priceOverride);
 
         when(mockProduct.getExternalId()).thenReturn(externalProductId);
-        when(mockProduct.getDescription()).thenReturn(productDescription);
         Optional<ProductEntity> productOptional = Optional.of(mockProduct);
         when(productDao.findByExternalId(externalProductId)).thenReturn(productOptional);
 
@@ -86,7 +84,6 @@ public class ChargeCreatorTest {
 
         assertThat(charge.getPrice(), is(priceOverride));
         assertThat(charge.getExternalId(), is(not(isEmptyOrNullString())));
-        assertThat(charge.getDescription(), is(productDescription));
     }
 
     @Test

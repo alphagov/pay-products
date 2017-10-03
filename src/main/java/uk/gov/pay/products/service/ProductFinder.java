@@ -6,6 +6,8 @@ import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.dao.ProductDao;
 import uk.gov.pay.products.util.ProductStatus;
 
+import java.util.List;
+import java.util.List;
 import java.util.Optional;
 
 public class ProductFinder {
@@ -32,5 +34,10 @@ public class ProductFinder {
                     return Optional.of(productEntity.toProduct());
                 })
                 .orElseGet(Optional::empty);
+    }
+
+    @Transactional
+    public List<Product> findByExternalServiceId(String externalServiceId) {
+        return linksDecorator.decorate(productDao.findByExternalServiceId(externalServiceId));
     }
 }

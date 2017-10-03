@@ -43,4 +43,9 @@ public class CatalogueEntityFixture {
         this.status = status;
         return this;
     }
+
+    public CatalogueEntityFixture withExternalServiceId(String externalServiceId) {
+        this.externalServiceId = externalServiceId;
+        return this;
+    }
 }

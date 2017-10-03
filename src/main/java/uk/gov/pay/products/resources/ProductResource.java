@@ -13,6 +13,7 @@ import javax.annotation.security.PermitAll;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import java.util.List;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.*;
@@ -73,5 +74,14 @@ public class ProductResource {
         return productsFactory.productsFinder().disableProduct(productExternalId)
                 .map(product -> Response.status(NO_CONTENT).build())
                 .orElseGet(() -> Response.status(NOT_FOUND).build());
+    }
+
+    @GET
+    @Produces(APPLICATION_JSON)
+    @PermitAll
+    public Response findProducts(@QueryParam("externalServiceId") String externalServiceId) {
+        logger.info("Searching for products with externalServiceId - [ {} ]", externalServiceId);
+        List<Product> products = productsFactory.productsFinder().findByExternalServiceId(externalServiceId);
+        return products.size() > 0 ? Response.status(OK).entity(products).build() : Response.status(NOT_FOUND).build();
     }
 }

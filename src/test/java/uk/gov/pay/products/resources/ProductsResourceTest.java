@@ -170,7 +170,7 @@ public class ProductsResourceTest extends IntegrationTest {
                 .toProduct();
 
         int catalogueId = randomInt();
-        databaseHelper.addProduct(product, catalogueId);
+        databaseHelper.addProductAndCatalogue(product, catalogueId);
 
         ValidatableResponse response = givenAuthenticatedSetup()
                 .when()
@@ -223,6 +223,13 @@ public class ProductsResourceTest extends IntegrationTest {
                 .patch(format("/v1/api/products/%s/disable", randomUuid()))
                 .then()
                 .statusCode(401);
+
+        givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products?externalServiceId=%s", randomUuid()))
+                .then()
+                .statusCode(401);
     }
 
     @Test
@@ -254,6 +261,54 @@ public class ProductsResourceTest extends IntegrationTest {
                 .when()
                 .accept(APPLICATION_JSON)
                 .patch(format("/v1/api/products/%s/disable", randomUuid()))
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void givenAnExistingExternalServiceId_shouldFindAndReturnProducts() throws Exception {
+        String externalServiceId = randomUuid();
+        CatalogueEntity aCatalogueEntity = aCatalogueEntity()
+                .withExternalServiceId(externalServiceId)
+                .build();
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withCatalogue(aCatalogueEntity)
+                .build()
+                .toProduct();
+
+        int catalogueId = randomInt();
+        databaseHelper.addProductAndCatalogue(product, catalogueId);
+
+        Product product_2 = ProductEntityFixture.aProductEntity()
+                .withCatalogue(aCatalogueEntity)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product_2, catalogueId);
+
+        ValidatableResponse response = givenAuthenticatedSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products?externalServiceId=%s", externalServiceId))
+                .then()
+                .statusCode(200);
+
+        response.body("", hasSize(2))
+                .body("[0].external_service_id", matchesPattern(externalServiceId))
+                .body("[0]._links", hasSize(2))
+                .body("[0].description", matchesPattern(product.getDescription()))
+                .body("[0].price", is(product.getPrice().intValue()))
+                .body("[0].name", matchesPattern(product.getName()))
+                .body("[1].name", matchesPattern(product_2.getName()));
+    }
+
+    @Test
+    public void givenNonExistingExternalServiceId_shouldReturn404() throws Exception {
+        givenAuthenticatedSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products?externalServiceId=%s", randomUuid()))
                 .then()
                 .statusCode(404);
     }

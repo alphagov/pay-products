@@ -2,6 +2,7 @@ package uk.gov.pay.products.resources;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
+import io.dropwizard.jersey.PATCH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.model.Product;
@@ -14,8 +15,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static javax.ws.rs.core.Response.Status.OK;
+import static javax.ws.rs.core.Response.Status.*;
 import static uk.gov.pay.products.resources.ProductResource.PRODUCTS_RESOURCE;
 
 @Path(PRODUCTS_RESOURCE)
@@ -61,5 +61,17 @@ public class ProductResource {
                         Response.status(OK).entity(product).build())
                 .orElseGet(() ->
                         Response.status(NOT_FOUND).build());
+    }
+
+    @PATCH
+    @Path("/{productExternalId}/disable")
+    @Produces(APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
+    @PermitAll
+    public Response disableProduct(@PathParam("productExternalId") String productExternalId) {
+        logger.info("Disabling a product with externalId - [ {} ]", productExternalId);
+        return productsFactory.productsFinder().disableProduct(productExternalId)
+                .map(product -> Response.status(NO_CONTENT).build())
+                .orElseGet(() -> Response.status(NOT_FOUND).build());
     }
 }

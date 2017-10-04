@@ -217,5 +217,44 @@ public class ProductsResourceTest extends IntegrationTest {
                 .get(format("/v1/api/products/%s", randomUuid()))
                 .then()
                 .statusCode(401);
+
+        givenSetup()
+                .accept(APPLICATION_JSON)
+                .patch(format("/v1/api/products/%s/disable", randomUuid()))
+                .then()
+                .statusCode(401);
+    }
+
+    @Test
+    public void givenAValidExternalProductId_shouldDisableTheProduct() throws Exception{
+        String externalId = randomUuid();
+        CatalogueEntity aCatalogueEntity = aCatalogueEntity().build();
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withCatalogue(aCatalogueEntity)
+                .build()
+                .toProduct();
+
+        int catalogueId = randomInt();
+        databaseHelper.addProduct(product, catalogueId);
+
+        givenAuthenticatedSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .patch(format("/v1/api/products/%s/disable", externalId))
+                .then()
+                .statusCode(204);
+
+    }
+
+    @Test
+    public void givenANonExistingExternalProductId_whenDisableAProduct_shouldReturn404() throws Exception{
+        givenAuthenticatedSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .patch(format("/v1/api/products/%s/disable", randomUuid()))
+                .then()
+                .statusCode(404);
     }
 }

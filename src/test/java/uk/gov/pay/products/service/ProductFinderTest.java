@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.dao.ProductDao;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
+import uk.gov.pay.products.util.ProductStatus;
 
 import java.util.Optional;
 
@@ -51,5 +52,23 @@ public class ProductFinderTest {
         Optional<Product> productOptional = productFinder.findByExternalId(externalId);
 
         assertThat(productOptional.isPresent(), is(false));
+    }
+
+    @Test
+    public void givenAnExistingProduct_shouldDisableIt() throws Exception{
+        String externalId = "1";
+        ProductEntity productEntity = new ProductEntity();
+        productEntity.setExternalId(externalId);
+        when(productDao.findByExternalId(externalId)).thenReturn(Optional.of(productEntity));
+
+        Optional<Product> productOptional = productFinder.findByExternalId(externalId);
+        assertThat(productOptional.isPresent(), is(true));
+        assertThat(productOptional.get().getStatus(), is(ProductStatus.ACTIVE));
+
+        productFinder.disableProduct(externalId);
+        productOptional = productFinder.findByExternalId(externalId);
+
+        assertThat(productOptional.isPresent(), is(true));
+        assertThat(productOptional.get().getStatus(), is(ProductStatus.INACTIVE));
     }
 }

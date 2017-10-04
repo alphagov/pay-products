@@ -164,12 +164,12 @@ same as above(docs/api_specification.md#post-v1apiproducts)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-## DELETE /v1/api/products/{productId}
+## PATCH /v1/api/products/{productExternalId}/disable
 
 This endpoint disables a product with the specified external product id
 
 ```
-DELETE /v1/api/products/uier837y735n837475y3847534
+PATCH /v1/api/products/uier837y735n837475y3847534/disable
 Authorization: Bearer API_TOKEN
 ```  
 

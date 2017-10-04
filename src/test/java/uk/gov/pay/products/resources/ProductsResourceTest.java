@@ -220,7 +220,7 @@ public class ProductsResourceTest extends IntegrationTest {
 
         givenSetup()
                 .accept(APPLICATION_JSON)
-                .delete(format("/v1/api/products/%s", randomUuid()))
+                .patch(format("/v1/api/products/%s/disable", randomUuid()))
                 .then()
                 .statusCode(401);
     }
@@ -242,19 +242,19 @@ public class ProductsResourceTest extends IntegrationTest {
         givenAuthenticatedSetup()
                 .when()
                 .accept(APPLICATION_JSON)
-                .delete(format("/v1/api/products/%s", externalId))
+                .patch(format("/v1/api/products/%s/disable", externalId))
                 .then()
                 .statusCode(204);
 
     }
 
     @Test
-    public void givenANonExistingExternalProductId_shouldReturn204() throws Exception{
+    public void givenANonExistingExternalProductId_whenDisableAProduct_shouldReturn404() throws Exception{
         givenAuthenticatedSetup()
                 .when()
                 .accept(APPLICATION_JSON)
-                .delete(format("/v1/api/products/%s", randomUuid()))
+                .patch(format("/v1/api/products/%s/disable", randomUuid()))
                 .then()
-                .statusCode(204);
+                .statusCode(404);
     }
 }

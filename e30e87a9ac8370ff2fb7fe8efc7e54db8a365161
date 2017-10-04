@@ -37,3 +37,5 @@ production-1.tag=alpha_production-1-1
 production-1.alpha_production-1-1.date=2017-10-03:13:41:41
 
 production-1.alpha_production-1-1.status=success
+
+release.tag=alpha_release-2

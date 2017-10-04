@@ -6,6 +6,7 @@ import org.junit.Test;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.entity.CatalogueEntity;
+import uk.gov.pay.products.util.ProductStatus;
 
 import javax.ws.rs.HttpMethod;
 import java.io.Serializable;
@@ -309,6 +310,30 @@ public class ProductsResourceTest extends IntegrationTest {
                 .when()
                 .accept(APPLICATION_JSON)
                 .get(format("/v1/api/products?externalServiceId=%s", randomUuid()))
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void givenAnExistingExternalServiceId_whenProductIsAlreadyDisabled_thenShouldReturn404() throws Exception {
+        String externalServiceId = randomUuid();
+        CatalogueEntity aCatalogueEntity = aCatalogueEntity()
+                .withExternalServiceId(externalServiceId)
+                .build();
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withCatalogue(aCatalogueEntity)
+                .withStatus(ProductStatus.INACTIVE)
+                .build()
+                .toProduct();
+
+        int catalogueId = randomInt();
+        databaseHelper.addProductAndCatalogue(product, catalogueId);
+
+        givenAuthenticatedSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products?externalServiceId=%s", externalServiceId))
                 .then()
                 .statusCode(404);
     }

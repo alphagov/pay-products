@@ -12,3 +12,5 @@ CREATE TABLE catalogues (
 );
 --rollback drop table catalogues;
 
+--changeset uk.gov.pay:add_catalogues_external-service-id_index
+CREATE INDEX external_service_id_idx ON catalogues (external_service_id);

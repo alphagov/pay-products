@@ -22,4 +22,9 @@ public class ProductFinder {
         return productDao.findByExternalId(externalId)
                 .map(productEntity -> linksDecorator.decorate(productEntity.toProduct()));
     }
+
+    @Transactional
+    public void disableProduct(String externalId){
+        productDao.disableByExternalId(externalId);
+    }
 }

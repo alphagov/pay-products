@@ -5,6 +5,7 @@ import org.junit.Test;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.persistence.entity.CatalogueEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
+import uk.gov.pay.products.util.ProductStatus;
 
 import java.util.Optional;
 
@@ -41,5 +42,29 @@ public class ProductDaoTest extends DaoTestBase {
         assertTrue(expectedProduct.isPresent());
 
         assertThat(expectedProduct.get().getName(), is(product.getName()));
+    }
+
+    @Test
+    public void shouldDisableAProduct_whenProductExists() throws Exception {
+        String externalId = randomUuid();
+
+        CatalogueEntity aCatalogueEntity = aCatalogueEntity().withExternalId(randomUuid()).build();
+
+        ProductEntity product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withCatalogue(aCatalogueEntity)
+                .withName("test name")
+                .build();
+
+        productDao.persist(product);
+
+        Optional<ProductEntity> expectedProduct = productDao.findByExternalId(externalId);
+        assertTrue(expectedProduct.isPresent());
+        assertThat(expectedProduct.get().getStatus(), is(ProductStatus.ACTIVE));
+
+        productDao.disableByExternalId(externalId);
+        expectedProduct = productDao.findByExternalId(externalId);
+        assertTrue(expectedProduct.isPresent());
+        assertThat(expectedProduct.get().getStatus(), is(ProductStatus.INACTIVE));
     }
 }

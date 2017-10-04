@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response.Status;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.OK;
 import static uk.gov.pay.products.resources.ProductResource.PRODUCTS_RESOURCE;
 
@@ -61,5 +62,16 @@ public class ProductResource {
                         Response.status(OK).entity(product).build())
                 .orElseGet(() ->
                         Response.status(NOT_FOUND).build());
+    }
+
+    @DELETE
+    @Path("/{productExternalId}")
+    @Produces(APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
+    @PermitAll
+    public Response deleteProduct(@PathParam("productExternalId") String productExternalId) {
+        logger.info("Disabling a product with externalId - [ {} ]", productExternalId);
+        productsFactory.productsFinder().disableProduct(productExternalId);
+        return Response.status(NO_CONTENT).build();
     }
 }

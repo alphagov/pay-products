@@ -245,7 +245,7 @@ public class ProductsResourceTest extends IntegrationTest {
                 .toProduct();
 
         int catalogueId = randomInt();
-        databaseHelper.addProduct(product, catalogueId);
+        databaseHelper.addProductAndCatalogue(product, catalogueId);
 
         givenAuthenticatedSetup()
                 .when()

@@ -55,4 +55,9 @@ public class ProductEntityFixture {
         this.externalId = externalId;
         return this;
     }
+
+    public ProductEntityFixture withStatus(ProductStatus status) {
+        this.status = status;
+        return this;
+    }
 }

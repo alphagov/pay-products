@@ -11,4 +11,3 @@ CREATE TABLE catalogues (
     version INTEGER DEFAULT 0 NOT NULL
 );
 --rollback drop table catalogues;
-

@@ -4,6 +4,8 @@ import uk.gov.pay.products.model.Link;
 import uk.gov.pay.products.model.Product;
 
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.ws.rs.HttpMethod.GET;
 import static javax.ws.rs.HttpMethod.POST;
@@ -34,4 +36,7 @@ public class LinksDecorator {
         return product;
     }
 
+    public List<Product> decorate(List<Product> products) {
+        return products.stream().map(product -> product = decorate(product)).collect(Collectors.toList());
+    }
 }

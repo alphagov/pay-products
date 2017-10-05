@@ -18,6 +18,3 @@ CREATE TABLE products (
 
 --changeset uk.gov.pay:add_products_catalogues_fk-catalogue_id
 ALTER TABLE products ADD CONSTRAINT fk_products_catalogues FOREIGN KEY (catalogue_id) REFERENCES catalogues (id) ON DELETE CASCADE;
-
---changeset uk.gov.pay:add_products_status_index
-CREATE INDEX status_idx ON products (status);

@@ -36,7 +36,7 @@ public class ChargesResourceTest extends IntegrationTest {
                 .toProduct();
 
         int catalogueId = randomInt();
-        databaseHelper.addProduct(product, catalogueId);
+        databaseHelper.addProductAndCatalogue(product, catalogueId);
 
         ImmutableMap<Object, Object> payload = ImmutableMap.builder()
                 .put(PRODUCT_EXTERNAL_ID, product.getExternalId())

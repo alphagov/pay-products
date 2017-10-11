@@ -79,9 +79,9 @@ public class ProductResource {
     @GET
     @Produces(APPLICATION_JSON)
     @PermitAll
-    public Response findProducts(@QueryParam("externalServiceId") String externalServiceId) {
-        logger.info("Searching for products with externalServiceId - [ {} ]", externalServiceId);
-        List<Product> products = productsFactory.productsFinder().findByExternalServiceId(externalServiceId);
+    public Response findProducts(@QueryParam("gatewayAccountId") Integer gatewayAccountId) {
+        logger.info("Searching for products with gatewayAccountId - [ {} ]", gatewayAccountId);
+        List<Product> products = productsFactory.productsFinder().findByGatewayAccountId(gatewayAccountId);
         return products.size() > 0 ? Response.status(OK).entity(products).build() : Response.status(NOT_FOUND).build();
     }
 }

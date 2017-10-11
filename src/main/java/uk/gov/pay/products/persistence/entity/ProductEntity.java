@@ -4,6 +4,7 @@ import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.util.ProductStatus;
 
 import javax.persistence.*;
+import java.math.BigInteger;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
@@ -34,9 +35,8 @@ public class ProductEntity extends AbstractEntity {
     @Convert(converter = UTCDateTimeConverter.class)
     private ZonedDateTime dateCreated = ZonedDateTime.now(ZoneId.of("UTC"));
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "catalogue_id", updatable = false)
-    private CatalogueEntity catalogueEntity;
+    @Column(name = "gateway_account_id")
+    private Integer gatewayAccountId;
 
     @Column(name = "return_url")
     private String returnUrl;
@@ -100,12 +100,12 @@ public class ProductEntity extends AbstractEntity {
         this.dateCreated = dateCreated;
     }
 
-    public CatalogueEntity getCatalogueEntity() {
-        return catalogueEntity;
+    public Integer getGatewayAccountId() {
+        return gatewayAccountId;
     }
 
-    public void setCatalogueEntity(CatalogueEntity catalogueEntity) {
-        this.catalogueEntity = catalogueEntity;
+    public void setGatewayAccountId(Integer gatewayAccountId) {
+        this.gatewayAccountId = gatewayAccountId;
     }
 
     public static ProductEntity from(Product product) {
@@ -117,6 +117,7 @@ public class ProductEntity extends AbstractEntity {
         productEntity.setPayApiToken(product.getPayApiToken());
         productEntity.setExternalId(product.getExternalId());
         productEntity.setDescription(product.getDescription());
+        productEntity.setGatewayAccountId(product.getGatewayAccountId());
         productEntity.setReturnUrl(product.getReturnUrl());
 
         return productEntity;
@@ -125,13 +126,12 @@ public class ProductEntity extends AbstractEntity {
     public Product toProduct() {
         return new Product(
                 this.externalId,
-                this.catalogueEntity != null ? this.catalogueEntity.getExternalServiceId() : null,
                 this.name,
                 this.description,
                 this.payApiToken,
                 this.price,
                 this.status,
-                this.catalogueEntity != null ? this.catalogueEntity.getExternalId() : null,
+                this.gatewayAccountId,
                 this.returnUrl);
     }
 

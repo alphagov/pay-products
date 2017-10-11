@@ -15,6 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -25,8 +26,8 @@ public class ProductsCreatorTest {
     private ProductsCreator productsCreator;
     @Captor
     private ArgumentCaptor<ProductEntity> persistedProductEntity;
-    private String externalServiceId;
     private String payApiToken;
+    private Integer gatewayAccountId = randomInt();
     public static final String PRODUCT_NAME = "Test product name";
     public static final Long PRICE = 1050L;
 
@@ -34,7 +35,7 @@ public class ProductsCreatorTest {
     public void setup() throws Exception {
         LinksDecorator linksDecorator = new LinksDecorator("http://localhost", "http://localhost/pay");
         productsCreator = new ProductsCreator(productDao, linksDecorator);
-        externalServiceId = randomUuid();
+        gatewayAccountId = randomInt();
         payApiToken = randomUuid();
     }
 
@@ -42,13 +43,12 @@ public class ProductsCreatorTest {
     public void shouldSuccess_whenProvidedAProductWithMinimumRequiredFields() throws Exception {
         Product basicProduct = new Product(
                 null,
-                externalServiceId,
                 PRODUCT_NAME,
                 null,
                 payApiToken,
                 PRICE,
                 null,
-                null,
+                gatewayAccountId,
                 null
         );
 
@@ -56,7 +56,7 @@ public class ProductsCreatorTest {
         assertThat(product.getName(), is("Test product name"));
         assertThat(product.getPrice(), is(1050L));
         assertThat(product.getPayApiToken(), is(payApiToken));
-        assertThat(product.getExternalServiceId(), is(externalServiceId));
+        assertThat(product.getGatewayAccountId(), is(gatewayAccountId));
 
         verify(productDao, times(1)).persist(persistedProductEntity.capture());
         ProductEntity productEntity = persistedProductEntity.getValue();
@@ -66,8 +66,8 @@ public class ProductsCreatorTest {
         assertThat(productEntity.getPayApiToken(), is(payApiToken));
         assertThat(productEntity.getExternalId(), is(not(isEmptyOrNullString())));
         assertThat(productEntity.getDateCreated(), is(notNullValue()));
-        assertThat(productEntity.getCatalogueEntity(), is(notNullValue()));
-        assertThat(productEntity.getCatalogueEntity().getExternalServiceId(), is(externalServiceId));
+        assertThat(productEntity.getGatewayAccountId(), is(notNullValue()));
+        assertThat(productEntity.getGatewayAccountId(), is(gatewayAccountId));
     }
 
     @Test
@@ -77,13 +77,12 @@ public class ProductsCreatorTest {
 
         Product productRequest = new Product(
                 null,
-                externalServiceId,
                 PRODUCT_NAME,
                 description,
                 payApiToken,
                 PRICE,
                 null,
-                null,
+                gatewayAccountId,
                 returnUrl
         );
 

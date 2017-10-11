@@ -5,7 +5,6 @@ import io.restassured.response.ValidatableResponse;
 import org.junit.Test;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.model.Product;
-import uk.gov.pay.products.persistence.entity.CatalogueEntity;
 import uk.gov.pay.products.util.ProductStatus;
 
 import javax.ws.rs.HttpMethod;
@@ -18,27 +17,26 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
-import static uk.gov.pay.products.fixtures.CatalogueEntityFixture.aCatalogueEntity;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 public class ProductsResourceTest extends IntegrationTest {
 
-    private static final String EXTERNAL_SERVICE_ID = "external_service_id";
     private static final String PAY_API_TOKEN = "pay_api_token";
     private static final String NAME = "name";
     private static final String PRICE = "price";
     private static final String EXTERNAL_ID = "external_id";
     private static final String DESCRIPTION = "description";
     private static final String RETURN_URL = "return_url";
+    private static final String GATEWAY_ACCOUNT_ID = "gateway_account_id";
 
     @Test
-    public void shouldFail_whenSavingAProduct_withInCorrectAuthToken() throws Exception {
+    public void shouldFail_whenSavingAProduct_withIncorrectAuthToken() throws Exception {
         ImmutableMap<String, ? extends Serializable> payload = ImmutableMap.of(
-                "external_service_id", randomUuid(),
-                "pay_api_token", randomUuid(),
-                "name", "a-name",
-                "price", 1234);
+                GATEWAY_ACCOUNT_ID, randomInt(),
+                PAY_API_TOKEN, randomUuid(),
+                NAME, "a-name",
+                PRICE, 1234);
 
         givenSetup()
                 .contentType(APPLICATION_JSON)
@@ -54,13 +52,13 @@ public class ProductsResourceTest extends IntegrationTest {
     @Test
     public void shouldSuccess_whenSavingAValidProduct_withMinimumMandatoryFields() throws Exception {
 
-        String externalServiceId = randomUuid();
         String payApiToken = randomUuid();
         String name = "Flashy new GOV Service";
         Long price = 1050L;
+        Integer gatewayAccountId = randomInt();
 
         ImmutableMap<String, ? extends Serializable> payload = ImmutableMap.of(
-                EXTERNAL_SERVICE_ID, externalServiceId,
+                GATEWAY_ACCOUNT_ID, gatewayAccountId,
                 PAY_API_TOKEN, payApiToken,
                 NAME, name,
                 PRICE, price);
@@ -75,7 +73,7 @@ public class ProductsResourceTest extends IntegrationTest {
 
         response
                 .body(NAME, is("Flashy new GOV Service"))
-                .body(EXTERNAL_SERVICE_ID, is(externalServiceId))
+                .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
                 .body(PRICE, is(1050))
                 .body(EXTERNAL_ID, matchesPattern("^[0-9a-z]{32}$"));
 
@@ -99,15 +97,15 @@ public class ProductsResourceTest extends IntegrationTest {
     @Test
     public void shouldSuccess_whenSavingAValidProduct_withAllFields() throws Exception {
 
-        String externalServiceId = randomUuid();
         String payApiToken = randomUuid();
         String name = "Flashy new GOV Service";
         Long price = 1050L;
         String description = "Some test description";
+        Integer gatewayAccountId = randomInt();
 
         String returnUrl = "http://some.valid.url";
         ImmutableMap<Object, Object> payload = ImmutableMap.builder()
-                .put(EXTERNAL_SERVICE_ID, externalServiceId)
+                .put(GATEWAY_ACCOUNT_ID, gatewayAccountId)
                 .put(PAY_API_TOKEN, payApiToken)
                 .put(NAME, name)
                 .put(PRICE, price)
@@ -125,9 +123,8 @@ public class ProductsResourceTest extends IntegrationTest {
 
         response
                 .body(NAME, is(name))
-                .body(EXTERNAL_SERVICE_ID, is(externalServiceId))
+                .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
                 .body(PRICE, is(1050))
-                .body(EXTERNAL_ID, matchesPattern("^[0-9a-z]{32}$"))
                 .body(DESCRIPTION, is(description))
                 .body(RETURN_URL, is(returnUrl));
 
@@ -162,16 +159,15 @@ public class ProductsResourceTest extends IntegrationTest {
     @Test
     public void givenAnExistingExternalProductId_shouldFindAndReturnProduct() throws Exception {
         String externalId = randomUuid();
-        CatalogueEntity aCatalogueEntity = aCatalogueEntity().build();
+        int gatewayAccountId = randomInt();
 
         Product product = ProductEntityFixture.aProductEntity()
                 .withExternalId(externalId)
-                .withCatalogue(aCatalogueEntity)
+                .withGatewayAccountId(gatewayAccountId)
                 .build()
                 .toProduct();
 
-        int catalogueId = randomInt();
-        databaseHelper.addProductAndCatalogue(product, catalogueId);
+        databaseHelper.addProduct(product);
 
         ValidatableResponse response = givenAuthenticatedSetup()
                 .when()
@@ -186,7 +182,7 @@ public class ProductsResourceTest extends IntegrationTest {
 
         response
                 .body(NAME, is(product.getName()))
-                .body(EXTERNAL_ID, matchesPattern("^[0-9a-z]{32}$"))
+                .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
                 .body(DESCRIPTION, is(product.getDescription()))
                 .body(RETURN_URL, is(product.getReturnUrl()));
 
@@ -228,7 +224,7 @@ public class ProductsResourceTest extends IntegrationTest {
         givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
-                .get(format("/v1/api/products?externalServiceId=%s", randomUuid()))
+                .get(format("/v1/api/products?gatewayAccountId=%s", randomUuid()))
                 .then()
                 .statusCode(401);
     }
@@ -236,16 +232,16 @@ public class ProductsResourceTest extends IntegrationTest {
     @Test
     public void givenAValidExternalProductId_shouldDisableTheProduct() throws Exception{
         String externalId = randomUuid();
-        CatalogueEntity aCatalogueEntity = aCatalogueEntity().build();
+        int gatewayAccountId = randomInt();
 
         Product product = ProductEntityFixture.aProductEntity()
                 .withExternalId(externalId)
-                .withCatalogue(aCatalogueEntity)
+                .withGatewayAccountId(gatewayAccountId)
                 .build()
                 .toProduct();
 
-        int catalogueId = randomInt();
-        databaseHelper.addProductAndCatalogue(product, catalogueId);
+
+        databaseHelper.addProduct(product);
 
         givenAuthenticatedSetup()
                 .when()
@@ -267,36 +263,32 @@ public class ProductsResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void givenAnExistingExternalServiceId_shouldFindAndReturnProducts() throws Exception {
-        String externalServiceId = randomUuid();
-        CatalogueEntity aCatalogueEntity = aCatalogueEntity()
-                .withExternalServiceId(externalServiceId)
-                .build();
+    public void givenAnExistingGatewayAccountId_shouldFindAndReturnProducts() throws Exception {
+        int gatewayAccountId = randomInt();
 
         Product product = ProductEntityFixture.aProductEntity()
-                .withCatalogue(aCatalogueEntity)
+                .withGatewayAccountId(gatewayAccountId)
                 .build()
                 .toProduct();
 
-        int catalogueId = randomInt();
-        databaseHelper.addProductAndCatalogue(product, catalogueId);
+        databaseHelper.addProduct(product);
 
         Product product_2 = ProductEntityFixture.aProductEntity()
-                .withCatalogue(aCatalogueEntity)
+                .withGatewayAccountId(gatewayAccountId)
                 .build()
                 .toProduct();
 
-        databaseHelper.addProduct(product_2, catalogueId);
+        databaseHelper.addProduct(product_2);
 
         ValidatableResponse response = givenAuthenticatedSetup()
                 .when()
                 .accept(APPLICATION_JSON)
-                .get(format("/v1/api/products?externalServiceId=%s", externalServiceId))
+                .get(format("/v1/api/products?gatewayAccountId=%s", gatewayAccountId))
                 .then()
                 .statusCode(200);
 
         response.body("", hasSize(2))
-                .body("[0].external_service_id", matchesPattern(externalServiceId))
+                .body("[0].gateway_account_id", is(gatewayAccountId))
                 .body("[0]._links", hasSize(2))
                 .body("[0].description", matchesPattern(product.getDescription()))
                 .body("[0].price", is(product.getPrice().intValue()))
@@ -305,35 +297,31 @@ public class ProductsResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void givenNonExistingExternalServiceId_shouldReturn404() throws Exception {
+    public void givenNonExistingGatewayAccountId_shouldReturn404() throws Exception {
         givenAuthenticatedSetup()
                 .when()
                 .accept(APPLICATION_JSON)
-                .get(format("/v1/api/products?externalServiceId=%s", randomUuid()))
+                .get(format("/v1/api/products?gatewayAccountId=%s", randomUuid()))
                 .then()
                 .statusCode(404);
     }
 
     @Test
-    public void givenAnExistingExternalServiceId_whenProductIsAlreadyDisabled_thenShouldReturn404() throws Exception {
-        String externalServiceId = randomUuid();
-        CatalogueEntity aCatalogueEntity = aCatalogueEntity()
-                .withExternalServiceId(externalServiceId)
-                .build();
+    public void givenAnExistingGatewayAccountId_whenProductIsAlreadyDisabled_thenShouldReturn404() throws Exception {
+        int gatewayAccountId = randomInt();
 
         Product product = ProductEntityFixture.aProductEntity()
-                .withCatalogue(aCatalogueEntity)
+                .withGatewayAccountId(gatewayAccountId)
                 .withStatus(ProductStatus.INACTIVE)
                 .build()
                 .toProduct();
 
-        int catalogueId = randomInt();
-        databaseHelper.addProductAndCatalogue(product, catalogueId);
+        databaseHelper.addProduct(product);
 
         givenAuthenticatedSetup()
                 .when()
                 .accept(APPLICATION_JSON)
-                .get(format("/v1/api/products?externalServiceId=%s", externalServiceId))
+                .get(format("/v1/api/products?gatewayAccountId=%s", gatewayAccountId))
                 .then()
                 .statusCode(404);
     }

@@ -11,19 +11,13 @@ public class DatabaseTestHelper {
         this.jdbi = jdbi;
     }
 
-    public DatabaseTestHelper addProductAndCatalogue(Product product, int catalogueId){
-        addCatalogue(catalogueId, product.getCatalogueExternalId(), product.getExternalServiceId());
-        return addProduct(product, catalogueId);
-    }
-
-    public DatabaseTestHelper addProduct(Product product, int catalogueId) {
+    public DatabaseTestHelper addProduct(Product product) {
         jdbi.withHandle(handle -> handle.createStatement("INSERT INTO products " +
-                "(catalogue_id, external_id, name, description, pay_api_token, price, " +
-                "status, return_url)" +
+                "(external_id, name, description, pay_api_token, price, " +
+                "status, return_url, gateway_account_id)" +
                 "VALUES " +
-                "(:catalogue_id, :external_id, :name, :description, :pay_api_token, :price, " +
-                ":status, :return_url)")
-                .bind("catalogue_id", catalogueId)
+                "(:external_id, :name, :description, :pay_api_token, :price, " +
+                ":status, :return_url, :gateway_account_id)")
                 .bind("external_id", product.getExternalId())
                 .bind("name", product.getName())
                 .bind("description", product.getDescription())
@@ -31,18 +25,7 @@ public class DatabaseTestHelper {
                 .bind("price", product.getPrice())
                 .bind("status", product.getStatus())
                 .bind("return_url", product.getReturnUrl())
-                .execute());
-
-        return this;
-    }
-
-    public DatabaseTestHelper addCatalogue(int catalogueId, String external_id, String external_service_id){
-        jdbi.withHandle(handle -> handle.createStatement("INSERT INTO catalogues " +
-                "(id, external_id, external_service_id)" +
-                "VALUES (:id, :external_id, :external_service_id)")
-                .bind("id", catalogueId)
-                .bind("external_id", external_id)
-                .bind("external_service_id", external_service_id)
+                .bind("gateway_account_id", product.getGatewayAccountId())
                 .execute());
 
         return this;

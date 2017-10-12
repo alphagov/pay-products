@@ -37,7 +37,7 @@ public class ProductFinder {
     }
 
     @Transactional
-    public List<Product> findByExternalServiceId(String externalServiceId) {
-        return linksDecorator.decorate(productDao.findByExternalServiceId(externalServiceId));
+    public List<Product> findByGatewayAccountId(Integer gatewayAccountId) {
+        return linksDecorator.decorate(productDao.findByGatewayAccountId(gatewayAccountId));
     }
 }

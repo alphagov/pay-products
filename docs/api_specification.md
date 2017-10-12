@@ -12,7 +12,7 @@ Authorization: Bearer API_TOKEN
 Content-Type: application/json
 
 {
-    "external_service_id" :     "d76tt83563thcert8urihgiuer",
+    "gateway_account_id" :     "1234",
     "pay_api_token" :           "5meusgv5ufclsbvde78mdf35bfdhnhm1307euq94kcf0lcqcqrovbjovib",
     "name" :                    "A name for the product",
     "description" :             "Description of the product",
@@ -25,7 +25,7 @@ Content-Type: application/json
 
 | Field                    | required | Description                                                      | Supported Values     |
 | ------------------------ |:--------:| ---------------------------------------------------------------- |----------------------|
-| `external_service_id`    |    X     | external service id of the Service as identified by adminusers.  |   |
+| `gateway_account_id`     |    X     | gateway account id of the Gateway Account as identified by adminusers.  |   |
 | `pay_api_token`          |    X     | valid api token for the gateway account of above service which this product takes payments for |  |
 | `name`                   |    X     | Name of the product. This will be passed as the `name` when creating the charge | |
 | `price`                  |    X     | Price for the product in pence. This will be passed as the  `amount` when creating charge    | |
@@ -39,11 +39,10 @@ Content-Type: application/json
 Content-Type: application/json
 {
     "external_product_id": "874h5c87834659q345698495",
-    "external_service_id" :  "d76tt83563thcert8urihgiuer",
+    "gateway_account_id" : "1234",
     "description":         "Description of the product",
     "price":               1050,
     "return_url" :         "https://some.valid.url/",
-    "catalogue_external_id" :   "748bwiirlwTjsfbdjgturedfkg",   
     "_links": [
     {
         "href": "https://govukpay-products.cloudapps.digital/v1/api/products/874h5c87834659q345698495",
@@ -63,13 +62,12 @@ Content-Type: application/json
 | Field                    | always present | Description                                   |
 | ------------------------ |:--------------:| --------------------------------------------- |
 | `external_product_id`    | X              | external id of the new product                |
-| `external_service_id`    | X              | external service id of the Service as identified by adminusers.  |   |
+| `gateway_account_id `    | X              | gateway account id of the Gateway    as identified by adminusers.  |   |
 | `description`            | X              | Description of the product |
 | `price`                  | X              | Price for the product in pence      |
 | `return_url`             |                | return url provided. _(not be available if it was not provided)_   |
 | `_links.self`            | X              | self GET link to the product. |
 | `_links.pay`             | X              | The link in `pay-products-ui` where a charge for this product will be generated and redirected to GOV.UK Pay |
-| `catalogue_external_id`  | X              | External id of the catalogue the product was linked to. |
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -110,12 +108,12 @@ same as above(docs/api_specification.md#post-v1apiproducts)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-## GET /v1/api/products?externalServiceId={serviceId}
+## GET /v1/api/products?gatewayAccountId={gatewayAccountId}
 
-This endpoint retrieves list of products that belongs to the specified service id.
+This endpoint retrieves list of products that belongs to the specified gateway account id.
 
 ```
-GET /v1/api/products?externalServiceId=hf7487483cn487er8n8y78tr8
+GET /v1/api/products?gatewayAccountId=1234
 Authorization: Bearer API_TOKEN
 ```  
 

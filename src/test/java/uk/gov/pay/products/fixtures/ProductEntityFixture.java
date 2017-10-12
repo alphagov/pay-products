@@ -1,6 +1,5 @@
 package uk.gov.pay.products.fixtures;
 
-import uk.gov.pay.products.persistence.entity.CatalogueEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductStatus;
 
@@ -17,11 +16,9 @@ public class ProductEntityFixture {
     private ProductStatus status = ProductStatus.ACTIVE;
     private String externalId = randomUuid();
     private ZonedDateTime dateCreated = ZonedDateTime.now();
-    private CatalogueEntity catalogueEntity;
+    private int gatewayAccountId;
 
-    private ProductEntityFixture() {
-        catalogueEntity = new CatalogueEntity();
-    }
+    private ProductEntityFixture() { }
 
     public ProductEntity build() {
         ProductEntity product = new ProductEntity();
@@ -32,7 +29,7 @@ public class ProductEntityFixture {
         product.setExternalId(externalId);
         product.setPrice(price);
         product.setStatus(status);
-        product.setCatalogueEntity(catalogueEntity);
+        product.setGatewayAccountId(gatewayAccountId);
 
         return product;
     }
@@ -46,8 +43,8 @@ public class ProductEntityFixture {
         return this;
     }
 
-    public ProductEntityFixture withCatalogue(CatalogueEntity catalogue) {
-        this.catalogueEntity = catalogue;
+    public ProductEntityFixture withGatewayAccountId(int gatewayAccountId) {
+        this.gatewayAccountId = gatewayAccountId;
         return this;
     }
 

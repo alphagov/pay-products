@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.model.Product;
-import uk.gov.pay.products.persistence.entity.CatalogueEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductStatus;
 
@@ -14,29 +13,26 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static uk.gov.pay.products.fixtures.CatalogueEntityFixture.aCatalogueEntity;
+import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 public class ProductDaoTest extends DaoTestBase {
 
     private ProductDao productDao;
-    private CatalogueDao catalogueDao;
 
     @Before
     public void before() {
         productDao = env.getInstance(ProductDao.class);
-        catalogueDao = env.getInstance(CatalogueDao.class);
     }
 
     @Test
     public void shouldSuccess_whenSavingAValidProduct() throws Exception {
         String externalId = randomUuid();
-
-        CatalogueEntity aCatalogueEntity = aCatalogueEntity().withExternalId(randomUuid()).build();
+        Integer gatewayAccountId = randomInt();
 
         ProductEntity product = ProductEntityFixture.aProductEntity()
                 .withExternalId(externalId)
-                .withCatalogue(aCatalogueEntity)
+                .withGatewayAccountId(gatewayAccountId)
                 .withName("test name")
                 .build();
 
@@ -51,28 +47,23 @@ public class ProductDaoTest extends DaoTestBase {
     @Test
     public void shouldReturnProductsWithStatusActive() throws Exception {
         String externalId = randomUuid();
-        String externalServiceId = randomUuid();
-
-        CatalogueEntity aCatalogueEntity = aCatalogueEntity()
-                .withExternalId(randomUuid())
-                .withExternalServiceId(externalServiceId)
-                .build();
+        Integer gatewayAccountId = randomInt();
 
         ProductEntity product = ProductEntityFixture.aProductEntity()
                 .withExternalId(externalId)
-                .withCatalogue(aCatalogueEntity)
+                .withGatewayAccountId(gatewayAccountId)
                 .build();
 
+        productDao.persist(product);
+
         ProductEntity product_2 = ProductEntityFixture.aProductEntity()
-                .withCatalogue(aCatalogueEntity)
+                .withGatewayAccountId(gatewayAccountId)
                 .withStatus(ProductStatus.INACTIVE)
                 .build();
 
-        aCatalogueEntity.getProducts().add(product);
-        aCatalogueEntity.getProducts().add(product_2);
-        catalogueDao.persist(aCatalogueEntity);
+        productDao.persist(product_2);
 
-        List<Product> products = productDao.findByExternalServiceId(externalServiceId);
+        List<Product> products = productDao.findByGatewayAccountId(gatewayAccountId);
         assertThat(products.size(), is(1));
         assertThat(products.get(0).getExternalId(), is(externalId));
         assertThat(products.get(0).getStatus(), is(ProductStatus.ACTIVE));

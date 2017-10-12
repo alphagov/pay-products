@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public class ProductRequestValidator {
     private final RequestValidations requestValidations;
-    private static final String FIELD_EXTERNAL_SERVICE_ID = "external_service_id";
+    private static final String FIELD_GATEWAY_ACCOUNT_ID = "gateway_account_id";
     private static final String FIELD_PAY_API_TOKEN = "pay_api_token";
     private static final String FIELD_NAME = "name";
     private static final String FIELD_PRICE = "price";
@@ -23,7 +23,7 @@ public class ProductRequestValidator {
     public Optional<Errors> validateCreateRequest(JsonNode payload) {
         Optional<List<String>> errors = requestValidations.checkIfExists(
                 payload,
-                FIELD_EXTERNAL_SERVICE_ID,
+                FIELD_GATEWAY_ACCOUNT_ID,
                 FIELD_PAY_API_TOKEN,
                 FIELD_NAME,
                 FIELD_PRICE);

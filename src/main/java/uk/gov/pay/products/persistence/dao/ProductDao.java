@@ -28,14 +28,14 @@ public class ProductDao extends JpaDao<ProductEntity> {
                 .getResultList().stream().findFirst();
     }
 
-    public List<Product> findByExternalServiceId(String externalServiceId) {
+    public List<Product> findByGatewayAccountId(Integer gatewayAccountId) {
         String query = "SELECT product FROM ProductEntity product " +
-                "WHERE product.catalogueEntity.externalServiceId = :externalServiceId " +
+                "WHERE product.gatewayAccountId = :gatewayAccountId " +
                 "AND product.status = :status";
 
         return entityManager.get()
                 .createQuery(query, ProductEntity.class)
-                .setParameter("externalServiceId", externalServiceId)
+                .setParameter("gatewayAccountId", gatewayAccountId)
                 .setParameter("status", ProductStatus.ACTIVE)
                 .getResultList().stream()
                 .map(ProductEntity::toProduct)

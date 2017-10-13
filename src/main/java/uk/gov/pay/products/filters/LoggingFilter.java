@@ -15,7 +15,7 @@ import static java.lang.String.format;
 
 public class LoggingFilter implements Filter {
 
-    private static final String HEADER_REQUEST_ID = "X-Request-Id";
+    public static final String HEADER_REQUEST_ID = "X-Request-Id";
     private static final Logger logger = LoggerFactory.getLogger(LoggingFilter.class);
 
     @Override

@@ -7,8 +7,8 @@ import uk.gov.pay.products.persistence.dao.ProductDao;
 import uk.gov.pay.products.util.ProductStatus;
 
 import java.util.List;
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ProductFinder {
     private final ProductDao productDao;
@@ -38,6 +38,19 @@ public class ProductFinder {
 
     @Transactional
     public List<Product> findByGatewayAccountId(Integer gatewayAccountId) {
-        return linksDecorator.decorate(productDao.findByGatewayAccountId(gatewayAccountId));
+        return productDao.findByGatewayAccountId(gatewayAccountId)
+                .stream()
+                .map(product -> linksDecorator.decorate(product))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Optional<Integer> findProductIdByExternalId(String externalId){
+        return productDao.findByExternalId(externalId)
+                .map(productEntity -> {
+                    Integer productId = productEntity.getId();
+                    return Optional.of(productId);
+                })
+                .orElseGet(Optional::empty);
     }
 }

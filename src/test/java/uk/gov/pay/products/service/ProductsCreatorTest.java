@@ -12,7 +12,10 @@ import uk.gov.pay.products.persistence.dao.ProductDao;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;

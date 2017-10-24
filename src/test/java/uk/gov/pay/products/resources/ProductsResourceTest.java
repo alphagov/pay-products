@@ -79,8 +79,6 @@ public class ProductsResourceTest extends IntegrationTest {
 
         String externalId = response.extract().path(EXTERNAL_ID);
 
-        System.out.println(response.extract().path("_links").toString());
-
         String productsUrl = "http://localhost:8080/v1/api/products/";
         String productsUIUrl = "http://localhost:3000/pay/";
         response
@@ -129,8 +127,6 @@ public class ProductsResourceTest extends IntegrationTest {
                 .body(RETURN_URL, is(returnUrl));
 
         String externalId = response.extract().path(EXTERNAL_ID);
-
-        System.out.println(response.extract().path("_links").toString());
 
         String productsUrl = "http://localhost:8080/v1/api/products/";
         String productsUIUrl = "http://localhost:3000/pay/";

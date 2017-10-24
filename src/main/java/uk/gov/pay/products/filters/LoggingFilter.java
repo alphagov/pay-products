@@ -6,7 +6,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -15,7 +20,7 @@ import static java.lang.String.format;
 
 public class LoggingFilter implements Filter {
 
-    private static final String HEADER_REQUEST_ID = "X-Request-Id";
+    public static final String HEADER_REQUEST_ID = "X-Request-Id";
     private static final Logger logger = LoggerFactory.getLogger(LoggingFilter.class);
 
     @Override

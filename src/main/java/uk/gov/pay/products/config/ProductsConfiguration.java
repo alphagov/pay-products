@@ -36,6 +36,11 @@ public class ProductsConfiguration extends Configuration {
         return vcapServices;
     }
 
+    @Valid
+    @NotNull
+    @JsonProperty("jerseyClientConfiguration")
+    private RestClientConfiguration restClientConfiguration;
+
     public String getGraphiteHost() {
         return graphiteHost;
     }

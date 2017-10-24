@@ -6,7 +6,11 @@ import com.codahale.metrics.health.HealthCheck;
 import io.dropwizard.db.DataSourceFactory;
 
 import javax.inject.Inject;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 

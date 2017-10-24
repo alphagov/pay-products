@@ -10,20 +10,29 @@ import uk.gov.pay.products.service.ProductsFactory;
 import uk.gov.pay.products.validations.ProductRequestValidator;
 
 import javax.annotation.security.PermitAll;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.*;
-import static uk.gov.pay.products.resources.ProductResource.PRODUCTS_RESOURCE;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
+import static javax.ws.rs.core.Response.Status.OK;
 
-@Path(PRODUCTS_RESOURCE)
+@Path("/")
 public class ProductResource {
-    private static Logger logger = LoggerFactory.getLogger(HealthCheckResource.class);
+    private static Logger logger = LoggerFactory.getLogger(ProductResource.class);
 
     public static final String PRODUCTS_RESOURCE = "/v1/api/products";
+    private static final String PRODUCTS_RESOURCE_GET = PRODUCTS_RESOURCE + "/{productExternalId}";
+    private static final String PRODUCTS_RESOURCE_DISABLE = PRODUCTS_RESOURCE + "/{productExternalId}/disable";
 
     private final ProductRequestValidator requestValidator;
     private final ProductsFactory productsFactory;
@@ -36,6 +45,7 @@ public class ProductResource {
     }
 
     @POST
+    @Path(PRODUCTS_RESOURCE)
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     @PermitAll
@@ -51,7 +61,7 @@ public class ProductResource {
     }
 
     @GET
-    @Path("/{productExternalId}")
+    @Path(PRODUCTS_RESOURCE_GET)
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     @PermitAll
@@ -65,7 +75,7 @@ public class ProductResource {
     }
 
     @PATCH
-    @Path("/{productExternalId}/disable")
+    @Path(PRODUCTS_RESOURCE_DISABLE)
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     @PermitAll
@@ -77,6 +87,7 @@ public class ProductResource {
     }
 
     @GET
+    @Path(PRODUCTS_RESOURCE)
     @Produces(APPLICATION_JSON)
     @PermitAll
     public Response findProducts(@QueryParam("gatewayAccountId") Integer gatewayAccountId) {

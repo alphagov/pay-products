@@ -63,7 +63,7 @@ public class ProductDaoTest extends DaoTestBase {
 
         productDao.persist(product_2);
 
-        List<Product> products = productDao.findByGatewayAccountId(gatewayAccountId);
+        List<ProductEntity> products = productDao.findByGatewayAccountId(gatewayAccountId);
         assertThat(products.size(), is(1));
         assertThat(products.get(0).getExternalId(), is(externalId));
         assertThat(products.get(0).getStatus(), is(ProductStatus.ACTIVE));

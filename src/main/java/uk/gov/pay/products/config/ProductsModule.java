@@ -8,6 +8,8 @@ import com.google.inject.persist.jpa.JpaPersistModule;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.setup.Environment;
 import uk.gov.pay.products.service.LinksDecorator;
+import uk.gov.pay.products.service.PaymentFinder;
+import uk.gov.pay.products.service.PaymentsFactory;
 import uk.gov.pay.products.service.ProductFinder;
 import uk.gov.pay.products.service.ProductsFactory;
 import uk.gov.pay.products.validations.ProductRequestValidator;
@@ -36,10 +38,11 @@ public class ProductsModule extends AbstractModule {
                 new LinksDecorator(
                         configuration.getBaseUrl(), configuration.getProductsUiPayUrl()));
         bind(ProductFinder.class).in(Singleton.class);
-
+        bind(PaymentFinder.class).in(Singleton.class);
 
         install(jpaModule(configuration));
         install(new FactoryModuleBuilder().build(ProductsFactory.class));
+        install(new FactoryModuleBuilder().build(PaymentsFactory.class));
     }
 
     private JpaPersistModule jpaModule(ProductsConfiguration configuration) {

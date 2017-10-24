@@ -28,7 +28,7 @@ public class ProductDao extends JpaDao<ProductEntity> {
                 .getResultList().stream().findFirst();
     }
 
-    public List<Product> findByGatewayAccountId(Integer gatewayAccountId) {
+    public List<ProductEntity> findByGatewayAccountId(Integer gatewayAccountId) {
         String query = "SELECT product FROM ProductEntity product " +
                 "WHERE product.gatewayAccountId = :gatewayAccountId " +
                 "AND product.status = :status";
@@ -37,8 +37,6 @@ public class ProductDao extends JpaDao<ProductEntity> {
                 .createQuery(query, ProductEntity.class)
                 .setParameter("gatewayAccountId", gatewayAccountId)
                 .setParameter("status", ProductStatus.ACTIVE)
-                .getResultList().stream()
-                .map(ProductEntity::toProduct)
-                .collect(Collectors.toList());
+                .getResultList();
     }
 }

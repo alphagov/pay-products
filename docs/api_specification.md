@@ -38,7 +38,7 @@ Content-Type: application/json
 201 OK
 Content-Type: application/json
 {
-    "external_product_id": "874h5c87834659q345698495",
+    "external_id": "874h5c87834659q345698495",
     "gateway_account_id" : "1234",
     "description":         "Description of the product",
     "price":               1050,
@@ -61,7 +61,7 @@ Content-Type: application/json
 
 | Field                    | always present | Description                                   |
 | ------------------------ |:--------------:| --------------------------------------------- |
-| `external_product_id`    | X              | external id of the new product                |
+| `external_id`            | X              | external id of the new product                |
 | `gateway_account_id `    | X              | gateway account id of the Gateway    as identified by adminusers.  |   |
 | `description`            | X              | Description of the product |
 | `price`                  | X              | Price for the product in pence      |
@@ -76,7 +76,7 @@ Content-Type: application/json
 This endpoint finds a product with the specified external product id
 
 ```
-GET /v1/api/products/uier837y735n837475y3847534
+GET /v1/api/products/874h5c87834659q345698495
 Authorization: Bearer API_TOKEN
 ```  
 
@@ -86,7 +86,7 @@ Authorization: Bearer API_TOKEN
 200 OK
 Content-Type: application/json
 {
-    "external_product_id": "874h5c87834659q345698495",
+    "external_id": "874h5c87834659q345698495",
     "description":         "Description of the product",
     "price":               1050,
     "return_url" :         "https://some.valid.url/"
@@ -123,7 +123,7 @@ Authorization: Bearer API_TOKEN
 200 OK
 Content-Type: application/json
     [{
-        "external_product_id": "874h5c87834659q345698495",
+        "external_id": "874h5c87834659q345698495",
         "description":         "Description 1",
         "price":               9999,
         "return_url" :         "https://some.valid.url/"
@@ -140,7 +140,7 @@ Content-Type: application/json
         }]
     },
     {
-        "external_product_id": "h6347634cwb67wii7b6ciueroytw",
+        "external_id": "h6347634cwb67wii7b6ciueroytw",
         "description":         "Description 2",
         "price":               1050,
         "return_url" :         "https://some.valid.url/"
@@ -179,35 +179,106 @@ Authorization: Bearer API_TOKEN
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------- 
 
-## POST /v1/api/products/{productId}/items
 
-Creates a new instance of a product that will take a payment
+## GET /v1/api/payments/{paymentId}
 
-### Request example
+This endpoint finds a payment with the specified external payment id
 
 ```
-POST /v1/api/products/874h5c87834659q345698495/items
+GET /v1/api/payments/h6347634cwb67wii7b6ciueroytw
 Authorization: Bearer API_TOKEN
-```
+```  
 
 ### Response example
 
 ```
-201 OK
+200 OK
 Content-Type: application/json
 {
-    "external_item_id" :    "8cnq3084y98e4n89jeaior1",
-    "description" :         "Description of the product",
-    "amount":               1050,
-    "external_product_id" : "874h5c87834659q345698495"
-}
+        "external_id": "h6347634cwb67wii7b6ciueroytw",
+        "next_url": "https://some.valid.url/paid",
+        "product_external_id": "uier837y735n837475y3847534",
+        "status": "CREATED",
+        "_links": [
+            {
+                "rel": "self",
+                "method": "GET",
+                "href": "https://govukpay-products.cloudapps.digital/v1/api/products/h6347634cwb67wii7b6ciueroytw"
+            },
+            {
+                "rel": "pay",
+                "method": "POST",
+                "href": "https://govukpay-products-ui.cloudapps.digital/pay/h6347634cwb67wii7b6ciueroytw"
+            }
+        ]
+    }
 ```
-
-#### Response field description
-
+#### Response field description 
 | Field                    | always present | Description                                   |
 | ------------------------ |:--------------:| --------------------------------------------- |
-| `external_item_id`       | X              | external item id. This will be passed as the `reference` when creating a charge   |
-| `description`            | X              | Description of the item which will be passed as `description` when creating a charge. By default this will be the same as belonging product description |
-| `amount`                 | X              | amount of the item which will be passes as `amount` when creation a charge. By default this will be the same as product price   |
-| `external_product_id`    | X              | external id of the product item belongs to          |
+| `external_id`            | X              | external id of the payment                |
+| `next_url`               | X              | Next URL provided|
+| `product_external_id `   | X              | product external id which owns this payment  |   |
+| `status`                 | X              | Status of the payment      |
+| `_links.self`            | X              | self GET link to the payment. |
+| `_links.pay`             | X              | The link in `pay-products-ui` where a charge for this product will be generated and redirected to GOV.UK Pay |
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## GET /v1/api/products/{productId/payments}
+
+This endpoint retrieves list of payments that belongs to the specified product external id.
+
+```
+GET /v1/api/products/uier837y735n837475y3847534/payments
+Authorization: Bearer API_TOKEN
+```  
+
+### Response example
+
+```
+200 OK
+Content-Type: application/json
+    [
+        {
+            "external_id": "h6347634cwb67wii7b6ciueroytw",
+            "next_url": "https://some.valid.url/paid",
+            "product_external_id": "uier837y735n837475y3847534",
+            "status": "CREATED",
+            "_links": [
+                {
+                    "rel": "self",
+                    "method": "GET",
+                    "href": "https://govukpay-products.cloudapps.digital/v1/api/products/h6347634cwb67wii7b6ciueroytw"
+                },
+                {
+                    "rel": "pay",
+                    "method": "POST",
+                    "href": "https://govukpay-products-ui.cloudapps.digital/pay/h6347634cwb67wii7b6ciueroytw"
+                }
+            ]
+        },
+        {
+            "external_id": "b3d007390f544a819eafe2b677652a40",
+            "next_url": "www.example.org/paid",
+            "product_external_id": "uier837y735n837475y3847534",
+            "status": "CREATED",
+            "_links": [
+                {
+                    "rel": "self",
+                    "method": "GET",
+                    "href": "https://govukpay-products.cloudapps.digital/v1/api/products/b3d007390f544a819eafe2b677652a40"
+                },
+                {
+                    "rel": "pay",
+                    "method": "POST",
+                    "href": "https://govukpay-products-ui.cloudapps.digital/pay/b3d007390f544a819eafe2b677652a40"
+                }
+            ]
+        }
+    ]
+```
+#### Response field description 
+same as above(docs/api_specification.md#post-v1apipayments)
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------

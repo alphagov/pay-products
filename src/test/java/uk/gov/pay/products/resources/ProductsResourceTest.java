@@ -79,8 +79,8 @@ public class ProductsResourceTest extends IntegrationTest {
 
         String externalId = response.extract().path(EXTERNAL_ID);
 
-        String productsUrl = "http://localhost:8080/v1/api/products/";
-        String productsUIUrl = "http://localhost:3000/pay/";
+        String productsUrl = "https://products.url/v1/api/products/";
+        String productsUIUrl = "https://products-ui.url/";
         response
                 .body("_links", hasSize(2))
                 .body("_links[0].href", matchesPattern(productsUrl + externalId))
@@ -128,8 +128,8 @@ public class ProductsResourceTest extends IntegrationTest {
 
         String externalId = response.extract().path(EXTERNAL_ID);
 
-        String productsUrl = "http://localhost:8080/v1/api/products/";
-        String productsUIUrl = "http://localhost:3000/pay/";
+        String productsUrl = "https://products.url/v1/api/products/";
+        String productsUIUrl = "https://products-ui.url/";
         response
                 .body("_links", hasSize(2))
                 .body("_links[0].href", matchesPattern(productsUrl + externalId))
@@ -182,8 +182,8 @@ public class ProductsResourceTest extends IntegrationTest {
                 .body(DESCRIPTION, is(product.getDescription()))
                 .body(RETURN_URL, is(product.getReturnUrl()));
 
-        String productsUrl = "http://localhost:8080/v1/api/products/";
-        String productsUIUrl = "http://localhost:3000/pay/";
+        String productsUrl = "https://products.url/v1/api/products/";
+        String productsUIUrl = "https://products-ui.url/";
         response
                 .body("_links", hasSize(2))
                 .body("_links[0].href", matchesPattern(productsUrl + externalId))

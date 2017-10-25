@@ -20,8 +20,8 @@ import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 public class PaymentResourceTest extends IntegrationTest {
 
-    private String paymentsUrl = "http://localhost:8080/v1/api/payments/";
-    private String productsUIUrl = "http://localhost:3000/pay/";
+    private String paymentsUrl = "https://products.url/v1/api/payments/";
+    private String productsUIUrl = "https://products-ui.url/";
     private String nextUrl = "www.gov.uk/pay";
     private int gatewayAccountId = randomInt();
 

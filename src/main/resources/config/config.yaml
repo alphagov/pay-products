@@ -58,7 +58,11 @@ jpa:
   queryResultsCache: false
   cacheSharedDefault: false
 
-baseUrl: ${BASE_URL:-http://localhost:8080}
-productsUiPayUrl: ${PRODUCTSUI_PAY_URL:-http://localhost:3000/pay}
+jerseyClientConfiguration:
+  disabledSecureConnection: "false"
 
-productsApiToken: ${PRODUCTS_API_TOKEN:-default-local-api-token}
+baseUrl: ${BASE_URL}
+publicApiUrl: ${PUBLICAPI_URL}
+productsUiPayUrl: ${PRODUCTSUI_PAY_URL}
+
+productsApiToken: ${PRODUCTS_API_TOKEN}

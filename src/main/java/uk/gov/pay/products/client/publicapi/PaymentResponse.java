@@ -28,7 +28,7 @@ public class PaymentResponse {
 
     private Links links;
 
-    private String cardBrand;
+    private CardBrand cardBrand;
 
     public PaymentResponse() {
     }
@@ -47,7 +47,7 @@ public class PaymentResponse {
             @JsonProperty("settlement_summary") SettlementSummary settlementSummary,
             @JsonProperty("card_details") CardDetails cardDetails,
             @JsonProperty("_links") Links links,
-            @JsonProperty("card_brand") String cardBrand) {
+            @JsonProperty("card_brand") CardBrand cardBrand) {
         this.paymentId = paymentId;
         this.amount = amount;
         this.state = state;
@@ -168,11 +168,11 @@ public class PaymentResponse {
         this.links = links;
     }
 
-    public String getCardBrand() {
+    public CardBrand getCardBrand() {
         return cardBrand;
     }
 
-    public void setCardBrand(String cardBrand) {
+    public void setCardBrand(CardBrand cardBrand) {
         this.cardBrand = cardBrand;
     }
 

@@ -26,6 +26,9 @@ public class ProductsConfiguration extends Configuration {
     private String baseUrl;
 
     @NotNull
+    private String publicApiUrl;
+
+    @NotNull
     private String productsUiPayUrl;
 
     private String productsApiToken;
@@ -35,6 +38,11 @@ public class ProductsConfiguration extends Configuration {
         String vcapServices = System.getenv("VCAP_SERVICES");
         return vcapServices;
     }
+
+    @Valid
+    @NotNull
+    @JsonProperty("jerseyClientConfiguration")
+    private RestClientConfiguration restClientConfiguration;
 
     public String getGraphiteHost() {
         return graphiteHost;
@@ -56,6 +64,10 @@ public class ProductsConfiguration extends Configuration {
 
     public String getBaseUrl() {
         return baseUrl;
+    }
+
+    public String getPublicApiUrl() {
+        return publicApiUrl;
     }
 
     public String getProductsUiPayUrl() {

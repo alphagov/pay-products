@@ -32,7 +32,7 @@ public class PaymentResource {
     public static final String PAYMENTS_RESOURCE_GET_PAYMENTS = API_VERSION_PATH + "/api/products/{productId}/payments";
 
 
-    private final PaymentFactory paymentsFactory;
+    private final PaymentFactory paymentFactory;
     private final ProductFactory productFactory;
 
     @Path(PAYMENTS_RESOURCE_GET_PAYMENT)
@@ -40,9 +40,9 @@ public class PaymentResource {
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     @PermitAll
-    public Response findPaymentByExternalId(@PathParam("paymentExternalId") String paymentExternalId){
+    public Response findPaymentByExternalId(@PathParam("paymentExternalId") String paymentExternalId) {
         logger.info("Find a payment with externalId - [ {} ]", paymentExternalId);
-        return paymentsFactory.paymentsFinder().findByExternalId(paymentExternalId)
+        return paymentFactory.paymentFinder().findByExternalId(paymentExternalId)
                 .map(payment ->
                         Response.status(OK).entity(payment).build())
                 .orElseGet(() ->
@@ -51,8 +51,8 @@ public class PaymentResource {
     }
 
     @Inject
-    public PaymentResource(PaymentFactory paymentsFactory, ProductFactory productFactory){
-        this.paymentsFactory = paymentsFactory;
+    public PaymentResource(PaymentFactory paymentFactory, ProductFactory productFactory) {
+        this.paymentFactory = paymentFactory;
         this.productFactory = productFactory;
     }
 
@@ -61,14 +61,16 @@ public class PaymentResource {
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     @PermitAll
-    public Response findPaymentsByProductExternalId(@PathParam("productId") String productExternalId){
+    public Response findPaymentsByProductExternalId(@PathParam("productId") String productExternalId) {
         logger.info("Find a list of payments with product id - [ {} ]", productExternalId);
-        Optional<Integer> productId = productFactory.productsFinder().findProductIdByExternalId(productExternalId);
-        if(!productId.isPresent()){
-            return Response.status(NOT_FOUND).build();
-        }
-        List<Payment> payments = paymentsFactory.paymentsFinder().findByProductId(productId.get());
-
-        return payments.size() > 0 ? Response.status(OK).entity(payments).build() : Response.status(NOT_FOUND).build();
+        Optional<Integer> productMaybe = productFactory.productFinder().findProductIdByExternalId(productExternalId);
+        return productMaybe
+                .map(product -> {
+                    List<Payment> payments = paymentFactory.paymentFinder().findByProductId(product);
+                    return payments.size() > 0
+                            ? Response.status(OK).entity(payments).build()
+                            : Response.status(NOT_FOUND).build();
+                })
+                .orElseGet(() -> Response.status(NOT_FOUND).build());
     }
 }

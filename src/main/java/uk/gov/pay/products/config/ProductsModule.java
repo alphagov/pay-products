@@ -7,14 +7,17 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.persist.jpa.JpaPersistModule;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.setup.Environment;
+import uk.gov.pay.products.client.RestClientFactory;
+import uk.gov.pay.products.client.publicapi.PublicApiRestClient;
 import uk.gov.pay.products.service.LinksDecorator;
 import uk.gov.pay.products.service.PaymentFinder;
-import uk.gov.pay.products.service.PaymentsFactory;
+import uk.gov.pay.products.service.PaymentFactory;
 import uk.gov.pay.products.service.ProductFinder;
-import uk.gov.pay.products.service.ProductsFactory;
+import uk.gov.pay.products.service.ProductFactory;
 import uk.gov.pay.products.validations.ProductRequestValidator;
 import uk.gov.pay.products.validations.RequestValidations;
 
+import javax.ws.rs.client.Client;
 import java.util.Properties;
 
 public class ProductsModule extends AbstractModule {
@@ -29,6 +32,8 @@ public class ProductsModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        final Client client = RestClientFactory.buildClient(configuration.getRestClientConfiguration());
+
         bind(DataSourceFactory.class).toInstance(configuration.getDataSourceFactory());
         bind(MetricRegistry.class).toInstance(environment.metrics());
         bind(Environment.class).toInstance(environment);
@@ -40,9 +45,12 @@ public class ProductsModule extends AbstractModule {
         bind(ProductFinder.class).in(Singleton.class);
         bind(PaymentFinder.class).in(Singleton.class);
 
+        bind(PublicApiRestClient.class).toInstance(
+                new PublicApiRestClient(client, configuration.getPublicApiUrl()));
+
         install(jpaModule(configuration));
-        install(new FactoryModuleBuilder().build(ProductsFactory.class));
-        install(new FactoryModuleBuilder().build(PaymentsFactory.class));
+        install(new FactoryModuleBuilder().build(ProductFactory.class));
+        install(new FactoryModuleBuilder().build(PaymentFactory.class));
     }
 
     private JpaPersistModule jpaModule(ProductsConfiguration configuration) {

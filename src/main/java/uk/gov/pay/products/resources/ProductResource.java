@@ -6,7 +6,7 @@ import io.dropwizard.jersey.PATCH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.model.Product;
-import uk.gov.pay.products.service.ProductsFactory;
+import uk.gov.pay.products.service.ProductFactory;
 import uk.gov.pay.products.validations.ProductRequestValidator;
 
 import javax.annotation.security.PermitAll;
@@ -35,13 +35,13 @@ public class ProductResource {
     private static final String PRODUCTS_RESOURCE_DISABLE = PRODUCTS_RESOURCE + "/{productExternalId}/disable";
 
     private final ProductRequestValidator requestValidator;
-    private final ProductsFactory productsFactory;
+    private final ProductFactory productFactory;
 
 
     @Inject
-    public ProductResource(ProductRequestValidator requestValidator, ProductsFactory productsFactory) {
+    public ProductResource(ProductRequestValidator requestValidator, ProductFactory productFactory) {
         this.requestValidator = requestValidator;
-        this.productsFactory = productsFactory;
+        this.productFactory = productFactory;
     }
 
     @POST
@@ -54,7 +54,7 @@ public class ProductResource {
         return requestValidator.validateCreateRequest(payload)
                 .map(errors -> Response.status(Status.BAD_REQUEST).entity(errors).build())
                 .orElseGet(() -> {
-                    Product product = productsFactory.productsCreator().doCreate(Product.from(payload));
+                    Product product = productFactory.productsCreator().doCreate(Product.from(payload));
                     return Response.status(Status.CREATED).entity(product).build();
                 });
 
@@ -67,7 +67,7 @@ public class ProductResource {
     @PermitAll
     public Response findProduct(@PathParam("productExternalId") String productExternalId) {
         logger.info("Find a product with externalId - [ {} ]", productExternalId);
-        return productsFactory.productsFinder().findByExternalId(productExternalId)
+        return productFactory.productsFinder().findByExternalId(productExternalId)
                 .map(product ->
                         Response.status(OK).entity(product).build())
                 .orElseGet(() ->
@@ -81,7 +81,7 @@ public class ProductResource {
     @PermitAll
     public Response disableProduct(@PathParam("productExternalId") String productExternalId) {
         logger.info("Disabling a product with externalId - [ {} ]", productExternalId);
-        return productsFactory.productsFinder().disableProduct(productExternalId)
+        return productFactory.productsFinder().disableProduct(productExternalId)
                 .map(product -> Response.status(NO_CONTENT).build())
                 .orElseGet(() -> Response.status(NOT_FOUND).build());
     }
@@ -92,7 +92,7 @@ public class ProductResource {
     @PermitAll
     public Response findProducts(@QueryParam("gatewayAccountId") Integer gatewayAccountId) {
         logger.info("Searching for products with gatewayAccountId - [ {} ]", gatewayAccountId);
-        List<Product> products = productsFactory.productsFinder().findByGatewayAccountId(gatewayAccountId);
+        List<Product> products = productFactory.productsFinder().findByGatewayAccountId(gatewayAccountId);
         return products.size() > 0 ? Response.status(OK).entity(products).build() : Response.status(NOT_FOUND).build();
     }
 }

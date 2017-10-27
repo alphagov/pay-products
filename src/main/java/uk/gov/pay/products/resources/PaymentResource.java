@@ -4,8 +4,8 @@ import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.model.Payment;
-import uk.gov.pay.products.service.PaymentsFactory;
-import uk.gov.pay.products.service.ProductsFactory;
+import uk.gov.pay.products.service.PaymentFactory;
+import uk.gov.pay.products.service.ProductFactory;
 
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.Consumes;
@@ -32,8 +32,8 @@ public class PaymentResource {
     public static final String PAYMENTS_RESOURCE_GET_PAYMENTS = API_VERSION_PATH + "/api/products/{productId}/payments";
 
 
-    private final PaymentsFactory paymentsFactory;
-    private final ProductsFactory productsFactory;
+    private final PaymentFactory paymentsFactory;
+    private final ProductFactory productFactory;
 
     @Path(PAYMENTS_RESOURCE_GET_PAYMENT)
     @GET
@@ -51,9 +51,9 @@ public class PaymentResource {
     }
 
     @Inject
-    public PaymentResource(PaymentsFactory paymentsFactory, ProductsFactory productsFactory){
+    public PaymentResource(PaymentFactory paymentsFactory, ProductFactory productFactory){
         this.paymentsFactory = paymentsFactory;
-        this.productsFactory = productsFactory;
+        this.productFactory = productFactory;
     }
 
     @Path(PAYMENTS_RESOURCE_GET_PAYMENTS)
@@ -63,7 +63,7 @@ public class PaymentResource {
     @PermitAll
     public Response findPaymentsByProductExternalId(@PathParam("productId") String productExternalId){
         logger.info("Find a list of payments with product id - [ {} ]", productExternalId);
-        Optional<Integer> productId = productsFactory.productsFinder().findProductIdByExternalId(productExternalId);
+        Optional<Integer> productId = productFactory.productsFinder().findProductIdByExternalId(productExternalId);
         if(!productId.isPresent()){
             return Response.status(NOT_FOUND).build();
         }

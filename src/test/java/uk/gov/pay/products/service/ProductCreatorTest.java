@@ -22,11 +22,11 @@ import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ProductsCreatorTest {
+public class ProductCreatorTest {
 
     @Mock
     private ProductDao productDao;
-    private ProductsCreator productsCreator;
+    private ProductCreator productsCreator;
     @Captor
     private ArgumentCaptor<ProductEntity> persistedProductEntity;
     private String payApiToken;
@@ -37,7 +37,7 @@ public class ProductsCreatorTest {
     @Before
     public void setup() throws Exception {
         LinksDecorator linksDecorator = new LinksDecorator("http://localhost", "http://localhost/pay");
-        productsCreator = new ProductsCreator(productDao, linksDecorator);
+        productsCreator = new ProductCreator(productDao, linksDecorator);
         gatewayAccountId = randomInt();
         payApiToken = randomUuid();
     }

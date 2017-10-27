@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response;
 
-class PublicApiResponseErrorException extends RuntimeException {
+public class PublicApiResponseErrorException extends RuntimeException {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PublicApiResponseErrorException.class);
 

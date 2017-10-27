@@ -1,5 +1,6 @@
 package uk.gov.pay.products.matchers;
 
+import org.apache.commons.lang.StringUtils;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -15,9 +16,9 @@ public class PaymentEntityMatcher {
                 return ((actualPaymentEntity != null) &&
                         (expectedPaymentEntity != null) &&
                         (actualPaymentEntity.getExternalId() != null) &&
-                        (actualPaymentEntity.getNextUrl() == expectedPaymentEntity.getNextUrl()) &&
+                        StringUtils.equals(actualPaymentEntity.getNextUrl(), expectedPaymentEntity.getNextUrl()) &&
                         (actualPaymentEntity.getStatus() == expectedPaymentEntity.getStatus()) &&
-                        (actualPaymentEntity.getGovukPaymentId() == expectedPaymentEntity.getGovukPaymentId()) &&
+                        StringUtils.equals(actualPaymentEntity.getGovukPaymentId(), expectedPaymentEntity.getGovukPaymentId()) &&
                         (actualPaymentEntity.getProductEntity() == expectedPaymentEntity.getProductEntity()));
             }
 

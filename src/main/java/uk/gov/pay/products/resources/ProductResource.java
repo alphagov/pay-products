@@ -54,7 +54,7 @@ public class ProductResource {
         return requestValidator.validateCreateRequest(payload)
                 .map(errors -> Response.status(Status.BAD_REQUEST).entity(errors).build())
                 .orElseGet(() -> {
-                    Product product = productFactory.productsCreator().doCreate(Product.from(payload));
+                    Product product = productFactory.productCreator().doCreate(Product.from(payload));
                     return Response.status(Status.CREATED).entity(product).build();
                 });
 
@@ -67,7 +67,7 @@ public class ProductResource {
     @PermitAll
     public Response findProduct(@PathParam("productExternalId") String productExternalId) {
         logger.info("Find a product with externalId - [ {} ]", productExternalId);
-        return productFactory.productsFinder().findByExternalId(productExternalId)
+        return productFactory.productFinder().findByExternalId(productExternalId)
                 .map(product ->
                         Response.status(OK).entity(product).build())
                 .orElseGet(() ->
@@ -81,7 +81,7 @@ public class ProductResource {
     @PermitAll
     public Response disableProduct(@PathParam("productExternalId") String productExternalId) {
         logger.info("Disabling a product with externalId - [ {} ]", productExternalId);
-        return productFactory.productsFinder().disableProduct(productExternalId)
+        return productFactory.productFinder().disableProduct(productExternalId)
                 .map(product -> Response.status(NO_CONTENT).build())
                 .orElseGet(() -> Response.status(NOT_FOUND).build());
     }
@@ -92,7 +92,7 @@ public class ProductResource {
     @PermitAll
     public Response findProducts(@QueryParam("gatewayAccountId") Integer gatewayAccountId) {
         logger.info("Searching for products with gatewayAccountId - [ {} ]", gatewayAccountId);
-        List<Product> products = productFactory.productsFinder().findByGatewayAccountId(gatewayAccountId);
+        List<Product> products = productFactory.productFinder().findByGatewayAccountId(gatewayAccountId);
         return products.size() > 0 ? Response.status(OK).entity(products).build() : Response.status(NOT_FOUND).build();
     }
 }

@@ -55,7 +55,7 @@ public class PaymentCreatorTest {
     public void shouldCreateASuccessfulPayment() throws Exception {
         int productId = 1;
         String productExternalId = "product-external-id";
-        long productPrice = 100l;
+        long productPrice = 100L;
         String productDescription = "description";
         String productReturnUrl = "https://return.url";
 
@@ -104,7 +104,7 @@ public class PaymentCreatorTest {
         int productId = 1;
 
         String productExternalId = "product-external-id";
-        long productPrice = 100l;
+        long productPrice = 100L;
         String productDescription = "description";
         String productReturnUrl = "https://return.url";
 
@@ -125,7 +125,6 @@ public class PaymentCreatorTest {
                 .thenThrow(PublicApiResponseErrorException.class);
 
         try {
-            Payment payment = paymentCreator.doCreate(productId);
             paymentCreator.doCreate(productId);
             fail("Expected an PaymentCreatorDownstreamException to be thrown");
         } catch (PaymentCreatorDownstreamException e) {

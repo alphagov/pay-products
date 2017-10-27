@@ -1,7 +1,7 @@
 package uk.gov.pay.products.service;
 
 public interface ProductFactory {
-    ProductCreator productsCreator();
+    ProductCreator productCreator();
 
-    ProductFinder productsFinder();
+    ProductFinder productFinder();
 }

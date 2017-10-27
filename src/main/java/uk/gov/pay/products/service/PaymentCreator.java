@@ -30,7 +30,7 @@ public class PaymentCreator {
     private final ProductDao productDao;
     private final PaymentDao paymentDao;
     private final PublicApiRestClient publicApiRestClient;
-    private LinksDecorator linksDecorator;
+    private final LinksDecorator linksDecorator;
 
 
     @Inject
@@ -82,7 +82,6 @@ public class PaymentCreator {
                     productEntity.getDescription(),
                     productEntity.getReturnUrl());
 
-
             try {
                 PaymentResponse paymentResponse = publicApiRestClient.createPayment(paymentRequest);
 
@@ -98,7 +97,6 @@ public class PaymentCreator {
             return paymentEntity;
         };
     }
-
 
     private TransactionalOperation<TransactionContext, PaymentEntity> afterPaymentCreation() {
         return context -> {

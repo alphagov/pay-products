@@ -11,14 +11,14 @@ public class CardDetails {
     private final String cardHolderName;
     private final String expiryDate;
     private final Address billingAddress;
-    private final String cardBrand;
+    private final CardBrand cardBrand;
 
     public CardDetails(
             @JsonProperty("last_digits_card_number") String lastDigitsCardNumber,
             @JsonProperty("cardholder_name") String cardHolderName,
             @JsonProperty("expiry_date") String expiryDate,
             @JsonProperty("billing_address") Address billingAddress,
-            @JsonProperty("card_brand") String cardBrand) {
+            @JsonProperty("card_brand") CardBrand cardBrand) {
         this.lastDigitsCardNumber = lastDigitsCardNumber;
         this.cardHolderName = cardHolderName;
         this.expiryDate = expiryDate;
@@ -42,7 +42,7 @@ public class CardDetails {
         return billingAddress;
     }
 
-    public String getCardBrand() {
+    public CardBrand getCardBrand() {
         return cardBrand;
     }
 

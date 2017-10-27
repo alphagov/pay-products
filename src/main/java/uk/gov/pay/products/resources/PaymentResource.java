@@ -4,8 +4,8 @@ import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.model.Payment;
-import uk.gov.pay.products.service.PaymentsFactory;
-import uk.gov.pay.products.service.ProductsFactory;
+import uk.gov.pay.products.service.PaymentFactory;
+import uk.gov.pay.products.service.ProductFactory;
 
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.Consumes;
@@ -32,17 +32,17 @@ public class PaymentResource {
     public static final String PAYMENTS_RESOURCE_GET_PAYMENTS = API_VERSION_PATH + "/api/products/{productId}/payments";
 
 
-    private final PaymentsFactory paymentsFactory;
-    private final ProductsFactory productsFactory;
+    private final PaymentFactory paymentFactory;
+    private final ProductFactory productFactory;
 
     @Path(PAYMENTS_RESOURCE_GET_PAYMENT)
     @GET
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     @PermitAll
-    public Response findPaymentByExternalId(@PathParam("paymentExternalId") String paymentExternalId){
+    public Response findPaymentByExternalId(@PathParam("paymentExternalId") String paymentExternalId) {
         logger.info("Find a payment with externalId - [ {} ]", paymentExternalId);
-        return paymentsFactory.paymentsFinder().findByExternalId(paymentExternalId)
+        return paymentFactory.paymentFinder().findByExternalId(paymentExternalId)
                 .map(payment ->
                         Response.status(OK).entity(payment).build())
                 .orElseGet(() ->
@@ -51,9 +51,9 @@ public class PaymentResource {
     }
 
     @Inject
-    public PaymentResource(PaymentsFactory paymentsFactory, ProductsFactory productsFactory){
-        this.paymentsFactory = paymentsFactory;
-        this.productsFactory = productsFactory;
+    public PaymentResource(PaymentFactory paymentFactory, ProductFactory productFactory) {
+        this.paymentFactory = paymentFactory;
+        this.productFactory = productFactory;
     }
 
     @Path(PAYMENTS_RESOURCE_GET_PAYMENTS)
@@ -61,14 +61,16 @@ public class PaymentResource {
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     @PermitAll
-    public Response findPaymentsByProductExternalId(@PathParam("productId") String productExternalId){
+    public Response findPaymentsByProductExternalId(@PathParam("productId") String productExternalId) {
         logger.info("Find a list of payments with product id - [ {} ]", productExternalId);
-        Optional<Integer> productId = productsFactory.productsFinder().findProductIdByExternalId(productExternalId);
-        if(!productId.isPresent()){
-            return Response.status(NOT_FOUND).build();
-        }
-        List<Payment> payments = paymentsFactory.paymentsFinder().findByProductId(productId.get());
-
-        return payments.size() > 0 ? Response.status(OK).entity(payments).build() : Response.status(NOT_FOUND).build();
+        Optional<Integer> productMaybe = productFactory.productFinder().findProductIdByExternalId(productExternalId);
+        return productMaybe
+                .map(product -> {
+                    List<Payment> payments = paymentFactory.paymentFinder().findByProductId(product);
+                    return payments.size() > 0
+                            ? Response.status(OK).entity(payments).build()
+                            : Response.status(NOT_FOUND).build();
+                })
+                .orElseGet(() -> Response.status(NOT_FOUND).build());
     }
 }

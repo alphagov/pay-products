@@ -8,13 +8,13 @@ import uk.gov.pay.products.persistence.entity.ProductEntity;
 
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
-public class ProductsCreator {
+public class ProductCreator {
 
     private final ProductDao productDao;
     private final LinksDecorator linksDecorator;
 
     @Inject
-    public ProductsCreator(ProductDao productDao, LinksDecorator linksDecorator) {
+    public ProductCreator(ProductDao productDao, LinksDecorator linksDecorator) {
         this.productDao = productDao;
         this.linksDecorator = linksDecorator;
     }

@@ -97,4 +97,16 @@ public class PaymentEntity extends AbstractEntity {
                 this.productEntity != null ? this.productEntity.getId() : null
         );
     }
+
+    @Override
+    public String toString() {
+        return "PaymentEntity{" +
+                "externalId='" + externalId + '\'' +
+                ", govukPaymentId='" + govukPaymentId + '\'' +
+                ", nextUrl='" + nextUrl + '\'' +
+                ", dateCreated=" + dateCreated +
+                ", productEntity=" + productEntity +
+                ", status=" + status +
+                '}';
+    }
 }

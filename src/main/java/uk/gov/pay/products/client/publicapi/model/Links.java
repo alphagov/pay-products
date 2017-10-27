@@ -14,6 +14,9 @@ public class Links {
     private Link refunds;
     private Link cancel;
 
+    public Links() {
+    }
+
     public Links(
             @JsonProperty("self") Link self,
             @JsonProperty("next_url") Link nextUrl,

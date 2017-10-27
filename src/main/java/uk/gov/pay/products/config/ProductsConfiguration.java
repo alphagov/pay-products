@@ -81,4 +81,8 @@ public class ProductsConfiguration extends Configuration {
     public String getProductsApiToken2() {
         return productsApiToken2;
     }
+
+    public RestClientConfiguration getRestClientConfiguration() {
+        return restClientConfiguration;
+    }
 }

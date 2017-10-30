@@ -78,10 +78,10 @@ public class PaymentCreatorTest {
                 paymentNextUrl);
 
 
-        when(productDao.findById(productId)).thenReturn(Optional.of(productEntity));
+        when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
         when(publicApiRestClient.createPayment(argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest)))).thenReturn(paymentResponse);
 
-        Payment payment = paymentCreator.doCreate(productId);
+        Payment payment = paymentCreator.doCreate(productExternalId);
 
         assertNotNull(payment);
         assertNotNull(payment.getExternalId());
@@ -102,7 +102,6 @@ public class PaymentCreatorTest {
     @Test
     public void shouldCreateAnErrorPayment_whenPublicApiCallFails() throws Exception {
         int productId = 1;
-
         String productExternalId = "product-external-id";
         long productPrice = 100L;
         String productDescription = "description";
@@ -120,12 +119,12 @@ public class PaymentCreatorTest {
                 productDescription,
                 productReturnUrl);
 
-        when(productDao.findById(productId)).thenReturn(Optional.of(productEntity));
+        when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
         when(publicApiRestClient.createPayment(argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest))))
                 .thenThrow(PublicApiResponseErrorException.class);
 
         try {
-            paymentCreator.doCreate(productId);
+            paymentCreator.doCreate(productExternalId);
             fail("Expected an PaymentCreatorDownstreamException to be thrown");
         } catch (PaymentCreatorDownstreamException e) {
             assertThat(e.getProductId(), is(productId));
@@ -140,15 +139,15 @@ public class PaymentCreatorTest {
 
     @Test
     public void shouldThrowPaymentCreatorNotFoundException_whenProductIsNotFound() throws Exception {
-        int productId = 1;
+        String productExternalId = "product-external-id";
 
-        when(productDao.findById(productId)).thenReturn(Optional.empty());
+        when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.empty());
 
         try {
-            paymentCreator.doCreate(productId);
+            paymentCreator.doCreate(productExternalId);
             fail("Expected an PaymentCreatorNotFoundException to be thrown");
         } catch (PaymentCreatorNotFoundException e) {
-            assertThat(e.getProductId(), is(productId));
+            assertThat(e.getProductExternalId(), is(productExternalId));
         }
 
     }

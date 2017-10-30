@@ -43,9 +43,9 @@ public class PaymentCreator {
         this.linksDecorator = linksDecorator;
     }
 
-    public Payment doCreate(Integer productId) {
+    public Payment doCreate(String productExternalId) {
         PaymentEntity paymentEntity = transactionFlowProvider.get()
-                .executeNext(beforePaymentCreation(productId))
+                .executeNext(beforePaymentCreation(productExternalId))
                 .executeNext(paymentCreation())
                 .executeNext(afterPaymentCreation())
                 .complete().get(PaymentEntity.class);
@@ -56,11 +56,11 @@ public class PaymentCreator {
         return linksDecorator.decorate(paymentEntity.toPayment());
     }
 
-    private TransactionalOperation<TransactionContext, PaymentEntity> beforePaymentCreation(Integer productId) {
+    private TransactionalOperation<TransactionContext, PaymentEntity> beforePaymentCreation(String productExternalId) {
         return context -> {
-            logger.info("Creating a new payment for productId {}", productId);
-            ProductEntity productEntity = productDao.findById(productId)
-                    .orElseThrow(() -> new PaymentCreatorNotFoundException(productId));
+            logger.info("Creating a new payment for product external id {}", productExternalId);
+            ProductEntity productEntity = productDao.findByExternalId(productExternalId)
+                    .orElseThrow(() -> new PaymentCreatorNotFoundException(productExternalId));
 
             PaymentEntity paymentEntity = new PaymentEntity();
             paymentEntity.setExternalId(randomUuid());
@@ -88,9 +88,9 @@ public class PaymentCreator {
                 paymentEntity.setGovukPaymentId(paymentResponse.getPaymentId());
                 paymentEntity.setNextUrl(getNextUrl(paymentResponse));
                 paymentEntity.setStatus(PaymentStatus.SUCCESS);
-                logger.info("Payment creation for productId {} successful {}", paymentEntity.getProductEntity().getId(), paymentEntity);
+                logger.info("Payment creation for product external id {} successful {}", paymentEntity.getProductEntity().getExternalId(), paymentEntity);
             } catch (PublicApiResponseErrorException e) {
-                logger.error("Payment creation for productId {} failed {}", paymentEntity.getProductEntity().getId(), e);
+                logger.error("Payment creation for product external id {} failed {}", paymentEntity.getProductEntity().getExternalId(), e);
                 paymentEntity.setStatus(PaymentStatus.ERROR);
             }
 
@@ -103,7 +103,7 @@ public class PaymentCreator {
             PaymentEntity paymentEntity = context.get(PaymentEntity.class);
             paymentDao.merge(paymentEntity);
 
-            logger.info("Payment creation for productId {} completed {}", paymentEntity.getProductEntity().getId());
+            logger.info("Payment creation for product external id {} completed {}", paymentEntity.getProductEntity().getExternalId());
             return paymentEntity;
         };
     }

@@ -2,13 +2,13 @@ package uk.gov.pay.products.service;
 
 public class PaymentCreatorNotFoundException extends RuntimeException {
 
-    private final Integer productId;
+    private final String productExternalId;
 
-    public PaymentCreatorNotFoundException(Integer productId) {
-        this.productId = productId;
+    public PaymentCreatorNotFoundException(String productExternalId) {
+        this.productExternalId = productExternalId;
     }
 
-    public Integer getProductId() {
-        return productId;
+    public String getProductExternalId() {
+        return productExternalId;
     }
 }

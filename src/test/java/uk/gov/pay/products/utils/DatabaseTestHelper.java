@@ -4,6 +4,9 @@ import org.skife.jdbi.v2.DBI;
 import uk.gov.pay.products.model.Payment;
 import uk.gov.pay.products.model.Product;
 
+import java.util.List;
+import java.util.Map;
+
 public class DatabaseTestHelper {
 
     private DBI jdbi;
@@ -54,4 +57,15 @@ public class DatabaseTestHelper {
                 .mapTo(Integer.class)
                 .first());
     }
+
+    public List<Map<String, Object>> getPaymentsByProductExternalId(String productExternalId) {
+        return jdbi.withHandle(h ->
+                h.createQuery("SELECT pa.id, pa.external_id, pa.govuk_payment_id, pa.next_url, pa.date_created, pa.product_id, pa.status " +
+                        "FROM payments pa, products pr " +
+                        "WHERE pr.id = pa.product_id " +
+                        "AND pr.external_id = :product_external_id")
+                        .bind("product_external_id", productExternalId)
+                        .list());
+    }
+
 }

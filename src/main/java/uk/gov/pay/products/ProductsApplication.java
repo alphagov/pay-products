@@ -12,6 +12,7 @@ import io.dropwizard.auth.oauth.OAuthCredentialAuthFilter;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.db.DataSourceFactory;
+import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -20,6 +21,8 @@ import uk.gov.pay.products.auth.TokenAuthenticator;
 import uk.gov.pay.products.config.PersistenceServiceInitialiser;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.config.ProductsModule;
+import uk.gov.pay.products.exception.mapper.PaymentCreatorDownstreamExceptionMapper;
+import uk.gov.pay.products.exception.mapper.PaymentCreatorNotFoundExceptionMapper;
 import uk.gov.pay.products.filters.LoggingFilter;
 import uk.gov.pay.products.healthchecks.DatabaseHealthCheck;
 import uk.gov.pay.products.healthchecks.DependentResourceWaitCommand;
@@ -87,6 +90,8 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
                         .buildAuthFilter()));
         environment.jersey().register(new AuthValueFactoryProvider.Binder<>(Token.class));
 
+        attachExceptionMappersTo(environment.jersey());
+
         setGlobalProxies();
     }
 
@@ -102,6 +107,11 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
                 .build(graphiteUDP)
                 .start(GRAPHITE_SENDING_PERIOD_SECONDS, TimeUnit.SECONDS);
 
+    }
+
+    private void attachExceptionMappersTo(JerseyEnvironment jersey) {
+        jersey.register(PaymentCreatorDownstreamExceptionMapper.class);
+        jersey.register(PaymentCreatorNotFoundExceptionMapper.class);
     }
 
     public static void main(final String[] args) throws Exception {

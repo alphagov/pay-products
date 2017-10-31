@@ -36,9 +36,6 @@ public class LinksDecorator {
         Link selfLink = makeSelfLink(GET, PAYMENTS_RESOURCE , payment.getExternalId());
         payment.getLinks().add(selfLink);
 
-        Link payLink = makeProductsUIUri(POST, payment.getExternalId());
-        payment.getLinks().add(payLink);
-
         return payment;
     }
 

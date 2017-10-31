@@ -1,4 +1,4 @@
-package uk.gov.pay.products.client.publicapi;
+package uk.gov.pay.products.exception;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.slf4j.Logger;
@@ -13,14 +13,14 @@ public class PublicApiResponseErrorException extends RuntimeException {
     private PublicApiErrorResponse error;
     private int status;
 
-    PublicApiResponseErrorException(Response response) {
+    public PublicApiResponseErrorException(Response response) {
         super(response.toString());
         this.status = response.getStatus();
         this.error = readError(response);
         response.close();
     }
 
-    PublicApiResponseErrorException(Throwable cause) {
+    public PublicApiResponseErrorException(Throwable cause) {
         super(cause);
     }
 

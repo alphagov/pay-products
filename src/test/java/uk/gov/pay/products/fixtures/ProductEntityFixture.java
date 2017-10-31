@@ -13,6 +13,7 @@ public class ProductEntityFixture {
     private String apiKey = "default api key";
     private String name = "default name";
     private Long price = 100L;
+    private String returnUrl = "http://return.url";
     private ProductStatus status = ProductStatus.ACTIVE;
     private String externalId = randomUuid();
     private ZonedDateTime dateCreated = ZonedDateTime.now();
@@ -30,6 +31,7 @@ public class ProductEntityFixture {
         product.setPrice(price);
         product.setStatus(status);
         product.setGatewayAccountId(gatewayAccountId);
+        product.setReturnUrl(returnUrl);
 
         return product;
     }
@@ -55,6 +57,11 @@ public class ProductEntityFixture {
 
     public ProductEntityFixture withStatus(ProductStatus status) {
         this.status = status;
+        return this;
+    }
+
+    public ProductEntityFixture withReturnUrl(String returnUrl) {
+        this.returnUrl = returnUrl;
         return this;
     }
 }

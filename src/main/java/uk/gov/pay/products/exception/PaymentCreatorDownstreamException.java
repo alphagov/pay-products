@@ -1,10 +1,10 @@
-package uk.gov.pay.products.service;
+package uk.gov.pay.products.exception;
 
-public class PaymentCreatorNotFoundException extends RuntimeException {
+public class PaymentCreatorDownstreamException extends RuntimeException {
 
     private final String productExternalId;
 
-    public PaymentCreatorNotFoundException(String productExternalId) {
+    public PaymentCreatorDownstreamException(String productExternalId) {
         this.productExternalId = productExternalId;
     }
 

@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.client.publicapi.PaymentRequest;
 import uk.gov.pay.products.client.publicapi.PaymentResponse;
-import uk.gov.pay.products.exception.PaymentCreatorDownstreamException;
+import uk.gov.pay.products.exception.PaymentCreationException;
 import uk.gov.pay.products.exception.PaymentCreatorNotFoundException;
 import uk.gov.pay.products.exception.PublicApiResponseErrorException;
 import uk.gov.pay.products.client.publicapi.PublicApiRestClient;
@@ -53,7 +53,7 @@ public class PaymentCreator {
                 .complete().get(PaymentEntity.class);
 
         if (paymentEntity.getStatus() == PaymentStatus.ERROR) {
-            throw new PaymentCreatorDownstreamException(paymentEntity.getProductEntity().getExternalId());
+            throw new PaymentCreationException(paymentEntity.getProductEntity().getExternalId());
         }
         return linksDecorator.decorate(paymentEntity.toPayment());
     }

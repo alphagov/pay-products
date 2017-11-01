@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.products.client.publicapi.PaymentRequest;
 import uk.gov.pay.products.client.publicapi.PaymentResponse;
-import uk.gov.pay.products.exception.PaymentCreatorDownstreamException;
+import uk.gov.pay.products.exception.PaymentCreationException;
 import uk.gov.pay.products.exception.PaymentCreatorNotFoundException;
 import uk.gov.pay.products.exception.PublicApiResponseErrorException;
 import uk.gov.pay.products.client.publicapi.PublicApiRestClient;
@@ -139,8 +139,8 @@ public class PaymentCreatorTest {
 
         try {
             paymentCreator.doCreate(productExternalId);
-            fail("Expected an PaymentCreatorDownstreamException to be thrown");
-        } catch (PaymentCreatorDownstreamException e) {
+            fail("Expected an PaymentCreationException to be thrown");
+        } catch (PaymentCreationException e) {
             assertThat(e.getProductExternalId(), is(productExternalId));
             PaymentEntity expectedPaymentEntity = createPaymentEntity(
                     null,

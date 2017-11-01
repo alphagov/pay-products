@@ -21,7 +21,7 @@ import uk.gov.pay.products.auth.TokenAuthenticator;
 import uk.gov.pay.products.config.PersistenceServiceInitialiser;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.config.ProductsModule;
-import uk.gov.pay.products.exception.mapper.PaymentCreatorDownstreamExceptionMapper;
+import uk.gov.pay.products.exception.mapper.PaymentCreationExceptionMapper;
 import uk.gov.pay.products.exception.mapper.PaymentCreatorNotFoundExceptionMapper;
 import uk.gov.pay.products.filters.LoggingFilter;
 import uk.gov.pay.products.healthchecks.DatabaseHealthCheck;
@@ -110,7 +110,7 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
     }
 
     private void attachExceptionMappersTo(JerseyEnvironment jersey) {
-        jersey.register(PaymentCreatorDownstreamExceptionMapper.class);
+        jersey.register(PaymentCreationExceptionMapper.class);
         jersey.register(PaymentCreatorNotFoundExceptionMapper.class);
     }
 

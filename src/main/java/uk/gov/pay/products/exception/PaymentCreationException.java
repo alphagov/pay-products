@@ -1,10 +1,10 @@
 package uk.gov.pay.products.exception;
 
-public class PaymentCreatorDownstreamException extends RuntimeException {
+public class PaymentCreationException extends RuntimeException {
 
     private final String productExternalId;
 
-    public PaymentCreatorDownstreamException(String productExternalId) {
+    public PaymentCreationException(String productExternalId) {
         this.productExternalId = productExternalId;
     }
 

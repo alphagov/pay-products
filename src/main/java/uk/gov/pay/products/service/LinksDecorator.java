@@ -36,20 +36,23 @@ public class LinksDecorator {
         Link selfLink = makeSelfLink(GET, PAYMENTS_RESOURCE , payment.getExternalId());
         payment.getLinks().add(selfLink);
 
+        Link nextUrl = makeNextUrlLink(GET, payment.getNextUrl());
+        payment.getLinks().add(nextUrl);
+
         return payment;
     }
 
     private Link makeSelfLink(String method, String resourcePath, String externalId){
         URI uri = fromUri(productsBaseUrl).path(resourcePath).path(externalId).build();
-        Link selfLink = Link.from(Link.Rel.self, method, uri.toString());
+        return Link.from(Link.Rel.self, method, uri.toString());
+    }
 
-        return selfLink;
+    private Link makeNextUrlLink(String method, String nextUrl){
+        return Link.from(Link.Rel.next, method, nextUrl);
     }
 
     private Link makeProductsUIUri(String method, String externalId){
         URI productsUIUri = fromUri(productsUIUrl).path(externalId).build();
-        Link payLink = Link.from(Link.Rel.pay, method, productsUIUri.toString());
-
-        return payLink;
+        return Link.from(Link.Rel.pay, method, productsUIUri.toString());
     }
 }

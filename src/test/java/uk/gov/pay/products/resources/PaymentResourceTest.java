@@ -1,7 +1,7 @@
 package uk.gov.pay.products.resources;
 
+import java.util.List;
 import io.restassured.response.ValidatableResponse;
-import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.products.fixtures.PaymentEntityFixture;
@@ -13,14 +13,12 @@ import uk.gov.pay.products.stubs.publicapi.PublicApiStub;
 
 import javax.json.JsonObject;
 import javax.ws.rs.HttpMethod;
-import java.util.List;
+
 import java.util.Map;
 
-import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.collection.IsMapContaining.hasKey;
+import static java.lang.String.format;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static org.junit.Assert.assertThat;
@@ -79,26 +77,30 @@ public class PaymentResourceTest extends IntegrationTest {
 
         assertThat(paymentRecords.size(), is(1));
 
-        MatcherAssert.assertThat(paymentRecords.get(0), hasKey("id"));
-        MatcherAssert.assertThat(paymentRecords.get(0), hasKey("external_id"));
+        assertThat(paymentRecords.get(0), hasKey("id"));
+        assertThat(paymentRecords.get(0), hasKey("external_id"));
         String paymentExternalId = (String) paymentRecords.get(0).get("external_id");
 
-        MatcherAssert.assertThat(paymentRecords.get(0), hasEntry("govuk_payment_id", govukPaymentId));
-        MatcherAssert.assertThat(paymentRecords.get(0), hasKey("product_id"));
-        MatcherAssert.assertThat(paymentRecords.get(0), hasEntry("next_url", nextUrl));
-        MatcherAssert.assertThat(paymentRecords.get(0), hasEntry("status", "SUCCESS"));
-        MatcherAssert.assertThat(paymentRecords.get(0), hasKey("date_created"));
+        assertThat(paymentRecords.get(0), hasEntry("govuk_payment_id", govukPaymentId));
+        assertThat(paymentRecords.get(0), hasKey("product_id"));
+        assertThat(paymentRecords.get(0), hasEntry("next_url", nextUrl));
+        assertThat(paymentRecords.get(0), hasEntry("status", "SUCCESS"));
+        assertThat(paymentRecords.get(0), hasEntry("amount", product.getPrice()));
+        assertThat(paymentRecords.get(0), hasKey("date_created"));
 
         response
                 .body("external_id", is(paymentExternalId))
                 .body("govuk_payment_id", is(govukPaymentId))
-                .body("next_url", is(nextUrl))
                 .body("product_external_id", is(product.getExternalId()))
                 .body("status", is("SUCCESS"))
-                .body("_links", hasSize(1))
+                .body("amount", is(product.getPrice().intValue()))
+                .body("_links", hasSize(2))
                 .body("_links[0].href", matchesPattern(paymentsUrl + paymentExternalId))
                 .body("_links[0].method", is(HttpMethod.GET))
-                .body("_links[0].rel", is("self"));
+                .body("_links[0].rel", is("self"))
+                .body("_links[1].href", is(nextUrl))
+                .body("_links[1].method", is(HttpMethod.GET))
+                .body("_links[1].rel", is("next"));
     }
 
     @Test
@@ -155,13 +157,14 @@ public class PaymentResourceTest extends IntegrationTest {
 
         assertThat(paymentRecords.size(), is(1));
 
-        MatcherAssert.assertThat(paymentRecords.get(0), hasKey("id"));
-        MatcherAssert.assertThat(paymentRecords.get(0), hasKey("external_id"));
-        MatcherAssert.assertThat(paymentRecords.get(0), hasEntry("govuk_payment_id", null));
-        MatcherAssert.assertThat(paymentRecords.get(0), hasKey("product_id"));
-        MatcherAssert.assertThat(paymentRecords.get(0), hasEntry("next_url", null));
-        MatcherAssert.assertThat(paymentRecords.get(0), hasEntry("status", "ERROR"));
-        MatcherAssert.assertThat(paymentRecords.get(0), hasKey("date_created"));
+        assertThat(paymentRecords.get(0), hasKey("id"));
+        assertThat(paymentRecords.get(0), hasKey("external_id"));
+        assertThat(paymentRecords.get(0), hasEntry("govuk_payment_id", null));
+        assertThat(paymentRecords.get(0), hasKey("product_id"));
+        assertThat(paymentRecords.get(0), hasEntry("next_url", null));
+        assertThat(paymentRecords.get(0), hasEntry("status", "ERROR"));
+        assertThat(paymentRecords.get(0), hasEntry("amount", null));
+        assertThat(paymentRecords.get(0), hasKey("date_created"));
     }
 
     @Test
@@ -199,10 +202,18 @@ public class PaymentResourceTest extends IntegrationTest {
                 .statusCode(200);
 
         response
-                .body("_links", hasSize(1))
+                .body("external_id", is(payment.getExternalId()))
+                .body("govuk_payment_id", is(payment.getGovukPaymentId()))
+                .body("product_external_id", is(product.getExternalId()))
+                .body("status", is(payment.getStatus().toString()))
+                .body("amount", is(payment.getAmount().intValue()))
+                .body("_links", hasSize(2))
                 .body("_links[0].href", matchesPattern(paymentsUrl + externalId))
                 .body("_links[0].method", is(HttpMethod.GET))
-                .body("_links[0].rel", is("self"));
+                .body("_links[0].rel", is("self"))
+                .body("_links[1].href", is(nextUrl))
+                .body("_links[1].method", is(HttpMethod.GET))
+                .body("_links[1].rel", is("next"));
 
     }
 
@@ -244,21 +255,21 @@ public class PaymentResourceTest extends IntegrationTest {
         Integer productId = databaseHelper.findProductId(productExternalId);
         productEntity.setId(productId);
 
-        PaymentEntity payment_1 = PaymentEntityFixture.aPaymentEntity()
+        PaymentEntity payment1 = PaymentEntityFixture.aPaymentEntity()
                 .withExternalId(paymentExternalId1)
                 .withProduct(productEntity)
                 .withNextUrl(nextUrl)
                 .build();
 
-        databaseHelper.addPayment(payment_1.toPayment());
+        databaseHelper.addPayment(payment1.toPayment());
 
-        PaymentEntity payment_2 = PaymentEntityFixture.aPaymentEntity()
+        PaymentEntity payment2 = PaymentEntityFixture.aPaymentEntity()
                 .withExternalId(paymentExternalId2)
                 .withProduct(productEntity)
                 .withNextUrl(nextUrl)
                 .build();
 
-        databaseHelper.addPayment(payment_2.toPayment());
+        databaseHelper.addPayment(payment2.toPayment());
 
         ValidatableResponse response = givenAuthenticatedSetup()
                 .when()
@@ -269,14 +280,30 @@ public class PaymentResourceTest extends IntegrationTest {
 
         response
                 .body("", hasSize(2))
-                .body("[0]._links", hasSize(1))
-                .body("[0]._links[0].href", matchesPattern(paymentsUrl + payment_1.getExternalId()))
+                .body("[0].external_id", is(payment1.getExternalId()))
+                .body("[0].govuk_payment_id", is(payment1.getGovukPaymentId()))
+                .body("[0].product_external_id", is(product.getExternalId()))
+                .body("[0].status", is(payment1.getStatus().toString()))
+                .body("[0].amount", is(payment1.getAmount().intValue()))
+                .body("[0]._links", hasSize(2))
+                .body("[0]._links[0].href", matchesPattern(paymentsUrl + payment1.getExternalId()))
                 .body("[0]._links[0].method", is(HttpMethod.GET))
                 .body("[0]._links[0].rel", is("self"))
-                .body("[1]._links", hasSize(1))
-                .body("[1]._links[0].href", matchesPattern(paymentsUrl + payment_2.getExternalId()))
+                .body("[0]._links[1].href", is(nextUrl))
+                .body("[0]._links[1].method", is(HttpMethod.GET))
+                .body("[0]._links[1].rel", is("next"))
+                .body("[1].external_id", is(payment2.getExternalId()))
+                .body("[1].govuk_payment_id", is(payment2.getGovukPaymentId()))
+                .body("[1].product_external_id", is(product.getExternalId()))
+                .body("[1].status", is(payment2.getStatus().toString()))
+                .body("[1].amount", is(payment2.getAmount().intValue()))
+                .body("[1]._links", hasSize(2))
+                .body("[1]._links[0].href", matchesPattern(paymentsUrl + payment2.getExternalId()))
                 .body("[1]._links[0].method", is(HttpMethod.GET))
-                .body("[1]._links[0].rel", is("self"));
+                .body("[1]._links[0].rel", is("self"))
+                .body("[1]._links[1].href", is(nextUrl))
+                .body("[1]._links[1].method", is(HttpMethod.GET))
+                .body("[1]._links[1].rel", is("next"));
     }
 
     @Test

@@ -90,6 +90,7 @@ public class PaymentCreator {
                 paymentEntity.setGovukPaymentId(paymentResponse.getPaymentId());
                 paymentEntity.setNextUrl(getNextUrl(paymentResponse));
                 paymentEntity.setStatus(PaymentStatus.SUCCESS);
+                paymentEntity.setAmount(paymentResponse.getAmount());
                 logger.info("Payment creation for product external id {} successful {}", paymentEntity.getProductEntity().getExternalId(), paymentEntity);
             } catch (PublicApiResponseErrorException e) {
                 logger.error("Payment creation for product external id {} failed {}", paymentEntity.getProductEntity().getExternalId(), e);

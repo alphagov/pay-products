@@ -37,14 +37,15 @@ public class DatabaseTestHelper {
 
     public DatabaseTestHelper addPayment(Payment payment) {
         jdbi.withHandle(handle -> handle.createStatement("INSERT INTO payments " +
-                "(external_id, govuk_payment_id, next_url, product_id, status)" +
+                "(external_id, govuk_payment_id, next_url, product_id, status, amount)" +
                 "VALUES " +
-                "(:external_id, :govuk_payment_id, :next_url, :product_id, :status)")
+                "(:external_id, :govuk_payment_id, :next_url, :product_id, :status, :amount)")
                 .bind("external_id", payment.getExternalId())
                 .bind("govuk_payment_id", payment.getGovukPaymentId())
                 .bind("next_url", payment.getNextUrl())
                 .bind("product_id",payment.getProductId())
                 .bind("status", payment.getStatus())
+                .bind("amount", payment.getAmount())
                 .execute());
 
         return this;
@@ -60,7 +61,7 @@ public class DatabaseTestHelper {
 
     public List<Map<String, Object>> getPaymentsByProductExternalId(String productExternalId) {
         return jdbi.withHandle(h ->
-                h.createQuery("SELECT pa.id, pa.external_id, pa.govuk_payment_id, pa.next_url, pa.date_created, pa.product_id, pa.status " +
+                h.createQuery("SELECT pa.id, pa.external_id, pa.govuk_payment_id, pa.next_url, pa.date_created, pa.product_id, pa.status, pa.amount " +
                         "FROM payments pa, products pr " +
                         "WHERE pr.id = pa.product_id " +
                         "AND pr.external_id = :product_external_id")

@@ -194,12 +194,18 @@ Content-Type: application/json
         "next_url": "https://some.valid.url/paid",
         "product_external_id": "uier837y735n837475y3847534",
         "status": "CREATED",
+        "amount" : 1050,
         "_links": [
             {
                 "rel": "self",
                 "method": "GET",
-                "href": "https://govukpay-products.cloudapps.digital/v1/api/products/h6347634cwb67wii7b6ciueroytw"
-            }
+                "href": "https://govukpay-products.cloudapps.digital/v1/api/payments/h6347634cwb67wii7b6ciueroytw"
+            },
+            {
+                "rel": "next",
+                "method": "GET",
+                "href": "https://some.valid.url/paid"
+            } 
         ]
     }
 ```
@@ -207,10 +213,11 @@ Content-Type: application/json
 | Field                    | always present | Description                                   |
 | ------------------------ |:--------------:| --------------------------------------------- |
 | `external_id`            | X              | external id of the payment                |
-| `next_url`               | X              | Next URL provided|
 | `product_external_id `   | X              | product external id which owns this payment  |   |
 | `status`                 | X              | Status of the payment      |
+| `amount`                 | X              | amount of the payment in pence. |
 | `_links.self`            | X              | self GET link to the payment. |
+| `_links.next`            | X              | next GET link |
 
 ## GET /v1/api/products/{productId}/payments
 
@@ -232,11 +239,17 @@ Content-Type: application/json
             "next_url": "https://some.valid.url/paid",
             "product_external_id": "uier837y735n837475y3847534",
             "status": "CREATED",
+            "amount" : 1050,
             "_links": [
                 {
                     "rel": "self",
                     "method": "GET",
-                    "href": "https://govukpay-products.cloudapps.digital/v1/api/products/h6347634cwb67wii7b6ciueroytw"
+                    "href": "https://govukpay-products.cloudapps.digital/v1/api/payments/h6347634cwb67wii7b6ciueroytw"
+                },
+                {
+                    "rel": "next",
+                    "method": "GET",
+                    "href": "https://some.valid.url/paid"
                 }
             ]
         },
@@ -245,12 +258,18 @@ Content-Type: application/json
             "next_url": "www.example.org/paid",
             "product_external_id": "uier837y735n837475y3847534",
             "status": "CREATED",
+            "amount" : 1050,
             "_links": [
                 {
                     "rel": "self",
                     "method": "GET",
-                    "href": "https://govukpay-products.cloudapps.digital/v1/api/products/b3d007390f544a819eafe2b677652a40"
-                }
+                    "href": "https://govukpay-products.cloudapps.digital/v1/api/payments/b3d007390f544a819eafe2b677652a40"
+                },
+                {
+                    "rel": "next",
+                    "method": "GET",
+                    "href": "https://some.valid.url/paid"
+                }       
             ]
         }
     ]
@@ -276,15 +295,20 @@ Authorization: Bearer API_TOKEN
 Content-Type: application/json
 {
         "external_id": "h6347634cwb67wii7b6ciueroytw",
-        "next_url": "https://some.valid.url/paid",
         "product_external_id": "uier837y735n837475y3847534",
         "status": "CREATED",
+        "amount" : 1050,
         "_links": [
             {
                 "rel": "self",
                 "method": "GET",
-                "href": "https://govukpay-products.cloudapps.digital/v1/api/products/h6347634cwb67wii7b6ciueroytw"
-            }
+                "href": "https://govukpay-products.cloudapps.digital/v1/api/payments/h6347634cwb67wii7b6ciueroytw"
+            },
+             {
+                            "rel": "next",
+                            "method": "GET",
+                            "href": "https://some.valid.url/paid"
+             }     
         ]
     }
 ```
@@ -292,7 +316,8 @@ Content-Type: application/json
 | Field                    | always present | Description                                   |
 | ------------------------ |:--------------:| --------------------------------------------- |
 | `external_id`            | X              | external id of the payment                |
-| `next_url`               | X              | Next URL provided|
-| `product_external_id `   | X              | product external id which owns this payment  |   |
-| `status`                 | X              | Status of the payment      |
-| `_links.self`            | X              | self GET link to the payment. |
+| `product_external_id `   | X              | product external id which owns this payment  |   
+| `status`                 | X              | Status of the payment 
+| `amount`                 | X              | amount of the payment in pence. |
+| `_links.self`            | X              | self GET link to the payment |
+| `_links.next`            | X              | next GET link |

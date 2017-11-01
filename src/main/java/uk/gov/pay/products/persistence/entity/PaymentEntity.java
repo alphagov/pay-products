@@ -28,6 +28,9 @@ public class PaymentEntity extends AbstractEntity {
     @Column(name = "next_url")
     private String nextUrl;
 
+    @Column(name = "amount")
+    private Long amount;
+
     @Column(name = "date_created")
     @Convert(converter = UTCDateTimeConverter.class)
     private ZonedDateTime dateCreated = ZonedDateTime.now(ZoneId.of("UTC"));
@@ -67,6 +70,14 @@ public class PaymentEntity extends AbstractEntity {
         this.nextUrl = nextUrl;
     }
 
+    public Long getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Long amount) {
+        this.amount = amount;
+    }
+
     public ZonedDateTime getDateCreated() {
         return dateCreated;
     }
@@ -92,6 +103,7 @@ public class PaymentEntity extends AbstractEntity {
                 this.getExternalId(),
                 this.getGovukPaymentId(),
                 this.getNextUrl(),
+                this.getAmount(),
                 this.productEntity != null ? this.productEntity.getExternalId() : null,
                 this.status,
                 this.productEntity != null ? this.productEntity.getId() : null
@@ -104,6 +116,7 @@ public class PaymentEntity extends AbstractEntity {
                 "externalId='" + externalId + '\'' +
                 ", govukPaymentId='" + govukPaymentId + '\'' +
                 ", nextUrl='" + nextUrl + '\'' +
+                ", amount=" + amount +
                 ", dateCreated=" + dateCreated +
                 ", productEntity=" + productEntity +
                 ", status=" + status +

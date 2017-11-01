@@ -63,6 +63,6 @@ jerseyClientConfiguration:
 
 baseUrl: https://products.url
 publicApiUrl: https://publicapi.url
-productsUiUrl: https://products-ui.url
+productsUiPayUrl: https://products-ui.url/pay
 
 productsApiToken: default-local-api-token

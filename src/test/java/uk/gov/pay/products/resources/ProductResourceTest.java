@@ -80,13 +80,13 @@ public class ProductResourceTest extends IntegrationTest {
         String externalId = response.extract().path(EXTERNAL_ID);
 
         String productsUrl = "https://products.url/v1/api/products/";
-        String productsUIUrl = "https://products-ui.url/";
+        String productsUIPayUrl = "https://products-ui.url/pay/";
         response
                 .body("_links", hasSize(2))
                 .body("_links[0].href", matchesPattern(productsUrl + externalId))
                 .body("_links[0].method", is(HttpMethod.GET))
                 .body("_links[0].rel", is("self"))
-                .body("_links[1].href", matchesPattern(productsUIUrl + externalId))
+                .body("_links[1].href", matchesPattern(productsUIPayUrl + externalId))
                 .body("_links[1].method", is(HttpMethod.POST))
                 .body("_links[1].rel", is("pay"));
 
@@ -129,13 +129,13 @@ public class ProductResourceTest extends IntegrationTest {
         String externalId = response.extract().path(EXTERNAL_ID);
 
         String productsUrl = "https://products.url/v1/api/products/";
-        String productsUIUrl = "https://products-ui.url/";
+        String productsUIPayUrl = "https://products-ui.url/pay/";
         response
                 .body("_links", hasSize(2))
                 .body("_links[0].href", matchesPattern(productsUrl + externalId))
                 .body("_links[0].method", is(HttpMethod.GET))
                 .body("_links[0].rel", is("self"))
-                .body("_links[1].href", matchesPattern(productsUIUrl + externalId))
+                .body("_links[1].href", matchesPattern(productsUIPayUrl + externalId))
                 .body("_links[1].method", is(HttpMethod.POST))
                 .body("_links[1].rel", is("pay"));
 
@@ -183,13 +183,13 @@ public class ProductResourceTest extends IntegrationTest {
                 .body(RETURN_URL, is(product.getReturnUrl()));
 
         String productsUrl = "https://products.url/v1/api/products/";
-        String productsUIUrl = "https://products-ui.url/";
+        String productsUIPayUrl = "https://products-ui.url/pay/";
         response
                 .body("_links", hasSize(2))
                 .body("_links[0].href", matchesPattern(productsUrl + externalId))
                 .body("_links[0].method", is(HttpMethod.GET))
                 .body("_links[0].rel", is("self"))
-                .body("_links[1].href", matchesPattern(productsUIUrl + externalId))
+                .body("_links[1].href", matchesPattern(productsUIPayUrl + externalId))
                 .body("_links[1].method", is(HttpMethod.POST))
                 .body("_links[1].rel", is("pay"));
     }

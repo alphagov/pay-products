@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.products.exception.PublicApiResponseErrorException;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;

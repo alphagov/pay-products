@@ -97,21 +97,21 @@ public class PaymentResponseMatcher {
                 matched = matched && StringUtils.equals(actualNextUrlPostLink.getType(), expectedNextUrlPostLink.getString("type"));
 
                 JsonObject expectedEventsLink = expectedLinks.getJsonObject("events");
-                Link actualEventsLink = actualLinks.getNextUrl();
+                Link actualEventsLink = actualLinks.getEvents();
                 if (actualEventsLink == null) return false;
 
                 matched = matched && StringUtils.equals(actualEventsLink.getHref(), expectedEventsLink.getString("href"));
                 matched = matched && StringUtils.equals(actualEventsLink.getMethod(), expectedEventsLink.getString("method"));
 
                 JsonObject expectedRefundsLink = expectedLinks.getJsonObject("refunds");
-                Link actualRefundsLink = actualLinks.getNextUrl();
+                Link actualRefundsLink = actualLinks.getRefunds();
                 if (actualRefundsLink == null) return false;
 
                 matched = matched && StringUtils.equals(actualRefundsLink.getHref(), expectedRefundsLink.getString("href"));
                 matched = matched && StringUtils.equals(actualRefundsLink.getMethod(), expectedRefundsLink.getString("method"));
 
                 JsonObject expectedCancelsLink = expectedLinks.getJsonObject("cancel");
-                Link actualCancelLink = actualLinks.getNextUrl();
+                Link actualCancelLink = actualLinks.getCancel();
                 if (actualCancelLink == null) return false;
 
                 matched = matched && StringUtils.equals(actualCancelLink.getHref(), expectedCancelsLink.getString("href"));

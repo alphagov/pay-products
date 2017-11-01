@@ -17,25 +17,28 @@ public class Payment {
 
     private static final String FIELD_EXTERNAL_ID = "external_id";
     private static final String FIELD_GOVUK_PAYMENT_ID = "govuk_payment_id";
-    private static final String FIELD_NEXT_URL = "next_url";
     private static final String FIELD_PRODUCT_EXTERNAL_ID = "product_external_id";
     private static final String FIELD_LINKS = "_links";
     private static final String FIELD_STATUS = "status";
+    private static final String FIELD_AMOUNT = "amount";
 
     private String externalId;
     private String govukPaymentId;
+    @JsonIgnore
     private String nextUrl;
     private String productExternalId;
     private List<Link> links = new ArrayList<>();
     @JsonIgnore
     private Integer productId;
+    private Long amount;
 
     private PaymentStatus status;
 
     public Payment(
             @JsonProperty(FIELD_EXTERNAL_ID) String externalId,
             @JsonProperty(FIELD_GOVUK_PAYMENT_ID) String govukPaymentId,
-            @JsonProperty(FIELD_NEXT_URL) String nextUrl,
+            String nextUrl,
+            @JsonProperty(FIELD_AMOUNT) Long amount,
             @JsonProperty(FIELD_PRODUCT_EXTERNAL_ID) String productExternalId,
             @JsonProperty(FIELD_STATUS) PaymentStatus status,
             Integer productId) {
@@ -45,6 +48,7 @@ public class Payment {
         this.productExternalId = productExternalId;
         this.status = status;
         this.productId = productId;
+        this.amount = amount;
     }
 
     public String getExternalId() {
@@ -79,4 +83,12 @@ public class Payment {
     public PaymentStatus getStatus() { return status; }
 
     public void setStatus(PaymentStatus status) { this.status = status; }
+
+    public Long getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Long amount) {
+        this.amount = amount;
+    }
 }

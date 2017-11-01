@@ -15,6 +15,7 @@ public class PaymentEntityFixture {
     private String nextUrl = "http://localhost:8080/v1/api/next";
     private ZonedDateTime dateCreated = ZonedDateTime.now();
     private PaymentStatus status = PaymentStatus.CREATED;
+    private Long amount = 100L;
 
     private ProductEntity productEntity;
 
@@ -30,6 +31,7 @@ public class PaymentEntityFixture {
         payment.setDateCreated(dateCreated);
         payment.setStatus(status);
         payment.setProductEntity(productEntity);
+        payment.setAmount(amount);
 
         return payment;
     }
@@ -58,8 +60,13 @@ public class PaymentEntityFixture {
         return this;
     }
 
-    public PaymentEntityFixture withStatus(PaymentStatus status){
+    public PaymentEntityFixture withStatus(PaymentStatus status) {
         this.status = status;
+        return this;
+    }
+
+    public PaymentEntityFixture withAmount(Long amount) {
+        this.amount = amount;
         return this;
     }
 

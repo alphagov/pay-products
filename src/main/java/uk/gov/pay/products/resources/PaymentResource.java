@@ -8,18 +8,14 @@ import uk.gov.pay.products.service.PaymentFactory;
 import uk.gov.pay.products.service.ProductFactory;
 
 import javax.annotation.security.PermitAll;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static javax.ws.rs.core.Response.Status.OK;
+import static javax.ws.rs.core.Response.Status.*;
+import static uk.gov.pay.products.resources.ProductResource.PRODUCT_RESOURCE_PATH;
 
 @Path("/")
 public class PaymentResource {
@@ -27,15 +23,20 @@ public class PaymentResource {
     private static Logger logger = LoggerFactory.getLogger(PaymentResource.class);
 
     private static final String API_VERSION_PATH = "v1";
-    public static final String PAYMENTS_RESOURCE = API_VERSION_PATH + "/api/payments";
-    public static final String PAYMENTS_RESOURCE_GET_PAYMENT = PAYMENTS_RESOURCE + "/{paymentExternalId}";
-    public static final String PAYMENTS_RESOURCE_GET_PAYMENTS = API_VERSION_PATH + "/api/products/{productId}/payments";
-
+    public static final String PAYMENTS_RESOURCE_PATH = API_VERSION_PATH + "/api/payments";
+    public static final String PAYMENT_RESOURCE_PATH = PAYMENTS_RESOURCE_PATH + "/{paymentExternalId}";
+    public static final String PRODUCT_PAYMENTS_RESOURCE_PATH = PRODUCT_RESOURCE_PATH + "/payments";
 
     private final PaymentFactory paymentFactory;
     private final ProductFactory productFactory;
 
-    @Path(PAYMENTS_RESOURCE_GET_PAYMENT)
+    @Inject
+    public PaymentResource(PaymentFactory paymentFactory, ProductFactory productFactory) {
+        this.paymentFactory = paymentFactory;
+        this.productFactory = productFactory;
+    }
+
+    @Path(PAYMENT_RESOURCE_PATH)
     @GET
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
@@ -47,22 +48,26 @@ public class PaymentResource {
                         Response.status(OK).entity(payment).build())
                 .orElseGet(() ->
                         Response.status(NOT_FOUND).build());
-
     }
 
-    @Inject
-    public PaymentResource(PaymentFactory paymentFactory, ProductFactory productFactory) {
-        this.paymentFactory = paymentFactory;
-        this.productFactory = productFactory;
+    @Path(PRODUCT_PAYMENTS_RESOURCE_PATH)
+    @POST
+    @Produces(APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
+    @PermitAll
+    public Response createPaymentByProductExternalId(@PathParam("productExternalId") String productExternalId) {
+        logger.info("Create a payment for product id - [ {} ]", productExternalId);
+        Payment payment = paymentFactory.paymentCreator().doCreate(productExternalId);
+        return Response.status(CREATED).entity(payment).build();
     }
 
-    @Path(PAYMENTS_RESOURCE_GET_PAYMENTS)
+    @Path(PRODUCT_PAYMENTS_RESOURCE_PATH)
     @GET
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     @PermitAll
-    public Response findPaymentsByProductExternalId(@PathParam("productId") String productExternalId) {
-        logger.info("Find a list of payments with product id - [ {} ]", productExternalId);
+    public Response findPaymentsByProductExternalId(@PathParam("productExternalId") String productExternalId) {
+        logger.info("Find a list of payments for product id - [ {} ]", productExternalId);
         Optional<Integer> productMaybe = productFactory.productFinder().findProductIdByExternalId(productExternalId);
         return productMaybe
                 .map(product -> {

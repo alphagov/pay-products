@@ -13,7 +13,8 @@ public class Link {
 
     public enum Rel {
         self,
-        pay
+        pay,
+        next
     }
 
     private Rel rel;

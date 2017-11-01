@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.mockserver.junit.MockServerRule;
 import uk.gov.pay.products.client.RestClientFactory;
 import uk.gov.pay.products.config.RestClientConfiguration;
+import uk.gov.pay.products.exception.PublicApiResponseErrorException;
 import uk.gov.pay.products.stubs.publicapi.PublicApiStub;
 
 import javax.json.JsonObject;
@@ -40,10 +41,11 @@ public class PublicApiRestClientTest {
         long amount = 2000;
         String reference = "a-reference";
         String description = "A Service Description";
-        String returnUrl = "http://a.service.domain/a-reference";
+        String returnUrl = "http://return.url";
+        String nextUrl = "http://next.url";
 
         JsonObject expectedPaymentRequestPayload = PublicApiStub.createPaymentRequestPayload(amount, reference, description, returnUrl);
-        JsonObject paymentResponsePayload = PublicApiStub.createPaymentResponsePayload(paymentId, amount, reference, description, returnUrl);
+        JsonObject paymentResponsePayload = PublicApiStub.createPaymentResponsePayload(paymentId, amount, reference, description, returnUrl, nextUrl);
 
         publicApiStub
                 .whenReceiveCreatedPaymentRequestWithBody(expectedPaymentRequestPayload)
@@ -59,7 +61,7 @@ public class PublicApiRestClientTest {
         long amount = 2000;
         String reference = "a-reference";
         String description = "A Service Description";
-        String returnUrl = "http://a.service.domain/a-reference";
+        String returnUrl = "http://return.url";
 
         JsonObject expectedPaymentRequestPayload = PublicApiStub.createPaymentRequestPayload(amount, reference, description, returnUrl);
         JsonObject errorPayload = PublicApiStub.createErrorPayload();
@@ -87,9 +89,10 @@ public class PublicApiRestClientTest {
         String paymentId = "hu20sqlact5260q2nanm0q8u93";
         String reference = "a-reference";
         String description = "A Service Description";
-        String returnUrl = "http://a.service.domain/a-reference";
+        String returnUrl = "http://return.url";
+        String nextUrl = "http://next.url";
 
-        JsonObject paymentResponsePayload = PublicApiStub.createPaymentResponsePayload(paymentId, amount, reference, description, returnUrl);
+        JsonObject paymentResponsePayload = PublicApiStub.createPaymentResponsePayload(paymentId, amount, reference, description, returnUrl, nextUrl);
 
         publicApiStub
                 .whenReceiveGetPaymentRequest(paymentId)

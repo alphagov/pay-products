@@ -32,7 +32,7 @@ public class PublicApiStub {
                 .build();
     }
 
-    public static JsonObject createPaymentResponsePayload(String paymentId, long amount, String reference, String description, String returnUrl) {
+    public static JsonObject createPaymentResponsePayload(String paymentId, long amount, String reference, String description, String returnUrl, String nextUrl) {
         return Json.createObjectBuilder()
                 .add("amount", amount)
                 .add("state",
@@ -78,13 +78,13 @@ public class PublicApiStub {
                                                 .add("method", "GET"))
                                 .add("next_url",
                                         Json.createObjectBuilder()
-                                                .add("href", "https://an.example.link/from/payment/platform")
+                                                .add("href", nextUrl)
                                                 .add("method", "GET"))
                                 .add("next_url_post",
                                         Json.createObjectBuilder()
                                                 .add("type", "multipart/form-data")
                                                 .add("params", Json.createObjectBuilder())
-                                                .add("href", "https://an.example.link/from/payment/platform")
+                                                .add("href", nextUrl)
                                                 .add("method", "POST"))
                                 .add("events",
                                         Json.createObjectBuilder()

@@ -29,7 +29,7 @@ public class ProductsConfiguration extends Configuration {
     private String publicApiUrl;
 
     @NotNull
-    private String productsUiPayUrl;
+    private String productsUiUrl;
 
     private String productsApiToken;
     private String productsApiToken2;
@@ -70,8 +70,8 @@ public class ProductsConfiguration extends Configuration {
         return publicApiUrl;
     }
 
-    public String getProductsUiPayUrl() {
-        return productsUiPayUrl;
+    public String getProductsUiUrl() {
+        return productsUiUrl;
     }
 
     public String getProductsApiToken() {

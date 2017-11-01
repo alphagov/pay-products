@@ -10,29 +10,22 @@ import uk.gov.pay.products.service.ProductFactory;
 import uk.gov.pay.products.validations.ProductRequestValidator;
 
 import javax.annotation.security.PermitAll;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static javax.ws.rs.core.Response.Status.NO_CONTENT;
-import static javax.ws.rs.core.Response.Status.OK;
+import static javax.ws.rs.core.Response.Status.*;
 
 @Path("/")
 public class ProductResource {
     private static Logger logger = LoggerFactory.getLogger(ProductResource.class);
 
-    public static final String PRODUCTS_RESOURCE = "/v1/api/products";
-    private static final String PRODUCTS_RESOURCE_GET = PRODUCTS_RESOURCE + "/{productExternalId}";
-    private static final String PRODUCTS_RESOURCE_DISABLE = PRODUCTS_RESOURCE + "/{productExternalId}/disable";
+    private static final String API_VERSION_PATH = "v1";
+    public static final String PRODUCTS_RESOURCE_PATH = API_VERSION_PATH + "/api/products";
+    public static final String PRODUCT_RESOURCE_PATH = PRODUCTS_RESOURCE_PATH + "/{productExternalId}";
+    public static final String DISABLE_PRODUCT_RESOURCE_PATH = PRODUCTS_RESOURCE_PATH + "/{productExternalId}/disable";
 
     private final ProductRequestValidator requestValidator;
     private final ProductFactory productFactory;
@@ -45,7 +38,7 @@ public class ProductResource {
     }
 
     @POST
-    @Path(PRODUCTS_RESOURCE)
+    @Path(PRODUCTS_RESOURCE_PATH)
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     @PermitAll
@@ -61,7 +54,7 @@ public class ProductResource {
     }
 
     @GET
-    @Path(PRODUCTS_RESOURCE_GET)
+    @Path(PRODUCT_RESOURCE_PATH)
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     @PermitAll
@@ -75,7 +68,7 @@ public class ProductResource {
     }
 
     @PATCH
-    @Path(PRODUCTS_RESOURCE_DISABLE)
+    @Path(DISABLE_PRODUCT_RESOURCE_PATH)
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     @PermitAll
@@ -87,7 +80,7 @@ public class ProductResource {
     }
 
     @GET
-    @Path(PRODUCTS_RESOURCE)
+    @Path(PRODUCTS_RESOURCE_PATH)
     @Produces(APPLICATION_JSON)
     @PermitAll
     public Response findProducts(@QueryParam("gatewayAccountId") Integer gatewayAccountId) {

@@ -5,7 +5,13 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import uk.gov.pay.products.client.publicapi.PaymentResponse;
-import uk.gov.pay.products.client.publicapi.model.*;
+import uk.gov.pay.products.client.publicapi.model.Address;
+import uk.gov.pay.products.client.publicapi.model.CardDetails;
+import uk.gov.pay.products.client.publicapi.model.Link;
+import uk.gov.pay.products.client.publicapi.model.Links;
+import uk.gov.pay.products.client.publicapi.model.PaymentState;
+import uk.gov.pay.products.client.publicapi.model.RefundSummary;
+import uk.gov.pay.products.client.publicapi.model.SettlementSummary;
 
 import javax.json.JsonObject;
 

@@ -9,7 +9,7 @@ import java.net.URI;
 import static javax.ws.rs.HttpMethod.GET;
 import static javax.ws.rs.HttpMethod.POST;
 import static javax.ws.rs.core.UriBuilder.fromUri;
-import static uk.gov.pay.products.resources.PaymentResource.*;
+import static uk.gov.pay.products.resources.PaymentResource.PAYMENTS_RESOURCE_PATH;
 import static uk.gov.pay.products.resources.ProductResource.PRODUCTS_RESOURCE_PATH;
 
 public class LinksDecorator {

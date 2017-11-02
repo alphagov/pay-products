@@ -2,14 +2,12 @@ package uk.gov.pay.products.persistence.dao;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductStatus;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class ProductDao extends JpaDao<ProductEntity> {
 

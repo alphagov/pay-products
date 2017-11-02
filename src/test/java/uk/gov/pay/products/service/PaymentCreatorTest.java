@@ -7,12 +7,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.products.client.publicapi.PaymentRequest;
 import uk.gov.pay.products.client.publicapi.PaymentResponse;
-import uk.gov.pay.products.exception.PaymentCreationException;
-import uk.gov.pay.products.exception.PaymentCreatorNotFoundException;
-import uk.gov.pay.products.exception.PublicApiResponseErrorException;
 import uk.gov.pay.products.client.publicapi.PublicApiRestClient;
 import uk.gov.pay.products.client.publicapi.model.Link;
 import uk.gov.pay.products.client.publicapi.model.Links;
+import uk.gov.pay.products.exception.PaymentCreationException;
+import uk.gov.pay.products.exception.PaymentCreatorNotFoundException;
+import uk.gov.pay.products.exception.PublicApiResponseErrorException;
 import uk.gov.pay.products.matchers.PaymentEntityMatcher;
 import uk.gov.pay.products.matchers.PaymentRequestMatcher;
 import uk.gov.pay.products.model.Payment;
@@ -26,12 +26,14 @@ import uk.gov.pay.products.util.PaymentStatus;
 import java.util.Optional;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
-import static uk.gov.pay.products.util.PaymentStatus.*;
+import static uk.gov.pay.products.util.PaymentStatus.ERROR;
+import static uk.gov.pay.products.util.PaymentStatus.SUCCESS;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PaymentCreatorTest {

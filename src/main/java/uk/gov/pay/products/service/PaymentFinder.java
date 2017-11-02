@@ -4,11 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import uk.gov.pay.products.model.Payment;
 import uk.gov.pay.products.persistence.dao.PaymentDao;
-import uk.gov.pay.products.persistence.dao.ProductDao;
-import uk.gov.pay.products.persistence.entity.PaymentEntity;
-import uk.gov.pay.products.persistence.entity.ProductEntity;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

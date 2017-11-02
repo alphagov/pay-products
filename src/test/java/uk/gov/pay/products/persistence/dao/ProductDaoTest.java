@@ -3,7 +3,6 @@ package uk.gov.pay.products.persistence.dao;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
-import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductStatus;
 

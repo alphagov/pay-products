@@ -6,7 +6,10 @@ import javax.json.JsonObject;
 
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.eclipse.jetty.http.HttpStatus.*;
+import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
+import static org.eclipse.jetty.http.HttpStatus.CREATED_201;
+import static org.eclipse.jetty.http.HttpStatus.NOT_FOUND_404;
+import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.mockserver.model.HttpResponse.response;
 
 public class PublicApiStubExpectation {

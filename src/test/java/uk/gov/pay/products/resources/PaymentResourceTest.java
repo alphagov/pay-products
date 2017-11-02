@@ -1,6 +1,5 @@
 package uk.gov.pay.products.resources;
 
-import java.util.List;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,12 +12,14 @@ import uk.gov.pay.products.stubs.publicapi.PublicApiStub;
 
 import javax.json.JsonObject;
 import javax.ws.rs.HttpMethod;
-
+import java.util.List;
 import java.util.Map;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static java.lang.String.format;
-import static org.hamcrest.Matchers.*;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static org.junit.Assert.assertThat;

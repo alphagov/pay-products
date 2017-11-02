@@ -7,9 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.products.model.Payment;
 import uk.gov.pay.products.persistence.dao.PaymentDao;
-import uk.gov.pay.products.persistence.dao.ProductDao;
 import uk.gov.pay.products.persistence.entity.PaymentEntity;
-import uk.gov.pay.products.persistence.entity.ProductEntity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +16,6 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
-import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -26,9 +23,6 @@ public class PaymentFinderTest {
 
     @Mock
     private PaymentDao paymentDao;
-
-    @Mock
-    private ProductEntity mockProductEntity;
 
     private PaymentFinder paymentFinder;
     private LinksDecorator linksDecorator;

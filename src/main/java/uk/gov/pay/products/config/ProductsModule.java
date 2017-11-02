@@ -10,10 +10,10 @@ import io.dropwizard.setup.Environment;
 import uk.gov.pay.products.client.RestClientFactory;
 import uk.gov.pay.products.client.publicapi.PublicApiRestClient;
 import uk.gov.pay.products.service.LinksDecorator;
-import uk.gov.pay.products.service.PaymentFinder;
 import uk.gov.pay.products.service.PaymentFactory;
-import uk.gov.pay.products.service.ProductFinder;
+import uk.gov.pay.products.service.PaymentFinder;
 import uk.gov.pay.products.service.ProductFactory;
+import uk.gov.pay.products.service.ProductFinder;
 import uk.gov.pay.products.validations.ProductRequestValidator;
 import uk.gov.pay.products.validations.RequestValidations;
 

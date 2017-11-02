@@ -3,7 +3,12 @@ package uk.gov.pay.products.client.publicapi;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import uk.gov.pay.products.client.publicapi.model.*;
+import uk.gov.pay.products.client.publicapi.model.CardBrand;
+import uk.gov.pay.products.client.publicapi.model.CardDetails;
+import uk.gov.pay.products.client.publicapi.model.Links;
+import uk.gov.pay.products.client.publicapi.model.PaymentState;
+import uk.gov.pay.products.client.publicapi.model.RefundSummary;
+import uk.gov.pay.products.client.publicapi.model.SettlementSummary;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class PaymentResponse {

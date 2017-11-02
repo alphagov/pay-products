@@ -2,7 +2,6 @@ package uk.gov.pay.products.service.transaction;
 
 import com.google.inject.persist.Transactional;
 
-import javax.persistence.OptimisticLockException;
 import java.util.Objects;
 
 /**

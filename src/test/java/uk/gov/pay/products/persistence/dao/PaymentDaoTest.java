@@ -12,7 +12,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 public class PaymentDaoTest extends DaoTestBase {
@@ -86,7 +89,7 @@ public class PaymentDaoTest extends DaoTestBase {
                 .build();
         databaseHelper.addPayment(payment2.toPayment());
 
-        List<PaymentEntity> paymentEntities = paymentDao.findByProductId(productEntity.getId());
+        List<PaymentEntity> paymentEntities = paymentDao.findByProductExternalId(productEntity.getExternalId());
         assertFalse(paymentEntities.isEmpty());
         assertThat(paymentEntities.size(), is(2));
 

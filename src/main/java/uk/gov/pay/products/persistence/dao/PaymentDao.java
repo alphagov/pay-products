@@ -2,13 +2,11 @@ package uk.gov.pay.products.persistence.dao;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import uk.gov.pay.products.model.Payment;
 import uk.gov.pay.products.persistence.entity.PaymentEntity;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class PaymentDao extends JpaDao<PaymentEntity> {
 
@@ -27,13 +25,12 @@ public class PaymentDao extends JpaDao<PaymentEntity> {
                 .getResultList().stream().findFirst();
     }
 
-    public List<PaymentEntity> findByProductId(Integer productId){
-        String query = "SELECT payment FROM PaymentEntity payment " +
-                "WHERE payment.productEntity.id = :productId";
+    public List<PaymentEntity> findByProductExternalId(String productExternalId){
+        String query = "SELECT payment FROM PaymentEntity payment WHERE payment.product.externalId=:productExternalId";
 
         return entityManager.get()
                 .createQuery(query, PaymentEntity.class)
-                .setParameter("productId", productId)
+                .setParameter("productExternalId", productExternalId)
                 .getResultList();
     }
 }

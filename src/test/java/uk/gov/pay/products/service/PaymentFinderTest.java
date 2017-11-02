@@ -8,7 +8,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.products.model.Payment;
 import uk.gov.pay.products.persistence.dao.PaymentDao;
 import uk.gov.pay.products.persistence.entity.PaymentEntity;
-import uk.gov.pay.products.persistence.entity.ProductEntity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +16,6 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
-import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -59,22 +57,19 @@ public class PaymentFinderTest {
     }
 
     @Test
-    public void shouldReturnAList_whenFoundByProductId() throws Exception{
-        String externalId = randomUuid();
-        Integer productId = randomInt();
-        ProductEntity productEntity = new ProductEntity();
-        productEntity.setId(productId);
+    public void shouldReturnAList_whenFoundByProductExternalId() throws Exception{
+        String externalPaymentId = randomUuid();
+        String externalProductId = randomUuid();
         PaymentEntity paymentEntity = new PaymentEntity();
-        paymentEntity.setExternalId(externalId);
-        paymentEntity.setProductEntity(productEntity);
+        paymentEntity.setExternalId(externalPaymentId);
         List<PaymentEntity> paymentList = Arrays.asList(paymentEntity);
 
-        when(paymentDao.findByProductId(productId)).thenReturn(paymentList);
+       when(paymentDao.findByProductExternalId(externalProductId)).thenReturn(paymentList);
 
-        List<Payment> expectedPaymentList = paymentFinder.findByProductId(productId);
+        List<Payment> expectedPaymentList = paymentFinder.findByProductExternalId(externalProductId);
 
         assertThat(expectedPaymentList.isEmpty(), is(false));
-        assertThat(expectedPaymentList.get(0).getExternalId(), is(externalId));
+        assertThat(expectedPaymentList.get(0).getExternalId(), is(externalPaymentId));
         assertThat(expectedPaymentList.size(), is(1));
     }
 }

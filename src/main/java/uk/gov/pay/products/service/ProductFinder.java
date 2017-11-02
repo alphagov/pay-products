@@ -47,14 +47,4 @@ public class ProductFinder {
                 .map(product -> linksDecorator.decorate(product))
                 .collect(Collectors.toList());
     }
-
-    @Transactional
-    public Optional<Integer> findProductIdByExternalId(String externalId){
-        return productDao.findByExternalId(externalId)
-                .map(productEntity -> {
-                    Integer productId = productEntity.getId();
-                    return Optional.of(productId);
-                })
-                .orElseGet(Optional::empty);
-    }
 }

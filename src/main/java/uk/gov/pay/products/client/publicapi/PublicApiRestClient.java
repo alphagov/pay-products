@@ -14,6 +14,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.util.Optional;
 
 import static java.lang.String.format;
+import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 
 public class PublicApiRestClient {
     private static final Logger logger = LoggerFactory.getLogger(PublicApiRestClient.class);
@@ -31,12 +32,13 @@ public class PublicApiRestClient {
         this.publicApiUrl = publicApiUrl;
     }
 
-    public PaymentResponse createPayment(PaymentRequest paymentRequest) {
+    public PaymentResponse createPayment(String apiToken, PaymentRequest paymentRequest) {
         logger.info("Public API client requested creation of payment - [ {} ]", paymentRequest);
 
         Response response = client
                 .target(buildAbsoluteUrl(PAYMENTS_PATH))
                 .request()
+                .header(AUTHORIZATION, constructBearerToken(apiToken))
                 .post(Entity.entity(paymentRequest, MediaType.APPLICATION_JSON));
 
         if (response.getStatus() == HttpStatus.CREATED_201) {
@@ -50,12 +52,13 @@ public class PublicApiRestClient {
         throw publicApiResponseErrorException;
     }
 
-    public Optional<PaymentResponse> getPayment(String paymentId) {
+    public Optional<PaymentResponse> getPayment(String apiToken, String paymentId) {
         logger.info("Public API client requested finding payment - [ {} ]", paymentId);
 
         Response response = client
                 .target(buildAbsoluteUrl(format(PAYMENT_PATH, paymentId)))
                 .request()
+                .header(AUTHORIZATION, constructBearerToken(apiToken))
                 .get();
 
         if (response.getStatus() == HttpStatus.OK_200) {
@@ -79,6 +82,10 @@ public class PublicApiRestClient {
                 .fromPath(publicApiUrl)
                 .path(relativeUrl)
                 .toString();
+    }
+
+    private String constructBearerToken(String apiToken) {
+        return "Bearer " + apiToken;
     }
 
 }

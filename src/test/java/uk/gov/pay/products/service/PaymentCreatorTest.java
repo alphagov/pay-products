@@ -3,6 +3,7 @@ package uk.gov.pay.products.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.products.client.publicapi.PaymentRequest;
@@ -64,6 +65,7 @@ public class PaymentCreatorTest {
         long productPrice = 100L;
         String productDescription = "description";
         String productReturnUrl = "https://return.url";
+        String productApiToken = "api-token";
 
         String paymentId = "payment-id";
         Long paymentAmount = 50L;
@@ -74,7 +76,8 @@ public class PaymentCreatorTest {
                 productPrice,
                 productExternalId,
                 productDescription,
-                productReturnUrl);
+                productReturnUrl,
+                productApiToken);
         PaymentRequest expectedPaymentRequest = createPaymentRequest(
                 productPrice,
                 productExternalId,
@@ -87,7 +90,7 @@ public class PaymentCreatorTest {
 
 
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
-        when(publicApiRestClient.createPayment(argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest)))).thenReturn(paymentResponse);
+        when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest)))).thenReturn(paymentResponse);
 
         Payment payment = paymentCreator.doCreate(productExternalId);
 
@@ -122,13 +125,16 @@ public class PaymentCreatorTest {
         long productPrice = 100L;
         String productDescription = "description";
         String productReturnUrl = "https://return.url";
+        String productApiToken = "api-token";
+
 
         ProductEntity productEntity = createProductEntity(
                 productId,
                 productPrice,
                 productExternalId,
                 productDescription,
-                productReturnUrl);
+                productReturnUrl,
+                productApiToken);
         PaymentRequest expectedPaymentRequest = createPaymentRequest(
                 productPrice,
                 productExternalId,
@@ -136,7 +142,7 @@ public class PaymentCreatorTest {
                 productReturnUrl);
 
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
-        when(publicApiRestClient.createPayment(argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest))))
+        when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest))))
                 .thenThrow(PublicApiResponseErrorException.class);
 
         try {
@@ -170,13 +176,14 @@ public class PaymentCreatorTest {
     }
 
 
-    private ProductEntity createProductEntity(int id, long price, String externalId, String description, String returnUrl) {
+    private ProductEntity createProductEntity(int id, long price, String externalId, String description, String returnUrl, String apiToken) {
         ProductEntity productEntity = new ProductEntity();
         productEntity.setId(id);
         productEntity.setPrice(price);
         productEntity.setExternalId(externalId);
         productEntity.setDescription(description);
         productEntity.setReturnUrl(returnUrl);
+        productEntity.setPayApiToken(apiToken);
 
         return productEntity;
     }

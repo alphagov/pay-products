@@ -85,7 +85,7 @@ public class PaymentCreator {
                     productEntity.getReturnUrl());
 
             try {
-                PaymentResponse paymentResponse = publicApiRestClient.createPayment(paymentRequest);
+                PaymentResponse paymentResponse = publicApiRestClient.createPayment(productEntity.getPayApiToken(), paymentRequest);
 
                 paymentEntity.setGovukPaymentId(paymentResponse.getPaymentId());
                 paymentEntity.setNextUrl(getNextUrl(paymentResponse));

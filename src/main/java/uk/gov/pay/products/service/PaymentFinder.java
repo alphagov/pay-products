@@ -4,8 +4,11 @@ import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import uk.gov.pay.products.model.Payment;
 import uk.gov.pay.products.persistence.dao.PaymentDao;
+import uk.gov.pay.products.persistence.dao.ProductDao;
 import uk.gov.pay.products.persistence.entity.PaymentEntity;
+import uk.gov.pay.products.persistence.entity.ProductEntity;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,13 +31,11 @@ public class PaymentFinder {
     }
 
     @Transactional
-    public List<Payment> findByProductId(Integer productId){
-        return paymentDao.findByProductId(productId)
-                .stream()
-                .map(PaymentEntity::toPayment)
-                .collect(Collectors.toList())
-                .stream()
-                .map(payment -> linksDecorator.decorate(payment))
-                .collect(Collectors.toList());
-    }
+    public List<Payment> findByProductExternalId(String productExternalId){
+            List<Payment> payments = paymentDao.findByProductExternalId(productExternalId)
+                    .stream()
+                    .map(paymentEntity -> linksDecorator.decorate(paymentEntity.toPayment()))
+                    .collect(Collectors.toList());
+            return payments;
+        }
 }

@@ -68,14 +68,7 @@ public class PaymentResource {
     @PermitAll
     public Response findPaymentsByProductExternalId(@PathParam("productExternalId") String productExternalId) {
         logger.info("Find a list of payments for product id - [ {} ]", productExternalId);
-        Optional<Integer> productMaybe = productFactory.productFinder().findProductIdByExternalId(productExternalId);
-        return productMaybe
-                .map(product -> {
-                    List<Payment> payments = paymentFactory.paymentFinder().findByProductId(product);
-                    return payments.size() > 0
-                            ? Response.status(OK).entity(payments).build()
-                            : Response.status(NOT_FOUND).build();
-                })
-                .orElseGet(() -> Response.status(NOT_FOUND).build());
+        List<Payment> payments = paymentFactory.paymentFinder().findByProductExternalId(productExternalId);
+        return payments.size() > 0 ? Response.status(OK).entity(payments).build() : Response.status(NOT_FOUND).build();
     }
 }

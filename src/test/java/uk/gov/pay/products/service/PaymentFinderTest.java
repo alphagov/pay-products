@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.products.model.Payment;
 import uk.gov.pay.products.persistence.dao.PaymentDao;
+import uk.gov.pay.products.persistence.dao.ProductDao;
 import uk.gov.pay.products.persistence.entity.PaymentEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 
@@ -25,6 +26,9 @@ public class PaymentFinderTest {
 
     @Mock
     private PaymentDao paymentDao;
+
+    @Mock
+    private ProductEntity mockProductEntity;
 
     private PaymentFinder paymentFinder;
     private LinksDecorator linksDecorator;
@@ -59,22 +63,19 @@ public class PaymentFinderTest {
     }
 
     @Test
-    public void shouldReturnAList_whenFoundByProductId() throws Exception{
-        String externalId = randomUuid();
-        Integer productId = randomInt();
-        ProductEntity productEntity = new ProductEntity();
-        productEntity.setId(productId);
+    public void shouldReturnAList_whenFoundByProductExternalId() throws Exception{
+        String externalPaymentId = randomUuid();
+        String externalProductId = randomUuid();
         PaymentEntity paymentEntity = new PaymentEntity();
-        paymentEntity.setExternalId(externalId);
-        paymentEntity.setProductEntity(productEntity);
+        paymentEntity.setExternalId(externalPaymentId);
         List<PaymentEntity> paymentList = Arrays.asList(paymentEntity);
 
-        when(paymentDao.findByProductId(productId)).thenReturn(paymentList);
+       when(paymentDao.findByProductExternalId(externalProductId)).thenReturn(paymentList);
 
-        List<Payment> expectedPaymentList = paymentFinder.findByProductId(productId);
+        List<Payment> expectedPaymentList = paymentFinder.findByProductExternalId(externalProductId);
 
         assertThat(expectedPaymentList.isEmpty(), is(false));
-        assertThat(expectedPaymentList.get(0).getExternalId(), is(externalId));
+        assertThat(expectedPaymentList.get(0).getExternalId(), is(externalPaymentId));
         assertThat(expectedPaymentList.size(), is(1));
     }
 }

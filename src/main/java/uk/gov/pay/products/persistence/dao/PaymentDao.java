@@ -27,13 +27,12 @@ public class PaymentDao extends JpaDao<PaymentEntity> {
                 .getResultList().stream().findFirst();
     }
 
-    public List<PaymentEntity> findByProductId(Integer productId){
-        String query = "SELECT payment FROM PaymentEntity payment " +
-                "WHERE payment.productEntity.id = :productId";
+    public List<PaymentEntity> findByProductExternalId(String productExternalId){
+        String query = "SELECT payment FROM PaymentEntity payment WHERE payment.product.externalId=:productExternalId";
 
         return entityManager.get()
                 .createQuery(query, PaymentEntity.class)
-                .setParameter("productId", productId)
+                .setParameter("productExternalId", productExternalId)
                 .getResultList();
     }
 }

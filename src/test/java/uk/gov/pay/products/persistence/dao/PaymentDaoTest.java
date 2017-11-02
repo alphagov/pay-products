@@ -86,7 +86,7 @@ public class PaymentDaoTest extends DaoTestBase {
                 .build();
         databaseHelper.addPayment(payment2.toPayment());
 
-        List<PaymentEntity> paymentEntities = paymentDao.findByProductId(productEntity.getId());
+        List<PaymentEntity> paymentEntities = paymentDao.findByProductExternalId(productEntity.getExternalId());
         assertFalse(paymentEntities.isEmpty());
         assertThat(paymentEntities.size(), is(2));
 

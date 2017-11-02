@@ -37,7 +37,7 @@ public class PaymentEntity extends AbstractEntity {
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "product_id", updatable = false)
-    private ProductEntity productEntity;
+    private ProductEntity product;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
@@ -87,11 +87,11 @@ public class PaymentEntity extends AbstractEntity {
     }
 
     public ProductEntity getProductEntity() {
-        return productEntity;
+        return product;
     }
 
     public void setProductEntity(ProductEntity productEntity) {
-        this.productEntity = productEntity;
+        this.product = productEntity;
     }
 
     public PaymentStatus getStatus() { return status; }
@@ -104,9 +104,9 @@ public class PaymentEntity extends AbstractEntity {
                 this.getGovukPaymentId(),
                 this.getNextUrl(),
                 this.getAmount(),
-                this.productEntity != null ? this.productEntity.getExternalId() : null,
+                this.product != null ? this.product.getExternalId() : null,
                 this.status,
-                this.productEntity != null ? this.productEntity.getId() : null
+                this.product != null ? this.product.getId() : null
         );
     }
 
@@ -118,7 +118,7 @@ public class PaymentEntity extends AbstractEntity {
                 ", nextUrl='" + nextUrl + '\'' +
                 ", amount=" + amount +
                 ", dateCreated=" + dateCreated +
-                ", productEntity=" + productEntity +
+                ", productEntity=" + product +
                 ", status=" + status +
                 '}';
     }

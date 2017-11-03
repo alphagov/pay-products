@@ -55,13 +55,13 @@ public class PaymentResourceTest extends IntegrationTest {
         JsonObject expectedPaymentRequestPayload = PublicApiStub.createPaymentRequestPayload(
                 product.getPrice(),
                 product.getExternalId(),
-                product.getDescription(),
+                product.getName(),
                 product.getReturnUrl());
         JsonObject paymentResponsePayload = PublicApiStub.createPaymentResponsePayload(
                 govukPaymentId,
                 product.getPrice(),
                 product.getExternalId(),
-                product.getDescription(),
+                product.getName(),
                 product.getReturnUrl(),
                 nextUrl);
         publicApiStub

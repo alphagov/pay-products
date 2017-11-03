@@ -81,7 +81,7 @@ public class PaymentCreator {
             PaymentRequest paymentRequest = new PaymentRequest(
                     productEntity.getPrice(),
                     productEntity.getExternalId(),
-                    productEntity.getDescription(),
+                    productEntity.getName(),
                     productEntity.getReturnUrl());
 
             try {

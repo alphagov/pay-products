@@ -63,7 +63,7 @@ public class PaymentCreatorTest {
         int productId = 1;
         String productExternalId = "product-external-id";
         long productPrice = 100L;
-        String productDescription = "description";
+        String productName = "name";
         String productReturnUrl = "https://return.url";
         String productApiToken = "api-token";
 
@@ -75,13 +75,13 @@ public class PaymentCreatorTest {
                 productId,
                 productPrice,
                 productExternalId,
-                productDescription,
+                productName,
                 productReturnUrl,
                 productApiToken);
         PaymentRequest expectedPaymentRequest = createPaymentRequest(
                 productPrice,
                 productExternalId,
-                productDescription,
+                productName,
                 productReturnUrl);
         PaymentResponse paymentResponse = createPaymentResponse(
                 paymentId,
@@ -123,7 +123,7 @@ public class PaymentCreatorTest {
         int productId = 1;
         String productExternalId = "product-external-id";
         long productPrice = 100L;
-        String productDescription = "description";
+        String productName = "name";
         String productReturnUrl = "https://return.url";
         String productApiToken = "api-token";
 
@@ -132,13 +132,13 @@ public class PaymentCreatorTest {
                 productId,
                 productPrice,
                 productExternalId,
-                productDescription,
+                productName,
                 productReturnUrl,
                 productApiToken);
         PaymentRequest expectedPaymentRequest = createPaymentRequest(
                 productPrice,
                 productExternalId,
-                productDescription,
+                productName,
                 productReturnUrl);
 
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
@@ -176,12 +176,12 @@ public class PaymentCreatorTest {
     }
 
 
-    private ProductEntity createProductEntity(int id, long price, String externalId, String description, String returnUrl, String apiToken) {
+    private ProductEntity createProductEntity(int id, long price, String externalId, String name, String returnUrl, String apiToken) {
         ProductEntity productEntity = new ProductEntity();
         productEntity.setId(id);
         productEntity.setPrice(price);
         productEntity.setExternalId(externalId);
-        productEntity.setDescription(description);
+        productEntity.setName(name);
         productEntity.setReturnUrl(returnUrl);
         productEntity.setPayApiToken(apiToken);
 

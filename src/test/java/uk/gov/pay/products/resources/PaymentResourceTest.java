@@ -65,7 +65,7 @@ public class PaymentResourceTest extends IntegrationTest {
                 product.getReturnUrl(),
                 nextUrl);
         publicApiStub
-                .whenReceiveCreatedPaymentRequestWithBody(expectedPaymentRequestPayload)
+                .whenReceiveCreatedPaymentRequestWithAuthApiTokenAndWithBody(product.getPayApiToken(), expectedPaymentRequestPayload)
                 .respondCreatedWithBody(paymentResponsePayload);
 
         ValidatableResponse response = givenAuthenticatedSetup()
@@ -143,7 +143,7 @@ public class PaymentResourceTest extends IntegrationTest {
         JsonObject errorPayload = PublicApiStub.createErrorPayload();
 
         publicApiStub
-                .whenReceiveCreatedPaymentRequestWithBody(expectedPaymentRequestPayload)
+                .whenReceiveCreatedPaymentRequestWithAuthApiTokenAndWithBody(product.getPayApiToken(), expectedPaymentRequestPayload)
                 .respondBadRequestWithBody(errorPayload);
 
         givenAuthenticatedSetup()

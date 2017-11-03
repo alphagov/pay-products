@@ -15,9 +15,7 @@ import java.util.Optional;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static uk.gov.pay.products.matchers.PaymentResponseMatcher.hasAllPaymentProperties;
 
@@ -45,43 +43,71 @@ public class PublicApiRestClientTest {
         String description = "A Service Description";
         String returnUrl = "http://return.url";
         String nextUrl = "http://next.url";
+        String apiToken = "api-token";
 
         JsonObject expectedPaymentRequestPayload = PublicApiStub.createPaymentRequestPayload(amount, reference, description, returnUrl);
         JsonObject paymentResponsePayload = PublicApiStub.createPaymentResponsePayload(paymentId, amount, reference, description, returnUrl, nextUrl);
 
         publicApiStub
-                .whenReceiveCreatedPaymentRequestWithBody(expectedPaymentRequestPayload)
+                .whenReceiveCreatedPaymentRequestWithAuthApiTokenAndWithBody(apiToken, expectedPaymentRequestPayload)
                 .respondCreatedWithBody(paymentResponsePayload);
 
         PaymentRequest paymentRequest = new PaymentRequest(amount, reference, description, returnUrl);
-        PaymentResponse actualPaymentResponse = publicApiRestClient.createPayment(paymentRequest);
+        PaymentResponse actualPaymentResponse = publicApiRestClient.createPayment(apiToken, paymentRequest);
         assertThat(actualPaymentResponse, hasAllPaymentProperties(paymentResponsePayload));
     }
 
     @Test
-    public void createPayment_shouldThrowAnException() throws PublicApiResponseErrorException {
+    public void createPayment_shouldThrowAnExceptionWhenBadRequest() throws PublicApiResponseErrorException {
         long amount = 2000;
         String reference = "a-reference";
         String description = "A Service Description";
         String returnUrl = "http://return.url";
+        String apiToken = "api-token";
 
         JsonObject expectedPaymentRequestPayload = PublicApiStub.createPaymentRequestPayload(amount, reference, description, returnUrl);
         JsonObject errorPayload = PublicApiStub.createErrorPayload();
 
         publicApiStub
-                .whenReceiveCreatedPaymentRequestWithBody(expectedPaymentRequestPayload)
+                .whenReceiveCreatedPaymentRequestWithAuthApiTokenAndWithBody(apiToken, expectedPaymentRequestPayload)
                 .respondBadRequestWithBody(errorPayload);
 
         PaymentRequest paymentRequest = new PaymentRequest(amount, reference, description, returnUrl);
 
 
         try {
-            publicApiRestClient.createPayment(paymentRequest);
+            publicApiRestClient.createPayment(apiToken, paymentRequest);
             fail("Expected an PublicApiResponseErrorException to be thrown");
         } catch (PublicApiResponseErrorException exception) {
             assertThat(exception.getErrorStatus(), is(400));
             assertThat(exception.getCode(), is(errorPayload.getString("code")));
             assertThat(exception.getDescription(), is(errorPayload.getString("description")));
+        }
+    }
+
+    @Test
+    public void createPayment_shouldThrowAnExceptionWhenUnauthorized() {
+        String paymentId = "hu20sqlact5260q2nanm0q8u93";
+        long amount = 2000;
+        String reference = "a-reference";
+        String description = "A Service Description";
+        String returnUrl = "http://return.url";
+        String nextUrl = "http://next.url";
+        String apiToken = "invalid-token";
+
+        JsonObject expectedPaymentRequestPayload = PublicApiStub.createPaymentRequestPayload(amount, reference, description, returnUrl);
+        PublicApiStub.createPaymentResponsePayload(paymentId, amount, reference, description, returnUrl, nextUrl);
+
+        publicApiStub
+                .whenReceiveCreatedPaymentRequestWithAuthApiTokenAndWithBody(apiToken, expectedPaymentRequestPayload)
+                .respondUnauthorized();
+
+        PaymentRequest paymentRequest = new PaymentRequest(amount, reference, description, returnUrl);
+        try {
+            publicApiRestClient.createPayment(apiToken, paymentRequest);
+            fail("Expected an PublicApiResponseErrorException to be thrown");
+        } catch (PublicApiResponseErrorException exception) {
+            assertThat(exception.getErrorStatus(), is(401));
         }
     }
 
@@ -93,6 +119,7 @@ public class PublicApiRestClientTest {
         String description = "A Service Description";
         String returnUrl = "http://return.url";
         String nextUrl = "http://next.url";
+        String apiToken = "api-token";
 
         JsonObject paymentResponsePayload = PublicApiStub.createPaymentResponsePayload(paymentId, amount, reference, description, returnUrl, nextUrl);
 
@@ -100,7 +127,7 @@ public class PublicApiRestClientTest {
                 .whenReceiveGetPaymentRequest(paymentId)
                 .respondOkWithBody(paymentResponsePayload);
 
-        Optional<PaymentResponse> actualPaymentResponse = publicApiRestClient.getPayment(paymentId);
+        Optional<PaymentResponse> actualPaymentResponse = publicApiRestClient.getPayment(apiToken, paymentId);
         assertTrue(actualPaymentResponse.isPresent());
         assertThat(actualPaymentResponse.get(), hasAllPaymentProperties(paymentResponsePayload));
     }
@@ -108,18 +135,20 @@ public class PublicApiRestClientTest {
     @Test
     public void findPayment_shouldNotFindAPayment() {
         String paymentId = "hu20sqlact5260q2nanm0q8u93";
+        String apiToken = "api-token";
 
         publicApiStub
                 .whenReceiveGetPaymentRequest(paymentId)
                 .respondNotFound();
 
-        Optional<PaymentResponse> actualPaymentResponse = publicApiRestClient.getPayment(paymentId);
+        Optional<PaymentResponse> actualPaymentResponse = publicApiRestClient.getPayment(apiToken, paymentId);
         assertFalse(actualPaymentResponse.isPresent());
     }
 
     @Test
     public void findPayment_shouldThrowAnException() {
         String paymentId = "hu20sqlact5260q2nanm0q8u93";
+        String apiToken = "api-token";
 
         JsonObject errorPayload = PublicApiStub.createErrorPayload();
 
@@ -128,7 +157,7 @@ public class PublicApiRestClientTest {
                 .respondBadRequestWithBody(errorPayload);
 
         try {
-            publicApiRestClient.getPayment(paymentId);
+            publicApiRestClient.getPayment(apiToken, paymentId);
             fail("Expected an PublicApiResponseErrorException to be thrown");
         } catch (PublicApiResponseErrorException exception) {
             assertThat(exception.getErrorStatus(), is(400));

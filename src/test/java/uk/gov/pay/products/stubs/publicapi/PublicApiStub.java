@@ -8,6 +8,7 @@ import javax.json.JsonObject;
 import static java.lang.String.format;
 import static javax.ws.rs.HttpMethod.GET;
 import static javax.ws.rs.HttpMethod.POST;
+import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.mockserver.model.HttpRequest.request;
@@ -110,10 +111,11 @@ public class PublicApiStub {
                 .build();
     }
 
-    public PublicApiStubExpectation whenReceiveCreatedPaymentRequestWithBody(JsonObject requestBody) {
+    public PublicApiStubExpectation whenReceiveCreatedPaymentRequestWithAuthApiTokenAndWithBody(String authApiToken, JsonObject requestBody) {
         return new PublicApiStubExpectation(mockClient.when(request()
                 .withMethod(POST)
                 .withPath(PAYMENTS_PATH)
+                .withHeader(AUTHORIZATION, "Bearer " + authApiToken)
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                 .withBody(requestBody.toString())));
     }

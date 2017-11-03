@@ -30,13 +30,15 @@ public class ProductResourceTest extends IntegrationTest {
     private static final String RETURN_URL = "return_url";
     private static final String GATEWAY_ACCOUNT_ID = "gateway_account_id";
 
+
     @Test
     public void shouldFail_whenSavingAProduct_withIncorrectAuthToken() throws Exception {
         ImmutableMap<String, ? extends Serializable> payload = ImmutableMap.of(
                 GATEWAY_ACCOUNT_ID, randomInt(),
                 PAY_API_TOKEN, randomUuid(),
                 NAME, "a-name",
-                PRICE, 1234);
+                PRICE, 1234,
+                RETURN_URL, "http://return.url");
 
         givenSetup()
                 .contentType(APPLICATION_JSON)
@@ -61,7 +63,8 @@ public class ProductResourceTest extends IntegrationTest {
                 GATEWAY_ACCOUNT_ID, gatewayAccountId,
                 PAY_API_TOKEN, payApiToken,
                 NAME, name,
-                PRICE, price);
+                PRICE, price,
+                RETURN_URL, "http://return.url");
 
         ValidatableResponse response = givenAuthenticatedSetup()
                 .contentType(APPLICATION_JSON)

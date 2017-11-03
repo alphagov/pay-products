@@ -13,6 +13,7 @@ public class ProductRequestValidator {
     private static final String FIELD_PAY_API_TOKEN = "pay_api_token";
     private static final String FIELD_NAME = "name";
     private static final String FIELD_PRICE = "price";
+    private static final String RETURN_URL = "return_url";
 
 
     @Inject
@@ -26,7 +27,8 @@ public class ProductRequestValidator {
                 FIELD_GATEWAY_ACCOUNT_ID,
                 FIELD_PAY_API_TOKEN,
                 FIELD_NAME,
-                FIELD_PRICE);
+                FIELD_PRICE,
+                RETURN_URL);
 
         return errors.map(Errors::from);
     }

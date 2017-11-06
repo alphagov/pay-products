@@ -24,7 +24,7 @@ public class ProductRequestValidatorTest {
     private static ProductRequestValidator productRequestValidator = new ProductRequestValidator(new RequestValidations());
 
     @Test
-    public void shouldPassWithAllFieldsPresent(){
+    public void shouldPass_whenAllFieldsPresent(){
         JsonNode payload = new ObjectMapper()
                 .valueToTree(ImmutableMap.of(
                         FIELD_GATEWAY_ACCOUNT_ID, 1,
@@ -39,7 +39,7 @@ public class ProductRequestValidatorTest {
     }
 
     @Test
-    public void shouldError_whenReturnUrlFieldIsMissing(){
+    public void shouldPass_whenReturnUrlFieldIsMissing(){
         JsonNode payload = new ObjectMapper()
                 .valueToTree(ImmutableMap.of(
                         FIELD_GATEWAY_ACCOUNT_ID, 1,
@@ -49,8 +49,7 @@ public class ProductRequestValidatorTest {
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
-        assertThat(errors.isPresent(), is(true));
-        assertThat(errors.get().getErrors().toString(), is("[Field [return_url] is required]"));
+        assertThat(errors.isPresent(), is(false));
     }
 
     @Test

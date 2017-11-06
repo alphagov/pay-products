@@ -27,11 +27,12 @@ public class ProductRequestValidator {
                 FIELD_GATEWAY_ACCOUNT_ID,
                 FIELD_PAY_API_TOKEN,
                 FIELD_NAME,
-                FIELD_PRICE,
-                FIELD_RETURN_URL);
+                FIELD_PRICE);
 
         if(!errors.isPresent()){
-            errors = requestValidations.checkIsUrl(payload, FIELD_RETURN_URL);
+            if(!requestValidations.checkIfExists(payload, FIELD_RETURN_URL).isPresent()) {
+                errors = requestValidations.checkIsUrl(payload, FIELD_RETURN_URL);
+            }
         }
 
         return errors.map(Errors::from);

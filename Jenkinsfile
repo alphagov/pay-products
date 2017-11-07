@@ -33,6 +33,11 @@ pipeline {
         }
       }
     }
+    stage('Test') {
+      steps {
+        runParameterisedEndToEnd("products", null, "end2end-products", false, false)
+      }
+    }
     stage('Docker Tag') {
       steps {
         script {

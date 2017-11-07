@@ -64,5 +64,5 @@ jerseyClientConfiguration:
 baseUrl: ${BASE_URL}
 publicApiUrl: ${PUBLICAPI_URL}
 productsUiPayUrl: ${PRODUCTSUI_PAY_URL}
-
+productsUiConfirmUrl: ${PRODUCTSUI_CONFIRMATION_URL}
 productsApiToken: ${PRODUCTS_API_TOKEN}

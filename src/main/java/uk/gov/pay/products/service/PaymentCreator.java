@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.client.publicapi.PaymentRequest;
 import uk.gov.pay.products.client.publicapi.PaymentResponse;
 import uk.gov.pay.products.client.publicapi.PublicApiRestClient;
+import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.exception.PaymentCreationException;
 import uk.gov.pay.products.exception.PaymentCreatorNotFoundException;
 import uk.gov.pay.products.exception.PublicApiResponseErrorException;
@@ -22,6 +23,8 @@ import uk.gov.pay.products.util.PaymentStatus;
 
 import javax.inject.Inject;
 
+import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 public class PaymentCreator {
@@ -33,16 +36,19 @@ public class PaymentCreator {
     private final PaymentDao paymentDao;
     private final PublicApiRestClient publicApiRestClient;
     private final LinksDecorator linksDecorator;
+    private final ProductsConfiguration productsConfiguration;
 
 
     @Inject
     public PaymentCreator(Provider<TransactionFlow> transactionFlowProvider, ProductDao productDao, PaymentDao paymentDao,
-                          PublicApiRestClient publicApiRestClient, LinksDecorator linksDecorator) {
+                          PublicApiRestClient publicApiRestClient, LinksDecorator linksDecorator,
+                          ProductsConfiguration productsConfiguration) {
         this.transactionFlowProvider = transactionFlowProvider;
         this.productDao = productDao;
         this.paymentDao = paymentDao;
         this.publicApiRestClient = publicApiRestClient;
         this.linksDecorator = linksDecorator;
+        this.productsConfiguration = productsConfiguration;
     }
 
     public Payment doCreate(String productExternalId) {
@@ -78,11 +84,16 @@ public class PaymentCreator {
         return context -> {
             PaymentEntity paymentEntity = context.get(PaymentEntity.class);
             ProductEntity productEntity = paymentEntity.getProductEntity();
+
+            String returnUrl = isBlank(productEntity.getReturnUrl())
+                    ? format("%s/%s", productsConfiguration.getProductsUiConfirmUrl(), paymentEntity.getExternalId())
+                    : productEntity.getReturnUrl();
+
             PaymentRequest paymentRequest = new PaymentRequest(
                     productEntity.getPrice(),
                     productEntity.getExternalId(),
                     productEntity.getName(),
-                    productEntity.getReturnUrl());
+                    returnUrl);
 
             try {
                 PaymentResponse paymentResponse = publicApiRestClient.createPayment(productEntity.getPayApiToken(), paymentRequest);

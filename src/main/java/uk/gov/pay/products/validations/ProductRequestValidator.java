@@ -13,7 +13,7 @@ public class ProductRequestValidator {
     private static final String FIELD_PAY_API_TOKEN = "pay_api_token";
     private static final String FIELD_NAME = "name";
     private static final String FIELD_PRICE = "price";
-    private static final String RETURN_URL = "return_url";
+    private static final String FIELD_RETURN_URL = "return_url";
 
 
     @Inject
@@ -27,8 +27,13 @@ public class ProductRequestValidator {
                 FIELD_GATEWAY_ACCOUNT_ID,
                 FIELD_PAY_API_TOKEN,
                 FIELD_NAME,
-                FIELD_PRICE,
-                RETURN_URL);
+                FIELD_PRICE);
+
+        if(!errors.isPresent()){
+            if(!requestValidations.checkIfExists(payload, FIELD_RETURN_URL).isPresent()) {
+                errors = requestValidations.checkIsUrl(payload, FIELD_RETURN_URL);
+            }
+        }
 
         return errors.map(Errors::from);
     }

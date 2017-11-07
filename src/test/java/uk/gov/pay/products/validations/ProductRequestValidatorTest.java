@@ -19,18 +19,19 @@ public class ProductRequestValidatorTest {
     private static final String FIELD_NAME = "name";
     private static final String FIELD_PRICE = "price";
     private static final String RETURN_URL = "return_url";
+    private static final String VALID_RETURN_URL = "https://valid.url";
 
     private static ProductRequestValidator productRequestValidator = new ProductRequestValidator(new RequestValidations());
 
     @Test
-    public void shouldPassWithAllFieldsPresent(){
+    public void shouldPass_whenAllFieldsPresent(){
         JsonNode payload = new ObjectMapper()
                 .valueToTree(ImmutableMap.of(
                         FIELD_GATEWAY_ACCOUNT_ID, 1,
                         FIELD_PAY_API_TOKEN, "api_token",
                         FIELD_NAME, "name",
                         FIELD_PRICE, 25.00,
-                        RETURN_URL, "return_url"));
+                        RETURN_URL, VALID_RETURN_URL));
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
@@ -38,7 +39,7 @@ public class ProductRequestValidatorTest {
     }
 
     @Test
-    public void shouldError_whenReturnUrlFieldIsMissing(){
+    public void shouldPass_whenReturnUrlFieldIsMissing(){
         JsonNode payload = new ObjectMapper()
                 .valueToTree(ImmutableMap.of(
                         FIELD_GATEWAY_ACCOUNT_ID, 1,
@@ -48,8 +49,7 @@ public class ProductRequestValidatorTest {
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
-        assertThat(errors.isPresent(), is(true));
-        assertThat(errors.get().getErrors().toString(), is("[Field [return_url] is required]"));
+        assertThat(errors.isPresent(), is(false));
     }
 
     @Test
@@ -59,7 +59,7 @@ public class ProductRequestValidatorTest {
                         FIELD_GATEWAY_ACCOUNT_ID, 1,
                         FIELD_PAY_API_TOKEN, "api_token",
                         FIELD_NAME, "name",
-                        RETURN_URL, "return_url"));
+                        RETURN_URL, VALID_RETURN_URL));
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
@@ -74,7 +74,7 @@ public class ProductRequestValidatorTest {
                         FIELD_GATEWAY_ACCOUNT_ID, 1,
                         FIELD_PAY_API_TOKEN, "api_token",
                         FIELD_PRICE, 25.00,
-                        RETURN_URL, "return_url"));
+                        RETURN_URL, VALID_RETURN_URL));
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
@@ -89,7 +89,7 @@ public class ProductRequestValidatorTest {
                         FIELD_GATEWAY_ACCOUNT_ID, 1,
                         FIELD_NAME, "name",
                         FIELD_PRICE, 25.00,
-                        RETURN_URL, "return_url"));
+                        RETURN_URL, VALID_RETURN_URL));
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
@@ -104,11 +104,27 @@ public class ProductRequestValidatorTest {
                         FIELD_PAY_API_TOKEN, "api_token",
                         FIELD_NAME, "name",
                         FIELD_PRICE, 25.00,
-                        RETURN_URL, "return_url"));
+                        RETURN_URL, VALID_RETURN_URL));
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().toString(), is("[Field [gateway_account_id] is required]"));
+    }
+
+    @Test
+    public void shouldError_whenReturnUrlIsInvalid(){
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(ImmutableMap.of(
+                        FIELD_GATEWAY_ACCOUNT_ID, 1,
+                        FIELD_PAY_API_TOKEN, "api_token",
+                        FIELD_NAME, "name",
+                        FIELD_PRICE, 25.00,
+                        RETURN_URL, "return_url"));
+
+        Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
+
+        assertThat(errors.isPresent(), is(true));
+        assertThat(errors.get().getErrors().toString(), is("[Field [return_url] must be a url]"));
     }
 }

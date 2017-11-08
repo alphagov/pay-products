@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.common.collect.ImmutableList;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -17,6 +19,10 @@ public class RequestValidations {
 
     public Optional<List<String>> checkIsNumeric(JsonNode payload, String... fieldNames) {
         return applyCheck(payload, isNotNumeric(), fieldNames, "Field [%s] must be a number");
+    }
+
+    public Optional<List<String>> checkIsUrl(JsonNode payload, String... fieldNames) {
+        return applyCheck(payload, isNotUrl(), fieldNames, "Field [%s] must be a https url");
     }
 
     public Optional<List<String>> checkIfExists(JsonNode payload, String... fieldNames) {
@@ -67,6 +73,21 @@ public class RequestValidations {
 
     public static Function<JsonNode, Boolean> isNotNumeric() {
         return jsonNode -> !isDigits(jsonNode.asText());
+    }
+
+    public static Function<JsonNode, Boolean> isNotUrl() {
+        return jsonNode -> {
+            if(jsonNode == null || isBlank(jsonNode.asText()) || !jsonNode.asText().startsWith("https")) {
+                return true;
+            }
+
+            try{
+                new URL(jsonNode.asText());
+            } catch (MalformedURLException e) {
+                return true;
+            }
+            return false;
+        };
     }
 
     public static Function<JsonNode, Boolean> isNotBoolean() {

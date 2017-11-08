@@ -32,7 +32,11 @@ public class ProductsConfiguration extends Configuration {
     private String productsUiPayUrl;
 
     private String productsApiToken;
+
     private String productsApiToken2;
+
+    @NotNull
+    private String productsUiConfirmUrl;
 
     public String getVcapServices() {
         String vcapServices = System.getenv("VCAP_SERVICES");
@@ -84,5 +88,8 @@ public class ProductsConfiguration extends Configuration {
 
     public RestClientConfiguration getRestClientConfiguration() {
         return restClientConfiguration;
+    }
+
+    public String getProductsUiConfirmUrl() { return productsUiConfirmUrl;
     }
 }

@@ -64,7 +64,7 @@ public class ProductResourceTest extends IntegrationTest {
                 PAY_API_TOKEN, payApiToken,
                 NAME, name,
                 PRICE, price,
-                RETURN_URL, "http://return.url");
+                RETURN_URL, "https://return.url");
 
         ValidatableResponse response = givenAuthenticatedSetup()
                 .contentType(APPLICATION_JSON)
@@ -104,7 +104,7 @@ public class ProductResourceTest extends IntegrationTest {
         String description = "Some test description";
         Integer gatewayAccountId = randomInt();
 
-        String returnUrl = "http://some.valid.url";
+        String returnUrl = "https://some.valid.url";
         ImmutableMap<Object, Object> payload = ImmutableMap.builder()
                 .put(GATEWAY_ACCOUNT_ID, gatewayAccountId)
                 .put(PAY_API_TOKEN, payApiToken)

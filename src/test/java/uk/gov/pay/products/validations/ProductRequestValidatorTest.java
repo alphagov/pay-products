@@ -124,7 +124,27 @@ public class ProductRequestValidatorTest {
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
+
+
         assertThat(errors.isPresent(), is(true));
-        assertThat(errors.get().getErrors().toString(), is("[Field [return_url] must be a url]"));
+        assertThat(errors.get().getErrors().toString(), is("[Field [return_url] must be a https url]"));
+    }
+
+    @Test
+    public void shouldError_whenReturnUrlIsNotHttps(){
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(ImmutableMap.of(
+                        FIELD_GATEWAY_ACCOUNT_ID, 1,
+                        FIELD_PAY_API_TOKEN, "api_token",
+                        FIELD_NAME, "name",
+                        FIELD_PRICE, 25.00,
+                        RETURN_URL, "http://return.url"));
+
+        Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
+
+
+
+        assertThat(errors.isPresent(), is(true));
+        assertThat(errors.get().getErrors().toString(), is("[Field [return_url] must be a https url]"));
     }
 }

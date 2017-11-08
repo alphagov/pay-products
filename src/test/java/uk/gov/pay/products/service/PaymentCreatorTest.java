@@ -63,7 +63,6 @@ public class PaymentCreatorTest {
     public void setup() throws Exception {
         LinksDecorator linksDecorator = new LinksDecorator(PRODUCT_URL, PRODUCT_UI_URL);
         paymentCreator = new PaymentCreator(TransactionFlow::new, productDao, paymentDao, publicApiRestClient, linksDecorator, productsConfiguration);
-        PowerMockito.mockStatic(RandomIdGenerator.class);
     }
 
     @Test
@@ -76,7 +75,6 @@ public class PaymentCreatorTest {
         String productApiToken = "api-token";
 
         String paymentId = "payment-id";
-        String paymentExternalId = "random-external-id";
         Long paymentAmount = 50L;
         String paymentNextUrl = "http://next.url";
 
@@ -100,7 +98,6 @@ public class PaymentCreatorTest {
 
 
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
-        when(RandomIdGenerator.randomUuid()).thenReturn(paymentExternalId);
         when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest)))).thenReturn(paymentResponse);
 
         Payment payment = paymentCreator.doCreate(productExternalId);
@@ -131,6 +128,8 @@ public class PaymentCreatorTest {
 
     @Test
     public void shouldCreateASuccessfulPayment_whenReturnUrlIsNotPresent() throws Exception {
+        PowerMockito.mockStatic(RandomIdGenerator.class);
+
         int productId = 1;
         String productExternalId = "product-external-id";
         long productPrice = 100L;
@@ -217,7 +216,6 @@ public class PaymentCreatorTest {
                 productReturnUrl);
 
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
-        when(RandomIdGenerator.randomUuid()).thenReturn(productExternalId);
         when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest))))
                 .thenThrow(PublicApiResponseErrorException.class);
 
@@ -239,7 +237,6 @@ public class PaymentCreatorTest {
     @Test
     public void shouldThrowPaymentCreatorNotFoundException_whenProductIsNotFound() throws Exception {
         String productExternalId = "product-external-id";
-        when(RandomIdGenerator.randomUuid()).thenReturn(productExternalId);
 
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.empty());
 

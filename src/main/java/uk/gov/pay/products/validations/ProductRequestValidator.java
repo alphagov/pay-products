@@ -30,7 +30,7 @@ public class ProductRequestValidator {
                 FIELD_PRICE);
 
         if(!errors.isPresent()){
-            if(!requestValidations.checkIfExists(payload, FIELD_RETURN_URL).isPresent()) {
+            if( payload.get(FIELD_RETURN_URL)!= null ) {
                 errors = requestValidations.checkIsUrl(payload, FIELD_RETURN_URL);
             }
         }

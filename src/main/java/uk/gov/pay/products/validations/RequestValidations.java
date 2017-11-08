@@ -22,7 +22,7 @@ public class RequestValidations {
     }
 
     public Optional<List<String>> checkIsUrl(JsonNode payload, String... fieldNames) {
-        return applyCheck(payload, isNotUrl(), fieldNames, "Field [%s] must be a url");
+        return applyCheck(payload, isNotUrl(), fieldNames, "Field [%s] must be a https url");
     }
 
     public Optional<List<String>> checkIfExists(JsonNode payload, String... fieldNames) {
@@ -77,6 +77,10 @@ public class RequestValidations {
 
     public static Function<JsonNode, Boolean> isNotUrl() {
         return jsonNode -> {
+            if(jsonNode == null || isBlank(jsonNode.asText()) || !jsonNode.asText().startsWith("https")) {
+                return true;
+            }
+
             try{
                 new URL(jsonNode.asText());
             } catch (MalformedURLException e) {

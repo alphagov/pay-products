@@ -21,6 +21,7 @@ public class Payment {
     private static final String FIELD_LINKS = "_links";
     private static final String FIELD_STATUS = "status";
     private static final String FIELD_AMOUNT = "amount";
+    private static final String FIELD_GOVUK_STATUS = "govuk_status";
 
     private String externalId;
     private String govukPaymentId;
@@ -31,6 +32,8 @@ public class Payment {
     @JsonIgnore
     private Integer productId;
     private Long amount;
+    @JsonProperty(FIELD_GOVUK_STATUS)
+    private String govUkStatus;
 
     private PaymentStatus status;
 
@@ -90,5 +93,13 @@ public class Payment {
 
     public void setAmount(Long amount) {
         this.amount = amount;
+    }
+
+    public String getGovUkStatus(){
+        return govUkStatus;
+    }
+
+    public void setGovukStatus(String status){
+        this.govUkStatus = status;
     }
 }

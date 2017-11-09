@@ -6,6 +6,6 @@ package uk.gov.pay.products.util;
 
 public enum PaymentStatus {
     CREATED,
-    SUCCESS,
+    SUBMITTED,
     ERROR
 }

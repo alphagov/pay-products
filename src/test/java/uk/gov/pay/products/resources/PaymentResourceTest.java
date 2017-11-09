@@ -85,7 +85,7 @@ public class PaymentResourceTest extends IntegrationTest {
         assertThat(paymentRecords.get(0), hasEntry("govuk_payment_id", govukPaymentId));
         assertThat(paymentRecords.get(0), hasKey("product_id"));
         assertThat(paymentRecords.get(0), hasEntry("next_url", nextUrl));
-        assertThat(paymentRecords.get(0), hasEntry("status", "SUCCESS"));
+        assertThat(paymentRecords.get(0), hasEntry("status", "SUBMITTED"));
         assertThat(paymentRecords.get(0), hasEntry("amount", product.getPrice()));
         assertThat(paymentRecords.get(0), hasKey("date_created"));
 
@@ -93,7 +93,7 @@ public class PaymentResourceTest extends IntegrationTest {
                 .body("external_id", is(paymentExternalId))
                 .body("govuk_payment_id", is(govukPaymentId))
                 .body("product_external_id", is(product.getExternalId()))
-                .body("status", is("SUCCESS"))
+                .body("status", is("SUBMITTED"))
                 .body("amount", is(product.getPrice().intValue()))
                 .body("_links", hasSize(2))
                 .body("_links[0].href", matchesPattern(paymentsUrl + paymentExternalId))

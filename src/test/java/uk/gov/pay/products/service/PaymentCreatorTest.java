@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import static uk.gov.pay.products.util.PaymentStatus.ERROR;
-import static uk.gov.pay.products.util.PaymentStatus.SUCCESS;
+import static uk.gov.pay.products.util.PaymentStatus.SUBMITTED;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(RandomIdGenerator.class)
@@ -115,13 +115,13 @@ public class PaymentCreatorTest {
         assertThat(payment.getLinks().get(1).getHref(), is(paymentResponse.getLinks().getNextUrl().getHref()));
         assertThat(payment.getProductId(), is(productEntity.getId()));
         assertThat(payment.getProductExternalId(), is(productEntity.getExternalId()));
-        assertThat(payment.getStatus(), is(SUCCESS));
+        assertThat(payment.getStatus(), is(SUBMITTED));
 
         PaymentEntity expectedPaymentEntity = createPaymentEntity(
                 paymentId,
                 paymentNextUrl,
                 productEntity,
-                SUCCESS,
+                SUBMITTED,
                 paymentAmount);
         verify(paymentDao).merge(argThat(PaymentEntityMatcher.isSame(expectedPaymentEntity)));
     }
@@ -181,13 +181,13 @@ public class PaymentCreatorTest {
         assertThat(payment.getLinks().get(1).getHref(), is(paymentResponse.getLinks().getNextUrl().getHref()));
         assertThat(payment.getProductId(), is(productEntity.getId()));
         assertThat(payment.getProductExternalId(), is(productEntity.getExternalId()));
-        assertThat(payment.getStatus(), is(SUCCESS));
+        assertThat(payment.getStatus(), is(SUBMITTED));
 
         PaymentEntity expectedPaymentEntity = createPaymentEntity(
                 paymentId,
                 paymentNextUrl,
                 productEntity,
-                SUCCESS,
+                SUBMITTED,
                 paymentAmount);
         verify(paymentDao).merge(argThat(PaymentEntityMatcher.isSame(expectedPaymentEntity)));
     }

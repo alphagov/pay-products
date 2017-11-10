@@ -34,6 +34,7 @@ public class ProductsModule extends AbstractModule {
     protected void configure() {
         final Client client = RestClientFactory.buildClient(configuration.getRestClientConfiguration());
 
+        bind(ProductsConfiguration.class).toInstance(configuration);
         bind(DataSourceFactory.class).toInstance(configuration.getDataSourceFactory());
         bind(MetricRegistry.class).toInstance(environment.metrics());
         bind(Environment.class).toInstance(environment);

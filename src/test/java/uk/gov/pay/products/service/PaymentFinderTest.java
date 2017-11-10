@@ -15,6 +15,7 @@ import uk.gov.pay.products.persistence.entity.PaymentEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.PaymentStatus;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -68,19 +69,55 @@ public class PaymentFinderTest {
 
     @Test
     public void shouldReturnAList_whenFoundByProductExternalId() throws Exception{
-        String externalPaymentId = randomUuid();
-        String externalProductId = randomUuid();
-        PaymentEntity paymentEntity = new PaymentEntity();
-        paymentEntity.setExternalId(externalPaymentId);
-        List<PaymentEntity> paymentList = Arrays.asList(paymentEntity);
+        String productExternalId = randomUuid();
+        String paymentExternalId_1 = randomUuid();
+        String paymentExternalId_2 = randomUuid();
+        PaymentEntity paymentEntity_1 = new PaymentEntity();
+        PaymentEntity paymentEntity_2 = new PaymentEntity();
+        ProductEntity productEntity = ProductEntityFixture.aProductEntity().build();
 
-        when(paymentDao.findByProductExternalId(externalProductId)).thenReturn(paymentList);
+        paymentEntity_1.setExternalId(paymentExternalId_1);
+        paymentEntity_1.setProductEntity(productEntity);
+        paymentEntity_1.setStatus(PaymentStatus.SUBMITTED);
+        paymentEntity_1.setGovukPaymentId(randomUuid());
 
-        List<Payment> expectedPaymentList = paymentFinder.findByProductExternalId(externalProductId);
+        paymentEntity_2.setExternalId(paymentExternalId_2);
+        paymentEntity_2.setProductEntity(productEntity);
+        paymentEntity_2.setStatus(PaymentStatus.CREATED);
+        paymentEntity_2.setGovukPaymentId(randomUuid());
+
+        List<PaymentEntity> paymentList = Arrays.asList(paymentEntity_1, paymentEntity_2);
+
+        PaymentResponse paymentResponse = new PaymentResponse();
+        paymentResponse.setState(new PaymentState("success", true, "a message", "a code"));
+
+        when(paymentDao.findByProductExternalId(productExternalId)).thenReturn(paymentList);
+        when(publicApiRestClient.getPayment(productEntity.getPayApiToken(), paymentEntity_1.getGovukPaymentId()))
+                .thenReturn(Optional.of(paymentResponse));
+
+        List<Payment> expectedPaymentList = paymentFinder.findByProductExternalId(productExternalId);
 
         assertThat(expectedPaymentList.isEmpty(), is(false));
-        assertThat(expectedPaymentList.get(0).getExternalId(), is(externalPaymentId));
-        assertThat(expectedPaymentList.size(), is(1));
+        assertThat(expectedPaymentList.size(), is(2));
+
+        Optional<Payment> payment_1 = expectedPaymentList.stream().filter(payment -> payment.getExternalId().equals(paymentExternalId_1)).findFirst();
+        assertThat(payment_1.isPresent(), is(true));
+        assertThat(payment_1.get().getGovUkStatus(), is("success"));
+
+        Optional<Payment> payment_2 = expectedPaymentList.stream().filter(payment -> payment.getExternalId().equals(paymentExternalId_2)).findFirst();
+        assertThat(payment_2.isPresent(), is(true));
+        assertThat(payment_2.get().getGovUkStatus(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldReturnAnEmptyList_whenThereQueriedByProductExternalIdAndThereAreNoCorrespondingPayments() throws Exception {
+        String productExternalId = randomUuid();
+        List<PaymentEntity> paymentList = new ArrayList<>();
+        when(paymentDao.findByProductExternalId(productExternalId)).thenReturn(paymentList);
+
+        List<Payment> expectedPaymentList = paymentFinder.findByProductExternalId(productExternalId);
+
+        assertThat(expectedPaymentList.isEmpty(), is(true));
     }
 
     @Test

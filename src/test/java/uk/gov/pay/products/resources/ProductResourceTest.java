@@ -296,17 +296,19 @@ public class ProductResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void givenNonExistingGatewayAccountId_shouldReturn404() throws Exception {
+    public void givenNonExistingGatewayAccountId_shouldNoProduct() throws Exception {
+        int unknownGatewayAccountId = randomInt();
         givenAuthenticatedSetup()
                 .when()
                 .accept(APPLICATION_JSON)
-                .get(format("/v1/api/products?gatewayAccountId=%s", randomUuid()))
+                .get(format("/v1/api/products?gatewayAccountId=%s", unknownGatewayAccountId))
                 .then()
-                .statusCode(404);
+                .statusCode(200)
+                .body("", hasSize(0));
     }
 
     @Test
-    public void givenAnExistingGatewayAccountId_whenProductIsAlreadyDisabled_thenShouldReturn404() throws Exception {
+    public void givenAnExistingGatewayAccountId_whenProductIsAlreadyDisabled_thenShouldNoProduct() throws Exception {
         int gatewayAccountId = randomInt();
 
         Product product = ProductEntityFixture.aProductEntity()
@@ -322,6 +324,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .accept(APPLICATION_JSON)
                 .get(format("/v1/api/products?gatewayAccountId=%s", gatewayAccountId))
                 .then()
-                .statusCode(404);
+                .statusCode(200)
+                .body("", hasSize(0));
     }
 }

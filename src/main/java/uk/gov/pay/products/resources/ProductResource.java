@@ -94,6 +94,6 @@ public class ProductResource {
     public Response findProducts(@QueryParam("gatewayAccountId") Integer gatewayAccountId) {
         logger.info("Searching for products with gatewayAccountId - [ {} ]", gatewayAccountId);
         List<Product> products = productFactory.productFinder().findByGatewayAccountId(gatewayAccountId);
-        return products.size() > 0 ? Response.status(OK).entity(products).build() : Response.status(NOT_FOUND).build();
+        return Response.status(OK).entity(products).build();
     }
 }

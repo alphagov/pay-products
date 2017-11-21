@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static uk.gov.pay.products.validations.RequestValidations.MAX_PRICE;
 
 public class ProductRequestValidatorTest {
 
@@ -53,6 +54,20 @@ public class ProductRequestValidatorTest {
     }
 
     @Test
+    public void shouldPass_whenPriceIsBelowMaxPrice(){
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(ImmutableMap.of(
+                        FIELD_GATEWAY_ACCOUNT_ID, 1,
+                        FIELD_PAY_API_TOKEN, "api_token",
+                        FIELD_NAME, "name",
+                        FIELD_PRICE, MAX_PRICE - 1L));
+
+        Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
+
+        assertThat(errors.isPresent(), is(false));
+    }
+
+    @Test
     public void shouldError_whenPriceFieldIsMissing(){
         JsonNode payload = new ObjectMapper()
                 .valueToTree(ImmutableMap.of(
@@ -65,6 +80,38 @@ public class ProductRequestValidatorTest {
 
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().toString(), is("[Field [price] is required]"));
+    }
+
+    @Test
+    public void shouldError_whenPriceFieldEqualsMaxPrice(){
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(ImmutableMap.of(
+                        FIELD_GATEWAY_ACCOUNT_ID, 1,
+                        FIELD_PAY_API_TOKEN, "api_token",
+                        FIELD_NAME, "name",
+                        RETURN_URL, VALID_RETURN_URL,
+                        FIELD_PRICE, MAX_PRICE));
+
+        Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
+
+        assertThat(errors.isPresent(), is(true));
+        assertThat(errors.get().getErrors().toString(), is("[Field [price] must be a number below " + MAX_PRICE + "]"));
+    }
+
+    @Test
+    public void shouldError_whenPriceFieldExceedsMaxPrice(){
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(ImmutableMap.of(
+                        FIELD_GATEWAY_ACCOUNT_ID, 1,
+                        FIELD_PAY_API_TOKEN, "api_token",
+                        FIELD_NAME, "name",
+                        RETURN_URL, VALID_RETURN_URL,
+                        FIELD_PRICE, MAX_PRICE + 1));
+
+        Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
+
+        assertThat(errors.isPresent(), is(true));
+        assertThat(errors.get().getErrors().toString(), is("[Field [price] must be a number below " + MAX_PRICE + "]"));
     }
 
     @Test

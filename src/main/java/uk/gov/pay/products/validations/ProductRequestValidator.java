@@ -16,6 +16,7 @@ public class ProductRequestValidator {
     private static final String FIELD_RETURN_URL = "return_url";
 
 
+
     @Inject
     public ProductRequestValidator(RequestValidations requestValidations) {
         this.requestValidations = requestValidations;
@@ -29,10 +30,12 @@ public class ProductRequestValidator {
                 FIELD_NAME,
                 FIELD_PRICE);
 
-        if(!errors.isPresent()){
-            if( payload.get(FIELD_RETURN_URL)!= null ) {
-                errors = requestValidations.checkIsUrl(payload, FIELD_RETURN_URL);
-            }
+        if (!errors.isPresent() && payload.get(FIELD_RETURN_URL)!= null){
+            errors = requestValidations.checkIsUrl(payload, FIELD_RETURN_URL);
+        }
+
+        if (!errors.isPresent() && payload.get(FIELD_PRICE) != null) {
+            errors = requestValidations.checkIsBelowMaxAmount(payload, FIELD_PRICE);
         }
 
         return errors.map(Errors::from);

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.common.collect.ImmutableList;
 
+import javax.json.Json;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -16,6 +18,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.math.NumberUtils.isDigits;
 
 public class RequestValidations {
+
+    protected static final Long MAX_PRICE = 10000000L;
 
     public Optional<List<String>> checkIsNumeric(JsonNode payload, String... fieldNames) {
         return applyCheck(payload, isNotNumeric(), fieldNames, "Field [%s] must be a number");
@@ -75,6 +79,10 @@ public class RequestValidations {
         return jsonNode -> !isDigits(jsonNode.asText());
     }
 
+    public static Function<JsonNode, Boolean> isBelowMax() {
+        return jsonNode -> isDigits(jsonNode.asText()) && jsonNode.asLong() >= MAX_PRICE;
+    }
+
     public static Function<JsonNode, Boolean> isNotUrl() {
         return jsonNode -> {
             if(jsonNode == null || isBlank(jsonNode.asText()) || !jsonNode.asText().startsWith("https")) {
@@ -92,5 +100,9 @@ public class RequestValidations {
 
     public static Function<JsonNode, Boolean> isNotBoolean() {
         return jsonNode -> !ImmutableList.of("true", "false").contains(jsonNode.asText().toLowerCase());
+    }
+
+    public Optional<List<String>> checkIsBelowMaxAmount(JsonNode payload, String... fieldNames) {
+        return applyCheck(payload, isBelowMax(), fieldNames, "Field [%s] must be a number below " + MAX_PRICE);
     }
 }

@@ -5,10 +5,18 @@ import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
 
+import static java.util.stream.IntStream.range;
+
 public class RandomIdGenerator {
 
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private static final Random RANDOM = new Random();
+    /**
+     * source
+     */
+    private static final String RANDOM_SOURCE_SET_1 = "ABCSDEFGHIJKLMNPQRSTUVWXYZ";
+    private static final String RANDOM_SOURCE_SET_2 = "123456789";
+    private static final String RANDOM_SOURCE_UNION = RANDOM_SOURCE_SET_1.concat(RANDOM_SOURCE_SET_2);
 
     /**
      * This method will generate a URL safe random string.
@@ -31,5 +39,28 @@ public class RandomIdGenerator {
 
     public static String randomUuid() {
         return UUID.randomUUID().toString().replace("-", "").toLowerCase();
+    }
+
+    /**
+     * Random string generator of length 10 (excluding `-`)
+     * Uses sets of upper case alphabets and numbers (excluding `0` and `o`) with biased on digits on every 4th character.
+     * <p>
+     * probability set (34 ^ 8) * (9 ^ 2) = 1.4464931e+14 (in the range of 10 - 100^ trillion)
+     *
+     * @return a user friendly reference of the format XXX-XXXX-XXX
+     */
+    public static String randomUserFriendlyReference() {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+        range(0, 10)
+                .forEach(i -> {
+                    if (i % 4 == 2) {
+                        sb.append(RANDOM_SOURCE_SET_2.charAt(random.nextInt(RANDOM_SOURCE_SET_2.length())));
+                        sb.append("-");
+                    } else {
+                        sb.append(RANDOM_SOURCE_UNION.charAt(random.nextInt(RANDOM_SOURCE_UNION.length())));
+                    }
+                });
+        return sb.toString();
     }
 }

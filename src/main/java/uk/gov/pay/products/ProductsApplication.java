@@ -21,6 +21,7 @@ import uk.gov.pay.products.auth.TokenAuthenticator;
 import uk.gov.pay.products.config.PersistenceServiceInitialiser;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.config.ProductsModule;
+import uk.gov.pay.products.config.ProxyConfiguration;
 import uk.gov.pay.products.exception.mapper.PaymentCreationExceptionMapper;
 import uk.gov.pay.products.exception.mapper.PaymentCreatorNotFoundExceptionMapper;
 import uk.gov.pay.products.filters.LoggingFilter;
@@ -92,12 +93,18 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
 
         attachExceptionMappersTo(environment.jersey());
 
-        setGlobalProxies();
+        setGlobalProxies(configuration);
     }
 
-    private void setGlobalProxies() {
+    private void setGlobalProxies(ProductsConfiguration configuration) {
         SSLSocketFactory socketFactory = new TrustingSSLSocketFactory();
         HttpsURLConnection.setDefaultSSLSocketFactory(socketFactory);
+
+        ProxyConfiguration proxyConfiguration = configuration.getProxyConfiguration();
+        if (proxyConfiguration.getEnabled()) {
+            System.setProperty("https.proxyHost", proxyConfiguration.getHost());
+            System.setProperty("https.proxyPort", proxyConfiguration.getPort().toString());
+        }
     }
 
     private void initialiseMetrics(ProductsConfiguration configuration, Environment environment) {

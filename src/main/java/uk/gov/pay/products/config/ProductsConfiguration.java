@@ -48,6 +48,11 @@ public class ProductsConfiguration extends Configuration {
     @JsonProperty("jerseyClientConfiguration")
     private RestClientConfiguration restClientConfiguration;
 
+    @Valid
+    @NotNull
+    @JsonProperty("proxy")
+    private ProxyConfiguration proxyConfiguration;
+
     public String getGraphiteHost() {
         return graphiteHost;
     }
@@ -91,5 +96,9 @@ public class ProductsConfiguration extends Configuration {
     }
 
     public String getProductsUiConfirmUrl() { return productsUiConfirmUrl;
+    }
+
+    public ProxyConfiguration getProxyConfiguration() {
+        return proxyConfiguration;
     }
 }

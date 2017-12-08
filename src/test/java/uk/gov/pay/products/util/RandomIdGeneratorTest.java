@@ -10,10 +10,10 @@ public class RandomIdGeneratorTest {
     @Test
     public void shouldGenerateARandomUserFriendlyReference() throws Exception {
         String reference = RandomIdGenerator.randomUserFriendlyReference();
-        assertThat(reference.replace("-", "").length(), is(10));
+        assertThat(reference.length(), is(10));
 
-        //will always contains a number (or more)
-        assertThat(reference.matches(".*\\d.*"),is(true));
+        //will always contains two numbers (or more)
+        assertThat(reference.matches(".*\\d{2,}.*"),is(true));
     }
 
 }

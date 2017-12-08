@@ -14,8 +14,8 @@ public class RandomIdGenerator {
     /**
      * source
      */
-    private static final String RANDOM_SOURCE_SET_1 = "ABCSDEFGHIJKLMNPQRSTUVWXYZ";
-    private static final String RANDOM_SOURCE_SET_2 = "123456789";
+    private static final String RANDOM_SOURCE_SET_1 = "ABCSDEFGHJKLMNPQRSTUVWXYZ";
+    private static final String RANDOM_SOURCE_SET_2 = "23456789";
     private static final String RANDOM_SOURCE_UNION = RANDOM_SOURCE_SET_1.concat(RANDOM_SOURCE_SET_2);
 
     /**
@@ -42,12 +42,12 @@ public class RandomIdGenerator {
     }
 
     /**
-     * Random string generator of length 10 (excluding `-`)
-     * Uses sets of upper case alphabets and numbers (excluding `0` and `o`) with biased on digits on every 4th character.
+     * Random string generator of length 10
+     * Uses sets of upper case alphabets and numbers (excluding `0`, `1`, `I` and `O`) with biased on digits on every 3rd and 7th character.
      * <p>
-     * probability set (34 ^ 8) * (9 ^ 2) = 1.4464931e+14 (in the range of 10 - 100^ trillion)
+     * probability set (33 ^ 8) * (8 ^ 2) = 1.4464931e+14 (in the range of 10 - 100^ trillion)
      *
-     * @return a user friendly reference of the format XXX-XXXX-XXX
+     * @return a user friendly reference of the format XXXXXXXXXX
      */
     public static String randomUserFriendlyReference() {
         Random random = new Random();
@@ -56,7 +56,6 @@ public class RandomIdGenerator {
                 .forEach(i -> {
                     if (i % 4 == 2) {
                         sb.append(RANDOM_SOURCE_SET_2.charAt(random.nextInt(RANDOM_SOURCE_SET_2.length())));
-                        sb.append("-");
                     } else {
                         sb.append(RANDOM_SOURCE_UNION.charAt(random.nextInt(RANDOM_SOURCE_UNION.length())));
                     }

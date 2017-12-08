@@ -10,12 +10,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.dao.ProductDao;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
+import uk.gov.pay.products.util.ProductType;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyOrNullString;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
@@ -54,6 +52,7 @@ public class ProductCreatorTest {
                 null,
                 gatewayAccountId,
                 null,
+                ProductType.DEMO,
                 null
         );
 
@@ -73,6 +72,8 @@ public class ProductCreatorTest {
         assertThat(productEntity.getDateCreated(), is(notNullValue()));
         assertThat(productEntity.getGatewayAccountId(), is(notNullValue()));
         assertThat(productEntity.getGatewayAccountId(), is(gatewayAccountId));
+        assertThat(productEntity.getType(), is(notNullValue()));
+        assertThat(productEntity.getType(), is(ProductType.DEMO));
     }
 
     @Test
@@ -89,6 +90,7 @@ public class ProductCreatorTest {
                 null,
                 gatewayAccountId,
                 SERVICE_NAME,
+                ProductType.DEMO,
                 returnUrl
         );
 

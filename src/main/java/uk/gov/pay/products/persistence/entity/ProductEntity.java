@@ -2,13 +2,9 @@ package uk.gov.pay.products.persistence.entity;
 
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.util.ProductStatus;
+import uk.gov.pay.products.util.ProductType;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
@@ -41,6 +37,10 @@ public class ProductEntity extends AbstractEntity {
 
     @Column(name = "gateway_account_id")
     private Integer gatewayAccountId;
+
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private ProductType type = ProductType.DEMO;
 
     @Column(name = "return_url")
     private String returnUrl;
@@ -95,8 +95,8 @@ public class ProductEntity extends AbstractEntity {
         return status;
     }
 
-    public void setStatus(ProductStatus status) {
-        this.status = status;
+    public void setType(ProductType type) {
+        this.type = type;
     }
 
     public ZonedDateTime getDateCreated() {
@@ -113,6 +113,22 @@ public class ProductEntity extends AbstractEntity {
 
     public void setGatewayAccountId(Integer gatewayAccountId) {
         this.gatewayAccountId = gatewayAccountId;
+    }
+
+    public ProductType getType() {
+        return type;
+    }
+
+    public void setStatus(ProductStatus status) {
+        this.status = status;
+    }
+
+    public String getReturnUrl() {
+        return returnUrl;
+    }
+
+    public void setReturnUrl(String returnUrl) {
+        this.returnUrl = returnUrl;
     }
 
     public static ProductEntity from(Product product) {
@@ -141,6 +157,7 @@ public class ProductEntity extends AbstractEntity {
                 this.status,
                 this.gatewayAccountId,
                 this.serviceName,
+                this.type,
                 this.returnUrl);
     }
 

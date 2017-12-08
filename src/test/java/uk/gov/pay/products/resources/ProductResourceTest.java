@@ -6,6 +6,7 @@ import org.junit.Test;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.util.ProductStatus;
+import uk.gov.pay.products.util.ProductType;
 
 import javax.ws.rs.HttpMethod;
 import java.io.Serializable;
@@ -27,19 +28,21 @@ public class ProductResourceTest extends IntegrationTest {
     private static final String PRICE = "price";
     private static final String EXTERNAL_ID = "external_id";
     private static final String DESCRIPTION = "description";
+    private static final String TYPE = "type";
     private static final String RETURN_URL = "return_url";
     private static final String GATEWAY_ACCOUNT_ID = "gateway_account_id";
     private static final String SERVICE_NAME = "service_name";
 
-
     @Test
     public void shouldFail_whenSavingAProduct_withIncorrectAuthToken() throws Exception {
-        ImmutableMap<String, ? extends Serializable> payload = ImmutableMap.of(
-                GATEWAY_ACCOUNT_ID, randomInt(),
-                PAY_API_TOKEN, randomUuid(),
-                NAME, "a-name",
-                PRICE, 1234,
-                RETURN_URL, "http://return.url");
+        ImmutableMap<String, ? extends Serializable> payload = ImmutableMap.<String, String>builder()
+                .put(GATEWAY_ACCOUNT_ID, randomInt().toString())
+                .put(PAY_API_TOKEN, randomUuid())
+                .put(NAME, "a-name")
+                .put(PRICE, "1234")
+                .put(TYPE, ProductType.DEMO.name())
+                .put(RETURN_URL, "http://return.url")
+                .build();
 
         givenSetup()
                 .contentType(APPLICATION_JSON)
@@ -49,7 +52,6 @@ public class ProductResourceTest extends IntegrationTest {
                 .post("/v1/api/products")
                 .then()
                 .statusCode(401);
-
     }
 
     @Test
@@ -60,6 +62,7 @@ public class ProductResourceTest extends IntegrationTest {
         Long price = 1050L;
         Integer gatewayAccountId = randomInt();
         String serviceName = "Example Name";
+        String type = ProductType.DEMO.name();
 
         ImmutableMap<Object, Object> payload = ImmutableMap.builder()
                 .put(GATEWAY_ACCOUNT_ID, gatewayAccountId)
@@ -67,6 +70,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .put(NAME, name)
                 .put(PRICE, price)
                 .put(SERVICE_NAME, serviceName)
+                .put(TYPE, type)
                 .put(RETURN_URL, "https://return.url")
                 .build();
 
@@ -83,6 +87,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
                 .body(PRICE, is(1050))
                 .body(EXTERNAL_ID, matchesPattern("^[0-9a-z]{32}$"))
+                .body(TYPE, is(type))
                 .body(SERVICE_NAME, is(serviceName));
 
         String externalId = response.extract().path(EXTERNAL_ID);
@@ -97,7 +102,6 @@ public class ProductResourceTest extends IntegrationTest {
                 .body("_links[1].href", matchesPattern(productsUIPayUrl + externalId))
                 .body("_links[1].method", is(HttpMethod.POST))
                 .body("_links[1].rel", is("pay"));
-
     }
 
     @Test
@@ -109,14 +113,17 @@ public class ProductResourceTest extends IntegrationTest {
         String description = "Some test description";
         Integer gatewayAccountId = randomInt();
         String serviceName = "Example Service";
-
+        String type = ProductType.DEMO.name();
+        
         String returnUrl = "https://some.valid.url";
-        ImmutableMap<Object, Object> payload = ImmutableMap.builder()
-                .put(GATEWAY_ACCOUNT_ID, gatewayAccountId)
+
+        ImmutableMap<String, String> payload = ImmutableMap.<String, String>builder()
+                .put(GATEWAY_ACCOUNT_ID, gatewayAccountId.toString())
                 .put(PAY_API_TOKEN, payApiToken)
                 .put(NAME, name)
-                .put(PRICE, price)
+                .put(PRICE, price.toString())
                 .put(DESCRIPTION, description)
+                .put(TYPE, type)
                 .put(RETURN_URL, returnUrl)
                 .put(SERVICE_NAME, serviceName)
                 .build();
@@ -133,6 +140,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .body(NAME, is(name))
                 .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
                 .body(PRICE, is(1050))
+                .body(TYPE, is(type))
                 .body(DESCRIPTION, is(description))
                 .body(RETURN_URL, is(returnUrl))
                 .body(SERVICE_NAME, is(serviceName));
@@ -190,6 +198,7 @@ public class ProductResourceTest extends IntegrationTest {
         response
                 .body(NAME, is(product.getName()))
                 .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
+                .body(TYPE, is(product.getType().name()))
                 .body(DESCRIPTION, is(product.getDescription()))
                 .body(RETURN_URL, is(product.getReturnUrl()));
 
@@ -237,7 +246,7 @@ public class ProductResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void givenAValidExternalProductId_shouldDisableTheProduct() throws Exception{
+    public void givenAValidExternalProductId_shouldDisableTheProduct() throws Exception {
         String externalId = randomUuid();
         int gatewayAccountId = randomInt();
 
@@ -246,7 +255,6 @@ public class ProductResourceTest extends IntegrationTest {
                 .withGatewayAccountId(gatewayAccountId)
                 .build()
                 .toProduct();
-
 
         databaseHelper.addProduct(product);
 
@@ -260,7 +268,7 @@ public class ProductResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void givenANonExistingExternalProductId_whenDisableAProduct_shouldReturn404() throws Exception{
+    public void givenANonExistingExternalProductId_whenDisableAProduct_shouldReturn404() throws Exception {
         givenAuthenticatedSetup()
                 .when()
                 .accept(APPLICATION_JSON)

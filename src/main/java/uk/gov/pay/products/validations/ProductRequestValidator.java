@@ -15,8 +15,7 @@ public class ProductRequestValidator {
     private static final String FIELD_PRICE = "price";
     private static final String FIELD_RETURN_URL = "return_url";
     private static final String FIELD_SERVICE_NAME = "service_name";
-
-
+    private static final String FIELD_TYPE = "type";
 
     @Inject
     public ProductRequestValidator(RequestValidations requestValidations) {
@@ -30,6 +29,7 @@ public class ProductRequestValidator {
                 FIELD_PAY_API_TOKEN,
                 FIELD_NAME,
                 FIELD_PRICE,
+                FIELD_TYPE
                 FIELD_SERVICE_NAME);
 
         if (!errors.isPresent() && payload.get(FIELD_RETURN_URL)!= null){
@@ -38,6 +38,10 @@ public class ProductRequestValidator {
 
         if (!errors.isPresent() && payload.get(FIELD_PRICE) != null) {
             errors = requestValidations.checkIsBelowMaxAmount(payload, FIELD_PRICE);
+        }
+
+        if (!errors.isPresent() && payload.get(FIELD_TYPE) != null) {
+            errors = requestValidations.checkIsProductType(payload, FIELD_TYPE);
         }
 
         return errors.map(Errors::from);

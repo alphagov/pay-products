@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import uk.gov.pay.products.util.Errors;
+import uk.gov.pay.products.util.ProductType;
 
 import java.util.Optional;
 
@@ -20,6 +21,7 @@ public class ProductRequestValidatorTest {
     private static final String FIELD_NAME = "name";
     private static final String FIELD_PRICE = "price";
     private static final String FIELD_SERVICE_NAME = "service_name";
+    private static final String FIELD_TYPE = "type";
     private static final String RETURN_URL = "return_url";
     private static final String VALID_RETURN_URL = "https://valid.url";
 
@@ -27,18 +29,17 @@ public class ProductRequestValidatorTest {
 
     @Test
     public void shouldPass_whenAllFieldsPresent(){
-        ImmutableMap<Object, Object> map = ImmutableMap.builder()
-                .put(FIELD_GATEWAY_ACCOUNT_ID, 1)
-                .put(FIELD_PAY_API_TOKEN, "api_token")
-                .put(FIELD_NAME, "name")
-                .put(FIELD_PRICE, 25.00)
-                .put(FIELD_SERVICE_NAME, "Example service")
-                .put(RETURN_URL, VALID_RETURN_URL)
-                .build();
-
-
         JsonNode payload = new ObjectMapper()
-                .valueToTree(map);
+                .valueToTree(
+                        ImmutableMap.<String, String>builder()
+                                .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
+                                .put(FIELD_PAY_API_TOKEN, "api_token")
+                                .put(FIELD_NAME, "name")
+                                .put(FIELD_PRICE, "25.00")
+                                .put(FIELD_SERVICE_NAME, "Example service")
+                                .put(FIELD_TYPE, ProductType.DEMO.toString())
+                                .put(FIELD_RETURN_URL, VALID_RETURN_URL)
+                                .build());
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
@@ -46,14 +47,15 @@ public class ProductRequestValidatorTest {
     }
 
     @Test
-    public void shouldPass_whenReturnUrlFieldIsMissing(){
+    public void shouldPass_whenReturnUrlFieldIsMissing() {
         JsonNode payload = new ObjectMapper()
                 .valueToTree(ImmutableMap.of(
                         FIELD_GATEWAY_ACCOUNT_ID, 1,
                         FIELD_PAY_API_TOKEN, "api_token",
                         FIELD_NAME, "name",
                         FIELD_SERVICE_NAME, "Example service",
-                        FIELD_PRICE, 25.00));
+                        FIELD_PRICE, 25.00,
+                        FIELD_TYPE, ProductType.DEMO.name()));
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
@@ -61,14 +63,15 @@ public class ProductRequestValidatorTest {
     }
 
     @Test
-    public void shouldPass_whenPriceIsBelowMaxPrice(){
+    public void shouldPass_whenPriceIsBelowMaxPrice() {
         JsonNode payload = new ObjectMapper()
                 .valueToTree(ImmutableMap.of(
                         FIELD_GATEWAY_ACCOUNT_ID, 1,
                         FIELD_PAY_API_TOKEN, "api_token",
                         FIELD_NAME, "name",
                         FIELD_SERVICE_NAME, "Example service",
-                        FIELD_PRICE, MAX_PRICE - 1L));
+                        FIELD_PRICE, MAX_PRICE - 1L,
+                        FIELD_TYPE, ProductType.DEMO.toString()));
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
@@ -76,14 +79,15 @@ public class ProductRequestValidatorTest {
     }
 
     @Test
-    public void shouldError_whenPriceFieldIsMissing(){
+    public void shouldError_whenPriceFieldIsMissing() {
         JsonNode payload = new ObjectMapper()
                 .valueToTree(ImmutableMap.of(
                         FIELD_GATEWAY_ACCOUNT_ID, 1,
                         FIELD_PAY_API_TOKEN, "api_token",
                         FIELD_NAME, "name",
                         FIELD_SERVICE_NAME, "Example service",
-                        RETURN_URL, VALID_RETURN_URL));
+                        RETURN_URL, VALID_RETURN_URL,
+                        FIELD_TYPE, ProductType.DEMO.toString()));
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
@@ -92,18 +96,18 @@ public class ProductRequestValidatorTest {
     }
 
     @Test
-    public void shouldError_whenPriceFieldEqualsMaxPrice(){
-        ImmutableMap<Object, Object> map = ImmutableMap.builder()
-                .put(FIELD_GATEWAY_ACCOUNT_ID, 1)
-                .put(FIELD_PAY_API_TOKEN, "api_token")
-                .put(FIELD_NAME, "name")
-                .put(FIELD_PRICE, MAX_PRICE)
-                .put(FIELD_SERVICE_NAME, "Example service")
-                .put(RETURN_URL, VALID_RETURN_URL)
-                .build();
-
+    public void shouldError_whenPriceFieldEqualsMaxPrice() {
         JsonNode payload = new ObjectMapper()
-                .valueToTree(map);
+                .valueToTree(
+                        ImmutableMap.<String, String>builder()
+                                .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
+                                .put(FIELD_PAY_API_TOKEN, "api_token")
+                                .put(FIELD_NAME, "name")
+                                .put(FIELD_PRICE, MAX_PRICE.toString())
+                                .put(FIELD_SERVICE_NAME, "Example service")
+                                .put(FIELD_TYPE, ProductType.DEMO.toString())
+                                .put(FIELD_RETURN_URL, VALID_RETURN_URL)
+                                .build());
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
@@ -112,18 +116,18 @@ public class ProductRequestValidatorTest {
     }
 
     @Test
-    public void shouldError_whenPriceFieldExceedsMaxPrice(){
-        ImmutableMap<Object, Object> map = ImmutableMap.builder()
-                .put(FIELD_GATEWAY_ACCOUNT_ID, 1)
-                .put(FIELD_PAY_API_TOKEN, "api_token")
-                .put(FIELD_NAME, "name")
-                .put(FIELD_PRICE, MAX_PRICE + 1)
-                .put(FIELD_SERVICE_NAME, "Example service")
-                .put(RETURN_URL, VALID_RETURN_URL)
-                .build();
-
+    public void shouldError_whenPriceFieldExceedsMaxPrice() {
         JsonNode payload = new ObjectMapper()
-                .valueToTree(map);
+                .valueToTree(
+                        ImmutableMap.<String, String>builder()
+                                .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
+                                .put(FIELD_PAY_API_TOKEN, "api_token")
+                                .put(FIELD_NAME, "name")
+                                .put(FIELD_PRICE, String.valueOf(MAX_PRICE + 1))
+                                .put(FIELD_SERVICE_NAME, "Example service")
+                                .put(FIELD_TYPE, ProductType.DEMO.toString())
+                                .put(FIELD_RETURN_URL, VALID_RETURN_URL)
+                                .build());
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
@@ -132,14 +136,15 @@ public class ProductRequestValidatorTest {
     }
 
     @Test
-    public void shouldError_whenNameFieldIsMissing(){
+    public void shouldError_whenNameFieldIsMissing() {
         JsonNode payload = new ObjectMapper()
                 .valueToTree(ImmutableMap.of(
                         FIELD_GATEWAY_ACCOUNT_ID, 1,
                         FIELD_PAY_API_TOKEN, "api_token",
                         FIELD_PRICE, 25.00,
                         FIELD_SERVICE_NAME, "Example service",
-                        RETURN_URL, VALID_RETURN_URL));
+                        FIELD_TYPE, ProductType.DEMO.toString(),
+                        FIELD_RETURN_URL, VALID_RETURN_URL));
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
@@ -148,14 +153,15 @@ public class ProductRequestValidatorTest {
     }
 
     @Test
-    public void shouldError_whenApiTokenFieldIsMissing(){
+    public void shouldError_whenApiTokenFieldIsMissing() {
         JsonNode payload = new ObjectMapper()
                 .valueToTree(ImmutableMap.of(
                         FIELD_GATEWAY_ACCOUNT_ID, 1,
                         FIELD_NAME, "name",
                         FIELD_PRICE, 25.00,
                         FIELD_SERVICE_NAME, "Example service",
-                        RETURN_URL, VALID_RETURN_URL));
+                        FIELD_TYPE, ProductType.DEMO.toString(),
+                        FIELD_RETURN_URL, VALID_RETURN_URL));
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
@@ -164,57 +170,88 @@ public class ProductRequestValidatorTest {
     }
 
     @Test
-    public void shouldError_whenGatewayAccountIdFieldIsMissing(){
+    public void shouldError_whenGatewayAccountIdFieldIsMissing() {
         JsonNode payload = new ObjectMapper()
                 .valueToTree(ImmutableMap.of(
                         FIELD_PAY_API_TOKEN, "api_token",
                         FIELD_NAME, "name",
                         FIELD_SERVICE_NAME, "Example service",
                         FIELD_PRICE, 25.00,
-                        RETURN_URL, VALID_RETURN_URL));
+                        FIELD_TYPE, ProductType.DEMO.toString(),
+                        FIELD_RETURN_URL, VALID_RETURN_URL));
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().toString(), is("[Field [gateway_account_id] is required]"));
     }
-
+    
     @Test
-    public void shouldError_whenServiceNameFieldIsMissing(){
-        ImmutableMap<Object, Object> map = ImmutableMap.builder()
-                .put(FIELD_GATEWAY_ACCOUNT_ID, 1)
-                .put(FIELD_PAY_API_TOKEN, "api_token")
-                .put(FIELD_NAME, "name")
-                .put(FIELD_PRICE, 25.00)
-                .put(RETURN_URL, VALID_RETURN_URL)
-                .build();
-
-
+    public void shouldError_whenReturnUrlIsInvalid(){
         JsonNode payload = new ObjectMapper()
-                .valueToTree(map);
+                .valueToTree(ImmutableMap.of(
+                        FIELD_GATEWAY_ACCOUNT_ID, 1,
+                        FIELD_PAY_API_TOKEN, "api_token",
+                        FIELD_NAME, "name",
+                        FIELD_PRICE, 25.00,
+                        RETURN_URL, "return_url"));
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
         assertThat(errors.isPresent(), is(true));
-        assertThat(errors.get().getErrors().toString(), is("[Field [service_name] is required]"));
+        assertThat(errors.get().getErrors().toString(), is("[Field [type] is required]"));
     }
 
     @Test
-    public void shouldError_whenReturnUrlIsInvalid(){
-        ImmutableMap<Object, Object> map = ImmutableMap.builder()
-                .put(FIELD_GATEWAY_ACCOUNT_ID, 1)
-                .put(FIELD_PAY_API_TOKEN, "api_token")
-                .put(FIELD_NAME, "name")
-                .put(FIELD_PRICE, MAX_PRICE + 1)
-                .put(FIELD_SERVICE_NAME, "Example service")
-                .put(RETURN_URL, "return-url")
-                .build();
-
+    public void shouldError_whenTypeIsMissing() {
         JsonNode payload = new ObjectMapper()
-                .valueToTree(map);
+                .valueToTree(ImmutableMap.of(
+                        FIELD_GATEWAY_ACCOUNT_ID, 1,
+                        FIELD_PAY_API_TOKEN, "api_token",
+                        FIELD_NAME, "name",
+                        FIELD_PRICE, 25.00,
+                        FIELD_SERVICE_NAME, "Example service",
+                        FIELD_RETURN_URL, VALID_RETURN_URL));
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
+        assertThat(errors.isPresent(), is(true));
+        assertThat(errors.get().getErrors().toString(), is("[Field [type] is required]"));
+    }
+
+    @Test
+    public void shouldError_whenTypeIsUnknown() {
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(
+                        ImmutableMap.<String, String>builder()
+                                .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
+                                .put(FIELD_PAY_API_TOKEN, "api_token")
+                                .put(FIELD_NAME, "name")
+                                .put(FIELD_PRICE, "25.0")
+                                .put(FIELD_TYPE, "UNKNOWN")
+                                .put(FIELD_RETURN_URL, VALID_RETURN_URL)
+                                .build());
+                        
+        Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
+
+        assertThat(errors.isPresent(), is(true));
+        assertThat(errors.get().getErrors().toString(), is("[Field [type] must be a valid product type ]"));
+    }
+
+    @Test
+    public void shouldError_whenReturnUrlIsInvalid() {
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(
+                        ImmutableMap.<String, String>builder()
+                                .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
+                                .put(FIELD_PAY_API_TOKEN, "api_token")
+                                .put(FIELD_NAME, "name")
+                                .put(FIELD_PRICE, "25.0")
+                                .put(FIELD_TYPE, ProductType.DEMO.toString())
+                                .put(FIELD_RETURN_URL, "return_url")
+                                .build());
+                        
+        Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
 
         assertThat(errors.isPresent(), is(true));
@@ -222,21 +259,21 @@ public class ProductRequestValidatorTest {
     }
 
     @Test
-    public void shouldError_whenReturnUrlIsNotHttps(){
-        ImmutableMap<Object, Object> map = ImmutableMap.builder()
-                .put(FIELD_GATEWAY_ACCOUNT_ID, 1)
-                .put(FIELD_PAY_API_TOKEN, "api_token")
-                .put(FIELD_NAME, "name")
-                .put(FIELD_PRICE, MAX_PRICE + 1)
-                .put(FIELD_SERVICE_NAME, "Example service")
-                .put(RETURN_URL, "http://return.url")
-                .build();
-
+    public void shouldError_whenReturnUrlIsNotHttps() {
         JsonNode payload = new ObjectMapper()
-                .valueToTree(map);
+                .valueToTree(
+
+                        ImmutableMap.<String, String>builder()
+                                .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
+                                .put(FIELD_PAY_API_TOKEN, "api_token")
+                                .put(FIELD_NAME, "name")
+                                .put(FIELD_PRICE, "25.0")
+                                .put(FIELD_SERVICE_NAME, "Example service")
+                                .put(FIELD_TYPE, ProductType.DEMO.toString())
+                                .put(FIELD_RETURN_URL, "http://return.url")
+                                .build());
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
-
 
 
         assertThat(errors.isPresent(), is(true));

@@ -8,9 +8,11 @@ import uk.gov.pay.products.persistence.entity.PaymentEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.PaymentStatus;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Objects.isNull;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -41,6 +43,7 @@ public class PaymentDaoTest extends DaoTestBase {
                 .withExternalId(randomUuid())
                 .withStatus(PaymentStatus.CREATED)
                 .withProduct(productEntity)
+                .withReferenceNumber("MH2KJY5KPW")
                 .build();
         databaseHelper.addPayment(payment.toPayment());
 
@@ -79,6 +82,7 @@ public class PaymentDaoTest extends DaoTestBase {
                 .withExternalId(randomUuid())
                 .withStatus(PaymentStatus.CREATED)
                 .withProduct(productEntity)
+                .withReferenceNumber("MH2KJY5KIY")
                 .build();
         databaseHelper.addPayment(payment1.toPayment());
 
@@ -86,6 +90,7 @@ public class PaymentDaoTest extends DaoTestBase {
                 .withExternalId(randomUuid())
                 .withStatus(PaymentStatus.ERROR)
                 .withProduct(productEntity)
+                .withReferenceNumber("MH3JY6KIY")
                 .build();
         databaseHelper.addPayment(payment2.toPayment());
 
@@ -110,5 +115,35 @@ public class PaymentDaoTest extends DaoTestBase {
         assertThat(paymentEntity2.getStatus(), is(payment2.getStatus()));
         assertThat(paymentEntity2.getGovukPaymentId(), is(payment2.getGovukPaymentId()));
         assertNotNull(paymentEntity2.getDateCreated());
+    }
+
+    @Test
+    public void shouldThrowExceptionOnMerge_whenSameGatewayAndReferenceNumber() {
+        String referenceNumber = randomUuid().substring(1,10).toUpperCase();
+        PaymentEntity payment1 = PaymentEntityFixture.aPaymentEntity()
+                .withExternalId(randomUuid())
+                .withStatus(PaymentStatus.CREATED)
+                .withProduct(productEntity)
+                .withReferenceNumber(referenceNumber)
+                .build();
+        databaseHelper.addPayment(payment1.toPayment());
+
+        PaymentEntity payment2 = PaymentEntityFixture.aPaymentEntity()
+                .withExternalId(randomUuid())
+                .withStatus(PaymentStatus.ERROR)
+                .withProduct(productEntity)
+                .withReferenceNumber(referenceNumber)
+                .build();
+
+        Exception exception = null;
+        try {
+            paymentDao.merge(payment2);
+        } catch (Exception ex) {
+            exception = ex;
+        }
+        assertThat(isNull(exception), is(false));
+        assertThat(exception instanceof javax.persistence.RollbackException, is(true));
+        assertThat(exception.getMessage().contains("payments_gateway_account_id_reference_number_key"), is(true));
+        assertThat(exception.getMessage().contains("duplicate key value violates unique constraint"), is(true));
     }
 }

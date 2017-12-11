@@ -16,6 +16,8 @@ public class PaymentEntityFixture {
     private ZonedDateTime dateCreated = ZonedDateTime.now();
     private PaymentStatus status = PaymentStatus.CREATED;
     private Long amount = 100L;
+    private Integer gatewayAccountId;
+    private String referenceNumber = "MXDRTEWR12";
 
     private ProductEntity productEntity;
 
@@ -32,6 +34,8 @@ public class PaymentEntityFixture {
         payment.setStatus(status);
         payment.setProductEntity(productEntity);
         payment.setAmount(amount);
+        payment.setGatewayAccountId(gatewayAccountId == null ? productEntity.getGatewayAccountId() : gatewayAccountId);
+        payment.setReferenceNumber(referenceNumber);
 
         return payment;
     }
@@ -72,6 +76,16 @@ public class PaymentEntityFixture {
 
     public PaymentEntityFixture withProduct(ProductEntity productEntity) {
         this.productEntity = productEntity;
+        return this;
+    }
+
+    public PaymentEntityFixture withGatewayAccountId(Integer gatewayAccountId) {
+        this.gatewayAccountId = gatewayAccountId;
+        return this;
+    }
+
+    public PaymentEntityFixture withReferenceNumber(String referenceNumber) {
+        this.referenceNumber = referenceNumber;
         return this;
     }
 }

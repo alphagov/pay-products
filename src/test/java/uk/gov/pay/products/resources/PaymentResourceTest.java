@@ -42,8 +42,10 @@ public class PaymentResourceTest extends IntegrationTest {
 
     @Test
     public void createAPayment_shouldSucceed() throws Exception {
+        String referenceNumber = randomUuid().substring(1, 10);
         Product product = aProductEntity()
                 .withExternalId(randomUuid())
+                .withGatewayAccountId(0)
                 .build()
                 .toProduct();
 
@@ -60,7 +62,7 @@ public class PaymentResourceTest extends IntegrationTest {
         JsonObject paymentResponsePayload = PublicApiStub.createPaymentResponsePayload(
                 govukPaymentId,
                 product.getPrice(),
-                product.getExternalId(),
+                referenceNumber,
                 product.getName(),
                 product.getReturnUrl(),
                 nextUrl);
@@ -88,6 +90,7 @@ public class PaymentResourceTest extends IntegrationTest {
         assertThat(paymentRecords.get(0), hasEntry("status", "SUBMITTED"));
         assertThat(paymentRecords.get(0), hasEntry("amount", product.getPrice()));
         assertThat(paymentRecords.get(0), hasKey("date_created"));
+        assertThat(paymentRecords.get(0), hasKey("reference_number"));
 
         response
                 .body("external_id", is(paymentExternalId))
@@ -130,6 +133,7 @@ public class PaymentResourceTest extends IntegrationTest {
     public void createAPayment_shouldFail_whenDownstreamError() throws Exception {
         Product product = aProductEntity()
                 .withExternalId(randomUuid())
+                .withGatewayAccountId(0)
                 .build()
                 .toProduct();
 
@@ -186,11 +190,14 @@ public class PaymentResourceTest extends IntegrationTest {
         productEntity.setId(productId);
 
         String externalId = randomUuid();
+        String referenceNumber = externalId.substring(0, 9);
 
         PaymentEntity payment = PaymentEntityFixture.aPaymentEntity()
                 .withExternalId(externalId)
                 .withProduct(productEntity)
                 .withNextUrl(nextUrl)
+                .withGatewayAccountId(productEntity.getGatewayAccountId())
+                .withReferenceNumber(referenceNumber)
                 .build();
 
         databaseHelper.addPayment(payment.toPayment());
@@ -208,6 +215,7 @@ public class PaymentResourceTest extends IntegrationTest {
                 .body("product_external_id", is(product.getExternalId()))
                 .body("status", is(payment.getStatus().toString()))
                 .body("amount", is(payment.getAmount().intValue()))
+                .body("reference_number", is(referenceNumber))
                 .body("_links", hasSize(2))
                 .body("_links[0].href", matchesPattern(paymentsUrl + externalId))
                 .body("_links[0].method", is(HttpMethod.GET))
@@ -260,6 +268,7 @@ public class PaymentResourceTest extends IntegrationTest {
                 .withExternalId(paymentExternalId1)
                 .withProduct(productEntity)
                 .withNextUrl(nextUrl)
+                .withReferenceNumber(paymentExternalId1.substring(0, 9))
                 .build();
 
         databaseHelper.addPayment(payment1.toPayment());
@@ -268,6 +277,7 @@ public class PaymentResourceTest extends IntegrationTest {
                 .withExternalId(paymentExternalId2)
                 .withProduct(productEntity)
                 .withNextUrl(nextUrl)
+                .withReferenceNumber(paymentExternalId2.substring(0, 9))
                 .build();
 
         databaseHelper.addPayment(payment2.toPayment());
@@ -286,6 +296,7 @@ public class PaymentResourceTest extends IntegrationTest {
                 .body("[0].product_external_id", is(product.getExternalId()))
                 .body("[0].status", is(payment1.getStatus().toString()))
                 .body("[0].amount", is(payment1.getAmount().intValue()))
+                .body("[0].reference_number", is(paymentExternalId1.substring(0, 9)))
                 .body("[0]._links", hasSize(2))
                 .body("[0]._links[0].href", matchesPattern(paymentsUrl + payment1.getExternalId()))
                 .body("[0]._links[0].method", is(HttpMethod.GET))
@@ -298,6 +309,7 @@ public class PaymentResourceTest extends IntegrationTest {
                 .body("[1].product_external_id", is(product.getExternalId()))
                 .body("[1].status", is(payment2.getStatus().toString()))
                 .body("[1].amount", is(payment2.getAmount().intValue()))
+                .body("[1].reference_number", is(paymentExternalId2.substring(0, 9)))
                 .body("[1]._links", hasSize(2))
                 .body("[1]._links[0].href", matchesPattern(paymentsUrl + payment2.getExternalId()))
                 .body("[1]._links[0].method", is(HttpMethod.GET))

@@ -13,7 +13,7 @@ public class RandomIdGeneratorTest {
         assertThat(reference.length(), is(10));
 
         //will always contains two numbers (or more)
-        assertThat(reference.matches(".*\\d{2,}.*"),is(true));
+        assertThat(reference.matches("(.*\\d){2}(.*)"),is(true));
     }
 
 }

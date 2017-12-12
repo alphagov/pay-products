@@ -200,7 +200,7 @@ public class PaymentResourceTest extends IntegrationTest {
                 .withReferenceNumber(referenceNumber)
                 .build();
 
-        databaseHelper.addPayment(payment.toPayment());
+        databaseHelper.addPayment(payment.toPayment(), productEntity.getGatewayAccountId());
 
         ValidatableResponse response = givenAuthenticatedSetup()
                 .when()
@@ -271,7 +271,7 @@ public class PaymentResourceTest extends IntegrationTest {
                 .withReferenceNumber(paymentExternalId1.substring(0, 9))
                 .build();
 
-        databaseHelper.addPayment(payment1.toPayment());
+        databaseHelper.addPayment(payment1.toPayment(), gatewayAccountId);
 
         PaymentEntity payment2 = PaymentEntityFixture.aPaymentEntity()
                 .withExternalId(paymentExternalId2)
@@ -280,7 +280,7 @@ public class PaymentResourceTest extends IntegrationTest {
                 .withReferenceNumber(paymentExternalId2.substring(0, 9))
                 .build();
 
-        databaseHelper.addPayment(payment2.toPayment());
+        databaseHelper.addPayment(payment2.toPayment(), gatewayAccountId);
 
         ValidatableResponse response = givenAuthenticatedSetup()
                 .when()

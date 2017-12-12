@@ -18,6 +18,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 public class PaymentDaoTest extends DaoTestBase {
@@ -45,7 +46,7 @@ public class PaymentDaoTest extends DaoTestBase {
                 .withProduct(productEntity)
                 .withReferenceNumber("MH2KJY5KPW")
                 .build();
-        databaseHelper.addPayment(payment.toPayment());
+        databaseHelper.addPayment(payment.toPayment(), 1);
 
         Optional<PaymentEntity> paymentEntity = paymentDao.findByExternalId(payment.getExternalId());
         assertTrue(paymentEntity.isPresent());
@@ -78,13 +79,14 @@ public class PaymentDaoTest extends DaoTestBase {
 
     @Test
     public void shouldSuccess_whenSearchingForPaymentsByProductId() throws Exception{
+        Integer gatewayAccountId = randomInt();
         PaymentEntity payment1 = PaymentEntityFixture.aPaymentEntity()
                 .withExternalId(randomUuid())
                 .withStatus(PaymentStatus.CREATED)
                 .withProduct(productEntity)
                 .withReferenceNumber("MH2KJY5KIY")
                 .build();
-        databaseHelper.addPayment(payment1.toPayment());
+        databaseHelper.addPayment(payment1.toPayment(), gatewayAccountId);
 
         PaymentEntity payment2 = PaymentEntityFixture.aPaymentEntity()
                 .withExternalId(randomUuid())
@@ -92,7 +94,7 @@ public class PaymentDaoTest extends DaoTestBase {
                 .withProduct(productEntity)
                 .withReferenceNumber("MH3JY6KIY")
                 .build();
-        databaseHelper.addPayment(payment2.toPayment());
+        databaseHelper.addPayment(payment2.toPayment(), gatewayAccountId);
 
         List<PaymentEntity> paymentEntities = paymentDao.findByProductExternalId(productEntity.getExternalId());
         assertFalse(paymentEntities.isEmpty());
@@ -120,19 +122,22 @@ public class PaymentDaoTest extends DaoTestBase {
     @Test
     public void shouldThrowExceptionOnMerge_whenSameGatewayAndReferenceNumber() {
         String referenceNumber = randomUuid().substring(1,10).toUpperCase();
+        Integer gatewayAccountId = randomInt();
         PaymentEntity payment1 = PaymentEntityFixture.aPaymentEntity()
                 .withExternalId(randomUuid())
                 .withStatus(PaymentStatus.CREATED)
                 .withProduct(productEntity)
                 .withReferenceNumber(referenceNumber)
+                .withGatewayAccountId(gatewayAccountId)
                 .build();
-        databaseHelper.addPayment(payment1.toPayment());
+        databaseHelper.addPayment(payment1.toPayment(), gatewayAccountId);
 
         PaymentEntity payment2 = PaymentEntityFixture.aPaymentEntity()
                 .withExternalId(randomUuid())
                 .withStatus(PaymentStatus.ERROR)
                 .withProduct(productEntity)
                 .withReferenceNumber(referenceNumber)
+                .withGatewayAccountId(gatewayAccountId)
                 .build();
 
         Exception exception = null;

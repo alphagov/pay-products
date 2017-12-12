@@ -113,7 +113,6 @@ public class PaymentEntity extends AbstractEntity {
                 this.product != null ? this.product.getExternalId() : null,
                 this.status,
                 this.product != null ? this.product.getId() : null,
-                this.getGatewayAccountId(),
                 this.getReferenceNumber()
         );
     }

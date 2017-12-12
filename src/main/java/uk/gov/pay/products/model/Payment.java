@@ -35,8 +35,6 @@ public class Payment {
     private Long amount;
     @JsonProperty(FIELD_GOVUK_STATUS)
     private String govUkStatus;
-    @JsonIgnore
-    private Integer gatewayAccountId;
     private String referenceNumber;
 
     private PaymentStatus status;
@@ -49,7 +47,6 @@ public class Payment {
             @JsonProperty(FIELD_PRODUCT_EXTERNAL_ID) String productExternalId,
             @JsonProperty(FIELD_STATUS) PaymentStatus status,
             Integer productId,
-            Integer gatewayAccountId,
             @JsonProperty(FIELD_REFERENCE_NUMBER) String referenceNumber) {
         this.externalId = externalId;
         this.govukPaymentId = govukPaymentId;
@@ -58,7 +55,6 @@ public class Payment {
         this.status = status;
         this.productId = productId;
         this.amount = amount;
-        this.gatewayAccountId = gatewayAccountId;
         this.referenceNumber = referenceNumber;
     }
 
@@ -109,10 +105,6 @@ public class Payment {
 
     public void setGovukStatus(String status){
         this.govUkStatus = status;
-    }
-
-    public Integer getGatewayAccountId() {
-        return gatewayAccountId;
     }
 
     public String getReferenceNumber() {

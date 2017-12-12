@@ -81,16 +81,17 @@ public class PaymentCreator {
             paymentEntity.setGatewayAccountId(productEntity.getGatewayAccountId());
             paymentEntity.setReferenceNumber(randomUserFriendlyReference());
 
-            AtomicInteger counter = new AtomicInteger(0);
+            int counter = 0;
             return mergePaymentEntityWithReferenceNumberCheck(paymentEntity, counter);
         };
     }
 
-    private PaymentEntity mergePaymentEntityWithReferenceNumberCheck(PaymentEntity paymentEntity, AtomicInteger counter) {
-        int count = counter.getAndIncrement();
+    private PaymentEntity mergePaymentEntityWithReferenceNumberCheck(PaymentEntity paymentEntity, int counter) {
+        int count = counter++;
         if(count == MAX_NUMBER_OF_RETRY_FOR_UNIQUE_REF_NUMBER) {
-            RuntimeException runtimeException = new RuntimeException("We have run out of random reference numbers");
-            logger.error("We have run out of random reference numbers", runtimeException);
+            String exceptionMsg = format("Too many conflicts generating unique user friendly reference numbers for gateway account %s", paymentEntity.getGatewayAccountId());
+            RuntimeException runtimeException = new RuntimeException(exceptionMsg);
+            logger.error(exceptionMsg, runtimeException);
             throw runtimeException;
         }
 

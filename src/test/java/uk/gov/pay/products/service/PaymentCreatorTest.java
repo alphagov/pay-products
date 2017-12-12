@@ -257,7 +257,7 @@ public class PaymentCreatorTest {
     }
 
     @Test
-    public void shouldThrowRuntimeException_whenRunOutOfReferenceNumbers() {
+    public void shouldThrowRuntimeException_whenTooManyConflictsInReferenceNumbers() {
         int productId = 1;
         String productExternalId = "product-external-id";
         long productPrice = 100L;
@@ -287,7 +287,7 @@ public class PaymentCreatorTest {
         }
         assertThat(isNull(exception), is(false));
         assertThat(exception instanceof RuntimeException, is(true));
-        assertThat(exception.getMessage().contains("We have run out of random reference numbers"), is(true));
+        assertThat(exception.getMessage().contains("Too many conflicts generating unique user friendly reference numbers for gateway account"), is(true));
         verify(paymentDao, times(3)).persist(any(PaymentEntity.class));
     }
 

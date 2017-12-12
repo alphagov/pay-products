@@ -35,17 +35,19 @@ public class DatabaseTestHelper {
         return this;
     }
 
-    public DatabaseTestHelper addPayment(Payment payment) {
+    public DatabaseTestHelper addPayment(Payment payment, Integer gatewayAccountId) {
         jdbi.withHandle(handle -> handle.createStatement("INSERT INTO payments " +
-                "(external_id, govuk_payment_id, next_url, product_id, status, amount)" +
+                "(external_id, govuk_payment_id, next_url, product_id, status, amount, gateway_account_id, reference_number)" +
                 "VALUES " +
-                "(:external_id, :govuk_payment_id, :next_url, :product_id, :status, :amount)")
+                "(:external_id, :govuk_payment_id, :next_url, :product_id, :status, :amount, :gateway_account_id, :reference_number)")
                 .bind("external_id", payment.getExternalId())
                 .bind("govuk_payment_id", payment.getGovukPaymentId())
                 .bind("next_url", payment.getNextUrl())
                 .bind("product_id",payment.getProductId())
                 .bind("status", payment.getStatus())
                 .bind("amount", payment.getAmount())
+                .bind("gateway_account_id", gatewayAccountId)
+                .bind("reference_number", payment.getReferenceNumber())
                 .execute());
 
         return this;
@@ -61,7 +63,7 @@ public class DatabaseTestHelper {
 
     public List<Map<String, Object>> getPaymentsByProductExternalId(String productExternalId) {
         return jdbi.withHandle(h ->
-                h.createQuery("SELECT pa.id, pa.external_id, pa.govuk_payment_id, pa.next_url, pa.date_created, pa.product_id, pa.status, pa.amount " +
+                h.createQuery("SELECT pa.id, pa.external_id, pa.govuk_payment_id, pa.next_url, pa.date_created, pa.product_id, pa.status, pa.amount, pa.reference_number " +
                         "FROM payments pa, products pr " +
                         "WHERE pr.id = pa.product_id " +
                         "AND pr.external_id = :product_external_id")

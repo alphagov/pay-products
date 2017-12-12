@@ -22,6 +22,7 @@ public class Payment {
     private static final String FIELD_STATUS = "status";
     private static final String FIELD_AMOUNT = "amount";
     private static final String FIELD_GOVUK_STATUS = "govuk_status";
+    private static final String FIELD_REFERENCE_NUMBER = "reference_number";
 
     private String externalId;
     private String govukPaymentId;
@@ -34,6 +35,7 @@ public class Payment {
     private Long amount;
     @JsonProperty(FIELD_GOVUK_STATUS)
     private String govUkStatus;
+    private String referenceNumber;
 
     private PaymentStatus status;
 
@@ -44,7 +46,8 @@ public class Payment {
             @JsonProperty(FIELD_AMOUNT) Long amount,
             @JsonProperty(FIELD_PRODUCT_EXTERNAL_ID) String productExternalId,
             @JsonProperty(FIELD_STATUS) PaymentStatus status,
-            Integer productId) {
+            Integer productId,
+            @JsonProperty(FIELD_REFERENCE_NUMBER) String referenceNumber) {
         this.externalId = externalId;
         this.govukPaymentId = govukPaymentId;
         this.nextUrl = nextUrl;
@@ -52,6 +55,7 @@ public class Payment {
         this.status = status;
         this.productId = productId;
         this.amount = amount;
+        this.referenceNumber = referenceNumber;
     }
 
     public String getExternalId() {
@@ -101,5 +105,9 @@ public class Payment {
 
     public void setGovukStatus(String status){
         this.govUkStatus = status;
+    }
+
+    public String getReferenceNumber() {
+        return referenceNumber;
     }
 }

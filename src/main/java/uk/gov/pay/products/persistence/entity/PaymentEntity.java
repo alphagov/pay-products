@@ -43,6 +43,12 @@ public class PaymentEntity extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
+    @Column(name = "gateway_account_id")
+    private Integer gatewayAccountId;
+
+    @Column(name = "reference_number")
+    private String referenceNumber;
+
     public PaymentEntity() {
     }
 
@@ -106,7 +112,8 @@ public class PaymentEntity extends AbstractEntity {
                 this.getAmount(),
                 this.product != null ? this.product.getExternalId() : null,
                 this.status,
-                this.product != null ? this.product.getId() : null
+                this.product != null ? this.product.getId() : null,
+                this.getReferenceNumber()
         );
     }
 
@@ -121,5 +128,21 @@ public class PaymentEntity extends AbstractEntity {
                 ", productEntity=" + product +
                 ", status=" + status +
                 '}';
+    }
+
+    public Integer getGatewayAccountId() {
+        return gatewayAccountId;
+    }
+
+    public void setGatewayAccountId(Integer gatewayAccountId) {
+        this.gatewayAccountId = gatewayAccountId;
+    }
+
+    public String getReferenceNumber() {
+        return referenceNumber;
+    }
+
+    public void setReferenceNumber(String referenceNumber) {
+        this.referenceNumber = referenceNumber;
     }
 }

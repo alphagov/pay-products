@@ -1,5 +1,6 @@
 package uk.gov.pay.products.service;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,10 +30,14 @@ import uk.gov.pay.products.util.RandomIdGenerator;
 
 import java.util.Optional;
 
+import static java.util.Objects.isNull;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
@@ -58,6 +63,8 @@ public class PaymentCreatorTest {
     private ProductsConfiguration productsConfiguration;
 
     private PaymentCreator paymentCreator;
+
+
 
     @Before
     public void setup() throws Exception {
@@ -249,6 +256,47 @@ public class PaymentCreatorTest {
 
     }
 
+    @Test
+    public void shouldThrowRuntimeException_whenTooManyConflictsInReferenceNumbers() {
+        int productId = 1;
+        String productExternalId = "product-external-id";
+        long productPrice = 100L;
+        String productName = "name";
+        String productApiToken = "api-token";
+
+        Integer gatewayAccountId = 1;
+
+        ProductEntity productEntity = createProductEntity(
+                productId,
+                productPrice,
+                productExternalId,
+                productName,
+                "",
+                productApiToken,
+                gatewayAccountId);
+
+        when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
+        doThrow(new javax.persistence.RollbackException("payments_gateway_account_id_reference_number_key duplicate key value violates unique constraint"))
+                .when(paymentDao).persist(any(PaymentEntity.class));
+
+        Exception exception = null;
+        try {
+            paymentCreator.doCreate(productExternalId);
+        } catch (RuntimeException ex) {
+            exception = ex;
+        }
+        assertThat(isNull(exception), is(false));
+        assertThat(exception instanceof RuntimeException, is(true));
+        assertThat(exception.getMessage().contains("Too many conflicts generating unique user friendly reference numbers for gateway account"), is(true));
+        verify(paymentDao, times(3)).persist(any(PaymentEntity.class));
+    }
+
+    private ProductEntity createProductEntity(int id, long price, String externalId, String name, String returnUrl, String apiToken, Integer gatewayAccountId) {
+        ProductEntity productEntity = createProductEntity(id, price, externalId, name, returnUrl,apiToken);
+        productEntity.setGatewayAccountId(gatewayAccountId);
+
+        return productEntity;
+    }
 
     private ProductEntity createProductEntity(int id, long price, String externalId, String name, String returnUrl, String apiToken) {
         ProductEntity productEntity = new ProductEntity();

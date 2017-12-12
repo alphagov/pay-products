@@ -23,8 +23,11 @@ import uk.gov.pay.products.util.PaymentStatus;
 
 import javax.inject.Inject;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static uk.gov.pay.products.util.RandomIdGenerator.randomUserFriendlyReference;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 public class PaymentCreator {
@@ -37,6 +40,7 @@ public class PaymentCreator {
     private final PublicApiRestClient publicApiRestClient;
     private final LinksDecorator linksDecorator;
     private final ProductsConfiguration productsConfiguration;
+    private final Integer MAX_NUMBER_OF_RETRY_FOR_UNIQUE_REF_NUMBER = 3;
 
 
     @Inject
@@ -74,10 +78,37 @@ public class PaymentCreator {
             paymentEntity.setExternalId(randomUuid());
             paymentEntity.setProductEntity(productEntity);
             paymentEntity.setStatus(PaymentStatus.CREATED);
-            paymentDao.persist(paymentEntity);
+            paymentEntity.setGatewayAccountId(productEntity.getGatewayAccountId());
+            paymentEntity.setReferenceNumber(randomUserFriendlyReference());
 
-            return paymentEntity;
+            int counter = 0;
+            return mergePaymentEntityWithReferenceNumberCheck(paymentEntity, counter);
         };
+    }
+
+    private PaymentEntity mergePaymentEntityWithReferenceNumberCheck(PaymentEntity paymentEntity, int counter) {
+        int count = counter++;
+        if(count == MAX_NUMBER_OF_RETRY_FOR_UNIQUE_REF_NUMBER) {
+            String exceptionMsg = format("Too many conflicts generating unique user friendly reference numbers for gateway account %s", paymentEntity.getGatewayAccountId());
+            RuntimeException runtimeException = new RuntimeException(exceptionMsg);
+            logger.error(exceptionMsg, runtimeException);
+            throw runtimeException;
+        }
+
+        try {
+            paymentDao.persist(paymentEntity);
+        } catch (Exception ex) {
+            if(ex instanceof javax.persistence.RollbackException
+                    && ex.getMessage().contains("payments_gateway_account_id_reference_number_key")
+                    && ex.getMessage().contains("duplicate key value violates unique constraint")) {
+                paymentEntity.setReferenceNumber(randomUserFriendlyReference());
+                mergePaymentEntityWithReferenceNumberCheck(paymentEntity, counter);
+
+            } else {
+                throw ex;
+            }
+        }
+        return paymentEntity;
     }
 
     private NonTransactionalOperation<TransactionContext, PaymentEntity> paymentCreation() {
@@ -88,6 +119,8 @@ public class PaymentCreator {
             String returnUrl = isBlank(productEntity.getReturnUrl())
                     ? format("%s/%s", productsConfiguration.getProductsUiConfirmUrl(), paymentEntity.getExternalId())
                     : productEntity.getReturnUrl();
+
+
 
             PaymentRequest paymentRequest = new PaymentRequest(
                     productEntity.getPrice(),

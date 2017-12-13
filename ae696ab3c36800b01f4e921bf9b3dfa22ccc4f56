@@ -31,3 +31,5 @@ release.alpha_release-41.date=2017-12-13:12:27:10
 staging-2.tag=FAILED-39
 
 staging-2.FAILED-39.date=
+
+staging-2.FAILED-39.status=failed

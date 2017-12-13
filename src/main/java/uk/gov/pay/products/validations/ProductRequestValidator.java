@@ -29,7 +29,7 @@ public class ProductRequestValidator {
                 FIELD_PAY_API_TOKEN,
                 FIELD_NAME,
                 FIELD_PRICE,
-                FIELD_TYPE
+                FIELD_TYPE,
                 FIELD_SERVICE_NAME);
 
         if (!errors.isPresent() && payload.get(FIELD_RETURN_URL)!= null){

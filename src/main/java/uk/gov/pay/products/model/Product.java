@@ -75,7 +75,7 @@ public class Product {
         String returnUrl = (jsonPayload.get(RETURN_URL) != null) ? jsonPayload.get(RETURN_URL).asText() : null;
         String serviceName = (jsonPayload.get(FIELD_SERVICE_NAME) != null) ? jsonPayload.get(FIELD_SERVICE_NAME).asText() : null;
 
-        return new Product(randomUuid(), name, description, paiApiToken,
+        return new Product(randomUuid(), name, description, payApiToken,
                 price, ProductStatus.ACTIVE, gatewayAccountId, serviceName, type, returnUrl);
     }
 

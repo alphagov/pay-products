@@ -123,14 +123,6 @@ public class ProductEntity extends AbstractEntity {
         this.status = status;
     }
 
-    public String getReturnUrl() {
-        return returnUrl;
-    }
-
-    public void setReturnUrl(String returnUrl) {
-        this.returnUrl = returnUrl;
-    }
-
     public static ProductEntity from(Product product) {
         ProductEntity productEntity = new ProductEntity();
 
@@ -141,6 +133,7 @@ public class ProductEntity extends AbstractEntity {
         productEntity.setExternalId(product.getExternalId());
         productEntity.setDescription(product.getDescription());
         productEntity.setGatewayAccountId(product.getGatewayAccountId());
+        productEntity.setType(product.getType());
         productEntity.setReturnUrl(product.getReturnUrl());
         productEntity.setServiceName(product.getServiceName());
 

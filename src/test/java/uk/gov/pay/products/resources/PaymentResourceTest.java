@@ -54,11 +54,6 @@ public class PaymentResourceTest extends IntegrationTest {
         String govukPaymentId = "govukPaymentId";
         String nextUrl = "http://next.url";
 
-        JsonObject expectedPaymentRequestPayload = PublicApiStub.createPaymentRequestPayload(
-                product.getPrice(),
-                product.getExternalId(),
-                product.getName(),
-                product.getReturnUrl());
         JsonObject paymentResponsePayload = PublicApiStub.createPaymentResponsePayload(
                 govukPaymentId,
                 product.getPrice(),
@@ -67,7 +62,7 @@ public class PaymentResourceTest extends IntegrationTest {
                 product.getReturnUrl(),
                 nextUrl);
         publicApiStub
-                .whenReceiveCreatedPaymentRequestWithAuthApiTokenAndWithBody(product.getPayApiToken(), expectedPaymentRequestPayload)
+                .whenReceiveCreatedPaymentRequestWithAuthApiToken(product.getPayApiToken())
                 .respondCreatedWithBody(paymentResponsePayload);
 
         ValidatableResponse response = givenAuthenticatedSetup()

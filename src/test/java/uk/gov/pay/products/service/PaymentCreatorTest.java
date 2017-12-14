@@ -29,6 +29,7 @@ import uk.gov.pay.products.util.PaymentStatus;
 import uk.gov.pay.products.util.RandomIdGenerator;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static java.util.Objects.isNull;
 import static org.hamcrest.core.Is.is;
@@ -43,6 +44,8 @@ import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import static uk.gov.pay.products.util.PaymentStatus.ERROR;
 import static uk.gov.pay.products.util.PaymentStatus.SUBMITTED;
+import static uk.gov.pay.products.util.RandomIdGenerator.randomUserFriendlyReference;
+import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(RandomIdGenerator.class)
@@ -74,12 +77,15 @@ public class PaymentCreatorTest {
 
     @Test
     public void shouldCreateASuccessfulPayment_whenReturnUrlIsPresent() throws Exception {
+        PowerMockito.mockStatic(RandomIdGenerator.class);
         int productId = 1;
         String productExternalId = "product-external-id";
+        String paymentExernalId = "payment-external-id";
         long productPrice = 100L;
         String productName = "name";
         String productReturnUrl = "https://return.url";
         String productApiToken = "api-token";
+        String referenceNumber = createRandomReferenceNumber();
 
         String paymentId = "payment-id";
         Long paymentAmount = 50L;
@@ -94,7 +100,7 @@ public class PaymentCreatorTest {
                 productApiToken);
         PaymentRequest expectedPaymentRequest = createPaymentRequest(
                 productPrice,
-                productExternalId,
+                referenceNumber,
                 productName,
                 productReturnUrl);
         PaymentResponse paymentResponse = createPaymentResponse(
@@ -104,6 +110,8 @@ public class PaymentCreatorTest {
                 productReturnUrl);
 
 
+        when(randomUuid()).thenReturn(paymentExernalId);
+        when(randomUserFriendlyReference()).thenReturn(referenceNumber);
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
         when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest)))).thenReturn(paymentResponse);
 
@@ -148,6 +156,7 @@ public class PaymentCreatorTest {
         String paymentExternalId = "random-external-id";
         Long paymentAmount = 50L;
         String paymentNextUrl = "http://next.url";
+        String referenceNumber = createRandomReferenceNumber();
 
         ProductEntity productEntity = createProductEntity(
                 productId,
@@ -158,7 +167,7 @@ public class PaymentCreatorTest {
                 productApiToken);
         PaymentRequest expectedPaymentRequest = createPaymentRequest(
                 productPrice,
-                productExternalId,
+                referenceNumber,
                 productName,
                 productReturnUrl + "/" + paymentExternalId);
         PaymentResponse paymentResponse = createPaymentResponse(
@@ -169,7 +178,8 @@ public class PaymentCreatorTest {
 
 
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
-        when(RandomIdGenerator.randomUuid()).thenReturn(paymentExternalId);
+        when(randomUuid()).thenReturn(paymentExternalId);
+        when(randomUserFriendlyReference()).thenReturn(referenceNumber);
         when(productsConfiguration.getProductsUiConfirmUrl()).thenReturn(productReturnUrl);
         when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest)))).thenReturn(paymentResponse);
 
@@ -201,12 +211,17 @@ public class PaymentCreatorTest {
 
     @Test
     public void shouldCreateAnErrorPayment_whenPublicApiCallFails() throws Exception {
+        PowerMockito.mockStatic(RandomIdGenerator.class);
+
         int productId = 1;
         String productExternalId = "product-external-id";
         long productPrice = 100L;
         String productName = "name";
         String productReturnUrl = "https://return.url";
         String productApiToken = "api-token";
+
+        String paymentExternalId = "random-external-id";
+        String referenceNumber = createRandomReferenceNumber();
 
 
         ProductEntity productEntity = createProductEntity(
@@ -218,11 +233,13 @@ public class PaymentCreatorTest {
                 productApiToken);
         PaymentRequest expectedPaymentRequest = createPaymentRequest(
                 productPrice,
-                productExternalId,
+                referenceNumber,
                 productName,
                 productReturnUrl);
 
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
+        when(randomUuid()).thenReturn(paymentExternalId);
+        when(randomUserFriendlyReference()).thenReturn(referenceNumber);
         when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest))))
                 .thenThrow(PublicApiResponseErrorException.class);
 
@@ -334,5 +351,9 @@ public class PaymentCreatorTest {
         paymentEntity.setStatus(status);
         paymentEntity.setAmount(amount);
         return paymentEntity;
+    }
+
+    private String createRandomReferenceNumber() {
+        return UUID.randomUUID().toString().replace("-", "").toUpperCase().substring(1, 10);
     }
 }

@@ -23,8 +23,6 @@ import uk.gov.pay.products.util.PaymentStatus;
 
 import javax.inject.Inject;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUserFriendlyReference;
@@ -124,7 +122,7 @@ public class PaymentCreator {
 
             PaymentRequest paymentRequest = new PaymentRequest(
                     productEntity.getPrice(),
-                    productEntity.getExternalId(),
+                    paymentEntity.getReferenceNumber(),
                     productEntity.getName(),
                     returnUrl);
 

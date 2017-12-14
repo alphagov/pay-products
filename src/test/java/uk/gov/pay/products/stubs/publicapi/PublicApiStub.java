@@ -120,6 +120,14 @@ public class PublicApiStub {
                 .withBody(requestBody.toString())));
     }
 
+    public PublicApiStubExpectation whenReceiveCreatedPaymentRequestWithAuthApiToken(String authApiToken) {
+        return new PublicApiStubExpectation(mockClient.when(request()
+                .withMethod(POST)
+                .withPath(PAYMENTS_PATH)
+                .withHeader(AUTHORIZATION, "Bearer " + authApiToken)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)));
+    }
+
     public PublicApiStubExpectation whenReceiveGetPaymentRequest(String paymentId) {
         return new PublicApiStubExpectation(mockClient.when(request()
                 .withMethod(GET)

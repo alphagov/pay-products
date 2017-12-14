@@ -13,3 +13,5 @@ production-1.tag=alpha_production-1-44
 production-1.alpha_production-1-44.date=2017-12-14:09:52:11
 
 production-1.alpha_production-1-44.status=success
+
+staging-2.tag=FAILED-44

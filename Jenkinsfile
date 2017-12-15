@@ -52,7 +52,7 @@ pipeline {
       }
       steps {
         deployPaas("products", "test", null, true)
-        deploy("products", "test", null, false, true, "uk.gov.pay.endtoend.categories.SmokeProducts")
+        deploy("products", "test", null, false, true, "uk.gov.pay.endtoend.categories.SmokeProducts", true)
       }
     }
   }

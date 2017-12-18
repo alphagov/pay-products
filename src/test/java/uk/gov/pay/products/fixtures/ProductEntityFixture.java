@@ -12,6 +12,7 @@ public class ProductEntityFixture {
     private String description = "default description";
     private String apiKey = "default api key";
     private String name = "default name";
+    private String serviceName = "default service";
     private Long price = 100L;
     private String returnUrl = "http://return.url";
     private ProductStatus status = ProductStatus.ACTIVE;
@@ -32,6 +33,7 @@ public class ProductEntityFixture {
         product.setStatus(status);
         product.setGatewayAccountId(gatewayAccountId);
         product.setReturnUrl(returnUrl);
+        product.setServiceName(serviceName);
 
         return product;
     }
@@ -57,6 +59,11 @@ public class ProductEntityFixture {
 
     public ProductEntityFixture withStatus(ProductStatus status) {
         this.status = status;
+        return this;
+    }
+
+    public ProductEntityFixture withServiceName(String serviceName) {
+        this.serviceName = serviceName;
         return this;
     }
 

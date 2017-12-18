@@ -26,6 +26,7 @@ public class Product {
     private static final String STATUS = "status";
     private static final String FIELD_GATEWAY_ACCOUNT_ID = "gateway_account_id";
     private static final String RETURN_URL = "return_url";
+    private static final String FIELD_SERVICE_NAME = "service_name";
 
     private String externalId;
     private String name;
@@ -36,6 +37,7 @@ public class Product {
     private Integer gatewayAccountId;
     private List<Link> links = new ArrayList<>();
     private String returnUrl;
+    private String serviceName;
 
     public Product(
             @JsonProperty(EXTERNAL_ID) String externalId,
@@ -45,6 +47,7 @@ public class Product {
             @JsonProperty(FIELD_PRICE) Long price,
             @JsonProperty(STATUS) ProductStatus status,
             @JsonProperty(FIELD_GATEWAY_ACCOUNT_ID) Integer gatewayAccountId,
+            @JsonProperty(FIELD_SERVICE_NAME) String serviceName,
             @JsonProperty(RETURN_URL) String returnUrl)
     {
         this.externalId = externalId;
@@ -54,6 +57,7 @@ public class Product {
         this.price = price;
         this.status = status;
         this.gatewayAccountId = gatewayAccountId;
+        this.serviceName = serviceName;
         this.returnUrl = returnUrl;
     }
 
@@ -64,9 +68,10 @@ public class Product {
         Integer gatewayAccountId = (jsonPayload.get(FIELD_GATEWAY_ACCOUNT_ID) != null ? jsonPayload.get(FIELD_GATEWAY_ACCOUNT_ID).asInt() : null);
         String description = (jsonPayload.get(DESCRIPTION) != null) ? jsonPayload.get(DESCRIPTION).asText() : null;
         String returnUrl = (jsonPayload.get(RETURN_URL) != null) ? jsonPayload.get(RETURN_URL).asText() : null;
+        String serviceName = (jsonPayload.get(FIELD_SERVICE_NAME) != null) ? jsonPayload.get(FIELD_SERVICE_NAME).asText() : null;
 
         return new Product(randomUuid(), name, description, paiApiToken,
-                price, ProductStatus.ACTIVE, gatewayAccountId, returnUrl);
+                price, ProductStatus.ACTIVE, gatewayAccountId, serviceName, returnUrl);
     }
 
     public String getName() {
@@ -94,6 +99,10 @@ public class Product {
 
     public String getExternalId() {
         return externalId;
+    }
+
+    public String getServiceName() {
+        return serviceName;
     }
 
     public void setLinks(List<Link> links) {

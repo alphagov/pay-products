@@ -29,6 +29,7 @@ public class ProductResourceTest extends IntegrationTest {
     private static final String DESCRIPTION = "description";
     private static final String RETURN_URL = "return_url";
     private static final String GATEWAY_ACCOUNT_ID = "gateway_account_id";
+    private static final String SERVICE_NAME = "service_name";
 
 
     @Test
@@ -103,6 +104,7 @@ public class ProductResourceTest extends IntegrationTest {
         Long price = 1050L;
         String description = "Some test description";
         Integer gatewayAccountId = randomInt();
+        String serviceName = "Example Service";
 
         String returnUrl = "https://some.valid.url";
         ImmutableMap<Object, Object> payload = ImmutableMap.builder()
@@ -112,6 +114,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .put(PRICE, price)
                 .put(DESCRIPTION, description)
                 .put(RETURN_URL, returnUrl)
+                .put(SERVICE_NAME, serviceName)
                 .build();
 
         ValidatableResponse response = givenAuthenticatedSetup()
@@ -127,7 +130,8 @@ public class ProductResourceTest extends IntegrationTest {
                 .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
                 .body(PRICE, is(1050))
                 .body(DESCRIPTION, is(description))
-                .body(RETURN_URL, is(returnUrl));
+                .body(RETURN_URL, is(returnUrl))
+                .body(SERVICE_NAME, is(serviceName));
 
         String externalId = response.extract().path(EXTERNAL_ID);
 

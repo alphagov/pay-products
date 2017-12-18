@@ -33,6 +33,7 @@ public class ProductCreatorTest {
     private Integer gatewayAccountId = randomInt();
     public static final String PRODUCT_NAME = "Test product name";
     public static final Long PRICE = 1050L;
+    private static final String SERVICE_NAME = "Example Service";
 
     @Before
     public void setup() throws Exception {
@@ -52,6 +53,7 @@ public class ProductCreatorTest {
                 PRICE,
                 null,
                 gatewayAccountId,
+                null,
                 null
         );
 
@@ -86,17 +88,20 @@ public class ProductCreatorTest {
                 PRICE,
                 null,
                 gatewayAccountId,
+                SERVICE_NAME,
                 returnUrl
         );
 
         Product product = productCreator.doCreate(productRequest);
         assertThat(product.getDescription(), is(description));
         assertThat(product.getReturnUrl(), is(returnUrl));
+        assertThat(product.getServiceName(), is(SERVICE_NAME));
 
         verify(productDao, times(1)).persist(persistedProductEntity.capture());
         ProductEntity productEntityValue = persistedProductEntity.getValue();
 
         assertThat(productEntityValue.getDescription(), is(description));
         assertThat(productEntityValue.getReturnUrl(), is(returnUrl));
+        assertThat(productEntityValue.getServiceName(), is(SERVICE_NAME));
     }
 }

@@ -17,6 +17,7 @@ Content-Type: application/json
     "name" :                    "A name for the product",
     "description" :             "Description of the product",
     "price" :                   1050,
+    "service_name":             "Some awesome government service",
     "return_url" :              "https://some.valid.url/"   
 }
 ```
@@ -30,6 +31,7 @@ Content-Type: application/json
 | `name`                   |    X     | Name of the product. This will be passed as the `name` when creating the charge | |
 | `price`                  |    X     | Price for the product in pence. This will be passed as the  `amount` when creating charge    | |
 | `description`            |          | Description of the product. This will be passed as the `description` when creating the charge | |
+| `service_name`           |    X     | The name of the service associated that the product is to be associated with    |   |
 | `return_url`             |          | (https only) where to redirect to upon completion of a payment. If not provided, `pay-products` will generate a default url to itself when creating a charge | |
 
 ### Response example
@@ -42,6 +44,7 @@ Content-Type: application/json
     "gateway_account_id" : "1234",
     "description":         "Description of the product",
     "price":               1050,
+    "service_name":             "Some awesome government service",
     "return_url" :         "https://some.valid.url/",
     "_links": [
     {
@@ -65,6 +68,7 @@ Content-Type: application/json
 | `gateway_account_id `    | X              | gateway account id of the Gateway    as identified by adminusers.  |   |
 | `description`            | X              | Description of the product |
 | `price`                  | X              | Price for the product in pence      |
+| `service_name`           | X              | The name of the service with which the product is associated  |
 | `return_url`             |                | return url provided. _(not be available if it was not provided)_   |
 | `_links.self`            | X              | self GET link to the product. |
 | `_links.pay`             | X              | The link in `pay-products-ui` where a charge for this product will be generated and redirected to GOV.UK Pay |
@@ -89,6 +93,7 @@ Content-Type: application/json
     "description":         "Description of the product",
     "price":               1050,
     "return_url" :         "https://some.valid.url/"
+    "service_name":        "Some awesome government service",
     "_links": [
     {
         "href": "https://govukpay-products.cloudapps.digital/v1/api/products/874h5c87834659q345698495",
@@ -125,6 +130,7 @@ Content-Type: application/json
         "description":         "Description 1",
         "price":               9999,
         "return_url" :         "https://some.valid.url/"
+        "service_name":        "Some awesome government service",
         "_links": [
         {
             "href": "https://govukpay-products.cloudapps.digital/v1/api/products/874h5c87834659q345698495",
@@ -142,6 +148,7 @@ Content-Type: application/json
         "description":         "Description 2",
         "price":               1050,
         "return_url" :         "https://some.valid.url/"
+        "service_name":             "Some awesome government service",
         "_links": [
         {
             "href": "https://govukpay-products.cloudapps.digital/v1/api/products/h6347634cwb67wii7b6ciueroytw",

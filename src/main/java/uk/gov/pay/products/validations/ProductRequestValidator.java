@@ -14,6 +14,7 @@ public class ProductRequestValidator {
     private static final String FIELD_NAME = "name";
     private static final String FIELD_PRICE = "price";
     private static final String FIELD_RETURN_URL = "return_url";
+    private static final String FIELD_SERVICE_NAME = "service_name";
 
 
 
@@ -28,7 +29,8 @@ public class ProductRequestValidator {
                 FIELD_GATEWAY_ACCOUNT_ID,
                 FIELD_PAY_API_TOKEN,
                 FIELD_NAME,
-                FIELD_PRICE);
+                FIELD_PRICE,
+                FIELD_SERVICE_NAME);
 
         if (!errors.isPresent() && payload.get(FIELD_RETURN_URL)!= null){
             errors = requestValidations.checkIsUrl(payload, FIELD_RETURN_URL);

@@ -59,13 +59,16 @@ public class ProductResourceTest extends IntegrationTest {
         String name = "Flashy new GOV Service";
         Long price = 1050L;
         Integer gatewayAccountId = randomInt();
+        String serviceName = "Example Name";
 
-        ImmutableMap<String, ? extends Serializable> payload = ImmutableMap.of(
-                GATEWAY_ACCOUNT_ID, gatewayAccountId,
-                PAY_API_TOKEN, payApiToken,
-                NAME, name,
-                PRICE, price,
-                RETURN_URL, "https://return.url");
+        ImmutableMap<Object, Object> payload = ImmutableMap.builder()
+                .put(GATEWAY_ACCOUNT_ID, gatewayAccountId)
+                .put(PAY_API_TOKEN, payApiToken)
+                .put(NAME, name)
+                .put(PRICE, price)
+                .put(SERVICE_NAME, serviceName)
+                .put(RETURN_URL, "https://return.url")
+                .build();
 
         ValidatableResponse response = givenAuthenticatedSetup()
                 .contentType(APPLICATION_JSON)
@@ -79,7 +82,8 @@ public class ProductResourceTest extends IntegrationTest {
                 .body(NAME, is("Flashy new GOV Service"))
                 .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
                 .body(PRICE, is(1050))
-                .body(EXTERNAL_ID, matchesPattern("^[0-9a-z]{32}$"));
+                .body(EXTERNAL_ID, matchesPattern("^[0-9a-z]{32}$"))
+                .body(SERVICE_NAME, is(serviceName));
 
         String externalId = response.extract().path(EXTERNAL_ID);
 

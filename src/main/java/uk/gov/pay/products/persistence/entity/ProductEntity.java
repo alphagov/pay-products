@@ -45,6 +45,9 @@ public class ProductEntity extends AbstractEntity {
     @Column(name = "return_url")
     private String returnUrl;
 
+    @Column(name = "service_name")
+    private String serviceName;
+
     public ProductEntity() {
     }
 
@@ -123,6 +126,7 @@ public class ProductEntity extends AbstractEntity {
         productEntity.setDescription(product.getDescription());
         productEntity.setGatewayAccountId(product.getGatewayAccountId());
         productEntity.setReturnUrl(product.getReturnUrl());
+        productEntity.setServiceName(product.getServiceName());
 
         return productEntity;
     }
@@ -136,6 +140,7 @@ public class ProductEntity extends AbstractEntity {
                 this.price,
                 this.status,
                 this.gatewayAccountId,
+                this.serviceName,
                 this.returnUrl);
     }
 
@@ -145,5 +150,13 @@ public class ProductEntity extends AbstractEntity {
 
     public void setReturnUrl(String returnUrl) {
         this.returnUrl = returnUrl;
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
     }
 }

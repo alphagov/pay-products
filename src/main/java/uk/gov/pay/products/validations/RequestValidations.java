@@ -3,11 +3,13 @@ package uk.gov.pay.products.validations;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.common.collect.ImmutableList;
+import uk.gov.pay.products.util.ProductType;
 
 import javax.json.Json;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.rmi.UnexpectedException;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -35,6 +37,14 @@ public class RequestValidations {
 
     public Optional<List<String>> checkMaxLength(JsonNode payload, int maxLength, String... fieldNames) {
         return applyCheck(payload, exceedsMaxLength(maxLength), fieldNames, "Field [%s] must have a maximum length of " + maxLength + " characters");
+    }
+
+    public Optional<List<String>> checkIsBelowMaxAmount(JsonNode payload, String... fieldNames) {
+        return applyCheck(payload, isBelowMax(), fieldNames, "Field [%s] must be a number below " + MAX_PRICE);
+    }
+
+    public Optional<List<String>> checkIsProductType(JsonNode payload, String... fieldNames) {
+        return applyCheck(payload, isNotProductType(), fieldNames, "Field [%s] must be a valid product type ");
     }
 
     private Function<JsonNode, Boolean> exceedsMaxLength(int maxLength) {
@@ -83,13 +93,25 @@ public class RequestValidations {
         return jsonNode -> isDigits(jsonNode.asText()) && jsonNode.asLong() >= MAX_PRICE;
     }
 
+    public static Function<JsonNode, Boolean> isNotProductType() {
+        return jsonNode -> {
+            try {
+                ProductType.valueOf(jsonNode.asText());
+            } catch (Exception e) {
+
+                return true;
+            }
+            return false;
+        };
+    }
+
     public static Function<JsonNode, Boolean> isNotUrl() {
         return jsonNode -> {
-            if(jsonNode == null || isBlank(jsonNode.asText()) || !jsonNode.asText().startsWith("https")) {
+            if (jsonNode == null || isBlank(jsonNode.asText()) || !jsonNode.asText().startsWith("https")) {
                 return true;
             }
 
-            try{
+            try {
                 new URL(jsonNode.asText());
             } catch (MalformedURLException e) {
                 return true;
@@ -102,7 +124,4 @@ public class RequestValidations {
         return jsonNode -> !ImmutableList.of("true", "false").contains(jsonNode.asText().toLowerCase());
     }
 
-    public Optional<List<String>> checkIsBelowMaxAmount(JsonNode payload, String... fieldNames) {
-        return applyCheck(payload, isBelowMax(), fieldNames, "Field [%s] must be a number below " + MAX_PRICE);
-    }
 }

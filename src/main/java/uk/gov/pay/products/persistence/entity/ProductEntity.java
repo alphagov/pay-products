@@ -2,13 +2,9 @@ package uk.gov.pay.products.persistence.entity;
 
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.util.ProductStatus;
+import uk.gov.pay.products.util.ProductType;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
@@ -41,6 +37,10 @@ public class ProductEntity extends AbstractEntity {
 
     @Column(name = "gateway_account_id")
     private Integer gatewayAccountId;
+
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private ProductType type = ProductType.DEMO;
 
     @Column(name = "return_url")
     private String returnUrl;
@@ -95,8 +95,8 @@ public class ProductEntity extends AbstractEntity {
         return status;
     }
 
-    public void setStatus(ProductStatus status) {
-        this.status = status;
+    public void setType(ProductType type) {
+        this.type = type;
     }
 
     public ZonedDateTime getDateCreated() {
@@ -115,6 +115,14 @@ public class ProductEntity extends AbstractEntity {
         this.gatewayAccountId = gatewayAccountId;
     }
 
+    public ProductType getType() {
+        return type;
+    }
+
+    public void setStatus(ProductStatus status) {
+        this.status = status;
+    }
+
     public static ProductEntity from(Product product) {
         ProductEntity productEntity = new ProductEntity();
 
@@ -125,6 +133,7 @@ public class ProductEntity extends AbstractEntity {
         productEntity.setExternalId(product.getExternalId());
         productEntity.setDescription(product.getDescription());
         productEntity.setGatewayAccountId(product.getGatewayAccountId());
+        productEntity.setType(product.getType());
         productEntity.setReturnUrl(product.getReturnUrl());
         productEntity.setServiceName(product.getServiceName());
 
@@ -141,6 +150,7 @@ public class ProductEntity extends AbstractEntity {
                 this.status,
                 this.gatewayAccountId,
                 this.serviceName,
+                this.type,
                 this.returnUrl);
     }
 

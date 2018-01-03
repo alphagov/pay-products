@@ -1,6 +1,5 @@
 package uk.gov.pay.products.model;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import uk.gov.pay.products.util.ProductStatus;
+import uk.gov.pay.products.util.ProductType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +24,7 @@ public class Product {
     private static final String EXTERNAL_ID = "external_id";
     private static final String DESCRIPTION = "description";
     private static final String STATUS = "status";
+    private static final String TYPE = "type";
     private static final String FIELD_GATEWAY_ACCOUNT_ID = "gateway_account_id";
     private static final String RETURN_URL = "return_url";
     private static final String FIELD_SERVICE_NAME = "service_name";
@@ -34,6 +35,7 @@ public class Product {
     private String payApiToken;
     private Long price;
     private ProductStatus status;
+    private ProductType type;
     private Integer gatewayAccountId;
     private List<Link> links = new ArrayList<>();
     private String returnUrl;
@@ -48,6 +50,7 @@ public class Product {
             @JsonProperty(STATUS) ProductStatus status,
             @JsonProperty(FIELD_GATEWAY_ACCOUNT_ID) Integer gatewayAccountId,
             @JsonProperty(FIELD_SERVICE_NAME) String serviceName,
+            @JsonProperty(TYPE) ProductType type,
             @JsonProperty(RETURN_URL) String returnUrl)
     {
         this.externalId = externalId;
@@ -58,20 +61,22 @@ public class Product {
         this.status = status;
         this.gatewayAccountId = gatewayAccountId;
         this.serviceName = serviceName;
+        this.type = type;
         this.returnUrl = returnUrl;
     }
 
     public static Product from(JsonNode jsonPayload) {
-        String paiApiToken = (jsonPayload.get(FIELD_PAY_API_TOKEN) != null) ? jsonPayload.get(FIELD_PAY_API_TOKEN).asText() : null;
+        String payApiToken = (jsonPayload.get(FIELD_PAY_API_TOKEN) != null) ? jsonPayload.get(FIELD_PAY_API_TOKEN).asText() : null;
         String name = (jsonPayload.get(FIELD_NAME) != null) ? jsonPayload.get(FIELD_NAME).asText() : null;
         Long price = (jsonPayload.get(FIELD_PRICE) != null) ? jsonPayload.get(FIELD_PRICE).asLong() : null;
         Integer gatewayAccountId = (jsonPayload.get(FIELD_GATEWAY_ACCOUNT_ID) != null ? jsonPayload.get(FIELD_GATEWAY_ACCOUNT_ID).asInt() : null);
         String description = (jsonPayload.get(DESCRIPTION) != null) ? jsonPayload.get(DESCRIPTION).asText() : null;
+        ProductType type = (jsonPayload.get(TYPE) != null) ? ProductType.valueOf(jsonPayload.get(TYPE).asText()) : null;
         String returnUrl = (jsonPayload.get(RETURN_URL) != null) ? jsonPayload.get(RETURN_URL).asText() : null;
         String serviceName = (jsonPayload.get(FIELD_SERVICE_NAME) != null) ? jsonPayload.get(FIELD_SERVICE_NAME).asText() : null;
 
-        return new Product(randomUuid(), name, description, paiApiToken,
-                price, ProductStatus.ACTIVE, gatewayAccountId, serviceName, returnUrl);
+        return new Product(randomUuid(), name, description, payApiToken,
+                price, ProductStatus.ACTIVE, gatewayAccountId, serviceName, type, returnUrl);
     }
 
     public String getName() {
@@ -112,6 +117,10 @@ public class Product {
     @JsonProperty("_links")
     public List<Link> getLinks() {
         return links;
+    }
+
+    public ProductType getType() {
+        return type;
     }
 
     public String getReturnUrl() {

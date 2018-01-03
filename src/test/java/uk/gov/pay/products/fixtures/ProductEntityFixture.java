@@ -2,6 +2,7 @@ package uk.gov.pay.products.fixtures;
 
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductStatus;
+import uk.gov.pay.products.util.ProductType;
 
 import java.time.ZonedDateTime;
 
@@ -16,6 +17,7 @@ public class ProductEntityFixture {
     private Long price = 100L;
     private String returnUrl = "http://return.url";
     private ProductStatus status = ProductStatus.ACTIVE;
+    private ProductType type = ProductType.DEMO;
     private String externalId = randomUuid();
     private ZonedDateTime dateCreated = ZonedDateTime.now();
     private int gatewayAccountId;
@@ -31,6 +33,7 @@ public class ProductEntityFixture {
         product.setExternalId(externalId);
         product.setPrice(price);
         product.setStatus(status);
+        product.setType(type);
         product.setGatewayAccountId(gatewayAccountId);
         product.setReturnUrl(returnUrl);
         product.setServiceName(serviceName);
@@ -64,6 +67,11 @@ public class ProductEntityFixture {
 
     public ProductEntityFixture withServiceName(String serviceName) {
         this.serviceName = serviceName;
+        return this;
+    }
+
+    public ProductEntityFixture withType(ProductType type) {
+        this.type = type;
         return this;
     }
 

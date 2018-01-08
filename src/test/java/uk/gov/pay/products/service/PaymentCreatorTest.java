@@ -1,6 +1,5 @@
 package uk.gov.pay.products.service;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,16 +30,12 @@ import uk.gov.pay.products.util.RandomIdGenerator;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import static uk.gov.pay.products.util.PaymentStatus.ERROR;
 import static uk.gov.pay.products.util.PaymentStatus.SUBMITTED;
@@ -68,7 +63,6 @@ public class PaymentCreatorTest {
     private PaymentCreator paymentCreator;
 
 
-
     @Before
     public void setup() throws Exception {
         LinksDecorator linksDecorator = new LinksDecorator(PRODUCT_URL, PRODUCT_UI_URL);
@@ -90,6 +84,8 @@ public class PaymentCreatorTest {
         String paymentId = "payment-id";
         Long paymentAmount = 50L;
         String paymentNextUrl = "http://next.url";
+        String productsUIConfirmUri = "https://products-ui/payment-complete";
+        String paymentReturnUrl = format("%s/%s", productsUIConfirmUri, paymentExernalId);
 
         ProductEntity productEntity = createProductEntity(
                 productId,
@@ -102,7 +98,7 @@ public class PaymentCreatorTest {
                 productPrice,
                 referenceNumber,
                 productName,
-                productReturnUrl);
+                paymentReturnUrl);
         PaymentResponse paymentResponse = createPaymentResponse(
                 paymentId,
                 paymentAmount,
@@ -114,6 +110,7 @@ public class PaymentCreatorTest {
         when(randomUserFriendlyReference()).thenReturn(referenceNumber);
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
         when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest)))).thenReturn(paymentResponse);
+        when(productsConfiguration.getProductsUiConfirmUrl()).thenReturn(productsUIConfirmUri);
 
         Payment payment = paymentCreator.doCreate(productExternalId);
 
@@ -222,6 +219,8 @@ public class PaymentCreatorTest {
 
         String paymentExternalId = "random-external-id";
         String referenceNumber = createRandomReferenceNumber();
+        String productsUIConfirmUri = "https://products-ui/payment-complete";
+        String paymentReturnUrl = format("%s/%s", productsUIConfirmUri, paymentExternalId);
 
 
         ProductEntity productEntity = createProductEntity(
@@ -235,11 +234,12 @@ public class PaymentCreatorTest {
                 productPrice,
                 referenceNumber,
                 productName,
-                productReturnUrl);
+                paymentReturnUrl);
 
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
         when(randomUuid()).thenReturn(paymentExternalId);
         when(randomUserFriendlyReference()).thenReturn(referenceNumber);
+        when(productsConfiguration.getProductsUiConfirmUrl()).thenReturn(productsUIConfirmUri);
         when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest))))
                 .thenThrow(PublicApiResponseErrorException.class);
 
@@ -309,7 +309,7 @@ public class PaymentCreatorTest {
     }
 
     private ProductEntity createProductEntity(int id, long price, String externalId, String name, String returnUrl, String apiToken, Integer gatewayAccountId) {
-        ProductEntity productEntity = createProductEntity(id, price, externalId, name, returnUrl,apiToken);
+        ProductEntity productEntity = createProductEntity(id, price, externalId, name, returnUrl, apiToken);
         productEntity.setGatewayAccountId(gatewayAccountId);
 
         return productEntity;

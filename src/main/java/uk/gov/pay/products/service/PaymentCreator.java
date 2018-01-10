@@ -24,7 +24,6 @@ import uk.gov.pay.products.util.PaymentStatus;
 import javax.inject.Inject;
 
 import static java.lang.String.format;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUserFriendlyReference;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
@@ -113,12 +112,7 @@ public class PaymentCreator {
         return context -> {
             PaymentEntity paymentEntity = context.get(PaymentEntity.class);
             ProductEntity productEntity = paymentEntity.getProductEntity();
-
-            String returnUrl = isBlank(productEntity.getReturnUrl())
-                    ? format("%s/%s", productsConfiguration.getProductsUiConfirmUrl(), paymentEntity.getExternalId())
-                    : productEntity.getReturnUrl();
-
-
+            String returnUrl = format("%s/%s", productsConfiguration.getProductsUiConfirmUrl(), paymentEntity.getExternalId());
 
             PaymentRequest paymentRequest = new PaymentRequest(
                     productEntity.getPrice(),

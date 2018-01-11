@@ -24,7 +24,7 @@ public class GatewayAccountRequestValidatorTest {
         JsonNode payload = new ObjectMapper()
                 .valueToTree(
                         ImmutableMap.<String, String>builder()
-                                .put(FIELD_OP, "update")
+                                .put(FIELD_OP, "replace")
                                 .put(FIELD_PATH, "service_name")
                                 .put(FIELD_VALUE, "A New Name")
                                 .build());
@@ -38,7 +38,7 @@ public class GatewayAccountRequestValidatorTest {
     public void shouldError_whenValueFieldIsMissing() {
         JsonNode payload = new ObjectMapper()
                 .valueToTree(ImmutableMap.<String, String>builder()
-                        .put(FIELD_OP, "update")
+                        .put(FIELD_OP, "replace")
                         .put(FIELD_PATH, "service_name")
                         .build());
 
@@ -66,7 +66,7 @@ public class GatewayAccountRequestValidatorTest {
     public void shouldError_whenPathFieldIsMissing() {
         JsonNode payload = new ObjectMapper()
                 .valueToTree(ImmutableMap.<String, String>builder()
-                        .put(FIELD_OP, "update")
+                        .put(FIELD_OP, "replace")
                         .put(FIELD_VALUE, "service_name")
                         .build());
 

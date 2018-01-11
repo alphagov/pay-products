@@ -8,7 +8,6 @@ import uk.gov.pay.products.persistence.entity.ProductEntity;
 
 import javax.inject.Inject;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class GatewayAccountUpdater {

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
 
@@ -77,6 +78,12 @@ public class Product {
 
         return new Product(randomUuid(), name, description, payApiToken,
                 price, ProductStatus.ACTIVE, gatewayAccountId, serviceName, type, returnUrl);
+    }
+
+    public static Product valueOf(ProductEntity productEntity) {
+        return new Product(productEntity.getExternalId(), productEntity.getName(), productEntity.getDescription(), productEntity.getPayApiToken(),
+                productEntity.getPrice(), productEntity.getStatus(), productEntity.getGatewayAccountId(), productEntity.getServiceName(),
+                productEntity.getType(), productEntity.getReturnUrl());
     }
 
     public String getName() {

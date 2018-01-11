@@ -9,6 +9,7 @@ import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.setup.Environment;
 import uk.gov.pay.products.client.RestClientFactory;
 import uk.gov.pay.products.client.publicapi.PublicApiRestClient;
+import uk.gov.pay.products.service.GatewayAccountFactory;
 import uk.gov.pay.products.service.LinksDecorator;
 import uk.gov.pay.products.service.PaymentFactory;
 import uk.gov.pay.products.service.PaymentFinder;
@@ -52,6 +53,7 @@ public class ProductsModule extends AbstractModule {
         install(jpaModule(configuration));
         install(new FactoryModuleBuilder().build(ProductFactory.class));
         install(new FactoryModuleBuilder().build(PaymentFactory.class));
+        install(new FactoryModuleBuilder().build(GatewayAccountFactory.class));
     }
 
     private JpaPersistModule jpaModule(ProductsConfiguration configuration) {

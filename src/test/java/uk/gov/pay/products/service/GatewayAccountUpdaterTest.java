@@ -35,7 +35,7 @@ public class GatewayAccountUpdaterTest {
         Integer gatewayAccountId = 1000;
         String serviceName = "New Service Name";
         PatchRequest request = PatchRequest.from(new ObjectMapper().valueToTree(ImmutableMap.of("op", "replace",
-                "path", "notify_settings",
+                "path", "service_name",
                 "value", serviceName)));
 
         ProductEntity productEntity = mock(ProductEntity.class);
@@ -52,7 +52,7 @@ public class GatewayAccountUpdaterTest {
         Integer gatewayAccountId = 1000;
         String serviceName = "New Service Name";
         PatchRequest request = PatchRequest.from(new ObjectMapper().valueToTree(ImmutableMap.of("op", "replace",
-                "path", "notify_settings",
+                "path", "service_name",
                 "value", serviceName)));
 
         ProductEntity productEntity1 = mock(ProductEntity.class);
@@ -71,7 +71,7 @@ public class GatewayAccountUpdaterTest {
         Integer gatewayAccountId = 1000;
         String serviceName = "New Service Name";
         PatchRequest request = PatchRequest.from(new ObjectMapper().valueToTree(ImmutableMap.of("op", "replace",
-                "path", "notify_settings",
+                "path", "service_name",
                 "value", serviceName)));
 
         when(productDao.findByGatewayAccountId(gatewayAccountId)).thenReturn(Arrays.asList());

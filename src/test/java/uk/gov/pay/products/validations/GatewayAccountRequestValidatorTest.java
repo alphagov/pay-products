@@ -75,4 +75,20 @@ public class GatewayAccountRequestValidatorTest {
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().toString(), is("[Field [path] is required]"));
     }
+
+    @Test
+    public void shouldError_whenEmptyFields() {
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(
+                        ImmutableMap.<String, String>builder()
+                                .put(FIELD_OP, "replace")
+                                .put(FIELD_PATH, "")
+                                .put(FIELD_VALUE, "")
+                                .build());
+
+        Optional<Errors> errors = requestValidator.validatePatchRequest(payload);
+
+        assertThat(errors.isPresent(), is(true));
+        assertThat(errors.get().getErrors().toString(), is("[Field [path] is required, Field [value] is required]"));
+    }
 }

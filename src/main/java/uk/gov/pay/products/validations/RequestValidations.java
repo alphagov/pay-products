@@ -5,11 +5,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.common.collect.ImmutableList;
 import uk.gov.pay.products.util.ProductType;
 
-import javax.json.Json;
-import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.rmi.UnexpectedException;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -45,6 +42,10 @@ public class RequestValidations {
 
     public Optional<List<String>> checkIsProductType(JsonNode payload, String... fieldNames) {
         return applyCheck(payload, isNotProductType(), fieldNames, "Field [%s] must be a valid product type ");
+    }
+
+    public Optional<List<String>> checkIfEmpty(JsonNode payload, String... fieldNames) {
+        return applyCheck(payload, notEmpty(), fieldNames, "Field [%s] is required");
     }
 
     private Function<JsonNode, Boolean> exceedsMaxLength(int maxLength) {
@@ -124,4 +125,10 @@ public class RequestValidations {
         return jsonNode -> !ImmutableList.of("true", "false").contains(jsonNode.asText().toLowerCase());
     }
 
+    public static Function<JsonNode, Boolean> notEmpty() {
+            return jsonElement -> (
+                    jsonElement != null &&
+                            !isBlank(jsonElement.asText())
+            );
+    }
 }

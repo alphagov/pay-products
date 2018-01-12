@@ -3,6 +3,7 @@ package uk.gov.pay.products.utils;
 import org.skife.jdbi.v2.DBI;
 import uk.gov.pay.products.model.Payment;
 import uk.gov.pay.products.model.Product;
+import uk.gov.pay.products.persistence.entity.ProductEntity;
 
 import java.util.List;
 import java.util.Map;
@@ -72,4 +73,11 @@ public class DatabaseTestHelper {
                         .list());
     }
 
+    public List<Map<String, Object>> findProductEntityByGatewayAccountId(Integer gatewayAccountId) {
+        return jdbi.withHandle(h ->
+                h.createQuery("SELECT * FROM products " +
+                    "WHERE gateway_account_id = :gateway_account_id")
+                .bind("gateway_account_id", gatewayAccountId)
+                .list());
+    }
 }

@@ -9,11 +9,13 @@ import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.setup.Environment;
 import uk.gov.pay.products.client.RestClientFactory;
 import uk.gov.pay.products.client.publicapi.PublicApiRestClient;
+import uk.gov.pay.products.service.GatewayAccountFactory;
 import uk.gov.pay.products.service.LinksDecorator;
 import uk.gov.pay.products.service.PaymentFactory;
 import uk.gov.pay.products.service.PaymentFinder;
 import uk.gov.pay.products.service.ProductFactory;
 import uk.gov.pay.products.service.ProductFinder;
+import uk.gov.pay.products.validations.GatewayAccountRequestValidator;
 import uk.gov.pay.products.validations.ProductRequestValidator;
 import uk.gov.pay.products.validations.RequestValidations;
 
@@ -40,6 +42,7 @@ public class ProductsModule extends AbstractModule {
         bind(Environment.class).toInstance(environment);
         bind(RequestValidations.class).in(Singleton.class);
         bind(ProductRequestValidator.class).in(Singleton.class);
+        bind(GatewayAccountRequestValidator.class).in(Singleton.class);
         bind(LinksDecorator.class).toInstance(
                 new LinksDecorator(
                         configuration.getBaseUrl(), configuration.getProductsUiPayUrl()));
@@ -52,6 +55,7 @@ public class ProductsModule extends AbstractModule {
         install(jpaModule(configuration));
         install(new FactoryModuleBuilder().build(ProductFactory.class));
         install(new FactoryModuleBuilder().build(PaymentFactory.class));
+        install(new FactoryModuleBuilder().build(GatewayAccountFactory.class));
     }
 
     private JpaPersistModule jpaModule(ProductsConfiguration configuration) {

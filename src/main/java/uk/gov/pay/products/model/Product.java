@@ -80,12 +80,6 @@ public class Product {
                 price, ProductStatus.ACTIVE, gatewayAccountId, serviceName, type, returnUrl);
     }
 
-    public static Product valueOf(ProductEntity productEntity) {
-        return new Product(productEntity.getExternalId(), productEntity.getName(), productEntity.getDescription(), productEntity.getPayApiToken(),
-                productEntity.getPrice(), productEntity.getStatus(), productEntity.getGatewayAccountId(), productEntity.getServiceName(),
-                productEntity.getType(), productEntity.getReturnUrl());
-    }
-
     public String getName() {
         return name;
     }

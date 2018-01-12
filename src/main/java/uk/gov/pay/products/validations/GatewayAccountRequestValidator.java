@@ -7,9 +7,9 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 
-import static uk.gov.pay.products.model.GatewayAccountRequest.FIELD_OPERATION;
-import static uk.gov.pay.products.model.GatewayAccountRequest.FIELD_OPERATION_PATH;
-import static uk.gov.pay.products.model.GatewayAccountRequest.FIELD_VALUE;
+import static uk.gov.pay.products.model.PatchRequest.FIELD_OPERATION;
+import static uk.gov.pay.products.model.PatchRequest.FIELD_OPERATION_PATH;
+import static uk.gov.pay.products.model.PatchRequest.FIELD_VALUE;
 
 public class GatewayAccountRequestValidator {
 

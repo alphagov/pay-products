@@ -5,8 +5,7 @@ import com.google.inject.Inject;
 import io.dropwizard.jersey.PATCH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.pay.products.model.GatewayAccountRequest;
-import uk.gov.pay.products.model.Product;
+import uk.gov.pay.products.model.PatchRequest;
 import uk.gov.pay.products.service.GatewayAccountFactory;
 import uk.gov.pay.products.validations.GatewayAccountRequestValidator;
 
@@ -16,7 +15,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
@@ -28,8 +26,8 @@ public class GatewayAccountResource {
     private static Logger logger = LoggerFactory.getLogger(GatewayAccountResource.class);
 
     private static final String API_VERSION_PATH = "v1";
-    public static final String GATEWAY_ACCOUNT_RESOURCE_PATH = API_VERSION_PATH + "/api/gateway-account";
-    public static final String GATEWAY_ACCOUNT_API_PATH = GATEWAY_ACCOUNT_RESOURCE_PATH + "/{gatewayAccountId}";
+    public static final String GATEWAY_ACCOUNTS_PATH = API_VERSION_PATH + "/api/gateway-account";
+    public static final String GATEWAY_ACCOUNT_PATH = GATEWAY_ACCOUNTS_PATH + "/{gatewayAccountId}";
     private final GatewayAccountRequestValidator requestValidator;
     private final GatewayAccountFactory gatewayAccountFactory;
 
@@ -40,7 +38,7 @@ public class GatewayAccountResource {
     }
 
     @PATCH
-    @Path(GATEWAY_ACCOUNT_API_PATH)
+    @Path(GATEWAY_ACCOUNT_PATH)
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     @PermitAll
@@ -49,12 +47,12 @@ public class GatewayAccountResource {
         return requestValidator.validatePatchRequest(payload)
                 .map(errors -> Response.status(BAD_REQUEST).entity(errors).build())
                 .orElseGet(() -> {
-                            List<Product> products = gatewayAccountFactory.getUpdateService()
-                                    .doPatch(gatewayAccountId, GatewayAccountRequest.from(payload));
-                            if (products.isEmpty()) {
-                                return Response.status(NOT_FOUND).build();
+                            Boolean success = gatewayAccountFactory.getUpdateService()
+                                    .doPatch(gatewayAccountId, PatchRequest.from(payload));
+                            if (success) {
+                                return Response.ok().build();
                             }
-                            return Response.ok().build();
+                            return Response.status(NOT_FOUND).build();
                         }
                 );
     }

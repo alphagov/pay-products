@@ -13,7 +13,7 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
-public class GatewayAccountRequest {
+public class PatchRequest {
 
     public static final String FIELD_OPERATION = "op";
     public static final String FIELD_OPERATION_PATH = "path";
@@ -54,7 +54,7 @@ public class GatewayAccountRequest {
                 try {
                     return new ObjectMapper().readValue(value.traverse(), new TypeReference<Map<String, String>>() {});
                 } catch (IOException e) {
-                    throw new RuntimeException(format("Malformed JSON object in GatewayAccountRequest.value"), e);
+                    throw new RuntimeException(format("Malformed JSON object in PatchRequest.value"), e);
                 }
             }
         }
@@ -62,14 +62,14 @@ public class GatewayAccountRequest {
     }
 
 
-    private GatewayAccountRequest(String op, String path, JsonNode value) {
+    private PatchRequest(String op, String path, JsonNode value) {
         this.op = op;
         this.path = path;
         this.value = value;
     }
 
-    public static GatewayAccountRequest from(JsonNode payload) {
-        return new GatewayAccountRequest(
+    public static PatchRequest from(JsonNode payload) {
+        return new PatchRequest(
                 payload.get(FIELD_OPERATION).asText(),
                 payload.get(FIELD_OPERATION_PATH).asText(),
                 payload.get(FIELD_VALUE));

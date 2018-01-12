@@ -1,7 +1,7 @@
 package uk.gov.pay.products.service;
 
 import com.google.inject.persist.Transactional;
-import uk.gov.pay.products.model.GatewayAccountRequest;
+import uk.gov.pay.products.model.PatchRequest;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.dao.ProductDao;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
@@ -20,17 +20,14 @@ public class GatewayAccountUpdater {
     }
 
     @Transactional
-    public List<Product> doPatch(Integer gatewayAccountId, GatewayAccountRequest gatewayAccountRequest) {
+    public Boolean doPatch(Integer gatewayAccountId, PatchRequest patchRequest) {
         List<ProductEntity> productEntities = productDao.findByGatewayAccountId(gatewayAccountId);
         productEntities
                 .forEach(productEntity -> {
-                    productEntity.setServiceName(gatewayAccountRequest.valueAsString());
+                    productEntity.setServiceName(patchRequest.valueAsString());
                     productDao.merge(productEntity);
                 });
 
-        return productEntities
-                .stream()
-                .map(productEntity -> Product.valueOf(productEntity))
-                .collect(Collectors.toList());
+        return !productEntities.isEmpty();
     }
 }

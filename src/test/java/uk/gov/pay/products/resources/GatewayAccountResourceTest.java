@@ -13,9 +13,9 @@ import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertThat;
-import static uk.gov.pay.products.model.GatewayAccountRequest.FIELD_OPERATION;
-import static uk.gov.pay.products.model.GatewayAccountRequest.FIELD_OPERATION_PATH;
-import static uk.gov.pay.products.model.GatewayAccountRequest.FIELD_VALUE;
+import static uk.gov.pay.products.model.PatchRequest.FIELD_OPERATION;
+import static uk.gov.pay.products.model.PatchRequest.FIELD_OPERATION_PATH;
+import static uk.gov.pay.products.model.PatchRequest.FIELD_VALUE;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 
 public class GatewayAccountResourceTest extends IntegrationTest {
@@ -42,7 +42,7 @@ public class GatewayAccountResourceTest extends IntegrationTest {
                 .put(FIELD_VALUE, VALUE)
                 .build();
 
-        ValidatableResponse response = givenAuthenticatedSetup()
+        givenAuthenticatedSetup()
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .body(mapper.writeValueAsString(payload))

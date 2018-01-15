@@ -30,7 +30,7 @@ public class GatewayAccountRequestValidator {
     }
 
     public Optional<Errors> validatePatchRequest(JsonNode payload) {
-        Optional<List<String>> errors = requestValidations.checkIfExists(
+        Optional<List<String>> errors = requestValidations.checkIfExistsOrEmpty(
                 payload,
                 FIELD_OPERATION,
                 FIELD_OPERATION_PATH,
@@ -44,18 +44,14 @@ public class GatewayAccountRequestValidator {
 
     private Optional<List<String>> validateServiceNameRequest(JsonNode payload){
         if(!payload.findValue(FIELD_OPERATION_PATH).asText().equals(FIELD_SERVICE_NAME)) {
-            return  Optional.of(asList(format("Operation [%s] not supported for path [%s]",
-                    FIELD_OPERATION,
+            return  Optional.of(asList(format("Path %s not supported / invalid",
                     payload.findValue(FIELD_OPERATION_PATH).asText())));
         }
         String op = payload.get(FIELD_OPERATION).asText();
         if (!VALID_ATTRIBUTE_UPDATE_OPERATIONS.get(FIELD_OPERATION).contains(op)) {
             return Optional.of(asList(format("Operation [%s] is not valid for path [%s]", op, FIELD_OPERATION)));
         }
-        JsonNode valueNode = payload.get(FIELD_VALUE);
-        if(null == valueNode) {
-            return Optional.of(asList(format("Field [%s] is required", FIELD_VALUE)));
-        }
-        return requestValidations.checkIfEmpty(valueNode, FIELD_OPERATION, FIELD_OPERATION_PATH, FIELD_VALUE);
+
+        return Optional.empty();
     }
 }

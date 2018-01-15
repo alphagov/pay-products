@@ -23,7 +23,7 @@ public class ProductRequestValidator {
     }
 
     public Optional<Errors> validateCreateRequest(JsonNode payload) {
-        Optional<List<String>> errors = requestValidations.checkIfExists(
+        Optional<List<String>> errors = requestValidations.checkIfExistsOrEmpty(
                 payload,
                 FIELD_GATEWAY_ACCOUNT_ID,
                 FIELD_PAY_API_TOKEN,

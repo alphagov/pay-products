@@ -129,38 +129,4 @@ public class GatewayAccountResourceTest extends IntegrationTest {
                 .then()
                 .statusCode(400);
     }
-
-    @Test
-    public void shouldError_whenInvalidOperation() throws Exception {
-        ImmutableMap<Object, Object> payload = ImmutableMap.builder()
-                .put(FIELD_OPERATION, "remove")
-                .put(FIELD_OPERATION_PATH, PATH)
-                .put(FIELD_VALUE, VALUE)
-                .build();
-
-        givenAuthenticatedSetup()
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .body(mapper.writeValueAsString(payload))
-                .patch(format("/v1/api/gateway-account/%s", randomInt()))
-                .then()
-                .statusCode(400);
-    }
-
-    @Test
-    public void shouldError_whenInvalidPath() throws Exception {
-        ImmutableMap<Object, Object> payload = ImmutableMap.builder()
-                .put(FIELD_OPERATION, OP)
-                .put(FIELD_OPERATION_PATH, "gateway_id")
-                .put(FIELD_VALUE, VALUE)
-                .build();
-
-        givenAuthenticatedSetup()
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .body(mapper.writeValueAsString(payload))
-                .patch(format("/v1/api/gateway-account/%s", randomInt()))
-                .then()
-                .statusCode(400);
-    }
 }

@@ -28,8 +28,8 @@ public class RequestValidations {
         return applyCheck(payload, isNotUrl(), fieldNames, "Field [%s] must be a https url");
     }
 
-    public Optional<List<String>> checkIfExists(JsonNode payload, String... fieldNames) {
-        return applyCheck(payload, notExist(), fieldNames, "Field [%s] is required");
+    public Optional<List<String>> checkIfExistsOrEmpty(JsonNode payload, String... fieldNames) {
+        return applyCheck(payload, notExistAndNotEmpty(), fieldNames, "Field [%s] is required");
     }
 
     public Optional<List<String>> checkMaxLength(JsonNode payload, int maxLength, String... fieldNames) {
@@ -42,10 +42,6 @@ public class RequestValidations {
 
     public Optional<List<String>> checkIsProductType(JsonNode payload, String... fieldNames) {
         return applyCheck(payload, isNotProductType(), fieldNames, "Field [%s] must be a valid product type ");
-    }
-
-    public Optional<List<String>> checkIfEmpty(JsonNode payload, String... fieldNames) {
-        return applyCheck(payload, notEmpty(), fieldNames, "Field [%s] is required");
     }
 
     private Function<JsonNode, Boolean> exceedsMaxLength(int maxLength) {
@@ -62,7 +58,7 @@ public class RequestValidations {
         return errors.size() > 0 ? Optional.of(errors) : Optional.empty();
     }
 
-    public Function<JsonNode, Boolean> notExist() {
+    public Function<JsonNode, Boolean> notExistAndNotEmpty() {
         return (jsonElement) -> {
             if (jsonElement instanceof ArrayNode) {
                 return notExistOrEmptyArray().apply(jsonElement);
@@ -123,12 +119,5 @@ public class RequestValidations {
 
     public static Function<JsonNode, Boolean> isNotBoolean() {
         return jsonNode -> !ImmutableList.of("true", "false").contains(jsonNode.asText().toLowerCase());
-    }
-
-    public static Function<JsonNode, Boolean> notEmpty() {
-            return jsonElement -> (
-                    jsonElement != null &&
-                            !isBlank(jsonElement.asText())
-            );
     }
 }

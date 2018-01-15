@@ -24,7 +24,7 @@ public class PaymentRequestValidator {
         if (payload == null || payload.isNull() || newArrayList(payload.fieldNames()).isEmpty()) {
             return Optional.empty();
         }
-        Optional<List<String>> errors = requestValidations.checkIfExists(payload, FIELD_PRICE);
+        Optional<List<String>> errors = requestValidations.checkIfExistsOrEmpty(payload, FIELD_PRICE);
         if (errors.isPresent()) {
             return Optional.of(Errors.from(errors.get()));
         }

@@ -327,7 +327,7 @@ Content-Type: application/json
 
 | Field                    | required | Description                                                      | Supported Values     |
 | ------------------------ |:--------:| ---------------------------------------------------------------- |----------------------|
-| `price`                  |          | Price override for the payment amount. If not present this will defaults to product in price.| |
+| `price`                  |          | Price override for the payment amount. If not present this will defaults to price of product.| |
 
 
 #### Response field description 

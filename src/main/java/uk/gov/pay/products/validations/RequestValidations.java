@@ -5,11 +5,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.common.collect.ImmutableList;
 import uk.gov.pay.products.util.ProductType;
 
-import javax.json.Json;
-import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.rmi.UnexpectedException;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -31,8 +28,8 @@ public class RequestValidations {
         return applyCheck(payload, isNotUrl(), fieldNames, "Field [%s] must be a https url");
     }
 
-    public Optional<List<String>> checkIfExists(JsonNode payload, String... fieldNames) {
-        return applyCheck(payload, notExist(), fieldNames, "Field [%s] is required");
+    public Optional<List<String>> checkIfExistsOrEmpty(JsonNode payload, String... fieldNames) {
+        return applyCheck(payload, notExistAndNotEmpty(), fieldNames, "Field [%s] is required");
     }
 
     public Optional<List<String>> checkMaxLength(JsonNode payload, int maxLength, String... fieldNames) {
@@ -61,7 +58,7 @@ public class RequestValidations {
         return errors.size() > 0 ? Optional.of(errors) : Optional.empty();
     }
 
-    public Function<JsonNode, Boolean> notExist() {
+    public Function<JsonNode, Boolean> notExistAndNotEmpty() {
         return (jsonElement) -> {
             if (jsonElement instanceof ArrayNode) {
                 return notExistOrEmptyArray().apply(jsonElement);
@@ -123,5 +120,4 @@ public class RequestValidations {
     public static Function<JsonNode, Boolean> isNotBoolean() {
         return jsonNode -> !ImmutableList.of("true", "false").contains(jsonNode.asText().toLowerCase());
     }
-
 }

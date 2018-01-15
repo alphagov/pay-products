@@ -35,6 +35,21 @@ public class GatewayAccountRequestValidatorTest {
     }
 
     @Test
+    public void shouldError_whenPathIsInvalid() {
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(ImmutableMap.<String, String>builder()
+                        .put(FIELD_OP, "replace")
+                        .put(FIELD_PATH, "gateway_id")
+                        .put(FIELD_VALUE, "A New Name")
+                        .build());
+
+        Optional<Errors> errors = requestValidator.validatePatchRequest(payload);
+
+        assertThat(errors.isPresent(), is(true));
+        assertThat(errors.get().getErrors().toString(), is("[Path gateway_id not supported / invalid]"));
+    }
+
+    @Test
     public void shouldError_whenValueFieldIsMissing() {
         JsonNode payload = new ObjectMapper()
                 .valueToTree(ImmutableMap.<String, String>builder()
@@ -74,5 +89,37 @@ public class GatewayAccountRequestValidatorTest {
 
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().toString(), is("[Field [path] is required]"));
+    }
+
+    @Test
+    public void shouldError_whenEmptyFields() {
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(
+                        ImmutableMap.<String, String>builder()
+                                .put(FIELD_OP, "replace")
+                                .put(FIELD_PATH, "")
+                                .put(FIELD_VALUE, "")
+                                .build());
+
+        Optional<Errors> errors = requestValidator.validatePatchRequest(payload);
+
+        assertThat(errors.isPresent(), is(true));
+        assertThat(errors.get().getErrors().toString(), is("[Field [path] is required, Field [value] is required]"));
+    }
+
+    @Test
+    public void shouldError_whenInvalidOperation() {
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(
+                        ImmutableMap.<String, String>builder()
+                                .put(FIELD_OP, "update")
+                                .put(FIELD_PATH, "gateway_id")
+                                .put(FIELD_VALUE, "A New Name")
+                                .build());
+
+        Optional<Errors> errors = requestValidator.validatePatchRequest(payload);
+
+        assertThat(errors.isPresent(), is(true));
+        assertThat(errors.get().getErrors().toString(), is("[Path gateway_id not supported / invalid]"));
     }
 }

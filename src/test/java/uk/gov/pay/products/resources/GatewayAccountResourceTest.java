@@ -1,7 +1,6 @@
 package uk.gov.pay.products.resources;
 
 import com.google.common.collect.ImmutableMap;
-import io.restassured.response.ValidatableResponse;
 import org.junit.Test;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.model.Product;
@@ -20,7 +19,7 @@ import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 
 public class GatewayAccountResourceTest extends IntegrationTest {
 
-    private static final String OP = "update";
+    private static final String OP = "replace";
     private static final String PATH = "service_name";
     private static final String VALUE = "A New Name";
 

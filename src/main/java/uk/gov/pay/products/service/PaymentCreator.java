@@ -52,10 +52,10 @@ public class PaymentCreator {
         this.productsConfiguration = productsConfiguration;
     }
 
-    public Payment doCreate(String productExternalId) {
+    public Payment doCreate(String productExternalId, Long priceOverride) {
         PaymentEntity paymentEntity = transactionFlowProvider.get()
                 .executeNext(beforePaymentCreation(productExternalId))
-                .executeNext(paymentCreation())
+                .executeNext(paymentCreation(priceOverride))
                 .executeNext(afterPaymentCreation())
                 .complete().get(PaymentEntity.class);
 
@@ -85,7 +85,7 @@ public class PaymentCreator {
 
     private PaymentEntity mergePaymentEntityWithReferenceNumberCheck(PaymentEntity paymentEntity, int counter) {
         int count = counter++;
-        if(count == MAX_NUMBER_OF_RETRY_FOR_UNIQUE_REF_NUMBER) {
+        if (count == MAX_NUMBER_OF_RETRY_FOR_UNIQUE_REF_NUMBER) {
             String exceptionMsg = format("Too many conflicts generating unique user friendly reference numbers for gateway account %s", paymentEntity.getGatewayAccountId());
             RuntimeException runtimeException = new RuntimeException(exceptionMsg);
             logger.error(exceptionMsg, runtimeException);
@@ -95,7 +95,7 @@ public class PaymentCreator {
         try {
             paymentDao.persist(paymentEntity);
         } catch (Exception ex) {
-            if(ex instanceof javax.persistence.RollbackException
+            if (ex instanceof javax.persistence.RollbackException
                     && ex.getMessage().contains("payments_gateway_account_id_reference_number_key")
                     && ex.getMessage().contains("duplicate key value violates unique constraint")) {
                 paymentEntity.setReferenceNumber(randomUserFriendlyReference());
@@ -108,14 +108,15 @@ public class PaymentCreator {
         return paymentEntity;
     }
 
-    private NonTransactionalOperation<TransactionContext, PaymentEntity> paymentCreation() {
+    private NonTransactionalOperation<TransactionContext, PaymentEntity> paymentCreation(Long priceOverride) {
         return context -> {
             PaymentEntity paymentEntity = context.get(PaymentEntity.class);
             ProductEntity productEntity = paymentEntity.getProductEntity();
             String returnUrl = format("%s/%s", productsConfiguration.getProductsUiConfirmUrl(), paymentEntity.getExternalId());
+            Long paymentPrice = priceOverride != null ? priceOverride : productEntity.getPrice();
 
             PaymentRequest paymentRequest = new PaymentRequest(
-                    productEntity.getPrice(),
+                    paymentPrice,
                     paymentEntity.getReferenceNumber(),
                     productEntity.getName(),
                     returnUrl);

@@ -31,39 +31,17 @@ public class GatewayAccountUpdaterTest {
     }
 
     @Test
-    public void shouldUpdateServiceName_whenSingleProduct() throws Exception {
+    public void shouldUpdateServiceName() throws Exception {
         Integer gatewayAccountId = 1000;
-        String serviceName = "New Service Name";
+        String newServiceName = "New Service Name";
         PatchRequest request = PatchRequest.from(new ObjectMapper().valueToTree(ImmutableMap.of("op", "replace",
                 "path", "service_name",
-                "value", serviceName)));
+                "value", newServiceName)));
 
-        ProductEntity productEntity = mock(ProductEntity.class);
-        when(productDao.findByGatewayAccountId(gatewayAccountId)).thenReturn(Arrays.asList(productEntity));
+        when(productDao.updateGatewayAccount(gatewayAccountId, newServiceName)).thenReturn(2);
 
         Boolean success = updater.doPatch(gatewayAccountId, request);
         assertThat(success, is(true));
-        verify(productDao, times(1)).merge(productEntity);
-        verify(productEntity, times(1)).setServiceName(serviceName);
-    }
-
-    @Test
-    public void shouldUpdateServiceName_whenTwoProduct() throws Exception {
-        Integer gatewayAccountId = 1000;
-        String serviceName = "New Service Name";
-        PatchRequest request = PatchRequest.from(new ObjectMapper().valueToTree(ImmutableMap.of("op", "replace",
-                "path", "service_name",
-                "value", serviceName)));
-
-        ProductEntity productEntity1 = mock(ProductEntity.class);
-        ProductEntity productEntity2 = mock(ProductEntity.class);
-        when(productDao.findByGatewayAccountId(gatewayAccountId)).thenReturn(Arrays.asList(productEntity1, productEntity2));
-
-        Boolean success = updater.doPatch(gatewayAccountId, request);
-        assertThat(success, is(true));
-        verify(productDao, times(2)).merge(any(ProductEntity.class));
-        verify(productEntity1, times(1)).setServiceName(serviceName);
-        verify(productEntity2, times(1)).setServiceName(serviceName);
     }
 
     @Test

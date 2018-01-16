@@ -22,27 +22,9 @@ public class GatewayAccountUpdater {
         this.productDao = productDao;
     }
 
-    private final Map<String, BiConsumer<PatchRequest, ProductEntity>> attributeUpdater =
-            new HashMap<String, BiConsumer<PatchRequest, ProductEntity>>() {{
-                put(FIELD_SERVICE_NAME, updateServiceName());
-            }};
-
     @Transactional
     public Boolean doPatch(Integer gatewayAccountId, PatchRequest patchRequest) {
-        List<ProductEntity> productEntities = productDao.findByGatewayAccountId(gatewayAccountId);
-        productEntities
-                .forEach(productEntity -> {
-                    attributeUpdater.get(patchRequest.getPath())
-                            .accept(patchRequest, productEntity);
-                    productDao.merge(productEntity);
-                });
-
-        return !productEntities.isEmpty();
-    }
-
-    private BiConsumer<PatchRequest, ProductEntity> updateServiceName() {
-        return (patchRequest, productEntity) -> {
-            productEntity.setServiceName(patchRequest.valueAsString());
-        };
+        return productDao
+                .updateGatewayAccount(gatewayAccountId, patchRequest.valueAsString()) > 0;
     }
 }

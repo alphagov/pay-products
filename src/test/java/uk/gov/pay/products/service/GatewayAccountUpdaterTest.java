@@ -55,6 +55,5 @@ public class GatewayAccountUpdaterTest {
         when(productDao.findByGatewayAccountId(gatewayAccountId)).thenReturn(Arrays.asList());
         Boolean success = updater.doPatch(gatewayAccountId, request);
         assertThat(success, is(false));
-        verify(productDao, times(0)).merge(any(ProductEntity.class));
     }
 }

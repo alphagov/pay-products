@@ -1,5 +1,6 @@
 package uk.gov.pay.products.resources;
 
+import com.google.common.collect.ImmutableMap;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,9 +18,7 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static org.junit.Assert.assertThat;
@@ -100,6 +99,53 @@ public class PaymentResourceTest extends IntegrationTest {
                 .body("_links[1].href", is(nextUrl))
                 .body("_links[1].method", is(HttpMethod.GET))
                 .body("_links[1].rel", is("next"));
+    }
+
+    @Test
+    public void createAPayment_shouldSucceed_whenPriceOverrideIsPresent() throws Exception {
+        String referenceNumber = randomUuid().substring(1, 10);
+        Product product = aProductEntity()
+                .withExternalId(randomUuid())
+                .withGatewayAccountId(0)
+                .build()
+                .toProduct();
+
+        Long priceOverride = 500L;
+        databaseHelper.addProduct(product);
+
+        String govukPaymentId = "govukPaymentId";
+        String nextUrl = "http://next.url";
+
+        JsonObject paymentResponsePayload = PublicApiStub.createPaymentResponsePayload(
+                govukPaymentId,
+                priceOverride,
+                referenceNumber,
+                product.getName(),
+                product.getReturnUrl(),
+                nextUrl);
+        publicApiStub
+                .whenReceiveCreatedPaymentRequestWithAuthApiToken(product.getPayApiToken())
+                .respondCreatedWithBody(paymentResponsePayload);
+
+        Map<String, Long> payload = ImmutableMap.of("price", priceOverride);
+        ValidatableResponse response = givenAuthenticatedSetup()
+                .accept(APPLICATION_JSON)
+                .body(mapper.writeValueAsString(payload))
+                .post(format("/v1/api/products/%s/payments", product.getExternalId()))
+                .then()
+                .statusCode(201);
+
+        List<Map<String, Object>> paymentRecords = databaseHelper.getPaymentsByProductExternalId(product.getExternalId());
+
+        assertThat(paymentRecords.size(), is(1));
+
+        assertThat(paymentRecords.get(0), hasEntry("amount", priceOverride));
+
+        response
+                .body("govuk_payment_id", is(govukPaymentId))
+                .body("product_external_id", is(product.getExternalId()))
+                .body("status", is("SUBMITTED"))
+                .body("amount", is(priceOverride.intValue()));
     }
 
     @Test

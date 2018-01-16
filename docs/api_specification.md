@@ -293,6 +293,10 @@ This endpoint creates a new payment for a given product in pay-products.
 ```
 POST /v1/api/products/uier837y735n837475y3847534/payments
 Authorization: Bearer API_TOKEN
+Content-Type: application/json
+{
+    "price" : 9090,
+}
 ```
 
 ### Response example
@@ -304,7 +308,7 @@ Content-Type: application/json
         "external_id": "h6347634cwb67wii7b6ciueroytw",
         "product_external_id": "uier837y735n837475y3847534",
         "status": "CREATED",
-        "amount" : 1050,
+        "amount" : 9090,
         "_links": [
             {
                 "rel": "self",
@@ -319,6 +323,13 @@ Content-Type: application/json
         ]
     }
 ```
+#### Request body description
+
+| Field                    | required | Description                                                      | Supported Values     |
+| ------------------------ |:--------:| ---------------------------------------------------------------- |----------------------|
+| `price`                  |          | Price override for the payment amount. If not present this will defaults to price of product.| |
+
+
 #### Response field description 
 | Field                    | always present | Description                                   |
 | ------------------------ |:--------------:| --------------------------------------------- |

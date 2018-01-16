@@ -1,11 +1,14 @@
 package uk.gov.pay.products.resources;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.model.Payment;
 import uk.gov.pay.products.service.PaymentFactory;
 import uk.gov.pay.products.service.ProductFactory;
+import uk.gov.pay.products.validations.PaymentRequestValidator;
+import uk.gov.pay.products.validations.ProductRequestValidator;
 
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.Consumes;
@@ -34,12 +37,12 @@ public class PaymentResource {
     public static final String PRODUCT_PAYMENTS_RESOURCE_PATH = PRODUCT_RESOURCE_PATH + "/payments";
 
     private final PaymentFactory paymentFactory;
-    private final ProductFactory productFactory;
+    private final PaymentRequestValidator requestValidator;
 
     @Inject
-    public PaymentResource(PaymentFactory paymentFactory, ProductFactory productFactory) {
+    public PaymentResource(PaymentFactory paymentFactory, PaymentRequestValidator requestValidator) {
         this.paymentFactory = paymentFactory;
-        this.productFactory = productFactory;
+        this.requestValidator = requestValidator;
     }
 
     @Path(PAYMENT_RESOURCE_PATH)
@@ -61,10 +64,22 @@ public class PaymentResource {
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     @PermitAll
-    public Response createPaymentByProductExternalId(@PathParam("productExternalId") String productExternalId) {
+    public Response createPayment(@PathParam("productExternalId") String productExternalId, JsonNode priceOverride) {
         logger.info("Create a payment for product id - [ {} ]", productExternalId);
-        Payment payment = paymentFactory.paymentCreator().doCreate(productExternalId);
-        return Response.status(CREATED).entity(payment).build();
+        return requestValidator.validatePriceOverrideRequest(priceOverride)
+                .map(errors -> Response.status(Response.Status.BAD_REQUEST).entity(errors).build())
+                .orElseGet(() -> {
+                    Payment payment = paymentFactory.paymentCreator().doCreate(productExternalId, extractAmountIfAvailable(priceOverride));
+                    return Response.status(CREATED).entity(payment).build();
+                });
+    }
+
+    private Long extractAmountIfAvailable(JsonNode priceOverride) {
+        if (priceOverride == null || priceOverride.get("price") == null) {
+            return null;
+        } else {
+            return priceOverride.get("price").asLong();
+        }
     }
 
     @Path(PRODUCT_PAYMENTS_RESOURCE_PATH)

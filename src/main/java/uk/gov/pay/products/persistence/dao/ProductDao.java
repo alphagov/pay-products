@@ -2,6 +2,7 @@ package uk.gov.pay.products.persistence.dao;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import uk.gov.pay.products.model.PatchRequest;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductStatus;
 
@@ -36,5 +37,14 @@ public class ProductDao extends JpaDao<ProductEntity> {
                 .setParameter("gatewayAccountId", gatewayAccountId)
                 .setParameter("status", ProductStatus.ACTIVE)
                 .getResultList();
+    }
+
+    public Integer updateGatewayAccount(Integer gatewayAccountId, String serviceName) {
+        String query = "UPDATE ProductEntity p SET p.serviceName = :serviceName WHERE p.gatewayAccountId = :gatewayAccountId";
+
+        return entityManager.get().createQuery(query)
+                .setParameter("serviceName", serviceName)
+                .setParameter("gatewayAccountId", gatewayAccountId)
+                .executeUpdate();
     }
 }

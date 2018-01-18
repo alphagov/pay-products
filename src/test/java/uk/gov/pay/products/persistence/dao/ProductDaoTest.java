@@ -67,4 +67,45 @@ public class ProductDaoTest extends DaoTestBase {
         assertThat(products.get(0).getExternalId(), is(externalId));
         assertThat(products.get(0).getStatus(), is(ProductStatus.ACTIVE));
     }
+
+    @Test
+    public void shouldUpdateBatchServiceName() throws Exception {
+        Integer gatewayAccountId = randomInt();
+        Integer anotherGatewayAccountId = randomInt();
+        String oldServiceName = "A Service Name";
+        String newServiceName = "New Service Name";
+
+        ProductEntity product = ProductEntityFixture.aProductEntity()
+                .withGatewayAccountId(gatewayAccountId)
+                .withServiceName(oldServiceName)
+                .build();
+
+        productDao.persist(product);
+
+        ProductEntity product_2 = ProductEntityFixture.aProductEntity()
+                .withGatewayAccountId(gatewayAccountId)
+                .withServiceName(oldServiceName)
+                .build();
+
+        productDao.persist(product_2);
+
+        ProductEntity product_3 = ProductEntityFixture.aProductEntity()
+                .withGatewayAccountId(anotherGatewayAccountId)
+                .withServiceName(oldServiceName)
+                .build();
+
+        productDao.persist(product_3);
+
+        Integer updatedRows = productDao.updateGatewayAccount(gatewayAccountId, newServiceName);
+        assertThat(updatedRows, is(2));
+
+        List<ProductEntity> products = productDao.findByGatewayAccountId(gatewayAccountId);
+        assertThat(products.size(), is(2));
+        assertThat(products.get(0).getServiceName(), is(newServiceName));
+        assertThat(products.get(1).getServiceName(), is(newServiceName));
+
+        products = productDao.findByGatewayAccountId(anotherGatewayAccountId);
+        assertThat(products.size(), is(1));
+        assertThat(products.get(0).getServiceName(), is(oldServiceName));
+    }
 }

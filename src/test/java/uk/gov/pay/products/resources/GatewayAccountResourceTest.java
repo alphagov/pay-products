@@ -116,7 +116,7 @@ public class GatewayAccountResourceTest extends IntegrationTest {
                 .body(mapper.writeValueAsString(payload))
                 .patch(format("/v1/api/gateway-account/%s", randomInt()))
                 .then()
-                .statusCode(404);
+                .statusCode(202);
     }
 
     @Test

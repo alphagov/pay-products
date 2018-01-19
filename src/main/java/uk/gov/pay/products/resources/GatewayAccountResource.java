@@ -17,8 +17,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.Response.Status.ACCEPTED;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
 @Path("/")
 public class GatewayAccountResource {
@@ -52,7 +52,7 @@ public class GatewayAccountResource {
                             if (success) {
                                 return Response.ok().build();
                             }
-                            return Response.status(NOT_FOUND).build();
+                            return Response.status(ACCEPTED).build();
                         }
                 );
     }

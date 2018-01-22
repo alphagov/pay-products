@@ -339,3 +339,39 @@ Content-Type: application/json
 | `amount`                 | X              | amount of the payment in pence. |
 | `_links.self`            | X              | self GET link to the payment |
 | `_links.next`            | X              | next GET link |
+
+## PATCH /v1/api/gateway-account/{gatewayAccountId}
+
+This endpoint batch updates Service Names of Products with a given gatewayAccountId
+
+### Request example
+
+```
+PATCH /v1/api/gateway-account/56
+Authorization: Bearer API_TOKEN
+Content-Type: application/json
+
+{
+    "op"    :     "replace",
+    "path"  :     "service_name",
+    "value" :     "A New Service Name"
+}
+
+```  
+### Response example
+
+```
+200 OK -> if any matching gateway_account_id was found and path's value was replaced
+
+202 ACCEPTED -> if no matching gateway_account_id was found
+
+```
+
+#### Request body description
+
+| Field                    | required | Description                                                      | Supported Values     |
+| ------------------------ |:--------:| ---------------------------------------------------------------- |----------------------|
+| `op`                     | X        | the required operation, ie `replace`, `delete`, etc.             |                      |
+| `path`                   | X        | the affected column name, ie `service_name`                      |                      |
+| `value`                  | X        | the new value                                                    |                      |
+

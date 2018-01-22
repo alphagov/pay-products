@@ -31,5 +31,4 @@ The JSON naming convention follows Hypertext Application Language (HAL).
 |[```/v1/api/payments```](docs/api_specification.md#post-v1apipayments)        | POST    | Creates a new payment                        |
 |[```/v1/api/payments/{paymentId}```](docs/api_specification.md#get-v1apipaymentspaymentid) |  GET  |     Gets an existing payment    |
 |[```/v1/api/products/{productId}/payments```](docs/api_specification.md#get-v1apiproductsproductidpayments) | GET | Gets a list of payments that belong to a specific product  |
-   
-  
+|[```/v1/api/gateway-account/{gatewayAccountId}```](docs/api_specification.md#get-v1apigatewayaccountgatewayaccountid) | PATCH | Updates a specific field of a given gateway-account of products |  

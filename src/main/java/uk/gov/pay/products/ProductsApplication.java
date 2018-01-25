@@ -6,9 +6,6 @@ import com.codahale.metrics.graphite.GraphiteUDP;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.dropwizard.Application;
-import io.dropwizard.auth.AuthDynamicFeature;
-import io.dropwizard.auth.AuthValueFactoryProvider;
-import io.dropwizard.auth.oauth.OAuthCredentialAuthFilter;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.db.DataSourceFactory;
@@ -16,8 +13,6 @@ import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import uk.gov.pay.products.auth.Token;
-import uk.gov.pay.products.auth.TokenAuthenticator;
 import uk.gov.pay.products.config.PersistenceServiceInitialiser;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.config.ProductsModule;
@@ -86,15 +81,7 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
         environment.jersey().register(injector.getInstance(PaymentResource.class));
         environment.jersey().register(injector.getInstance(GatewayAccountResource.class));
 
-        environment.jersey().register(new AuthDynamicFeature(
-                new OAuthCredentialAuthFilter.Builder<Token>()
-                        .setAuthenticator(new TokenAuthenticator(configuration))
-                        .setPrefix("Bearer")
-                        .buildAuthFilter()));
-        environment.jersey().register(new AuthValueFactoryProvider.Binder<>(Token.class));
-
         attachExceptionMappersTo(environment.jersey());
-
         setGlobalProxies(configuration);
     }
 

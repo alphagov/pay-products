@@ -37,12 +37,6 @@ public class IntegrationTest {
         validAuthHeader = new Header("Authorization", "Bearer " + DEFAULT_AUTH_TOKEN);
     }
 
-    protected RequestSpecification givenAuthenticatedSetup() {
-        return given().port(app.getLocalPort())
-                .contentType(JSON)
-                .headers(headers(validAuthHeader));
-    }
-
     protected RequestSpecification givenSetup() {
         return given().port(app.getLocalPort())
                 .contentType(JSON);

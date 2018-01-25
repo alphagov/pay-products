@@ -64,7 +64,7 @@ public class PaymentResourceTest extends IntegrationTest {
                 .whenReceiveCreatedPaymentRequestWithAuthApiToken(product.getPayApiToken())
                 .respondCreatedWithBody(paymentResponsePayload);
 
-        ValidatableResponse response = givenAuthenticatedSetup()
+        ValidatableResponse response = givenSetup()
                 .accept(APPLICATION_JSON)
                 .post(format("/v1/api/products/%s/payments", product.getExternalId()))
                 .then()
@@ -128,7 +128,7 @@ public class PaymentResourceTest extends IntegrationTest {
                 .respondCreatedWithBody(paymentResponsePayload);
 
         Map<String, Long> payload = ImmutableMap.of("price", priceOverride);
-        ValidatableResponse response = givenAuthenticatedSetup()
+        ValidatableResponse response = givenSetup()
                 .accept(APPLICATION_JSON)
                 .body(mapper.writeValueAsString(payload))
                 .post(format("/v1/api/products/%s/payments", product.getExternalId()))
@@ -149,19 +149,10 @@ public class PaymentResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void createAPayment_shouldFail_whenNotAuthenticated() throws Exception {
-        givenSetup()
-                .accept(APPLICATION_JSON)
-                .post(format("/v1/api/products/%s/payments", "payment-id"))
-                .then()
-                .statusCode(401);
-    }
-
-    @Test
     public void createAPayment_shouldFail_whenProductIsNotFound() throws Exception {
         String unknownProductId = "unknown-product-id";
 
-        givenAuthenticatedSetup()
+        givenSetup()
                 .accept(APPLICATION_JSON)
                 .post(format("/v1/api/products/%s/payments", unknownProductId))
                 .then()
@@ -191,7 +182,7 @@ public class PaymentResourceTest extends IntegrationTest {
                 .whenReceiveCreatedPaymentRequestWithAuthApiTokenAndWithBody(product.getPayApiToken(), expectedPaymentRequestPayload)
                 .respondBadRequestWithBody(errorPayload);
 
-        givenAuthenticatedSetup()
+        givenSetup()
                 .accept(APPLICATION_JSON)
                 .post(format("/v1/api/products/%s/payments", product.getExternalId()))
                 .then()
@@ -243,7 +234,7 @@ public class PaymentResourceTest extends IntegrationTest {
 
         databaseHelper.addPayment(payment.toPayment(), productEntity.getGatewayAccountId());
 
-        ValidatableResponse response = givenAuthenticatedSetup()
+        ValidatableResponse response = givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
                 .get(format("/v1/api/payments/%s", externalId))
@@ -269,21 +260,11 @@ public class PaymentResourceTest extends IntegrationTest {
 
     @Test
     public void findAPayment_shouldFail_WhenPaymentIsNotFound() throws Exception {
-        givenAuthenticatedSetup()
+        givenSetup()
                 .accept(APPLICATION_JSON)
                 .get(format("/v1/api/payments/%s", randomUuid()))
                 .then()
                 .statusCode(404);
-    }
-
-    @Test
-    public void findAPayment_shouldFail_whenNotAuthenticated() throws Exception {
-        givenSetup()
-                .when()
-                .accept(APPLICATION_JSON)
-                .get(format("/v1/api/payments/%s", randomUuid()))
-                .then()
-                .statusCode(401);
     }
 
     @Test
@@ -323,7 +304,7 @@ public class PaymentResourceTest extends IntegrationTest {
 
         databaseHelper.addPayment(payment2.toPayment(), gatewayAccountId);
 
-        ValidatableResponse response = givenAuthenticatedSetup()
+        ValidatableResponse response = givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
                 .get(format("v1/api/products/%s/payments", productExternalId))
@@ -362,26 +343,10 @@ public class PaymentResourceTest extends IntegrationTest {
 
     @Test
     public void findAllPaymentsOfAProduct_shouldFail_whenProductIsNotFound() throws Exception {
-        givenAuthenticatedSetup()
+        givenSetup()
                 .accept(APPLICATION_JSON)
                 .get(format("/v1/api/products/%s/payments", randomUuid()))
                 .then()
                 .statusCode(404);
-    }
-
-    @Test
-    public void findAllPaymentsOfAProduct_shouldFail_whenNotAuthenticated() throws Exception {
-        givenSetup()
-                .accept(APPLICATION_JSON)
-                .get(format("/v1/api/payments/%s", randomUuid()))
-                .then()
-                .statusCode(401);
-
-        givenSetup()
-                .when()
-                .accept(APPLICATION_JSON)
-                .get(format("/v1/api/products/%s/payments", randomUuid()))
-                .then()
-                .statusCode(401);
     }
 }

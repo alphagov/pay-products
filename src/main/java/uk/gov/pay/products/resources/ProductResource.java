@@ -9,22 +9,13 @@ import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.service.ProductFactory;
 import uk.gov.pay.products.validations.ProductRequestValidator;
 
-import javax.annotation.security.PermitAll;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static javax.ws.rs.core.Response.Status.NO_CONTENT;
-import static javax.ws.rs.core.Response.Status.OK;
+import static javax.ws.rs.core.Response.Status.*;
 
 @Path("/")
 public class ProductResource {
@@ -49,7 +40,6 @@ public class ProductResource {
     @Path(PRODUCTS_RESOURCE_PATH)
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
-    @PermitAll
     public Response createProduct(JsonNode payload) {
         logger.info("Create Service POST request - [ {} ]", payload);
         return requestValidator.validateCreateRequest(payload)
@@ -65,7 +55,6 @@ public class ProductResource {
     @Path(PRODUCT_RESOURCE_PATH)
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
-    @PermitAll
     public Response findProduct(@PathParam("productExternalId") String productExternalId) {
         logger.info("Find a product with externalId - [ {} ]", productExternalId);
         return productFactory.productFinder().findByExternalId(productExternalId)
@@ -79,7 +68,6 @@ public class ProductResource {
     @Path(DISABLE_PRODUCT_RESOURCE_PATH)
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
-    @PermitAll
     public Response disableProduct(@PathParam("productExternalId") String productExternalId) {
         logger.info("Disabling a product with externalId - [ {} ]", productExternalId);
         return productFactory.productFinder().disableProduct(productExternalId)
@@ -90,7 +78,6 @@ public class ProductResource {
     @GET
     @Path(PRODUCTS_RESOURCE_PATH)
     @Produces(APPLICATION_JSON)
-    @PermitAll
     public Response findProducts(@QueryParam("gatewayAccountId") Integer gatewayAccountId) {
         logger.info("Searching for products with gatewayAccountId - [ {} ]", gatewayAccountId);
         List<Product> products = productFactory.productFinder().findByGatewayAccountId(gatewayAccountId);

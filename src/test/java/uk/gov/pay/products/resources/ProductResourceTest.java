@@ -34,27 +34,6 @@ public class ProductResourceTest extends IntegrationTest {
     private static final String SERVICE_NAME = "service_name";
 
     @Test
-    public void shouldFail_whenSavingAProduct_withIncorrectAuthToken() throws Exception {
-        ImmutableMap<String, ? extends Serializable> payload = ImmutableMap.<String, String>builder()
-                .put(GATEWAY_ACCOUNT_ID, randomInt().toString())
-                .put(PAY_API_TOKEN, randomUuid())
-                .put(NAME, "a-name")
-                .put(PRICE, "1234")
-                .put(TYPE, ProductType.DEMO.name())
-                .put(RETURN_URL, "http://return.url")
-                .build();
-
-        givenSetup()
-                .contentType(APPLICATION_JSON)
-                .header("Authorization", "Bearer invalid-api-key")
-                .accept(APPLICATION_JSON)
-                .body(mapper.writeValueAsString(payload))
-                .post("/v1/api/products")
-                .then()
-                .statusCode(401);
-    }
-
-    @Test
     public void shouldSuccess_whenSavingAValidProduct_withMinimumMandatoryFields() throws Exception {
 
         String payApiToken = randomUuid();
@@ -74,7 +53,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .put(RETURN_URL, "https://return.url")
                 .build();
 
-        ValidatableResponse response = givenAuthenticatedSetup()
+        ValidatableResponse response = givenSetup()
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .body(mapper.writeValueAsString(payload))
@@ -128,7 +107,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .put(SERVICE_NAME, serviceName)
                 .build();
 
-        ValidatableResponse response = givenAuthenticatedSetup()
+        ValidatableResponse response = givenSetup()
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .body(mapper.writeValueAsString(payload))
@@ -162,7 +141,7 @@ public class ProductResourceTest extends IntegrationTest {
 
     @Test
     public void shouldError_whenSavingAProduct_withMandatoryFieldsMissing() throws Exception {
-        givenAuthenticatedSetup()
+        givenSetup()
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .body(mapper.writeValueAsString("{}"))
@@ -184,7 +163,7 @@ public class ProductResourceTest extends IntegrationTest {
 
         databaseHelper.addProduct(product);
 
-        ValidatableResponse response = givenAuthenticatedSetup()
+        ValidatableResponse response = givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
                 .get(format("/v1/api/products/%s", externalId))
@@ -216,33 +195,11 @@ public class ProductResourceTest extends IntegrationTest {
 
     @Test
     public void givenANonExistingExternalProductId_shouldReturn404() throws Exception {
-        givenAuthenticatedSetup()
+        givenSetup()
                 .accept(APPLICATION_JSON)
                 .get(format("/v1/api/products/%s", randomUuid()))
                 .then()
                 .statusCode(404);
-    }
-
-    @Test
-    public void givenANotAuthenticatedRequest_shouldReturn401() throws Exception {
-        givenSetup()
-                .accept(APPLICATION_JSON)
-                .get(format("/v1/api/products/%s", randomUuid()))
-                .then()
-                .statusCode(401);
-
-        givenSetup()
-                .accept(APPLICATION_JSON)
-                .patch(format("/v1/api/products/%s/disable", randomUuid()))
-                .then()
-                .statusCode(401);
-
-        givenSetup()
-                .when()
-                .accept(APPLICATION_JSON)
-                .get(format("/v1/api/products?gatewayAccountId=%s", randomUuid()))
-                .then()
-                .statusCode(401);
     }
 
     @Test
@@ -258,7 +215,7 @@ public class ProductResourceTest extends IntegrationTest {
 
         databaseHelper.addProduct(product);
 
-        givenAuthenticatedSetup()
+        givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
                 .patch(format("/v1/api/products/%s/disable", externalId))
@@ -269,7 +226,7 @@ public class ProductResourceTest extends IntegrationTest {
 
     @Test
     public void givenANonExistingExternalProductId_whenDisableAProduct_shouldReturn404() throws Exception {
-        givenAuthenticatedSetup()
+        givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
                 .patch(format("/v1/api/products/%s/disable", randomUuid()))
@@ -295,7 +252,7 @@ public class ProductResourceTest extends IntegrationTest {
 
         databaseHelper.addProduct(product_2);
 
-        ValidatableResponse response = givenAuthenticatedSetup()
+        ValidatableResponse response = givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
                 .get(format("/v1/api/products?gatewayAccountId=%s", gatewayAccountId))
@@ -314,7 +271,7 @@ public class ProductResourceTest extends IntegrationTest {
     @Test
     public void givenNonExistingGatewayAccountId_shouldNoProduct() throws Exception {
         int unknownGatewayAccountId = randomInt();
-        givenAuthenticatedSetup()
+        givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
                 .get(format("/v1/api/products?gatewayAccountId=%s", unknownGatewayAccountId))
@@ -335,7 +292,7 @@ public class ProductResourceTest extends IntegrationTest {
 
         databaseHelper.addProduct(product);
 
-        givenAuthenticatedSetup()
+        givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
                 .get(format("/v1/api/products?gatewayAccountId=%s", gatewayAccountId))

@@ -41,7 +41,7 @@ public class GatewayAccountResourceTest extends IntegrationTest {
                 .put(FIELD_VALUE, VALUE)
                 .build();
 
-        givenAuthenticatedSetup()
+        givenSetup()
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .body(mapper.writeValueAsString(payload))
@@ -79,7 +79,7 @@ public class GatewayAccountResourceTest extends IntegrationTest {
                 .put(FIELD_VALUE, VALUE)
                 .build();
 
-        givenAuthenticatedSetup()
+        givenSetup()
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .body(mapper.writeValueAsString(payload))
@@ -94,15 +94,6 @@ public class GatewayAccountResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void updateAProduct_shouldFail_whenNotAuthenticated() throws Exception {
-        givenSetup()
-                .accept(APPLICATION_JSON)
-                .patch(format("/v1/api/gateway-account/%s", randomInt()))
-                .then()
-                .statusCode(401);
-    }
-
-    @Test
     public void givenANonExistingProduct_whenUpdateAServiceName_shouldReturn404() throws Exception {
         ImmutableMap<Object, Object> payload = ImmutableMap.builder()
                 .put(FIELD_OPERATION, OP)
@@ -110,7 +101,7 @@ public class GatewayAccountResourceTest extends IntegrationTest {
                 .put(FIELD_VALUE, VALUE)
                 .build();
 
-        givenAuthenticatedSetup()
+        givenSetup()
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .body(mapper.writeValueAsString(payload))
@@ -121,7 +112,7 @@ public class GatewayAccountResourceTest extends IntegrationTest {
 
     @Test
     public void shouldError_whenUpdatingAServiceName_withMandatoryFieldsMissing() throws Exception {
-        givenAuthenticatedSetup()
+        givenSetup()
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .body(mapper.writeValueAsString("{}"))

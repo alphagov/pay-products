@@ -9,7 +9,6 @@ import uk.gov.pay.products.model.PatchRequest;
 import uk.gov.pay.products.service.GatewayAccountFactory;
 import uk.gov.pay.products.validations.GatewayAccountRequestValidator;
 
-import javax.annotation.security.PermitAll;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -41,7 +40,6 @@ public class GatewayAccountResource {
     @Path(GATEWAY_ACCOUNT_PATH)
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
-    @PermitAll
     public Response patchGatewayAccount(@PathParam("gatewayAccountId") Integer gatewayAccountId, JsonNode payload) {
         logger.info("Patching gateway account [ {} ]", gatewayAccountId);
         return requestValidator.validatePatchRequest(payload)

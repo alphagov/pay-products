@@ -8,7 +8,6 @@ This endpoint creates a new product in pay-products.
 
 ```
 POST /v1/api/products
-Authorization: Bearer API_TOKEN
 Content-Type: application/json
 
 {
@@ -17,6 +16,7 @@ Content-Type: application/json
     "name" :                    "A name for the product",
     "description" :             "Description of the product",
     "price" :                   1050,
+    "type" :                    "DEMO",
     "service_name":             "Some awesome government service",
     "return_url" :              "https://some.valid.url/"   
 }
@@ -44,6 +44,7 @@ Content-Type: application/json
     "gateway_account_id" : "1234",
     "description":         "Description of the product",
     "price":               1050,
+    "type":                "DEMO,
     "service_name":             "Some awesome government service",
     "return_url" :         "https://some.valid.url/",
     "_links": [
@@ -80,7 +81,6 @@ This endpoint finds a product with the specified external product id
 
 ```
 GET /v1/api/products/874h5c87834659q345698495
-Authorization: Bearer API_TOKEN
 ```  
 
 ### Response example
@@ -117,7 +117,6 @@ This endpoint retrieves list of products that belongs to the specified gateway a
 
 ```
 GET /v1/api/products?gatewayAccountId=1234
-Authorization: Bearer API_TOKEN
 ```  
 
 ### Response example
@@ -172,7 +171,6 @@ This endpoint disables a product with the specified external product id
 
 ```
 PATCH /v1/api/products/uier837y735n837475y3847534/disable
-Authorization: Bearer API_TOKEN
 ```  
 
 ### Response example
@@ -188,7 +186,6 @@ This endpoint finds a payment with the specified external payment id
 
 ```
 GET /v1/api/payments/h6347634cwb67wii7b6ciueroytw
-Authorization: Bearer API_TOKEN
 ```  
 
 ### Response example
@@ -232,7 +229,6 @@ This endpoint retrieves list of payments that belongs to the specified product e
 
 ```
 GET /v1/api/products/uier837y735n837475y3847534/payments
-Authorization: Bearer API_TOKEN
 ```  
 
 ### Response example
@@ -292,7 +288,6 @@ This endpoint creates a new payment for a given product in pay-products.
 
 ```
 POST /v1/api/products/uier837y735n837475y3847534/payments
-Authorization: Bearer API_TOKEN
 Content-Type: application/json
 {
     "price" : 9090,
@@ -348,7 +343,6 @@ This endpoint batch updates Service Names of Products with a given gatewayAccoun
 
 ```
 PATCH /v1/api/gateway-account/56
-Authorization: Bearer API_TOKEN
 Content-Type: application/json
 
 {

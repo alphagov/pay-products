@@ -31,10 +31,6 @@ public class ProductsConfiguration extends Configuration {
     @NotNull
     private String productsUiPayUrl;
 
-    private String productsApiToken;
-
-    private String productsApiToken2;
-
     @NotNull
     private String productsUiConfirmUrl;
 
@@ -81,14 +77,6 @@ public class ProductsConfiguration extends Configuration {
 
     public String getProductsUiPayUrl() {
         return productsUiPayUrl;
-    }
-
-    public String getProductsApiToken() {
-        return productsApiToken;
-    }
-
-    public String getProductsApiToken2() {
-        return productsApiToken2;
     }
 
     public RestClientConfiguration getRestClientConfiguration() {

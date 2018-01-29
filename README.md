@@ -11,8 +11,6 @@ These products are integrated with GOVUK.Pay so that a user can make payments us
 | Variable | Default | Purpose |
 |----------|---------|---------|
 | `PRODUCTS_UI_URL` | - | base url of the products ui micro service |
-| `API_KEY`     | - | API Key for request authentication |
-| `API_KEY2`    | - | Alternate API Key for request authentication |
 
 ## API Specification
 

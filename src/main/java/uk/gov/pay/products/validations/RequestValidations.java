@@ -87,7 +87,7 @@ public class RequestValidations {
     }
 
     public static Function<JsonNode, Boolean> isBelowMax() {
-        return jsonNode -> isDigits(jsonNode.asText()) && jsonNode.asLong() >= MAX_PRICE;
+        return jsonNode -> isDigits(jsonNode.asText()) && jsonNode.asLong() > MAX_PRICE;
     }
 
     public static Function<JsonNode, Boolean> isNotProductType() {

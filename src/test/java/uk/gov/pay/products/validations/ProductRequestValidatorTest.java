@@ -103,26 +103,6 @@ public class ProductRequestValidatorTest {
     }
 
     @Test
-    public void shouldError_whenPriceFieldEqualsMaxPrice() {
-        JsonNode payload = new ObjectMapper()
-                .valueToTree(
-                        ImmutableMap.<String, String>builder()
-                                .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
-                                .put(FIELD_PAY_API_TOKEN, "api_token")
-                                .put(FIELD_NAME, "name")
-                                .put(FIELD_PRICE, MAX_PRICE.toString())
-                                .put(FIELD_SERVICE_NAME, "Example service")
-                                .put(FIELD_TYPE, ProductType.DEMO.toString())
-                                .put(FIELD_RETURN_URL, VALID_RETURN_URL)
-                                .build());
-
-        Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
-
-        assertThat(errors.isPresent(), is(true));
-        assertThat(errors.get().getErrors().toString(), is("[Field [price] must be a number below " + MAX_PRICE + "]"));
-    }
-
-    @Test
     public void shouldError_whenPriceFieldExceedsMaxPrice() {
         JsonNode payload = new ObjectMapper()
                 .valueToTree(

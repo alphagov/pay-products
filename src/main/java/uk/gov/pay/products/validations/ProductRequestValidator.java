@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class ProductRequestValidator {
-    private final RequestValidations requestValidations;
     private static final String FIELD_GATEWAY_ACCOUNT_ID = "gateway_account_id";
     private static final String FIELD_PAY_API_TOKEN = "pay_api_token";
     private static final String FIELD_NAME = "name";
@@ -16,6 +15,9 @@ public class ProductRequestValidator {
     private static final String FIELD_RETURN_URL = "return_url";
     private static final String FIELD_SERVICE_NAME = "service_name";
     private static final String FIELD_TYPE = "type";
+    private static final int FIELD_SERVICE_NAME_MAX_LENGTH = 50;
+
+    private final RequestValidations requestValidations;
 
     @Inject
     public ProductRequestValidator(RequestValidations requestValidations) {
@@ -32,7 +34,7 @@ public class ProductRequestValidator {
                 FIELD_TYPE,
                 FIELD_SERVICE_NAME);
 
-        if (!errors.isPresent() && payload.get(FIELD_RETURN_URL)!= null){
+        if (!errors.isPresent() && payload.get(FIELD_RETURN_URL) != null) {
             errors = requestValidations.checkIsUrl(payload, FIELD_RETURN_URL);
         }
 
@@ -42,6 +44,10 @@ public class ProductRequestValidator {
 
         if (!errors.isPresent() && payload.get(FIELD_TYPE) != null) {
             errors = requestValidations.checkIsProductType(payload, FIELD_TYPE);
+        }
+
+        if (!errors.isPresent() && payload.get(FIELD_SERVICE_NAME) != null) {
+            errors = requestValidations.checkMaxLength(payload, FIELD_SERVICE_NAME_MAX_LENGTH, FIELD_SERVICE_NAME);
         }
 
         return errors.map(Errors::from);

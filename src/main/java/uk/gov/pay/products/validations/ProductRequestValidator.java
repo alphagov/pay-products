@@ -7,6 +7,8 @@ import uk.gov.pay.products.util.Errors;
 import java.util.List;
 import java.util.Optional;
 
+import static uk.gov.pay.products.util.ProductType.ADHOC;
+
 public class ProductRequestValidator {
     private static final String FIELD_GATEWAY_ACCOUNT_ID = "gateway_account_id";
     private static final String FIELD_PAY_API_TOKEN = "pay_api_token";
@@ -30,7 +32,6 @@ public class ProductRequestValidator {
                 FIELD_GATEWAY_ACCOUNT_ID,
                 FIELD_PAY_API_TOKEN,
                 FIELD_NAME,
-                FIELD_PRICE,
                 FIELD_TYPE,
                 FIELD_SERVICE_NAME);
 
@@ -44,6 +45,10 @@ public class ProductRequestValidator {
 
         if (!errors.isPresent() && payload.get(FIELD_TYPE) != null) {
             errors = requestValidations.checkIsProductType(payload, FIELD_TYPE);
+        }
+
+        if (!errors.isPresent() && !ADHOC.name().equals(payload.get(FIELD_TYPE).asText())) {
+            errors = requestValidations.checkIfExistsOrEmpty(payload, FIELD_PRICE);
         }
 
         if (!errors.isPresent() && payload.get(FIELD_SERVICE_NAME) != null) {

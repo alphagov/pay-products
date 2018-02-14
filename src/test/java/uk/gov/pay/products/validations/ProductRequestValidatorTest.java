@@ -85,7 +85,7 @@ public class ProductRequestValidatorTest {
     }
 
     @Test
-    public void shouldError_whenPriceFieldIsMissing() {
+    public void shouldError_whenPriceFieldIsMissing_forNonAdhocProduct() {
         JsonNode payload = new ObjectMapper()
                 .valueToTree(ImmutableMap.<String, String>builder()
                         .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
@@ -102,6 +102,23 @@ public class ProductRequestValidatorTest {
         assertThat(errors.get().getErrors().toString(), is("[Field [price] is required]"));
     }
 
+    @Test
+    public void shouldNotError_whenPriceFieldIsMissing_forAdhocProduct() {
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(ImmutableMap.<String, String>builder()
+                        .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
+                        .put(FIELD_PAY_API_TOKEN, "api_token")
+                        .put(FIELD_NAME, "name")
+                        .put(FIELD_SERVICE_NAME, "Example service")
+                        .put(FIELD_RETURN_URL, VALID_RETURN_URL)
+                        .put(FIELD_TYPE, ProductType.ADHOC.toString())
+                        .build());
+
+        Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
+
+        assertThat(errors.isPresent(), is(false));
+    }
+    
     @Test
     public void shouldError_whenPriceFieldExceedsMaxPrice() {
         JsonNode payload = new ObjectMapper()

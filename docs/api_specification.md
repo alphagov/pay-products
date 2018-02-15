@@ -29,7 +29,7 @@ Content-Type: application/json
 | `gateway_account_id`     |    X     | gateway account id of the Gateway Account as identified by adminusers.  |   |
 | `pay_api_token`          |    X     | valid api token for the gateway account of above service which this product takes payments for |  |
 | `name`                   |    X     | Name of the product. This will be passed as the `name` when creating the charge | |
-| `price`                  |    X     | Price for the product in pence. This will be passed as the  `amount` when creating charge    | |
+| `price`                  |          | Price for the product in pence. This will be passed as the  `amount` when creating charge. Mandatory for Non-ADHOC products    | |
 | `description`            |          | Description of the product. This will be passed as the `description` when creating the charge | |
 | `service_name`           |    X     | The name of the service associated that the product is to be associated with    |   |
 | `return_url`             |          | (https only) where to redirect to upon completion of a payment. If not provided, `pay-products` will generate a default url to itself when creating a charge | |

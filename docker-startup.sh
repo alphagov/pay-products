@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -eu
-RUN_MIGRATION=${RUN_MIGRATION:-true} # TODO this should be 'false' once e2e is up to date
+RUN_MIGRATION=${RUN_MIGRATION:-false}
 RUN_APP=${RUN_APP:-true}
 
 java -jar *-allinone.jar waitOnDependencies *.yaml && \

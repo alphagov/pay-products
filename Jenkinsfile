@@ -51,7 +51,8 @@ pipeline {
         branch 'master'
       }
       steps {
-        deploy("products", "test", null, true, true, "uk.gov.pay.endtoend.categories.SmokeProducts", true)
+        deploy("products", "test", null, false, false, "uk.gov.pay.endtoend.categories.SmokeProducts", true)
+        deployEcs("products", "test", null, true, true, "uk.gov.pay.endtoend.categories.SmokeProducts", true)
       }
     }
   }

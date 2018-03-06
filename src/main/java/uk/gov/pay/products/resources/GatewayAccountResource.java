@@ -19,14 +19,11 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.ACCEPTED;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
-@Path("/")
+@Path("/v1/api")
 public class GatewayAccountResource {
 
     private static Logger logger = LoggerFactory.getLogger(GatewayAccountResource.class);
 
-    private static final String API_VERSION_PATH = "v1";
-    public static final String GATEWAY_ACCOUNTS_PATH = API_VERSION_PATH + "/api/gateway-account";
-    public static final String GATEWAY_ACCOUNT_PATH = GATEWAY_ACCOUNTS_PATH + "/{gatewayAccountId}";
     private final GatewayAccountRequestValidator requestValidator;
     private final GatewayAccountFactory gatewayAccountFactory;
 
@@ -37,7 +34,7 @@ public class GatewayAccountResource {
     }
 
     @PATCH
-    @Path(GATEWAY_ACCOUNT_PATH)
+    @Path("/gateway-account/{gatewayAccountId}")
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     public Response patchGatewayAccount(@PathParam("gatewayAccountId") Integer gatewayAccountId, JsonNode payload) {

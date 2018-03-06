@@ -9,7 +9,6 @@ import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
 
 import javax.ws.rs.HttpMethod;
-import java.io.Serializable;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;

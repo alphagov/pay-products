@@ -17,18 +17,12 @@ import java.util.List;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.*;
 
-@Path("/")
+@Path("/v1/api")
 public class ProductResource {
     private static Logger logger = LoggerFactory.getLogger(ProductResource.class);
 
-    private static final String API_VERSION_PATH = "v1";
-    public static final String PRODUCTS_RESOURCE_PATH = API_VERSION_PATH + "/api/products";
-    public static final String PRODUCT_RESOURCE_PATH = PRODUCTS_RESOURCE_PATH + "/{productExternalId}";
-    public static final String DISABLE_PRODUCT_RESOURCE_PATH = PRODUCTS_RESOURCE_PATH + "/{productExternalId}/disable";
-
     private final ProductRequestValidator requestValidator;
     private final ProductFactory productFactory;
-
 
     @Inject
     public ProductResource(ProductRequestValidator requestValidator, ProductFactory productFactory) {
@@ -37,7 +31,7 @@ public class ProductResource {
     }
 
     @POST
-    @Path(PRODUCTS_RESOURCE_PATH)
+    @Path("/products")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     public Response createProduct(JsonNode payload) {
@@ -52,7 +46,7 @@ public class ProductResource {
     }
 
     @GET
-    @Path(PRODUCT_RESOURCE_PATH)
+    @Path("/products/{productExternalId}")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     public Response findProduct(@PathParam("productExternalId") String productExternalId) {
@@ -65,7 +59,7 @@ public class ProductResource {
     }
 
     @PATCH
-    @Path(DISABLE_PRODUCT_RESOURCE_PATH)
+    @Path("/products/{productExternalId}/disable")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     public Response disableProduct(@PathParam("productExternalId") String productExternalId) {
@@ -76,7 +70,7 @@ public class ProductResource {
     }
 
     @GET
-    @Path(PRODUCTS_RESOURCE_PATH)
+    @Path("/products")
     @Produces(APPLICATION_JSON)
     public Response findProducts(@QueryParam("gatewayAccountId") Integer gatewayAccountId) {
         logger.info("Searching for products with gatewayAccountId - [ {} ]", gatewayAccountId);

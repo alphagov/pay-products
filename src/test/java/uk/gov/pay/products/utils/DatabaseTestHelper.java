@@ -19,10 +19,10 @@ public class DatabaseTestHelper {
     public DatabaseTestHelper addProduct(Product product) {
         jdbi.withHandle(handle -> handle.createStatement("INSERT INTO products " +
                 "(external_id, name, description, pay_api_token, price, " +
-                "status, return_url, type, gateway_account_id)" +
+                "status, return_url, type, gateway_account_id, service_name)" +
                 "VALUES " +
                 "(:external_id, :name, :description, :pay_api_token, :price, " +
-                ":status, :return_url, :type, :gateway_account_id)")
+                ":status, :return_url, :type, :gateway_account_id, :service_name)")
                 .bind("external_id", product.getExternalId())
                 .bind("name", product.getName())
                 .bind("description", product.getDescription())
@@ -32,6 +32,7 @@ public class DatabaseTestHelper {
                 .bind("return_url", product.getReturnUrl())
                 .bind("type", product.getType())
                 .bind("gateway_account_id", product.getGatewayAccountId())
+                .bind("service_name", product.getServiceName())
                 .execute());
 
         return this;

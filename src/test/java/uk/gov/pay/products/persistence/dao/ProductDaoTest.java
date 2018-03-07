@@ -3,12 +3,15 @@ package uk.gov.pay.products.persistence.dao;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
+import uk.gov.pay.products.matchers.ProductMatcher;
+import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductStatus;
 
 import java.util.List;
 import java.util.Optional;
 
+import static junit.framework.TestCase.assertFalse;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -25,7 +28,106 @@ public class ProductDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void shouldSuccess_whenSavingAValidProduct() throws Exception {
+    public void findByExternalId_shouldReturnAProduct_whenExists() throws Exception {
+        String externalId = randomUuid();
+        Integer gatewayAccountId = randomInt();
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+
+        Optional<ProductEntity> productEntity = productDao.findByExternalId(externalId);
+        assertTrue(productEntity.isPresent());
+        assertThat(productEntity.get().toProduct(), ProductMatcher.isSame(product));
+    }
+
+    @Test
+    public void findByExternalId_shouldNotReturnAProduct_whenDoesNotExist() throws Exception {
+        String externalId = "xxx";
+        String anotherExternalId = "yyy";
+        Integer gatewayAccountId = randomInt();
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+
+        Optional<ProductEntity> productEntity = productDao.findByExternalId(anotherExternalId);
+        assertFalse(productEntity.isPresent());
+    }
+
+    @Test
+    public void findByGatewayAccountIdAndExternalId_shouldReturnAProduct_whenExists() throws Exception {
+        String externalId = randomUuid();
+        Integer gatewayAccountId = randomInt();
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+
+        Optional<ProductEntity> productEntity = productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId);
+        assertTrue(productEntity.isPresent());
+        assertThat(productEntity.get().toProduct(), ProductMatcher.isSame(product));
+    }
+
+    @Test
+    public void findByGatewayAccountIdAndExternalId_shouldNotReturnAProduct_whenDoesNotExist() throws Exception {
+        String externalId = randomUuid();
+        Integer gatewayAccountId = 0;
+        Integer anotherGatewayAccountId = 1;
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+
+        Optional<ProductEntity> productEntity = productDao.findByGatewayAccountIdAndExternalId(anotherGatewayAccountId, externalId);
+        assertFalse(productEntity.isPresent());
+
+    }
+
+    @Test
+    public void findByGatewayAccountId_shouldReturnActiveProductsForTheGivenAccount() throws Exception {
+        String externalId = randomUuid();
+        Integer gatewayAccountId = randomInt();
+
+        Product activeProduct = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(activeProduct);
+
+        Product inactiveProduct = ProductEntityFixture.aProductEntity()
+                .withGatewayAccountId(gatewayAccountId)
+                .withStatus(ProductStatus.INACTIVE)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(inactiveProduct);
+
+        List<ProductEntity> products = productDao.findByGatewayAccountId(gatewayAccountId);
+        assertThat(products.size(), is(1));
+        assertThat(products.get(0).toProduct(), ProductMatcher.isSame(activeProduct));
+    }
+
+    @Test
+    public void persist_shouldSucceed_whenTheProductIsValid() throws Exception {
         String externalId = randomUuid();
         Integer gatewayAccountId = randomInt();
 
@@ -37,64 +139,41 @@ public class ProductDaoTest extends DaoTestBase {
 
         productDao.persist(product);
 
-        Optional<ProductEntity> expectedProduct = productDao.findByExternalId(externalId);
-        assertTrue(expectedProduct.isPresent());
-
-        assertThat(expectedProduct.get().getName(), is(product.getName()));
+        Optional<ProductEntity> newProduct = productDao.findByExternalId(externalId);
+        assertTrue(newProduct.isPresent());
+        assertThat(newProduct.get().toProduct(), ProductMatcher.isSame(product.toProduct()));
     }
 
     @Test
-    public void shouldReturnProductsWithStatusActive() throws Exception {
-        String externalId = randomUuid();
-        Integer gatewayAccountId = randomInt();
-
-        ProductEntity product = ProductEntityFixture.aProductEntity()
-                .withExternalId(externalId)
-                .withGatewayAccountId(gatewayAccountId)
-                .build();
-
-        productDao.persist(product);
-
-        ProductEntity product_2 = ProductEntityFixture.aProductEntity()
-                .withGatewayAccountId(gatewayAccountId)
-                .withStatus(ProductStatus.INACTIVE)
-                .build();
-
-        productDao.persist(product_2);
-
-        List<ProductEntity> products = productDao.findByGatewayAccountId(gatewayAccountId);
-        assertThat(products.size(), is(1));
-        assertThat(products.get(0).getExternalId(), is(externalId));
-        assertThat(products.get(0).getStatus(), is(ProductStatus.ACTIVE));
-    }
-
-    @Test
-    public void shouldUpdateBatchServiceName() throws Exception {
+    public void updateGatewayAccount_shouldUpdateTheServiceNameOfAllProductOfGivenGatewayAccount() throws Exception {
         Integer gatewayAccountId = randomInt();
         Integer anotherGatewayAccountId = randomInt();
-        String oldServiceName = "A Service Name";
+        String oldServiceName = "Old Service Name";
         String newServiceName = "New Service Name";
 
-        ProductEntity product = ProductEntityFixture.aProductEntity()
+        Product product1 = ProductEntityFixture.aProductEntity()
                 .withGatewayAccountId(gatewayAccountId)
                 .withServiceName(oldServiceName)
-                .build();
+                .build()
+                .toProduct();
 
-        productDao.persist(product);
+        databaseHelper.addProduct(product1);
 
-        ProductEntity product_2 = ProductEntityFixture.aProductEntity()
+        Product product2 = ProductEntityFixture.aProductEntity()
                 .withGatewayAccountId(gatewayAccountId)
                 .withServiceName(oldServiceName)
-                .build();
+                .build()
+                .toProduct();
 
-        productDao.persist(product_2);
+        databaseHelper.addProduct(product2);
 
-        ProductEntity product_3 = ProductEntityFixture.aProductEntity()
+        Product product3 = ProductEntityFixture.aProductEntity()
                 .withGatewayAccountId(anotherGatewayAccountId)
                 .withServiceName(oldServiceName)
-                .build();
+                .build()
+                .toProduct();
 
-        productDao.persist(product_3);
+        databaseHelper.addProduct(product3);
 
         Integer updatedRows = productDao.updateGatewayAccount(gatewayAccountId, newServiceName);
         assertThat(updatedRows, is(2));

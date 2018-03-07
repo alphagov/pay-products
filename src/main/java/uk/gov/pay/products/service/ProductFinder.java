@@ -28,6 +28,12 @@ public class ProductFinder {
     }
 
     @Transactional
+    public Optional<Product> findByGatewayAccountIdAndExternalId(Integer gatewayAccountId, String externalId) {
+        return productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)
+                .map(productEntity -> linksDecorator.decorate(productEntity.toProduct()));
+    }
+
+    @Transactional
     public Optional<Product> disableProduct(String externalId) {
         return productDao.findByExternalId(externalId)
                 .map(productEntity -> {

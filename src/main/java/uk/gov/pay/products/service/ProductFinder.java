@@ -34,8 +34,18 @@ public class ProductFinder {
     }
 
     @Transactional
-    public Optional<Product> disableProduct(String externalId) {
+    public Optional<Product> disableByExternalId(String externalId) {
         return productDao.findByExternalId(externalId)
+                .map(productEntity -> {
+                    productEntity.setStatus(ProductStatus.INACTIVE);
+                    return Optional.of(productEntity.toProduct());
+                })
+                .orElseGet(Optional::empty);
+    }
+
+    @Transactional
+    public Optional<Product> disableByGatewayAccountIdAndExternalId(Integer gatewayAccountId, String externalId) {
+        return productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)
                 .map(productEntity -> {
                     productEntity.setStatus(ProductStatus.INACTIVE);
                     return Optional.of(productEntity.toProduct());

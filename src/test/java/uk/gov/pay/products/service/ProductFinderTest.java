@@ -74,17 +74,16 @@ public class ProductFinderTest {
     @Test
     public void findByGatewayAccountIdAndExternalId_shouldReturnEmpty_whenNotFound() throws Exception {
         Integer gatewayAccountId = 1;
-        Integer anotherGatewayAccountId = 2;
         String externalId = "1";
         when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.empty());
 
-        Optional<Product> productOptional = productFinder.findByGatewayAccountIdAndExternalId(anotherGatewayAccountId, externalId);
+        Optional<Product> productOptional = productFinder.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId);
 
         assertFalse(productOptional.isPresent());
     }
 
     @Test
-    public void disableProduct_shouldDisableProduct() throws Exception{
+    public void disableByExternalId_shouldDisableProduct_whenFound() throws Exception{
         String externalId = "1";
         ProductEntity productEntity = new ProductEntity();
         productEntity.setExternalId(externalId);
@@ -94,10 +93,51 @@ public class ProductFinderTest {
         assertThat(productOptional.isPresent(), is(true));
         assertThat(productOptional.get().getStatus(), is(ProductStatus.ACTIVE));
 
-        productFinder.disableProduct(externalId);
-        productOptional = productFinder.findByExternalId(externalId);
+        Optional<Product> disabledProduct = productFinder.disableByExternalId(externalId);
 
+        assertThat(disabledProduct.isPresent(), is(true));
+        assertThat(disabledProduct.get().getStatus(), is(ProductStatus.INACTIVE));
+    }
+
+    @Test
+    public void disableByExternalId_shouldReturnEmpty_whenNotFound() throws Exception{
+        String externalId = "1";
+        ProductEntity productEntity = new ProductEntity();
+        productEntity.setExternalId(externalId);
+        when(productDao.findByExternalId(externalId)).thenReturn(Optional.empty());
+
+        Optional<Product> disabledProduct = productFinder.disableByExternalId(externalId);
+
+        assertFalse(disabledProduct.isPresent());
+    }
+
+    @Test
+    public void disableByGatewayAccountIdAndExternalId_shouldDisableProduct_whenFound() throws Exception{
+        Integer gatewayAccountId = 1;
+        String externalId = "1";
+        ProductEntity productEntity = new ProductEntity();
+        productEntity.setExternalId(externalId);
+        productEntity.setGatewayAccountId(gatewayAccountId);
+        when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.of(productEntity));
+
+        Optional<Product> productOptional = productFinder.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId);
         assertThat(productOptional.isPresent(), is(true));
-        assertThat(productOptional.get().getStatus(), is(ProductStatus.INACTIVE));
+        assertThat(productOptional.get().getStatus(), is(ProductStatus.ACTIVE));
+
+        Optional<Product> disabledProduct = productFinder.disableByGatewayAccountIdAndExternalId(gatewayAccountId, externalId);
+
+        assertThat(disabledProduct.isPresent(), is(true));
+        assertThat(disabledProduct.get().getStatus(), is(ProductStatus.INACTIVE));
+    }
+
+    @Test
+    public void disableByGatewayAccountIdAndExternalId_shouldReturnEmpty_whenNotFound() throws Exception{
+        Integer gatewayAccountId = 1;
+        String externalId = "1";
+        when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.empty());
+
+        Optional<Product> disabledProduct = productFinder.disableByGatewayAccountIdAndExternalId(gatewayAccountId, externalId);
+
+        assertFalse(disabledProduct.isPresent());
     }
 }

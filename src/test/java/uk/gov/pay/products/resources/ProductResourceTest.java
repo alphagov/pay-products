@@ -150,7 +150,7 @@ public class ProductResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void givenAnExistingExternalProductId_shouldFindAndReturnProduct() throws Exception {
+    public void findProduct_shouldReturnProduct_whenFound() throws Exception {
         String externalId = randomUuid();
         int gatewayAccountId = randomInt();
 
@@ -165,7 +165,7 @@ public class ProductResourceTest extends IntegrationTest {
         ValidatableResponse response = givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
-                .get(format("/v1/api/products/%s", externalId))
+                .get(format("/v1/api/gateway-account/%s/products/%s", gatewayAccountId, externalId))
                 .then()
                 .statusCode(200);
 
@@ -193,16 +193,16 @@ public class ProductResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void givenANonExistingExternalProductId_shouldReturn404() throws Exception {
+    public void findProduct_shouldReturn404_whenNotFound() throws Exception {
         givenSetup()
                 .accept(APPLICATION_JSON)
-                .get(format("/v1/api/products/%s", randomUuid()))
+                .get(format("/v1/api/gateway-account/%s/products/%s", randomInt(), randomUuid()))
                 .then()
                 .statusCode(404);
     }
 
     @Test
-    public void givenAValidExternalProductId_shouldDisableTheProduct() throws Exception {
+    public void disableProduct_shouldReturn201_whenProductIsDisabled() throws Exception {
         String externalId = randomUuid();
         int gatewayAccountId = randomInt();
 
@@ -224,7 +224,7 @@ public class ProductResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void givenANonExistingExternalProductId_whenDisableAProduct_shouldReturn404() throws Exception {
+    public void disableProduct_shouldReturn404_whenNotFound() throws Exception {
         givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
@@ -234,7 +234,7 @@ public class ProductResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void givenAnExistingGatewayAccountId_shouldFindAndReturnProducts() throws Exception {
+    public void findProducts_shouldReturnActiveProducts_whenFound() throws Exception {
         int gatewayAccountId = randomInt();
 
         Product product = ProductEntityFixture.aProductEntity()
@@ -254,7 +254,7 @@ public class ProductResourceTest extends IntegrationTest {
         ValidatableResponse response = givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
-                .get(format("/v1/api/products?gatewayAccountId=%s", gatewayAccountId))
+                .get(format("/v1/api/gateway-account/%s/products", gatewayAccountId))
                 .then()
                 .statusCode(200);
 
@@ -268,19 +268,19 @@ public class ProductResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void givenNonExistingGatewayAccountId_shouldNoProduct() throws Exception {
+    public void findProducts_shouldReturnNoProduct_whenNoneFound() throws Exception {
         int unknownGatewayAccountId = randomInt();
         givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
-                .get(format("/v1/api/products?gatewayAccountId=%s", unknownGatewayAccountId))
+                .get(format("/v1/api/gateway-account/%s/products", unknownGatewayAccountId))
                 .then()
                 .statusCode(200)
                 .body("", hasSize(0));
     }
 
     @Test
-    public void givenAnExistingGatewayAccountId_whenProductIsAlreadyDisabled_thenShouldNoProduct() throws Exception {
+    public void findProducts_shouldNotReturnInactiveProducts() throws Exception {
         int gatewayAccountId = randomInt();
 
         Product product = ProductEntityFixture.aProductEntity()
@@ -294,7 +294,7 @@ public class ProductResourceTest extends IntegrationTest {
         givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
-                .get(format("/v1/api/products?gatewayAccountId=%s", gatewayAccountId))
+                .get(format("/v1/api/gateway-account/%s/products", gatewayAccountId))
                 .then()
                 .statusCode(200)
                 .body("", hasSize(0));

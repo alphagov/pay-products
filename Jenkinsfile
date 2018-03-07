@@ -19,16 +19,32 @@ pipeline {
   stages {
     stage('Maven Build') {
       steps {
-        sh 'docker pull govukpay/postgres:9.4.4'
-        sh 'mvn clean package'
+        script {
+          def long stepBuildTime = System.currentTimeMillis()
+
+          sh 'docker pull govukpay/postgres:9.4.4'
+          sh 'mvn clean package'
+
+          postSuccessfulMetrics("products.maven-build", stepBuildTime)
+        }
+      }
+      post {
+        failure {
+          postMetric("products.maven-build.failure", 1, "new")
+        }
       }
     }
     stage('Docker Build') {
       steps {
         script {
-          buildApp{
+          buildAppWithMetrics {
             app = "products"
           }
+        }
+      }
+      post {
+        failure {
+          postMetric("products.docker-build.failure", 1, "new")
         }
       }
     }
@@ -40,9 +56,14 @@ pipeline {
     stage('Docker Tag') {
       steps {
         script {
-          dockerTag {
+          dockerTagWithMetrics {
             app = "products"
           }
+        }
+      }
+      post {
+        failure {
+          postMetric("products.docker-tag.failure", 1, "new")
         }
       }
     }
@@ -54,6 +75,14 @@ pipeline {
         deploy("products", "test", null, false, false, "uk.gov.pay.endtoend.categories.SmokeProducts", true)
         deployEcs("products", "test", null, true, true, "uk.gov.pay.endtoend.categories.SmokeProducts", true)
       }
+    }
+  }
+  post {
+    failure {
+      postMetric("products.failure", 1, "new")
+    }
+    success {
+      postSuccessfulMetrics("products")
     }
   }
 }

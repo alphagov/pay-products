@@ -17,18 +17,12 @@ import java.util.List;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.*;
 
-@Path("/")
+@Path("/v1/api")
 public class ProductResource {
     private static Logger logger = LoggerFactory.getLogger(ProductResource.class);
 
-    private static final String API_VERSION_PATH = "v1";
-    public static final String PRODUCTS_RESOURCE_PATH = API_VERSION_PATH + "/api/products";
-    public static final String PRODUCT_RESOURCE_PATH = PRODUCTS_RESOURCE_PATH + "/{productExternalId}";
-    public static final String DISABLE_PRODUCT_RESOURCE_PATH = PRODUCTS_RESOURCE_PATH + "/{productExternalId}/disable";
-
     private final ProductRequestValidator requestValidator;
     private final ProductFactory productFactory;
-
 
     @Inject
     public ProductResource(ProductRequestValidator requestValidator, ProductFactory productFactory) {
@@ -37,7 +31,7 @@ public class ProductResource {
     }
 
     @POST
-    @Path(PRODUCTS_RESOURCE_PATH)
+    @Path("/products")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     public Response createProduct(JsonNode payload) {
@@ -51,11 +45,14 @@ public class ProductResource {
 
     }
 
+    // TODO: TO BE REMOVED!
+    // Leaving this provisionally for backward compatibility
+    @Deprecated
     @GET
-    @Path(PRODUCT_RESOURCE_PATH)
+    @Path("/products/{productExternalId}")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
-    public Response findProduct(@PathParam("productExternalId") String productExternalId) {
+    public Response deprecatedFindProduct(@PathParam("productExternalId") String productExternalId) {
         logger.info("Find a product with externalId - [ {} ]", productExternalId);
         return productFactory.productFinder().findByExternalId(productExternalId)
                 .map(product ->
@@ -64,21 +61,60 @@ public class ProductResource {
                         Response.status(NOT_FOUND).build());
     }
 
-    @PATCH
-    @Path(DISABLE_PRODUCT_RESOURCE_PATH)
+    @GET
+    @Path("/gateway-account/{gatewayAccountId}/products/{productExternalId}")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
-    public Response disableProduct(@PathParam("productExternalId") String productExternalId) {
+    public Response findProduct(@PathParam("gatewayAccountId") Integer gatewayAccountId, @PathParam("productExternalId") String productExternalId) {
+        logger.info("Find a product with externalId - [ {} ]", productExternalId);
+        return productFactory.productFinder().findByGatewayAccountIdAndExternalId(gatewayAccountId, productExternalId)
+                .map(product ->
+                        Response.status(OK).entity(product).build())
+                .orElseGet(() ->
+                        Response.status(NOT_FOUND).build());
+    }
+
+    // TODO: TO BE REMOVED!
+    // Leaving this provisionally for backward compatibility
+    @Deprecated
+    @PATCH
+    @Path("/products/{productExternalId}/disable")
+    @Produces(APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
+    public Response deprecatedDisableProduct(@PathParam("productExternalId") String productExternalId) {
         logger.info("Disabling a product with externalId - [ {} ]", productExternalId);
-        return productFactory.productFinder().disableProduct(productExternalId)
+        return productFactory.productFinder().disableByExternalId(productExternalId)
                 .map(product -> Response.status(NO_CONTENT).build())
                 .orElseGet(() -> Response.status(NOT_FOUND).build());
     }
 
-    @GET
-    @Path(PRODUCTS_RESOURCE_PATH)
+    @PATCH
+    @Path("/gateway-account/{gatewayAccountId}/products/{productExternalId}/disable")
     @Produces(APPLICATION_JSON)
-    public Response findProducts(@QueryParam("gatewayAccountId") Integer gatewayAccountId) {
+    @Consumes(APPLICATION_JSON)
+    public Response disableProduct(@PathParam("gatewayAccountId") Integer gatewayAccountId, @PathParam("productExternalId") String productExternalId) {
+        logger.info("Disabling a product with externalId - [ {} ]", productExternalId);
+        return productFactory.productFinder().disableByGatewayAccountIdAndExternalId(gatewayAccountId, productExternalId)
+                .map(product -> Response.status(NO_CONTENT).build())
+                .orElseGet(() -> Response.status(NOT_FOUND).build());
+    }
+
+    // TODO: TO BE REMOVED!
+    // Leaving this provisionally for backward compatibility
+    @Deprecated
+    @GET
+    @Path("/products")
+    @Produces(APPLICATION_JSON)
+    public Response deprecatedFindProducts(@QueryParam("gatewayAccountId") Integer gatewayAccountId) {
+        logger.info("Searching for products with gatewayAccountId - [ {} ]", gatewayAccountId);
+        List<Product> products = productFactory.productFinder().findByGatewayAccountId(gatewayAccountId);
+        return Response.status(OK).entity(products).build();
+    }
+
+    @GET
+    @Path("/gateway-account/{gatewayAccountId}/products")
+    @Produces(APPLICATION_JSON)
+    public Response findProducts(@PathParam("gatewayAccountId") Integer gatewayAccountId) {
         logger.info("Searching for products with gatewayAccountId - [ {} ]", gatewayAccountId);
         List<Product> products = productFactory.productFinder().findByGatewayAccountId(gatewayAccountId);
         return Response.status(OK).entity(products).build();

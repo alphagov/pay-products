@@ -14,17 +14,11 @@ import java.util.List;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.*;
-import static uk.gov.pay.products.resources.ProductResource.PRODUCT_RESOURCE_PATH;
 
-@Path("/")
+@Path("/v1/api")
 public class PaymentResource {
 
     private static Logger logger = LoggerFactory.getLogger(PaymentResource.class);
-
-    private static final String API_VERSION_PATH = "v1";
-    public static final String PAYMENTS_RESOURCE_PATH = API_VERSION_PATH + "/api/payments";
-    public static final String PAYMENT_RESOURCE_PATH = PAYMENTS_RESOURCE_PATH + "/{paymentExternalId}";
-    public static final String PRODUCT_PAYMENTS_RESOURCE_PATH = PRODUCT_RESOURCE_PATH + "/payments";
 
     private final PaymentFactory paymentFactory;
     private final PaymentRequestValidator requestValidator;
@@ -35,7 +29,7 @@ public class PaymentResource {
         this.requestValidator = requestValidator;
     }
 
-    @Path(PAYMENT_RESOURCE_PATH)
+    @Path("/payments/{paymentExternalId}")
     @GET
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
@@ -48,7 +42,7 @@ public class PaymentResource {
                         Response.status(NOT_FOUND).build());
     }
 
-    @Path(PRODUCT_PAYMENTS_RESOURCE_PATH)
+    @Path("/products/{productExternalId}/payments")
     @POST
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
@@ -70,7 +64,7 @@ public class PaymentResource {
         }
     }
 
-    @Path(PRODUCT_PAYMENTS_RESOURCE_PATH)
+    @Path("/products/{productExternalId}/payments")
     @GET
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)

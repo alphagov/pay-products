@@ -9,8 +9,6 @@ import java.net.URI;
 import static javax.ws.rs.HttpMethod.GET;
 import static javax.ws.rs.HttpMethod.POST;
 import static javax.ws.rs.core.UriBuilder.fromUri;
-import static uk.gov.pay.products.resources.PaymentResource.PAYMENTS_RESOURCE_PATH;
-import static uk.gov.pay.products.resources.ProductResource.PRODUCTS_RESOURCE_PATH;
 
 public class LinksDecorator {
 
@@ -23,7 +21,7 @@ public class LinksDecorator {
     }
 
     public Product decorate(Product product) {
-        Link selfLink = makeSelfLink(GET, PRODUCTS_RESOURCE_PATH, product.getExternalId());
+        Link selfLink = makeSelfLink(GET, "v1/api/products", product.getExternalId());
         product.getLinks().add(selfLink);
 
         Link payLink = makeProductsUIUri(POST, product.getExternalId());
@@ -33,7 +31,7 @@ public class LinksDecorator {
     }
 
     public Payment decorate(Payment payment){
-        Link selfLink = makeSelfLink(GET, PAYMENTS_RESOURCE_PATH, payment.getExternalId());
+        Link selfLink = makeSelfLink(GET, "v1/api/payments", payment.getExternalId());
         payment.getLinks().add(selfLink);
 
         Link nextUrl = makeNextUrlLink(GET, payment.getNextUrl());

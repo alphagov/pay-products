@@ -127,4 +127,20 @@ public class Product {
     public String getReturnUrl() {
         return returnUrl;
     }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "externalId='" + externalId + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                ", status=" + status +
+                ", type=" + type +
+                ", gatewayAccountId=" + gatewayAccountId +
+                ", links=" + links +
+                ", returnUrl='" + returnUrl + '\'' +
+                ", serviceName='" + serviceName + '\'' +
+                '}';
+    }
 }

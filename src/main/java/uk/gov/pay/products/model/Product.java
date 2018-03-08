@@ -134,7 +134,6 @@ public class Product {
                 "externalId='" + externalId + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", payApiToken='" + payApiToken + '\'' +
                 ", price=" + price +
                 ", status=" + status +
                 ", type=" + type +

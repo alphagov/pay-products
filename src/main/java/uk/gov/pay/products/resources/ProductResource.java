@@ -47,6 +47,7 @@ public class ProductResource {
 
     // TODO: TO BE REMOVED!
     // Leaving this provisionally for backward compatibility
+    @Deprecated
     @GET
     @Path("/products/{productExternalId}")
     @Produces(APPLICATION_JSON)
@@ -75,6 +76,7 @@ public class ProductResource {
 
     // TODO: TO BE REMOVED!
     // Leaving this provisionally for backward compatibility
+    @Deprecated
     @PATCH
     @Path("/products/{productExternalId}/disable")
     @Produces(APPLICATION_JSON)
@@ -99,6 +101,7 @@ public class ProductResource {
 
     // TODO: TO BE REMOVED!
     // Leaving this provisionally for backward compatibility
+    @Deprecated
     @GET
     @Path("/products")
     @Produces(APPLICATION_JSON)

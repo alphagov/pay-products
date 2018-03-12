@@ -22,8 +22,8 @@ public class ProductFinder {
     }
 
     @Transactional
-    public Optional<Product> findByExternalId(String externalId) {
-        return productDao.findByExternalId(externalId)
+    public Optional<Product> findByFriendlyUrlOrExternalId(String friendlyUrlOrExternalId) {
+        return productDao.findByFriendlyUrlOrExternalId(friendlyUrlOrExternalId)
                 .map(productEntity -> linksDecorator.decorate(productEntity.toProduct()));
     }
 
@@ -35,7 +35,7 @@ public class ProductFinder {
 
     @Transactional
     public Optional<Product> disableByExternalId(String externalId) {
-        return productDao.findByExternalId(externalId)
+        return productDao.findByFriendlyUrlOrExternalId(externalId)
                 .map(productEntity -> {
                     productEntity.setStatus(ProductStatus.INACTIVE);
                     return Optional.of(productEntity.toProduct());

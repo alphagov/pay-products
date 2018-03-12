@@ -8,6 +8,7 @@ import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductStatus;
 
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,15 +41,15 @@ public class ProductDaoTest extends DaoTestBase {
 
         databaseHelper.addProduct(product);
 
-        Optional<ProductEntity> productEntity = productDao.findByExternalId(externalId);
+        Optional<ProductEntity> productEntity = productDao.findByFriendlyUrlOrExternalId(externalId);
         assertTrue(productEntity.isPresent());
         assertThat(productEntity.get().toProduct(), ProductMatcher.isSame(product));
     }
 
     @Test
     public void findByExternalId_shouldNotReturnAProduct_whenDoesNotExist() throws Exception {
-        String externalId = "xxx";
-        String anotherExternalId = "yyy";
+        String externalId = randomUuid();
+        String anotherExternalId = randomUuid();
         Integer gatewayAccountId = randomInt();
 
         Product product = ProductEntityFixture.aProductEntity()
@@ -59,7 +60,7 @@ public class ProductDaoTest extends DaoTestBase {
 
         databaseHelper.addProduct(product);
 
-        Optional<ProductEntity> productEntity = productDao.findByExternalId(anotherExternalId);
+        Optional<ProductEntity> productEntity = productDao.findByFriendlyUrlOrExternalId(anotherExternalId);
         assertFalse(productEntity.isPresent());
     }
 
@@ -139,7 +140,7 @@ public class ProductDaoTest extends DaoTestBase {
 
         productDao.persist(product);
 
-        Optional<ProductEntity> newProduct = productDao.findByExternalId(externalId);
+        Optional<ProductEntity> newProduct = productDao.findByFriendlyUrlOrExternalId(externalId);
         assertTrue(newProduct.isPresent());
         assertThat(newProduct.get().toProduct(), ProductMatcher.isSame(product.toProduct()));
     }
@@ -186,5 +187,45 @@ public class ProductDaoTest extends DaoTestBase {
         products = productDao.findByGatewayAccountId(anotherGatewayAccountId);
         assertThat(products.size(), is(1));
         assertThat(products.get(0).getServiceName(), is(oldServiceName));
+    }
+
+    @Test
+    public void findByFriendlyUrl_shouldReturnAProduct_whenExists() throws Exception {
+        String externalId = randomUuid();
+        Integer gatewayAccountId = randomInt();
+        String friendlyUrl = URLEncoder.encode("kent-council/pay-for-your-fishing-licence", "UTF-8");
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .withFriendlyUrl(friendlyUrl)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+
+        Optional<ProductEntity> productEntity = productDao.findByFriendlyUrlOrExternalId(friendlyUrl);
+        assertTrue(productEntity.isPresent());
+        assertThat(productEntity.get().toProduct(), ProductMatcher.isSame(product));
+    }
+
+    @Test
+    public void findByFriendlyUrl_shouldNotReturnAProduct_whenDoesNotExist() throws Exception {
+        String externalId = randomUuid();
+        Integer gatewayAccountId = randomInt();
+        String friendlyUrl = URLEncoder.encode("kent-council/pay-for-your-parking-permit", "UTF-8");
+        String anotherFriendlyUrl = URLEncoder.encode("kent-council-pay-for-your-parking-permit", "UTF-8");
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .withFriendlyUrl(friendlyUrl)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+
+        Optional<ProductEntity> productEntity = productDao.findByFriendlyUrlOrExternalId(anotherFriendlyUrl);
+        assertFalse(productEntity.isPresent());
     }
 }

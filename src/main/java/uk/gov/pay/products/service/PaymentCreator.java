@@ -68,7 +68,7 @@ public class PaymentCreator {
     private TransactionalOperation<TransactionContext, PaymentEntity> beforePaymentCreation(String productExternalId) {
         return context -> {
             logger.info("Creating a new payment for product external id {}", productExternalId);
-            ProductEntity productEntity = productDao.findByExternalId(productExternalId)
+            ProductEntity productEntity = productDao.findByFriendlyUrlOrExternalId(productExternalId)
                     .orElseThrow(() -> new PaymentCreatorNotFoundException(productExternalId));
 
             PaymentEntity paymentEntity = new PaymentEntity();

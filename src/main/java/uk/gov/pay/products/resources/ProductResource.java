@@ -54,7 +54,20 @@ public class ProductResource {
     @Consumes(APPLICATION_JSON)
     public Response deprecatedFindProduct(@PathParam("productExternalId") String productExternalId) {
         logger.info("Find a product with externalId - [ {} ]", productExternalId);
-        return productFactory.productFinder().findByExternalId(productExternalId)
+        return productFactory.productFinder().findByFriendlyUrlOrExternalId(productExternalId)
+                .map(product ->
+                        Response.status(OK).entity(product).build())
+                .orElseGet(() ->
+                        Response.status(NOT_FOUND).build());
+    }
+
+    @GET
+    @Path("/{findString}")
+    @Produces(APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
+    public Response findProductByFriendlyUrlOrExternalId(@PathParam("findString") String friendlyUrlOrExternalId) {
+        logger.info("Find a product with friendly url or externalId - [ {} ]", friendlyUrlOrExternalId);
+        return productFactory.productFinder().findByFriendlyUrlOrExternalId(friendlyUrlOrExternalId)
                 .map(product ->
                         Response.status(OK).entity(product).build())
                 .orElseGet(() ->

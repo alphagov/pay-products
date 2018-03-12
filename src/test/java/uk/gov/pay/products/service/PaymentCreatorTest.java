@@ -108,7 +108,7 @@ public class PaymentCreatorTest {
 
         when(randomUuid()).thenReturn(paymentExernalId);
         when(randomUserFriendlyReference()).thenReturn(referenceNumber);
-        when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
+        when(productDao.findByFriendlyUrlOrExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
         when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest)))).thenReturn(paymentResponse);
         when(productsConfiguration.getProductsUiConfirmUrl()).thenReturn(productsUIConfirmUri);
 
@@ -174,7 +174,7 @@ public class PaymentCreatorTest {
                 productReturnUrl);
 
 
-        when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
+        when(productDao.findByFriendlyUrlOrExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
         when(randomUuid()).thenReturn(paymentExternalId);
         when(randomUserFriendlyReference()).thenReturn(referenceNumber);
         when(productsConfiguration.getProductsUiConfirmUrl()).thenReturn(productReturnUrl);
@@ -242,7 +242,7 @@ public class PaymentCreatorTest {
                 productReturnUrl);
 
 
-        when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
+        when(productDao.findByFriendlyUrlOrExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
         when(randomUuid()).thenReturn(paymentExternalId);
         when(randomUserFriendlyReference()).thenReturn(referenceNumber);
         when(productsConfiguration.getProductsUiConfirmUrl()).thenReturn(productReturnUrl);
@@ -294,7 +294,7 @@ public class PaymentCreatorTest {
                 productName,
                 paymentReturnUrl);
 
-        when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
+        when(productDao.findByFriendlyUrlOrExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
         when(randomUuid()).thenReturn(paymentExternalId);
         when(randomUserFriendlyReference()).thenReturn(referenceNumber);
         when(productsConfiguration.getProductsUiConfirmUrl()).thenReturn(productsUIConfirmUri);
@@ -320,7 +320,7 @@ public class PaymentCreatorTest {
     public void shouldThrowPaymentCreatorNotFoundException_whenProductIsNotFound() throws Exception {
         String productExternalId = "product-external-id";
 
-        when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.empty());
+        when(productDao.findByFriendlyUrlOrExternalId(productExternalId)).thenReturn(Optional.empty());
 
         try {
             paymentCreator.doCreate(productExternalId, null);
@@ -350,7 +350,7 @@ public class PaymentCreatorTest {
                 productApiToken,
                 gatewayAccountId);
 
-        when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
+        when(productDao.findByFriendlyUrlOrExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
         doThrow(new javax.persistence.RollbackException("payments_gateway_account_id_reference_number_key duplicate key value violates unique constraint"))
                 .when(paymentDao).persist(any(PaymentEntity.class));
 

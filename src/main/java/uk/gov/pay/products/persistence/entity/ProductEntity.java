@@ -48,6 +48,9 @@ public class ProductEntity extends AbstractEntity {
     @Column(name = "service_name")
     private String serviceName;
 
+    @Column(name = "friendly_url")
+    private String friendlyUrl;
+
     public ProductEntity() {
     }
 
@@ -123,6 +126,10 @@ public class ProductEntity extends AbstractEntity {
         this.status = status;
     }
 
+    public void setFriendlyUrl(String friendlyURl) { this.friendlyUrl = friendlyURl; }
+
+    public String getFriendlyUrl() { return friendlyUrl; }
+
     public static ProductEntity from(Product product) {
         ProductEntity productEntity = new ProductEntity();
 
@@ -136,6 +143,7 @@ public class ProductEntity extends AbstractEntity {
         productEntity.setType(product.getType());
         productEntity.setReturnUrl(product.getReturnUrl());
         productEntity.setServiceName(product.getServiceName());
+        productEntity.setFriendlyUrl(product.getFriendlyUrl());
 
         return productEntity;
     }
@@ -151,7 +159,8 @@ public class ProductEntity extends AbstractEntity {
                 this.gatewayAccountId,
                 this.serviceName,
                 this.type,
-                this.returnUrl);
+                this.returnUrl,
+                this.friendlyUrl);
     }
 
     public String getReturnUrl() {

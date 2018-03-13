@@ -150,7 +150,59 @@ public class ProductResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void findProduct_shouldReturnProduct_whenFound() throws Exception {
+    public void findProductByExternalId_shouldReturnProduct_whenFound() throws Exception {
+        String externalId = randomUuid();
+        int gatewayAccountId = randomInt();
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+
+        ValidatableResponse response = givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products/%s", externalId))
+                .then()
+                .statusCode(200);
+
+        Integer intPrice = response.extract().path(PRICE);
+        Long price = new Long(intPrice);
+        assertThat(price, equalTo(product.getPrice()));
+
+        response
+                .body(NAME, is(product.getName()))
+                .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
+                .body(TYPE, is(product.getType().name()))
+                .body(DESCRIPTION, is(product.getDescription()))
+                .body(RETURN_URL, is(product.getReturnUrl()));
+
+        String productsUrl = "https://products.url/v1/api/products/";
+        String productsUIPayUrl = "https://products-ui.url/pay/";
+        response
+                .body("_links", hasSize(2))
+                .body("_links[0].href", matchesPattern(productsUrl + externalId))
+                .body("_links[0].method", is(HttpMethod.GET))
+                .body("_links[0].rel", is("self"))
+                .body("_links[1].href", matchesPattern(productsUIPayUrl + externalId))
+                .body("_links[1].method", is(HttpMethod.POST))
+                .body("_links[1].rel", is("pay"));
+    }
+
+    @Test
+    public void findProductByExternalId_shouldReturn404_whenNotFound() throws Exception {
+        givenSetup()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products/%s", randomInt(), randomUuid()))
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void findProductByGatewayAccountIdAndExternalId_shouldReturnProduct_whenFound() throws Exception {
         String externalId = randomUuid();
         int gatewayAccountId = randomInt();
 
@@ -193,7 +245,7 @@ public class ProductResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void findProduct_shouldReturn404_whenNotFound() throws Exception {
+    public void findProductByGatewayAccountIdAndExternalId_shouldReturn404_whenNotFound() throws Exception {
         givenSetup()
                 .accept(APPLICATION_JSON)
                 .get(format("/v1/api/gateway-account/%s/products/%s", randomInt(), randomUuid()))
@@ -202,7 +254,7 @@ public class ProductResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void disableProduct_shouldReturn201_whenProductIsDisabled() throws Exception {
+    public void disableProductByExternalId_shouldReturn201_whenProductIsDisabled() throws Exception {
         String externalId = randomUuid();
         int gatewayAccountId = randomInt();
 
@@ -224,7 +276,7 @@ public class ProductResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void disableProduct_shouldReturn404_whenNotFound() throws Exception {
+    public void disableProductByExternalId_shouldReturn404_whenNotFound() throws Exception {
         givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
@@ -234,7 +286,39 @@ public class ProductResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void findProducts_shouldReturnActiveProducts_whenFound() throws Exception {
+    public void disableProductByGatewayAccountIdAndExternalId_shouldReturn201_whenProductIsDisabled() throws Exception {
+        String externalId = randomUuid();
+        int gatewayAccountId = randomInt();
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+
+        givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .patch(format("/v1/api/gateway-account/%s/products/%s/disable", gatewayAccountId, externalId))
+                .then()
+                .statusCode(204);
+
+    }
+
+    @Test
+    public void disableProductByGatewayAccountIdAndExternalId_shouldReturn404_whenNotFound() throws Exception {
+        givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .patch(format("/v1/api/gateway-account/%s/products/%s/disable", randomInt(), randomUuid()))
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void findProductsByGatewayAccountId_shouldReturnActiveProducts_whenFound() throws Exception {
         int gatewayAccountId = randomInt();
 
         Product product = ProductEntityFixture.aProductEntity()
@@ -268,7 +352,7 @@ public class ProductResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void findProducts_shouldReturnNoProduct_whenNoneFound() throws Exception {
+    public void findProductsByGatewayAccountId_shouldReturnNoProduct_whenNoneFound() throws Exception {
         int unknownGatewayAccountId = randomInt();
         givenSetup()
                 .when()
@@ -280,7 +364,7 @@ public class ProductResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void findProducts_shouldNotReturnInactiveProducts() throws Exception {
+    public void findProductsByGatewayAccountId_shouldNotReturnInactiveProducts() throws Exception {
         int gatewayAccountId = randomInt();
 
         Product product = ProductEntityFixture.aProductEntity()

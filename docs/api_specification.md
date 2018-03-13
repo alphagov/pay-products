@@ -77,7 +77,7 @@ Content-Type: application/json
 
 ## GET /v1/api/products/{productId}
 
-This endpoint finds a product with the specified external product id
+This endpoint finds a product with the specified productId
 
 ```
 GET /v1/api/products/874h5c87834659q345698495
@@ -110,13 +110,50 @@ Content-Type: application/json
 #### Response field description 
 same as above(docs/api_specification.md#post-v1apiproducts)
 
+## GET /v1/api/gateway-account/{gatewayAccountId}/products/{productId}
 
-## GET /v1/api/products?gatewayAccountId={gatewayAccountId}
+This endpoint finds a product with the specified productId that belongs to the gateway account specified by gatewayAccountId
 
-This endpoint retrieves list of products that belongs to the specified gateway account id.
+Returns the product only if it exists in the given gateway account. Useful to avoid insecure direct object reference.
 
 ```
-GET /v1/api/products?gatewayAccountId=1234
+GET /v1/api/gateway-account/1234/products/874h5c87834659q345698495
+```  
+
+### Response example
+
+```
+200 OK
+Content-Type: application/json
+{
+    "external_id": "874h5c87834659q345698495",
+    "description":         "Description of the product",
+    "price":               1050,
+    "return_url" :         "https://some.valid.url/"
+    "service_name":        "Some awesome government service",
+    "_links": [
+    {
+        "href": "https://govukpay-products.cloudapps.digital/v1/api/products/874h5c87834659q345698495",
+        "rel" : "self",
+        "method" : "GET"
+    },
+    {
+         "href": "https://govukpay-products-ui.cloudapps.digital/pay/874h5c87834659q345698495",
+         "rel" : "pay",
+         "method" : "POST"
+    }]
+}
+```
+#### Response field description 
+same as above(docs/api_specification.md#post-v1apiproducts)
+
+
+## GET /v1/api/gateway-account/{gatewayAccountId}/products
+
+This endpoint retrieves list of products that belongs to the specified gatewayAccountId.
+
+```
+GET /v1/api/gateway-account/1234/products
 ```  
 
 ### Response example
@@ -169,8 +206,68 @@ same as above(docs/api_specification.md#post-v1apiproducts)
 
 This endpoint disables a product with the specified external product id
 
+Deletes/Disables the product only if it exists in the given gateway account. Useful to avoid insecure direct object reference.
+
 ```
 PATCH /v1/api/products/uier837y735n837475y3847534/disable
+```  
+
+### Response example
+
+```
+204 OK
+``` 
+
+
+## GET /v1/api/payments/{paymentId}
+
+This endpoint finds a payment with the specified external payment id
+
+```
+GET /v1/api/payments/h6347634cwb67wii7b6ciueroytw
+```  
+
+### Response example
+
+```
+200 OK
+Content-Type: application/json
+{
+        "external_id": "h6347634cwb67wii7b6ciueroytw",
+        "next_url": "https://some.valid.url/paid",
+        "product_external_id": "uier837y735n837475y3847534",
+        "status": "CREATED",
+        "amount" : 1050,
+        "_links": [
+            {
+                "rel": "self",
+                "method": "GET",
+                "href": "https://govukpay-products.cloudapps.digital/v1/api/payments/h6347634cwb67wii7b6ciueroytw"
+            },
+            {
+                "rel": "next",
+                "method": "GET",
+                "href": "https://some.valid.url/paid"
+            } 
+        ]
+    }
+```
+#### Response field description 
+| Field                    | always present | Description                                   |
+| ------------------------ |:--------------:| --------------------------------------------- |
+| `external_id`            | X              | external id of the payment                |
+| `product_external_id `   | X              | product external id which owns this payment  |   |
+| `status`                 | X              | Status of the payment      |
+| `amount`                 | X              | amount of the payment in pence. |
+| `_links.self`            | X              | self GET link to the payment. |
+| `_links.next`            | X              | next GET link |
+
+## PATCH /v1/api/gateway-account/{gatewayAccountId}/products/{productExternalId}/disable
+
+This endpoint disables a product with the specified productExternalId that belongs to the gateway account specified by gatewayAccountId
+
+```
+PATCH /v1/api/gateway-account/1234/products/uier837y735n837475y3847534/disable
 ```  
 
 ### Response example
@@ -342,7 +439,7 @@ This endpoint batch updates Service Names of Products with a given gatewayAccoun
 ### Request example
 
 ```
-PATCH /v1/api/gateway-account/56
+PATCH /v1/api/gateway-account/1234
 Content-Type: application/json
 
 {

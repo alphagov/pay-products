@@ -29,6 +29,7 @@ public class Product {
     private static final String FIELD_GATEWAY_ACCOUNT_ID = "gateway_account_id";
     private static final String RETURN_URL = "return_url";
     private static final String FIELD_SERVICE_NAME = "service_name";
+    private static final String FIELD_FRIENDLY_URL = "friendly_url";
 
     private String externalId;
     private String name;
@@ -41,6 +42,7 @@ public class Product {
     private List<Link> links = new ArrayList<>();
     private String returnUrl;
     private String serviceName;
+    private String friendlyUrl;
 
     public Product(
             @JsonProperty(EXTERNAL_ID) String externalId,
@@ -52,7 +54,8 @@ public class Product {
             @JsonProperty(FIELD_GATEWAY_ACCOUNT_ID) Integer gatewayAccountId,
             @JsonProperty(FIELD_SERVICE_NAME) String serviceName,
             @JsonProperty(TYPE) ProductType type,
-            @JsonProperty(RETURN_URL) String returnUrl)
+            @JsonProperty(RETURN_URL) String returnUrl,
+            @JsonProperty(FIELD_FRIENDLY_URL) String friendlyUrl)
     {
         this.externalId = externalId;
         this.name = name;
@@ -64,6 +67,7 @@ public class Product {
         this.serviceName = serviceName;
         this.type = type;
         this.returnUrl = returnUrl;
+        this.friendlyUrl = friendlyUrl;
     }
 
     public static Product from(JsonNode jsonPayload) {
@@ -75,9 +79,10 @@ public class Product {
         ProductType type = (jsonPayload.get(TYPE) != null) ? ProductType.valueOf(jsonPayload.get(TYPE).asText()) : null;
         String returnUrl = (jsonPayload.get(RETURN_URL) != null) ? jsonPayload.get(RETURN_URL).asText() : null;
         String serviceName = (jsonPayload.get(FIELD_SERVICE_NAME) != null) ? jsonPayload.get(FIELD_SERVICE_NAME).asText() : null;
+        String friendlyUrl = (jsonPayload.get(FIELD_FRIENDLY_URL) != null) ? jsonPayload.get(FIELD_FRIENDLY_URL).asText() : null;
 
         return new Product(randomUuid(), name, description, payApiToken,
-                price, ProductStatus.ACTIVE, gatewayAccountId, serviceName, type, returnUrl);
+                price, ProductStatus.ACTIVE, gatewayAccountId, serviceName, type, returnUrl, friendlyUrl);
     }
 
     public String getName() {
@@ -128,6 +133,8 @@ public class Product {
         return returnUrl;
     }
 
+    public String getFriendlyUrl() { return friendlyUrl; }
+
     @Override
     public String toString() {
         return "Product{" +
@@ -141,6 +148,7 @@ public class Product {
                 ", links=" + links +
                 ", returnUrl='" + returnUrl + '\'' +
                 ", serviceName='" + serviceName + '\'' +
+                ", friendlyUrl='" + friendlyUrl + '\'' +
                 '}';
     }
 }

@@ -21,6 +21,7 @@ public class ProductEntityFixture {
     private String externalId = randomUuid();
     private ZonedDateTime dateCreated = ZonedDateTime.now();
     private int gatewayAccountId;
+    private String friendlyUrl;
 
     private ProductEntityFixture() { }
 
@@ -37,6 +38,7 @@ public class ProductEntityFixture {
         product.setGatewayAccountId(gatewayAccountId);
         product.setReturnUrl(returnUrl);
         product.setServiceName(serviceName);
+        product.setFriendlyUrl(friendlyUrl);
 
         return product;
     }
@@ -77,6 +79,11 @@ public class ProductEntityFixture {
 
     public ProductEntityFixture withReturnUrl(String returnUrl) {
         this.returnUrl = returnUrl;
+        return this;
+    }
+
+    public ProductEntityFixture withFriendlyUrl(String friendlyUrl) {
+        this.friendlyUrl = friendlyUrl;
         return this;
     }
 }

@@ -53,6 +53,7 @@ public class ProductCreatorTest {
                 gatewayAccountId,
                 null,
                 ProductType.DEMO,
+                null,
                 null
         );
 
@@ -80,6 +81,7 @@ public class ProductCreatorTest {
     public void shouldSuccess_whenProvidedAllFields() throws Exception {
         String description = "Test description";
         String returnUrl = "http://my-return-url.com";
+        String friendlyUrl = "kent-council-online-service%2Fpay-for-your-fishing-licence";
 
         Product productRequest = new Product(
                 null,
@@ -91,7 +93,8 @@ public class ProductCreatorTest {
                 gatewayAccountId,
                 SERVICE_NAME,
                 ProductType.DEMO,
-                returnUrl
+                returnUrl,
+                friendlyUrl
         );
 
         Product product = productCreator.doCreate(productRequest);

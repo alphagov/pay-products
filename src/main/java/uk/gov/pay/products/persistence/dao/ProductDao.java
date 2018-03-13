@@ -17,13 +17,13 @@ public class ProductDao extends JpaDao<ProductEntity> {
         super(entityManager, ProductEntity.class);
     }
 
-    public Optional<ProductEntity> findByExternalId(String externalId) {
+    public Optional<ProductEntity> findByFriendlyUrlOrExternalId(String friendlyUrlOrExternalId) {
         String query = "SELECT product FROM ProductEntity product " +
-                "WHERE product.externalId = :externalId";
+                "WHERE product.friendlyUrl = :friendlyUrlOrExternalId OR product.externalId = :friendlyUrlOrExternalId";
 
         return entityManager.get()
                 .createQuery(query, ProductEntity.class)
-                .setParameter("externalId", externalId)
+                .setParameter("friendlyUrlOrExternalId", friendlyUrlOrExternalId)
                 .getResultList().stream().findFirst();
     }
 

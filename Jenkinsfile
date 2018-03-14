@@ -30,7 +30,7 @@ pipeline {
       }
       post {
         failure {
-          postMetric("products.maven-build.failure", 1, "new")
+          postMetric("products.maven-build.failure", 1)
         }
       }
     }
@@ -44,7 +44,7 @@ pipeline {
       }
       post {
         failure {
-          postMetric("products.docker-build.failure", 1, "new")
+          postMetric("products.docker-build.failure", 1)
         }
       }
     }
@@ -63,7 +63,7 @@ pipeline {
       }
       post {
         failure {
-          postMetric("products.docker-tag.failure", 1, "new")
+          postMetric("products.docker-tag.failure", 1)
         }
       }
     }
@@ -72,17 +72,16 @@ pipeline {
         branch 'master'
       }
       steps {
-        deploy("products", "test", null, false, false, "uk.gov.pay.endtoend.categories.SmokeProducts", true)
         deployEcs("products", "test", null, true, true, "uk.gov.pay.endtoend.categories.SmokeProducts", true)
       }
     }
   }
   post {
     failure {
-      postMetric("products.failure", 1, "new")
+      postMetric(appendBranchSuffix("products") + ".failure", 1)
     }
     success {
-      postSuccessfulMetrics("products")
+      postSuccessfulMetrics(appendBranchSuffix("products"))
     }
   }
 }

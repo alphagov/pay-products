@@ -21,6 +21,8 @@ public class ProductEntityFixture {
     private String externalId = randomUuid();
     private ZonedDateTime dateCreated = ZonedDateTime.now();
     private int gatewayAccountId;
+    private String serviceNamePath;
+    private String productNamePath;
 
     private ProductEntityFixture() { }
 
@@ -37,6 +39,8 @@ public class ProductEntityFixture {
         product.setGatewayAccountId(gatewayAccountId);
         product.setReturnUrl(returnUrl);
         product.setServiceName(serviceName);
+        product.setServiceNamePath(serviceNamePath);
+        product.setProductNamePath(productNamePath);
 
         return product;
     }
@@ -77,6 +81,12 @@ public class ProductEntityFixture {
 
     public ProductEntityFixture withReturnUrl(String returnUrl) {
         this.returnUrl = returnUrl;
+        return this;
+    }
+
+    public ProductEntityFixture withProductPath(String serviceNamePath, String productNamePath) {
+        this.serviceNamePath = serviceNamePath;
+        this.productNamePath = productNamePath;
         return this;
     }
 }

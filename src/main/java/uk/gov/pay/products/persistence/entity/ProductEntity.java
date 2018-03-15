@@ -48,6 +48,12 @@ public class ProductEntity extends AbstractEntity {
     @Column(name = "service_name")
     private String serviceName;
 
+    @Column(name = "service_name_path")
+    private String serviceNamePath;
+
+    @Column(name = "product_name_path")
+    private String productNamePath;
+
     public ProductEntity() {
     }
 
@@ -151,7 +157,9 @@ public class ProductEntity extends AbstractEntity {
                 this.gatewayAccountId,
                 this.serviceName,
                 this.type,
-                this.returnUrl);
+                this.returnUrl,
+                this.serviceNamePath,
+                this.productNamePath);
     }
 
     public String getReturnUrl() {
@@ -169,4 +177,12 @@ public class ProductEntity extends AbstractEntity {
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
     }
+
+    public String getServiceNamePath() { return serviceNamePath; }
+
+    public void setServiceNamePath(String serviceNamePath) { this.serviceNamePath = serviceNamePath; }
+
+    public String getProductNamePath() { return productNamePath; }
+
+    public void setProductNamePath(String productNamePath) { this.productNamePath = productNamePath; }
 }

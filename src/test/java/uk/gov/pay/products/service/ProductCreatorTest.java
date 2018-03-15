@@ -53,6 +53,8 @@ public class ProductCreatorTest {
                 gatewayAccountId,
                 null,
                 ProductType.DEMO,
+                null,
+                null,
                 null
         );
 
@@ -80,6 +82,8 @@ public class ProductCreatorTest {
     public void shouldSuccess_whenProvidedAllFields() throws Exception {
         String description = "Test description";
         String returnUrl = "http://my-return-url.com";
+        String serviceNamePath = "service-name-path";
+        String productNamePath = "product-name-path";
 
         Product productRequest = new Product(
                 null,
@@ -91,7 +95,9 @@ public class ProductCreatorTest {
                 gatewayAccountId,
                 SERVICE_NAME,
                 ProductType.DEMO,
-                returnUrl
+                returnUrl,
+                serviceNamePath,
+                productNamePath
         );
 
         Product product = productCreator.doCreate(productRequest);

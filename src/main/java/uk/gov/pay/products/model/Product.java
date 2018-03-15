@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
 
@@ -29,6 +28,8 @@ public class Product {
     private static final String FIELD_GATEWAY_ACCOUNT_ID = "gateway_account_id";
     private static final String RETURN_URL = "return_url";
     private static final String FIELD_SERVICE_NAME = "service_name";
+    private static final String FIELD_SERVICE_NAME_PATH = "service_name_path";
+    private static final String FIELD_PRODUCT_NAME_PATH = "product_name_path";
 
     private String externalId;
     private String name;
@@ -41,6 +42,8 @@ public class Product {
     private List<Link> links = new ArrayList<>();
     private String returnUrl;
     private String serviceName;
+    private String serviceNamePath;
+    private String productNamePath;
 
     public Product(
             @JsonProperty(EXTERNAL_ID) String externalId,
@@ -52,7 +55,9 @@ public class Product {
             @JsonProperty(FIELD_GATEWAY_ACCOUNT_ID) Integer gatewayAccountId,
             @JsonProperty(FIELD_SERVICE_NAME) String serviceName,
             @JsonProperty(TYPE) ProductType type,
-            @JsonProperty(RETURN_URL) String returnUrl)
+            @JsonProperty(RETURN_URL) String returnUrl,
+            String serviceNamePath,
+            String productNamePath)
     {
         this.externalId = externalId;
         this.name = name;
@@ -64,6 +69,8 @@ public class Product {
         this.serviceName = serviceName;
         this.type = type;
         this.returnUrl = returnUrl;
+        this.serviceNamePath = serviceNamePath;
+        this.productNamePath = productNamePath;
     }
 
     public static Product from(JsonNode jsonPayload) {
@@ -75,9 +82,12 @@ public class Product {
         ProductType type = (jsonPayload.get(TYPE) != null) ? ProductType.valueOf(jsonPayload.get(TYPE).asText()) : null;
         String returnUrl = (jsonPayload.get(RETURN_URL) != null) ? jsonPayload.get(RETURN_URL).asText() : null;
         String serviceName = (jsonPayload.get(FIELD_SERVICE_NAME) != null) ? jsonPayload.get(FIELD_SERVICE_NAME).asText() : null;
+        String serviceNamePath = (jsonPayload.get(FIELD_SERVICE_NAME_PATH) != null) ? jsonPayload.get(FIELD_SERVICE_NAME_PATH).asText() : null;
+        String productNamePath = (jsonPayload.get(FIELD_PRODUCT_NAME_PATH) != null) ? jsonPayload.get(FIELD_PRODUCT_NAME_PATH).asText() : null;
 
         return new Product(randomUuid(), name, description, payApiToken,
-                price, ProductStatus.ACTIVE, gatewayAccountId, serviceName, type, returnUrl);
+                price, ProductStatus.ACTIVE, gatewayAccountId, serviceName, type, returnUrl,
+                serviceNamePath, productNamePath);
     }
 
     public String getName() {
@@ -128,6 +138,10 @@ public class Product {
         return returnUrl;
     }
 
+    public String getServiceNamePath() { return serviceNamePath; }
+
+    public String getProductNamePath() { return productNamePath; }
+
     @Override
     public String toString() {
         return "Product{" +
@@ -141,6 +155,8 @@ public class Product {
                 ", links=" + links +
                 ", returnUrl='" + returnUrl + '\'' +
                 ", serviceName='" + serviceName + '\'' +
+                ", serviceNamePath='" + serviceNamePath + '\'' +
+                ", productNamePath='" + productNamePath +
                 '}';
     }
 }

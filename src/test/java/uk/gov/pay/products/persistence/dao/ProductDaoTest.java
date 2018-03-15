@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static junit.framework.TestCase.assertFalse;
+import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -186,5 +187,47 @@ public class ProductDaoTest extends DaoTestBase {
         products = productDao.findByGatewayAccountId(anotherGatewayAccountId);
         assertThat(products.size(), is(1));
         assertThat(products.get(0).getServiceName(), is(oldServiceName));
+    }
+
+    @Test
+    public void findByProductPath_shouldReturnAProduct_whenExists() throws Exception {
+        String externalId = randomUuid();
+        Integer gatewayAccountId = randomInt();
+        String serviceNamePath = randomAlphanumeric(40);
+        String productNamePath = randomAlphanumeric(65);
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .withProductPath(serviceNamePath, productNamePath)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+
+        Optional<ProductEntity> productEntity = productDao.findByProductPath(serviceNamePath, productNamePath);
+        assertTrue(productEntity.isPresent());
+        assertThat(productEntity.get().toProduct(), ProductMatcher.isSame(product));
+    }
+
+    @Test
+    public void findByProductPath_shouldNotReturnAProduct_whenDoesNotExists() throws Exception {
+        String externalId = randomUuid();
+        Integer gatewayAccountId = randomInt();
+        String serviceNamePath = randomAlphanumeric(40);
+        String productNamePath = randomAlphanumeric(65);
+        String anotherProductNamePath = randomAlphanumeric(15);
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .withProductPath(serviceNamePath, productNamePath)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+
+        Optional<ProductEntity> productEntity = productDao.findByProductPath(serviceNamePath, anotherProductNamePath);
+       assertThat(productEntity.isPresent(), is(false));
     }
 }

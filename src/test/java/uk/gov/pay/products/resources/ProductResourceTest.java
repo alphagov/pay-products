@@ -12,6 +12,7 @@ import javax.ws.rs.HttpMethod;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -31,6 +32,7 @@ public class ProductResourceTest extends IntegrationTest {
     private static final String RETURN_URL = "return_url";
     private static final String GATEWAY_ACCOUNT_ID = "gateway_account_id";
     private static final String SERVICE_NAME = "service_name";
+    private static final String PAY_FRIENDLY_URL = "pay_friendly_url";
 
     @Test
     public void shouldSuccess_whenSavingAValidProduct_withMinimumMandatoryFields() throws Exception {
@@ -382,5 +384,51 @@ public class ProductResourceTest extends IntegrationTest {
                 .then()
                 .statusCode(200)
                 .body("", hasSize(0));
+    }
+
+    @Test
+    public void findProductByProductPath_shouldReturnProduct_whenFound() throws Exception {
+        String externalId = randomUuid();
+        int gatewayAccountId = randomInt();
+        String serviceNamePath = randomAlphanumeric(40);
+        String productNamePath = randomAlphanumeric(65);
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .withType(ProductType.ADHOC)
+                .withPrice(1000)
+                .withProductPath(serviceNamePath, productNamePath)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+
+        givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/payments?serviceNamePath=%s&productNamePath=%s", serviceNamePath, productNamePath))
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
+    public void findProductByProductPath_shouldReturn404_whenNotFound() throws Exception {
+        givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/payments?serviceNamePath=%s&productNamePath=%s", randomAlphanumeric(40), randomAlphanumeric(65)))
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void findProductByProductPath_shouldReturn404_whenNullQueryParam() throws Exception {
+        givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/payments?serviceNamePath=%s&productNamePath=%s", randomAlphanumeric(40), ""))
+                .then()
+                .statusCode(404);
     }
 }

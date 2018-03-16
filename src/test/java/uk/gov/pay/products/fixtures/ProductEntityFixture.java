@@ -89,4 +89,9 @@ public class ProductEntityFixture {
         this.productNamePath = productNamePath;
         return this;
     }
+
+    public ProductEntityFixture withPrice(long price) {
+        this.price = price;
+        return this;
+    }
 }

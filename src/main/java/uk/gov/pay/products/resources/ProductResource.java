@@ -14,6 +14,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
+import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.*;
 
@@ -100,5 +101,17 @@ public class ProductResource {
         logger.info("Searching for products with gatewayAccountId - [ {} ]", gatewayAccountId);
         List<Product> products = productFactory.productFinder().findByGatewayAccountId(gatewayAccountId);
         return Response.status(OK).entity(products).build();
+    }
+
+    @GET
+    @Path("/payments")
+    @Produces(APPLICATION_JSON)
+    public Response findProductByProductPath(
+            @QueryParam("serviceNamePath") String serviceNamePath,
+            @QueryParam("productNamePath") String productNamePath ) {
+        logger.info(format("Searching for product with product path - [ serviceNamePath=%s productNamePath=%s ]", serviceNamePath, productNamePath));
+        return productFactory.productFinder().findByProductPath(serviceNamePath, productNamePath)
+                    .map(product -> Response.status(OK).entity(product).build())
+                            .orElseGet(() -> Response.status(NOT_FOUND).build());
     }
 }

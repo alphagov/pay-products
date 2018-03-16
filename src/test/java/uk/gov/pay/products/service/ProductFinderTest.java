@@ -140,4 +140,34 @@ public class ProductFinderTest {
 
         assertFalse(disabledProduct.isPresent());
     }
+
+    @Test
+    public void findByProductPath_shouldReturnProduct_whenFound() throws Exception {
+        String externalId = "1";
+        String serviceNamePath = "service-name-path";
+        String productNamePath = "product-name-path";
+        ProductEntity productEntity = new ProductEntity();
+        productEntity.setExternalId(externalId);
+        productEntity.setServiceNamePath(serviceNamePath);
+        productEntity.setProductNamePath(productNamePath);
+
+        when(productDao.findByProductPath(serviceNamePath, productNamePath)).thenReturn(Optional.of(productEntity));
+
+        Optional<Product> productOptional = productFinder.findByProductPath(serviceNamePath, productNamePath);
+
+        assertTrue(productOptional.isPresent());
+        assertThat(productOptional.get().getServiceNamePath(), is(serviceNamePath));
+        assertThat(productOptional.get().getProductNamePath(), is(productNamePath));
+    }
+
+    @Test
+    public void findByProductPath_shouldReturnEmpty_whenNotFound() throws Exception {
+        String serviceNamePath = "service-name-path";
+        String productNamePath = "product-name-path";
+        when(productDao.findByProductPath(serviceNamePath, productNamePath)).thenReturn(Optional.empty());
+
+        Optional<Product> productOptional = productFinder.findByProductPath(serviceNamePath, productNamePath);
+
+        assertFalse(productOptional.isPresent());
+    }
 }

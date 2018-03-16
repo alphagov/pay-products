@@ -63,4 +63,10 @@ public class ProductFinder {
                 .map(product -> linksDecorator.decorate(product))
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public Optional<Product> findByProductPath(String serviceNamePath, String productNamePath) {
+        return productDao.findByProductPath(serviceNamePath, productNamePath)
+                .map(productEntity -> linksDecorator.decorate(productEntity.toProduct()));
+    }
 }

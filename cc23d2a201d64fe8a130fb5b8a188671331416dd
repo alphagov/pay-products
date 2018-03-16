@@ -17,3 +17,5 @@ production-2.alpha_production-2-61.status=success
 production-2.tag=FAILED-61
 
 production-2.FAILED-61.date=
+
+production-2.FAILED-61.status=failed

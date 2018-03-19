@@ -7,7 +7,6 @@ import uk.gov.pay.products.model.Product;
 import java.net.URI;
 
 import static javax.ws.rs.HttpMethod.GET;
-import static javax.ws.rs.HttpMethod.POST;
 import static javax.ws.rs.core.UriBuilder.fromUri;
 
 public class LinksDecorator {
@@ -15,8 +14,6 @@ public class LinksDecorator {
     private final String productsBaseUrl;
     private final String productsUIUrl;
     private final String friendlyBaseUrl;
-    private final static String SERVICE_NAME_PATH_QUERY_PARAM = "serviceNamePath";
-    private final static String PRODUCT_NAME_PATH_QUERY_PARAM = "productNamePath";
 
     public LinksDecorator(String productsBaseUrl, String productsUIUrl, String friendlyBaseUrl) {
         this.productsBaseUrl = productsBaseUrl;
@@ -28,7 +25,7 @@ public class LinksDecorator {
         Link selfLink = makeSelfLink(GET, "v1/api/products", product.getExternalId());
         product.getLinks().add(selfLink);
 
-        Link payLink = makeProductsUIUri(POST, product.getExternalId());
+        Link payLink = makeProductsUIUri(GET, product.getExternalId());
         product.getLinks().add(payLink);
 
         if(product.getServiceNamePath() != null && product.getProductNamePath() != null) {

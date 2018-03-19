@@ -79,7 +79,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .body("_links[0].method", is(HttpMethod.GET))
                 .body("_links[0].rel", is("self"))
                 .body("_links[1].href", matchesPattern(productsUIPayUrl + externalId))
-                .body("_links[1].method", is(HttpMethod.POST))
+                .body("_links[1].method", is(HttpMethod.GET))
                 .body("_links[1].rel", is("pay"));
     }
 
@@ -134,7 +134,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .body("_links[0].method", is(HttpMethod.GET))
                 .body("_links[0].rel", is("self"))
                 .body("_links[1].href", matchesPattern(productsUIPayUrl + externalId))
-                .body("_links[1].method", is(HttpMethod.POST))
+                .body("_links[1].method", is(HttpMethod.GET))
                 .body("_links[1].rel", is("pay"));
 
     }
@@ -189,7 +189,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .body("_links[0].method", is(HttpMethod.GET))
                 .body("_links[0].rel", is("self"))
                 .body("_links[1].href", matchesPattern(productsUIPayUrl + externalId))
-                .body("_links[1].method", is(HttpMethod.POST))
+                .body("_links[1].method", is(HttpMethod.GET))
                 .body("_links[1].rel", is("pay"));
     }
 
@@ -241,7 +241,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .body("_links[0].method", is(HttpMethod.GET))
                 .body("_links[0].rel", is("self"))
                 .body("_links[1].href", matchesPattern(productsUIPayUrl + externalId))
-                .body("_links[1].method", is(HttpMethod.POST))
+                .body("_links[1].method", is(HttpMethod.GET))
                 .body("_links[1].rel", is("pay"));
     }
 

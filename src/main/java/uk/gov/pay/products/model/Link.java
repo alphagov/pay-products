@@ -14,7 +14,8 @@ public class Link {
     public enum Rel {
         self,
         pay,
-        next
+        next,
+        friendly
     }
 
     private Rel rel;

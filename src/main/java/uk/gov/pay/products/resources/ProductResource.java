@@ -104,7 +104,7 @@ public class ProductResource {
     }
 
     @GET
-    @Path("/payments")
+    @Path("/products")
     @Produces(APPLICATION_JSON)
     public Response findProductByProductPath(
             @QueryParam("serviceNamePath") String serviceNamePath,

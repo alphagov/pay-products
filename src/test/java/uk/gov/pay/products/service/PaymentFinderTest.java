@@ -40,7 +40,7 @@ public class PaymentFinderTest {
 
     @Before
     public void setup() throws Exception {
-        linksDecorator = new LinksDecorator("http://localhost", "http://localhost/pay");
+        linksDecorator = new LinksDecorator("http://localhost", "http://localhost/pay", "http://localhost/payments");
         paymentFinder = new PaymentFinder(paymentDao, linksDecorator, publicApiRestClient);
     }
 

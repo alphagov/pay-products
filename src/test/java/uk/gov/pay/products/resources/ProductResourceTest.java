@@ -32,7 +32,6 @@ public class ProductResourceTest extends IntegrationTest {
     private static final String RETURN_URL = "return_url";
     private static final String GATEWAY_ACCOUNT_ID = "gateway_account_id";
     private static final String SERVICE_NAME = "service_name";
-    private static final String PAY_FRIENDLY_URL = "pay_friendly_url";
 
     @Test
     public void shouldSuccess_whenSavingAValidProduct_withMinimumMandatoryFields() throws Exception {
@@ -80,7 +79,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .body("_links[0].method", is(HttpMethod.GET))
                 .body("_links[0].rel", is("self"))
                 .body("_links[1].href", matchesPattern(productsUIPayUrl + externalId))
-                .body("_links[1].method", is(HttpMethod.POST))
+                .body("_links[1].method", is(HttpMethod.GET))
                 .body("_links[1].rel", is("pay"));
     }
 
@@ -135,7 +134,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .body("_links[0].method", is(HttpMethod.GET))
                 .body("_links[0].rel", is("self"))
                 .body("_links[1].href", matchesPattern(productsUIPayUrl + externalId))
-                .body("_links[1].method", is(HttpMethod.POST))
+                .body("_links[1].method", is(HttpMethod.GET))
                 .body("_links[1].rel", is("pay"));
 
     }
@@ -190,7 +189,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .body("_links[0].method", is(HttpMethod.GET))
                 .body("_links[0].rel", is("self"))
                 .body("_links[1].href", matchesPattern(productsUIPayUrl + externalId))
-                .body("_links[1].method", is(HttpMethod.POST))
+                .body("_links[1].method", is(HttpMethod.GET))
                 .body("_links[1].rel", is("pay"));
     }
 
@@ -242,7 +241,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .body("_links[0].method", is(HttpMethod.GET))
                 .body("_links[0].rel", is("self"))
                 .body("_links[1].href", matchesPattern(productsUIPayUrl + externalId))
-                .body("_links[1].method", is(HttpMethod.POST))
+                .body("_links[1].method", is(HttpMethod.GET))
                 .body("_links[1].rel", is("pay"));
     }
 
@@ -404,12 +403,23 @@ public class ProductResourceTest extends IntegrationTest {
 
         databaseHelper.addProduct(product);
 
-        givenSetup()
+        ValidatableResponse response = givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
-                .get(format("/v1/api/payments?serviceNamePath=%s&productNamePath=%s", serviceNamePath, productNamePath))
+                .get(format("/v1/api/products?serviceNamePath=%s&productNamePath=%s", serviceNamePath, productNamePath))
                 .then()
                 .statusCode(200);
+
+        String urlToMatch = format("https://products-ui.url/products/%s/%s", serviceNamePath, productNamePath);
+        response
+                .body("service_name_path", is(serviceNamePath))
+                .body("product_name_path", is(productNamePath))
+                .body("_links", hasSize(3))
+                .body("_links[2].href", is(urlToMatch))
+                .body("_links[2].method", is(HttpMethod.GET))
+                .body("_links[2].rel", is("friendly"));
+
+
     }
 
     @Test
@@ -417,7 +427,7 @@ public class ProductResourceTest extends IntegrationTest {
         givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
-                .get(format("/v1/api/payments?serviceNamePath=%s&productNamePath=%s", randomAlphanumeric(40), randomAlphanumeric(65)))
+                .get(format("/v1/api/products?serviceNamePath=%s&productNamePath=%s", randomAlphanumeric(40), randomAlphanumeric(65)))
                 .then()
                 .statusCode(404);
     }
@@ -427,7 +437,7 @@ public class ProductResourceTest extends IntegrationTest {
         givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
-                .get(format("/v1/api/payments?serviceNamePath=%s&productNamePath=%s", randomAlphanumeric(40), ""))
+                .get(format("/v1/api/products?serviceNamePath=%s&productNamePath=%s", randomAlphanumeric(40), ""))
                 .then()
                 .statusCode(404);
     }

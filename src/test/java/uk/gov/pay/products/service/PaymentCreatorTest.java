@@ -47,6 +47,7 @@ import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 public class PaymentCreatorTest {
     static private String PRODUCT_URL = "https://products.url";
     static private String PRODUCT_UI_URL = "https://products-ui.url";
+    static private String FRIENDLY_URL = "https://products-ui.url/payments";
 
     @Mock
     private ProductDao productDao;
@@ -65,7 +66,7 @@ public class PaymentCreatorTest {
 
     @Before
     public void setup() throws Exception {
-        LinksDecorator linksDecorator = new LinksDecorator(PRODUCT_URL, PRODUCT_UI_URL);
+        LinksDecorator linksDecorator = new LinksDecorator(PRODUCT_URL, PRODUCT_UI_URL, FRIENDLY_URL);
         paymentCreator = new PaymentCreator(TransactionFlow::new, productDao, paymentDao, publicApiRestClient, linksDecorator, productsConfiguration);
     }
 

@@ -406,11 +406,11 @@ public class ProductResourceTest extends IntegrationTest {
         ValidatableResponse response = givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
-                .get(format("/v1/api/payments?serviceNamePath=%s&productNamePath=%s", serviceNamePath, productNamePath))
+                .get(format("/v1/api/products?serviceNamePath=%s&productNamePath=%s", serviceNamePath, productNamePath))
                 .then()
                 .statusCode(200);
 
-        String urlToMatch = format("https://products-ui.url/payments/%s/%s", serviceNamePath, productNamePath);
+        String urlToMatch = format("https://products-ui.url/products/%s/%s", serviceNamePath, productNamePath);
         response
                 .body("service_name_path", is(serviceNamePath))
                 .body("product_name_path", is(productNamePath))
@@ -427,7 +427,7 @@ public class ProductResourceTest extends IntegrationTest {
         givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
-                .get(format("/v1/api/payments?serviceNamePath=%s&productNamePath=%s", randomAlphanumeric(40), randomAlphanumeric(65)))
+                .get(format("/v1/api/products?serviceNamePath=%s&productNamePath=%s", randomAlphanumeric(40), randomAlphanumeric(65)))
                 .then()
                 .statusCode(404);
     }
@@ -437,7 +437,7 @@ public class ProductResourceTest extends IntegrationTest {
         givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
-                .get(format("/v1/api/payments?serviceNamePath=%s&productNamePath=%s", randomAlphanumeric(40), ""))
+                .get(format("/v1/api/products?serviceNamePath=%s&productNamePath=%s", randomAlphanumeric(40), ""))
                 .then()
                 .statusCode(404);
     }

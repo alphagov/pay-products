@@ -70,3 +70,4 @@ baseUrl: https://products.url
 publicApiUrl: https://publicapi.url
 productsUiPayUrl: https://products-ui.url/pay
 productsUiConfirmUrl: https://products.url/confirm
+friendlyBaseUri: https://products-ui.url/payments

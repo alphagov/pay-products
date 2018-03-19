@@ -14,10 +14,14 @@ public class LinksDecorator {
 
     private final String productsBaseUrl;
     private final String productsUIUrl;
+    private final String friendlyBaseUrl;
+    private final static String SERVICE_NAME_PATH_QUERY_PARAM = "serviceNamePath";
+    private final static String PRODUCT_NAME_PATH_QUERY_PARAM = "productNamePath";
 
-    public LinksDecorator(String productsBaseUrl, String productsUIUrl) {
+    public LinksDecorator(String productsBaseUrl, String productsUIUrl, String friendlyBaseUrl) {
         this.productsBaseUrl = productsBaseUrl;
         this.productsUIUrl = productsUIUrl;
+        this.friendlyBaseUrl = friendlyBaseUrl;
     }
 
     public Product decorate(Product product) {
@@ -26,6 +30,11 @@ public class LinksDecorator {
 
         Link payLink = makeProductsUIUri(POST, product.getExternalId());
         product.getLinks().add(payLink);
+
+        if(product.getServiceNamePath() != null && product.getProductNamePath() != null) {
+            Link friendlyLink = makeFriendlyLink(GET, product.getServiceNamePath(), product.getProductNamePath());
+            product.getLinks().add(friendlyLink);
+        }
 
         return product;
     }
@@ -52,5 +61,15 @@ public class LinksDecorator {
     private Link makeProductsUIUri(String method, String externalId){
         URI productsUIUri = fromUri(productsUIUrl).path(externalId).build();
         return Link.from(Link.Rel.pay, method, productsUIUri.toString());
+    }
+
+    private Link makeFriendlyLink(String method, String serviceNamePath, String productNamePath) {
+        if(serviceNamePath == null || productNamePath == null){
+            return null;
+        }
+        URI friendlyUri = fromUri(friendlyBaseUrl)
+                .path(serviceNamePath)
+                .path(productNamePath).build();
+        return Link.from(Link.Rel.friendly, method, friendlyUri.toString());
     }
 }

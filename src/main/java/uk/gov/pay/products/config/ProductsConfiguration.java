@@ -34,6 +34,9 @@ public class ProductsConfiguration extends Configuration {
     @NotNull
     private String productsUiConfirmUrl;
 
+    @NotNull
+    private String friendlyBaseUri;
+
     public String getVcapServices() {
         String vcapServices = System.getenv("VCAP_SERVICES");
         return vcapServices;
@@ -89,4 +92,6 @@ public class ProductsConfiguration extends Configuration {
     public ProxyConfiguration getProxyConfiguration() {
         return proxyConfiguration;
     }
+
+    public String getFriendlyBaseUri() { return friendlyBaseUri; }
 }

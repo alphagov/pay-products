@@ -45,7 +45,9 @@ public class ProductsModule extends AbstractModule {
         bind(GatewayAccountRequestValidator.class).in(Singleton.class);
         bind(LinksDecorator.class).toInstance(
                 new LinksDecorator(
-                        configuration.getBaseUrl(), configuration.getProductsUiPayUrl()));
+                        configuration.getBaseUrl(),
+                        configuration.getProductsUiPayUrl(),
+                        configuration.getFriendlyBaseUri()));
         bind(ProductFinder.class).in(Singleton.class);
         bind(PaymentFinder.class).in(Singleton.class);
 

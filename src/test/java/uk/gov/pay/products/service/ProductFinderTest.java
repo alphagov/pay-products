@@ -29,7 +29,7 @@ public class ProductFinderTest {
 
     @Before
     public void setup() throws Exception {
-        linksDecorator = new LinksDecorator("http://localhost", "http://localhost/pay");
+        linksDecorator = new LinksDecorator("http://localhost", "http://localhost/pay", "http://localhost/payments");
         productFinder = new ProductFinder(productDao, linksDecorator);
     }
 

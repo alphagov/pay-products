@@ -35,7 +35,7 @@ public class ProductCreatorTest {
 
     @Before
     public void setup() throws Exception {
-        LinksDecorator linksDecorator = new LinksDecorator("http://localhost", "http://localhost/pay");
+        LinksDecorator linksDecorator = new LinksDecorator("http://localhost", "http://localhost/pay", "http://localhost/payments");
         productCreator = new ProductCreator(productDao, linksDecorator);
         gatewayAccountId = randomInt();
         payApiToken = randomUuid();

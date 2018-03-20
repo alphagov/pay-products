@@ -142,6 +142,8 @@ public class ProductEntity extends AbstractEntity {
         productEntity.setType(product.getType());
         productEntity.setReturnUrl(product.getReturnUrl());
         productEntity.setServiceName(product.getServiceName());
+        productEntity.setServiceNamePath(product.getServiceNamePath());
+        productEntity.setProductNamePath(product.getProductNamePath());
 
         return productEntity;
     }

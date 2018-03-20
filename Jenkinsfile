@@ -50,7 +50,7 @@ pipeline {
     }
     stage('Test') {
       steps {
-        runParameterisedEndToEnd("products", null, "end2end-tagged", false, false, "uk.gov.pay.endtoend.categories.End2EndProducts")
+        runProductsE2E("products")
       }
     }
     stage('Docker Tag') {

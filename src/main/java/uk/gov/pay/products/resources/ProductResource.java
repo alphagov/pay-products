@@ -40,8 +40,13 @@ public class ProductResource {
         return requestValidator.validateCreateRequest(payload)
                 .map(errors -> Response.status(Status.BAD_REQUEST).entity(errors).build())
                 .orElseGet(() -> {
-                    Product product = productFactory.productCreator().doCreate(Product.from(payload));
-                    return Response.status(Status.CREATED).entity(product).build();
+                    try {
+                        Product product = productFactory.productCreator().doCreate(Product.from(payload));
+                        return Response.status(Status.CREATED).entity(product).build();
+                    } catch (javax.persistence.RollbackException ex) {
+                        logger.info("Conflict error while persisting product, product path already exists. " + ex.getLocalizedMessage());
+                        return Response.status(Status.CONFLICT).build();
+                    }
                 });
 
     }

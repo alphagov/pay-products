@@ -18,7 +18,9 @@ Content-Type: application/json
     "price" :                   1050,
     "type" :                    "DEMO",
     "service_name":             "Some awesome government service",
-    "return_url" :              "https://some.valid.url/"   
+    "return_url" :              "https://some.valid.url/",
+    "service_name_path" :       "some-awesome-government-service",
+    "product_name_path" :       "name-for-product"
 }
 ```
 
@@ -33,6 +35,8 @@ Content-Type: application/json
 | `description`            |          | Description of the product. This will be passed as the `description` when creating the charge | |
 | `service_name`           |    X     | The name of the service associated that the product is to be associated with    |   |
 | `return_url`             |          | (https only) where to redirect to upon completion of a payment. If not provided, `pay-products` will generate a default url to itself when creating a charge | |
+| `service_name_path`      |          | Service Name Path part of Product Path. Required for Adhoc type only.  |   |
+| `product_name_path`      |          | Product Name Path part of Product Path. Required for Adhoc type only.   |   |
 
 ### Response example
 
@@ -56,7 +60,12 @@ Content-Type: application/json
     {
          "href": "https://govukpay-products-ui.cloudapps.digital/pay/874h5c87834659q345698495",
          "rel" : "pay",
-         "method" : "POST"
+         "method" : "GET"
+    },
+    {
+        "href": "https://govukpay-products-ui.cloudapps.digital/products?serviceNamePath=some-awesome-government-service&productNamePath=pay-for-my-product",
+        "rel" : "friendly",
+        "method" : "GET"
     }]
 }
 ```
@@ -66,13 +75,14 @@ Content-Type: application/json
 | Field                    | always present | Description                                   |
 | ------------------------ |:--------------:| --------------------------------------------- |
 | `external_id`            | X              | external id of the new product                |
-| `gateway_account_id `    | X              | gateway account id of the Gateway    as identified by adminusers.  |   |
+| `gateway_account_id `    | X              | gateway account id of the Gateway    as identified by adminusers.  |
 | `description`            | X              | Description of the product |
 | `price`                  | X              | Price for the product in pence      |
 | `service_name`           | X              | The name of the service with which the product is associated  |
 | `return_url`             |                | return url provided. _(not be available if it was not provided)_   |
 | `_links.self`            | X              | self GET link to the product. |
 | `_links.pay`             | X              | The link in `pay-products-ui` where a charge for this product will be generated and redirected to GOV.UK Pay |
+| `_links.friendly`        |                | The friendly link to be used for Adhoc payments |
 
 
 ## GET /v1/api/products/{productId}
@@ -103,8 +113,13 @@ Content-Type: application/json
     {
          "href": "https://govukpay-products-ui.cloudapps.digital/pay/874h5c87834659q345698495",
          "rel" : "pay",
-         "method" : "POST"
-    }]
+         "method" : "GET"
+    },
+    {
+         "href": "https://govukpay-products-ui.cloudapps.digital/products?serviceNamePath=some-awesome-government-service&productNamePath=pay-for-my-product",
+         "rel" : "friendly",
+         "method" : "GET"
+     }]
 }
 ```
 #### Response field description 
@@ -141,12 +156,56 @@ Content-Type: application/json
          "href": "https://govukpay-products-ui.cloudapps.digital/pay/874h5c87834659q345698495",
          "rel" : "pay",
          "method" : "POST"
+    },
+    {
+         "href": "https://govukpay-products-ui.cloudapps.digital/products?serviceNamePath=some-awesome-government-service&productNamePath=pay-for-my-product",
+         "rel" : "friendly",
+         "method" : "GET"
     }]
 }
 ```
 #### Response field description 
 same as above(docs/api_specification.md#post-v1apiproducts)
 
+## GET /v1/api/products?serviceNamePath={serviceNamePath}&productNamePath={productNamePath}
+
+This endpoint finds a product with the product path (friendly url)
+
+```
+GET /v1/api/products?serviceNamePath=my-service&productNamePath=my-product
+```  
+
+### Response example
+
+```
+200 OK
+Content-Type: application/json
+{
+    "external_id": "874h5c87834659q345698495",
+    "description":         "Description of the product",
+    "price":               1050,
+    "return_url" :         "https://some.valid.url/"
+    "service_name":        "Some awesome government service",
+    "_links": [
+    {
+        "href": "https://govukpay-products.cloudapps.digital/v1/api/products/874h5c87834659q345698495",
+        "rel" : "self",
+        "method" : "GET"
+    },
+    {
+         "href": "https://govukpay-products-ui.cloudapps.digital/pay/874h5c87834659q345698495",
+         "rel" : "pay",
+         "method" : "POST"
+    },
+    {
+         "href": "https://govukpay-products-ui.cloudapps.digital/products?serviceNamePath=some-awesome-government-service&productNamePath=pay-for-my-product",
+         "rel" : "friendly",
+         "method" : "GET"
+    }]
+}
+```
+#### Response field description 
+same as above(docs/api_specification.md#post-v1apiproducts) except that `_links.friendly` is always present
 
 ## GET /v1/api/gateway-account/{gatewayAccountId}/products
 

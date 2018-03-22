@@ -4,8 +4,12 @@ import uk.gov.pay.products.model.Link;
 import uk.gov.pay.products.model.Payment;
 import uk.gov.pay.products.model.Product;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
+import static java.lang.String.format;
 import static javax.ws.rs.HttpMethod.GET;
 import static javax.ws.rs.core.UriBuilder.fromUri;
 
@@ -67,6 +71,10 @@ public class LinksDecorator {
         URI friendlyUri = fromUri(friendlyBaseUrl)
                 .path(serviceNamePath)
                 .path(productNamePath).build();
-        return Link.from(Link.Rel.friendly, method, friendlyUri.toString());
+        try {
+            return Link.from(Link.Rel.friendly, method, URLEncoder.encode(friendlyUri.toString(), StandardCharsets.UTF_8.name()));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(format("Friendly URL is not encodable [ %s ]", friendlyUri.toString()));
+        }
     }
 }

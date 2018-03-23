@@ -25,6 +25,8 @@ public class ProductRequestValidatorTest {
     private static final String FIELD_TYPE = "type";
     private static final String FIELD_RETURN_URL = "return_url";
     private static final String VALID_RETURN_URL = "https://valid.url";
+    private static final String FIELD_SERVICE_NAME_PATH = "service_name_path";
+    private static final String FIELD_PRODUCT_NAME_PATH = "product_name_path";
 
     private static ProductRequestValidator productRequestValidator = new ProductRequestValidator(new RequestValidations());
 
@@ -112,6 +114,8 @@ public class ProductRequestValidatorTest {
                         .put(FIELD_SERVICE_NAME, "Example service")
                         .put(FIELD_RETURN_URL, VALID_RETURN_URL)
                         .put(FIELD_TYPE, ProductType.ADHOC.toString())
+                        .put(FIELD_SERVICE_NAME_PATH, "service-name-path")
+                        .put(FIELD_PRODUCT_NAME_PATH, "product-name-path")
                         .build());
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
@@ -292,5 +296,44 @@ public class ProductRequestValidatorTest {
 
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().toString(), is("[Field [service_name] must have a maximum length of 50 characters]"));
+    }
+
+    @Test
+    public void shouldError_whenTypeIsAdhocAndNoProductPathIsPresent() {
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(ImmutableMap.<String, String>builder()
+                        .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
+                        .put(FIELD_PAY_API_TOKEN, "api_token")
+                        .put(FIELD_NAME, "name")
+                        .put(FIELD_PRICE, "25.0")
+                        .put(FIELD_SERVICE_NAME, randomAlphanumeric(50))
+                        .put(FIELD_RETURN_URL, VALID_RETURN_URL)
+                        .put(FIELD_TYPE, ProductType.ADHOC.toString())
+                        .build());
+
+        Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
+
+        assertThat(errors.isPresent(), is(true));
+        assertThat(errors.get().getErrors().toString(), is("[Field [service_name_path] is required, Field [product_name_path] is required]"));
+    }
+
+    @Test
+    public void shouldError_whenTypeIsAdhocAndNoServiceNamePathIsPresent() {
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(ImmutableMap.<String, String>builder()
+                        .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
+                        .put(FIELD_PAY_API_TOKEN, "api_token")
+                        .put(FIELD_NAME, "name")
+                        .put(FIELD_PRICE, "25.0")
+                        .put(FIELD_SERVICE_NAME, randomAlphanumeric(50))
+                        .put(FIELD_RETURN_URL, VALID_RETURN_URL)
+                        .put(FIELD_TYPE, ProductType.ADHOC.toString())
+                        .put(FIELD_PRODUCT_NAME_PATH, "product-name-path")
+                        .build());
+
+        Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
+
+        assertThat(errors.isPresent(), is(true));
+        assertThat(errors.get().getErrors().toString(), is("[Field [service_name_path] is required]"));
     }
 }

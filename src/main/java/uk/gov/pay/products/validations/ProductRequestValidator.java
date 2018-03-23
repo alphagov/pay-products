@@ -18,6 +18,8 @@ public class ProductRequestValidator {
     private static final String FIELD_SERVICE_NAME = "service_name";
     private static final String FIELD_TYPE = "type";
     private static final int FIELD_SERVICE_NAME_MAX_LENGTH = 50;
+    private static final String FIELD_SERVICE_NAME_PATH = "service_name_path";
+    private static final String FIELD_PRODUCT_NAME_PATH = "product_name_path";
 
     private final RequestValidations requestValidations;
 
@@ -53,6 +55,10 @@ public class ProductRequestValidator {
 
         if (!errors.isPresent() && payload.get(FIELD_SERVICE_NAME) != null) {
             errors = requestValidations.checkMaxLength(payload, FIELD_SERVICE_NAME_MAX_LENGTH, FIELD_SERVICE_NAME);
+        }
+
+        if (!errors.isPresent() && ADHOC.name().equals(payload.get(FIELD_TYPE).asText())) {
+            errors = requestValidations.checkIfExistsOrEmpty(payload, FIELD_SERVICE_NAME_PATH, FIELD_PRODUCT_NAME_PATH);
         }
 
         return errors.map(Errors::from);

@@ -72,7 +72,7 @@ pipeline {
         branch 'master'
       }
       steps {
-        deployEcs("products", "test", null, false, false)
+        deployEcs("products")
       }
     }
     stage('Smoke Tests') {

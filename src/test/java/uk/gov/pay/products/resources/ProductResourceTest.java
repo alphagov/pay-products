@@ -137,7 +137,7 @@ public class ProductResourceTest extends IntegrationTest {
 
         String productsUrl = "https://products.url/v1/api/products/";
         String productsUIPayUrl = "https://products-ui.url/pay/";
-        String urlToMatch = URLEncoder.encode(format("https://products-ui.url/products/%s/%s", serviceNamePath, productNamePath), StandardCharsets.UTF_8.name());
+        String urlToMatch = format("https://products-ui.url/products/%s/%s", serviceNamePath, productNamePath);
         response
                 .body("_links", hasSize(3))
                 .body("_links[0].href", matchesPattern(productsUrl + externalId))
@@ -472,7 +472,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .then()
                 .statusCode(200);
 
-        String urlToMatch = URLEncoder.encode(format("https://products-ui.url/products/%s/%s", serviceNamePath, productNamePath), StandardCharsets.UTF_8.name());
+        String urlToMatch = format("https://products-ui.url/products/%s/%s", serviceNamePath, productNamePath);
         response
                 .body("service_name_path", is(serviceNamePath))
                 .body("product_name_path", is(productNamePath))

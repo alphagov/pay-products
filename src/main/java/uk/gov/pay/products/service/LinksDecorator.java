@@ -68,13 +68,15 @@ public class LinksDecorator {
         if(serviceNamePath == null || productNamePath == null){
             return null;
         }
-        URI friendlyUri = fromUri(friendlyBaseUrl)
-                .path(serviceNamePath)
-                .path(productNamePath).build();
         try {
-            return Link.from(Link.Rel.friendly, method, URLEncoder.encode(friendlyUri.toString(), StandardCharsets.UTF_8.name()));
+            URI friendlyUri = fromUri(friendlyBaseUrl)
+                .path(URLEncoder.encode(serviceNamePath, StandardCharsets.UTF_8.name()))
+                .path(URLEncoder.encode(productNamePath, StandardCharsets.UTF_8.name()))
+                .build();
+
+            return Link.from(Link.Rel.friendly, method, friendlyUri.toString());
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(format("Friendly URL is not encodable [ %s ]", friendlyUri.toString()));
+            throw new RuntimeException(format("Friendly URL is not encodable [ %s %s ]", serviceNamePath, productNamePath));
         }
     }
 }

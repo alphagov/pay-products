@@ -21,8 +21,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
-import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
-import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
+import static uk.gov.pay.commons.utils.RandomIdGenerator.randomInt;
+import static uk.gov.pay.commons.utils.RandomIdGenerator.randomUuid;
 
 public class ProductResourceTest extends IntegrationTest {
 

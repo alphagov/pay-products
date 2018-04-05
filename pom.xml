@@ -121,6 +121,11 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
             <version>${jackson.version}</version>
         </dependency>
+        <dependency>
+            <groupId>pay-java-commons</groupId>
+            <artifactId>utils</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
         <!-- testing -->
         <dependency>
@@ -301,4 +306,14 @@
             </plugin>
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <id>jcenter</id>
+            <url>https://jcenter.bintray.com/</url>
+        </repository>
+        <repository>
+            <id>maven</id>
+            <url>http://repo1.maven.org/maven2</url>
+        </repository>
+    </repositories>
 </project>

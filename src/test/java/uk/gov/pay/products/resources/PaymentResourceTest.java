@@ -18,13 +18,15 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static org.junit.Assert.assertThat;
+import static uk.gov.pay.commons.utils.RandomIdGenerator.randomInt;
+import static uk.gov.pay.commons.utils.RandomIdGenerator.randomUuid;
 import static uk.gov.pay.products.fixtures.ProductEntityFixture.aProductEntity;
-import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
-import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 public class PaymentResourceTest extends IntegrationTest {
 

@@ -24,8 +24,8 @@ import uk.gov.pay.products.util.PaymentStatus;
 import javax.inject.Inject;
 
 import static java.lang.String.format;
-import static uk.gov.pay.products.util.RandomIdGenerator.randomUserFriendlyReference;
-import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
+import static uk.gov.pay.commons.utils.RandomIdGenerator.randomUserFriendlyReference;
+import static uk.gov.pay.commons.utils.RandomIdGenerator.randomUuid;
 
 public class PaymentCreator {
 

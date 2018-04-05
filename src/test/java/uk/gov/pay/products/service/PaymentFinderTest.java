@@ -24,7 +24,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.mockito.Mockito.when;
-import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
+import static uk.gov.pay.commons.utils.RandomIdGenerator.randomUuid;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PaymentFinderTest {

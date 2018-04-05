@@ -6,7 +6,8 @@ import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.dao.ProductDao;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 
-import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
+import static uk.gov.pay.commons.utils.RandomIdGenerator.randomUuid;
+
 
 public class ProductCreator {
 

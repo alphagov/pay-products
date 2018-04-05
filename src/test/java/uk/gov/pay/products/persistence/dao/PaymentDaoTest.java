@@ -18,8 +18,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
-import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
+import static uk.gov.pay.commons.utils.RandomIdGenerator.randomInt;
+import static uk.gov.pay.commons.utils.RandomIdGenerator.randomUuid;
 
 public class PaymentDaoTest extends DaoTestBase {
 

@@ -12,7 +12,7 @@ import uk.gov.pay.products.util.ProductType;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
+import static uk.gov.pay.commons.utils.RandomIdGenerator.randomUuid;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)

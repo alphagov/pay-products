@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import uk.gov.pay.commons.utils.RandomIdGenerator;
 import uk.gov.pay.products.client.publicapi.PaymentRequest;
 import uk.gov.pay.products.client.publicapi.PaymentResponse;
 import uk.gov.pay.products.client.publicapi.PublicApiRestClient;
@@ -25,7 +26,6 @@ import uk.gov.pay.products.persistence.entity.PaymentEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.service.transaction.TransactionFlow;
 import uk.gov.pay.products.util.PaymentStatus;
-import uk.gov.pay.products.util.RandomIdGenerator;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -37,10 +37,10 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
+import static uk.gov.pay.commons.utils.RandomIdGenerator.randomUserFriendlyReference;
+import static uk.gov.pay.commons.utils.RandomIdGenerator.randomUuid;
 import static uk.gov.pay.products.util.PaymentStatus.ERROR;
 import static uk.gov.pay.products.util.PaymentStatus.SUBMITTED;
-import static uk.gov.pay.products.util.RandomIdGenerator.randomUserFriendlyReference;
-import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(RandomIdGenerator.class)

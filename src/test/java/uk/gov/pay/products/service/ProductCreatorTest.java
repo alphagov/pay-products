@@ -16,8 +16,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
-import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
+import static uk.gov.pay.commons.utils.RandomIdGenerator.randomInt;
+import static uk.gov.pay.commons.utils.RandomIdGenerator.randomUuid;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProductCreatorTest {

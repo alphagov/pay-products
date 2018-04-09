@@ -13,6 +13,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -77,6 +78,7 @@ public class ProductResource {
                         Response.status(NOT_FOUND).build());
     }
 
+    @Deprecated
     @PATCH
     @Path("/products/{productExternalId}/disable")
     @Produces(APPLICATION_JSON)
@@ -86,6 +88,16 @@ public class ProductResource {
         return productFactory.productFinder().disableByExternalId(productExternalId)
                 .map(product -> Response.status(NO_CONTENT).build())
                 .orElseGet(() -> Response.status(NOT_FOUND).build());
+    }
+
+    @DELETE
+    @Path("/products/{productExternalId}")
+    @Produces(APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
+    public Response deleteProductByExternalId(@PathParam("productExternalId") String productExternalId) {
+        logger.info("Deleting a product with externalId - [ {} ]", productExternalId);
+        Boolean success = productFactory.productFinder().deleteByExternalId(productExternalId);
+        return success ? Response.status(NO_CONTENT).build() : Response.status(NOT_FOUND).build();
     }
 
     @PATCH

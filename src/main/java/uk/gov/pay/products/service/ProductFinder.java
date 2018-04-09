@@ -33,6 +33,7 @@ public class ProductFinder {
                 .map(productEntity -> linksDecorator.decorate(productEntity.toProduct()));
     }
 
+    @Deprecated
     @Transactional
     public Optional<Product> disableByExternalId(String externalId) {
         return productDao.findByExternalId(externalId)
@@ -41,6 +42,16 @@ public class ProductFinder {
                     return Optional.of(productEntity.toProduct());
                 })
                 .orElseGet(Optional::empty);
+    }
+
+    @Transactional
+    public Boolean deleteByExternalId(String externalId) {
+        return productDao.findByExternalId(externalId)
+                .map(productEntity -> {
+                    productDao.remove(productEntity);
+                    return true;
+                })
+                .orElse(false);
     }
 
     @Transactional

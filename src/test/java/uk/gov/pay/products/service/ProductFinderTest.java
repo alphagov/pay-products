@@ -112,6 +112,34 @@ public class ProductFinderTest {
     }
 
     @Test
+    public void deleteByExternalId_shouldDeleteProduct_whenFound() throws Exception{
+        String externalId = "1";
+        ProductEntity productEntity = new ProductEntity();
+        productEntity.setExternalId(externalId);
+        when(productDao.findByExternalId(externalId)).thenReturn(Optional.of(productEntity));
+
+        Optional<Product> productOptional = productFinder.findByExternalId(externalId);
+        assertThat(productOptional.isPresent(), is(true));
+        assertThat(productOptional.get().getStatus(), is(ProductStatus.ACTIVE));
+
+        Boolean success = productFinder.deleteByExternalId(externalId);
+
+        assertThat(success, is(true));
+    }
+
+    @Test
+    public void deleteByExternalId_shouldReturnFalse_whenNotFound() throws Exception{
+        String externalId = "1";
+        ProductEntity productEntity = new ProductEntity();
+        productEntity.setExternalId(externalId);
+        when(productDao.findByExternalId(externalId)).thenReturn(Optional.empty());
+
+        Boolean success = productFinder.deleteByExternalId(externalId);
+
+        assertThat(success, is(false));
+    }
+
+    @Test
     public void disableByGatewayAccountIdAndExternalId_shouldDisableProduct_whenFound() throws Exception{
         Integer gatewayAccountId = 1;
         String externalId = "1";

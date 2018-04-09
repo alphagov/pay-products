@@ -54,6 +54,7 @@ public class ProductFinder {
                 .orElse(false);
     }
 
+    @Deprecated
     @Transactional
     public Optional<Product> disableByGatewayAccountIdAndExternalId(Integer gatewayAccountId, String externalId) {
         return productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)
@@ -62,6 +63,16 @@ public class ProductFinder {
                     return Optional.of(productEntity.toProduct());
                 })
                 .orElseGet(Optional::empty);
+    }
+
+    @Transactional
+    public Boolean deleteByGatewayAccountIdAndExternalId(Integer gatewayAccountId, String externalId) {
+        return productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)
+                .map(productEntity -> {
+                    productDao.remove(productEntity);
+                    return true;
+                })
+                .orElse(false);
     }
 
     @Transactional

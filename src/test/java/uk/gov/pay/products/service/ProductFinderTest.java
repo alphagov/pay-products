@@ -159,6 +159,35 @@ public class ProductFinderTest {
     }
 
     @Test
+    public void deleteByGatewayAccountIdAndExternalId_shouldDeleteProduct_whenFound() throws Exception{
+        Integer gatewayAccountId = 1;
+        String externalId = "1";
+        ProductEntity productEntity = new ProductEntity();
+        productEntity.setExternalId(externalId);
+        productEntity.setGatewayAccountId(gatewayAccountId);
+        when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.of(productEntity));
+
+        Optional<Product> productOptional = productFinder.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId);
+        assertThat(productOptional.isPresent(), is(true));
+        assertThat(productOptional.get().getStatus(), is(ProductStatus.ACTIVE));
+
+        Boolean success = productFinder.deleteByGatewayAccountIdAndExternalId(gatewayAccountId, externalId);
+
+        assertThat(success, is(true));
+    }
+
+    @Test
+    public void deleteByGatewayAccountIdAndExternalId_shouldReturnFalse_whenNotFound() throws Exception{
+        Integer gatewayAccountId = 1;
+        String externalId = "1";
+        when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.empty());
+
+        Boolean success = productFinder.deleteByGatewayAccountIdAndExternalId(gatewayAccountId, externalId);
+
+        assertThat(success, is(false));
+    }
+
+    @Test
     public void disableByGatewayAccountIdAndExternalId_shouldReturnEmpty_whenNotFound() throws Exception{
         Integer gatewayAccountId = 1;
         String externalId = "1";

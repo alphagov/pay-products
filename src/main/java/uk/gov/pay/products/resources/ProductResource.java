@@ -100,6 +100,7 @@ public class ProductResource {
         return success ? Response.status(NO_CONTENT).build() : Response.status(NOT_FOUND).build();
     }
 
+    @Deprecated
     @PATCH
     @Path("/gateway-account/{gatewayAccountId}/products/{productExternalId}/disable")
     @Produces(APPLICATION_JSON)
@@ -109,6 +110,16 @@ public class ProductResource {
         return productFactory.productFinder().disableByGatewayAccountIdAndExternalId(gatewayAccountId, productExternalId)
                 .map(product -> Response.status(NO_CONTENT).build())
                 .orElseGet(() -> Response.status(NOT_FOUND).build());
+    }
+
+    @DELETE
+    @Path("/gateway-account/{gatewayAccountId}/products/{productExternalId}")
+    @Produces(APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
+    public Response deleteProductByGatewayAccountIdAndExternalId(@PathParam("gatewayAccountId") Integer gatewayAccountId, @PathParam("productExternalId") String productExternalId) {
+        logger.info("Deleting a product with externalId - [ {} ]", productExternalId);
+        Boolean success = productFactory.productFinder().deleteByGatewayAccountIdAndExternalId(gatewayAccountId, productExternalId);
+        return success ? Response.status(NO_CONTENT).build() : Response.status(NOT_FOUND).build();
     }
 
     @GET

@@ -388,6 +388,37 @@ public class ProductResourceTest extends IntegrationTest {
     }
 
     @Test
+    public void deleteProductByGatewayAccountIdAndExternalId_shouldReturn201_whenProductIsDeleted() throws Exception {
+        String externalId = randomUuid();
+        int gatewayAccountId = randomInt();
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+
+        givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .delete(format("/v1/api/gateway-account/%s/products/%s", gatewayAccountId, externalId))
+                .then()
+                .statusCode(204);
+    }
+
+    @Test
+    public void deleteProductByGatewayAccountIdAndExternalId_shouldReturn404_whenNotFound() throws Exception {
+        givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .delete(format("/v1/api/gateway-account/%s/products/%s", randomInt(), randomUuid()))
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
     public void disableProductByGatewayAccountIdAndExternalId_shouldReturn201_whenProductIsDisabled() throws Exception {
         String externalId = randomUuid();
         int gatewayAccountId = randomInt();

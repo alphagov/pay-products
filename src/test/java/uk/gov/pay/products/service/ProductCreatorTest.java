@@ -7,15 +7,19 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.pay.products.matchers.ProductMatcher;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.dao.ProductDao;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductType;
 
+import java.util.Optional;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
@@ -111,5 +115,73 @@ public class ProductCreatorTest {
         assertThat(productEntityValue.getDescription(), is(description));
         assertThat(productEntityValue.getReturnUrl(), is(returnUrl));
         assertThat(productEntityValue.getServiceName(), is(SERVICE_NAME));
+    }
+
+    @Test
+    public void doUpdateByGatewayAccountId_shouldUpdateProduct() {
+        String externalId = "external-id";
+        String updatedName = "updated-name";
+        String updatedDescription = "updated-description";
+        Long updatedPrice = 500L;
+
+        Product productToUpdate = new Product(
+                "external-id",
+                updatedName,
+                updatedDescription,
+                payApiToken,
+                updatedPrice,
+                null,
+                1,
+                SERVICE_NAME,
+                ProductType.ADHOC,
+                "http://my-return-url.com",
+                "service-name-path",
+                "product-name-path"
+        );
+
+        ProductEntity mockedProductEntity = mock(ProductEntity.class);
+        when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.of(mockedProductEntity));
+        when(mockedProductEntity.toProduct()).thenReturn(productToUpdate);
+
+        Optional<Product> updatedProduct = productCreator.doUpdateByGatewayAccountId(gatewayAccountId, productToUpdate);
+
+        verify(mockedProductEntity,  times(1)).setName(updatedName);
+        verify(mockedProductEntity,  times(1)).setDescription(updatedDescription);
+        verify(mockedProductEntity,  times(1)).setPrice(updatedPrice);
+        verify(mockedProductEntity,  times(1)).toProduct();
+        verifyNoMoreInteractions(mockedProductEntity);
+
+
+        assertTrue(updatedProduct.isPresent());
+        assertThat(productToUpdate, ProductMatcher.isSame(updatedProduct.get()));
+    }
+
+    @Test
+    public void doUpdateByGatewayAccountId_shouldNotUpdateProduct_whenNotFound() {
+        String externalId = "external-id";
+        String updatedName = "updated-name";
+        String updatedDescription = "updated-description";
+        Long updatedPrice = 500L;
+
+        Product productToUpdate = new Product(
+                "external-id",
+                updatedName,
+                updatedDescription,
+                payApiToken,
+                updatedPrice,
+                null,
+                1,
+                SERVICE_NAME,
+                ProductType.ADHOC,
+                "http://my-return-url.com",
+                "service-name-path",
+                "product-name-path"
+        );
+
+        when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.empty());
+
+        Optional<Product> updatedProduct = productCreator.doUpdateByGatewayAccountId(gatewayAccountId, productToUpdate);
+
+        assertFalse(updatedProduct.isPresent());
     }
 }

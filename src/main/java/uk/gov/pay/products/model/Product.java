@@ -74,6 +74,7 @@ public class Product {
     }
 
     public static Product from(JsonNode jsonPayload) {
+        String externalId = (jsonPayload.get(EXTERNAL_ID) != null) ? jsonPayload.get(EXTERNAL_ID).asText() : randomUuid();
         String payApiToken = (jsonPayload.get(FIELD_PAY_API_TOKEN) != null) ? jsonPayload.get(FIELD_PAY_API_TOKEN).asText() : null;
         String name = (jsonPayload.get(FIELD_NAME) != null) ? jsonPayload.get(FIELD_NAME).asText() : null;
         Long price = (jsonPayload.get(FIELD_PRICE) != null) ? jsonPayload.get(FIELD_PRICE).asLong() : null;
@@ -85,7 +86,7 @@ public class Product {
         String serviceNamePath = (jsonPayload.get(FIELD_SERVICE_NAME_PATH) != null) ? jsonPayload.get(FIELD_SERVICE_NAME_PATH).asText() : null;
         String productNamePath = (jsonPayload.get(FIELD_PRODUCT_NAME_PATH) != null) ? jsonPayload.get(FIELD_PRODUCT_NAME_PATH).asText() : null;
 
-        return new Product(randomUuid(), name, description, payApiToken,
+        return new Product(externalId, name, description, payApiToken,
                 price, ProductStatus.ACTIVE, gatewayAccountId, serviceName, type, returnUrl,
                 serviceNamePath, productNamePath);
     }

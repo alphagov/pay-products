@@ -2,6 +2,7 @@ package uk.gov.pay.products.resources;
 
 import com.google.common.collect.ImmutableMap;
 import io.restassured.response.ValidatableResponse;
+import org.junit.Assert;
 import org.junit.Test;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.model.Product;
@@ -10,14 +11,15 @@ import uk.gov.pay.products.util.ProductType;
 
 import javax.ws.rs.HttpMethod;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
@@ -100,7 +102,7 @@ public class ProductResourceTest extends IntegrationTest {
         String type = ProductType.ADHOC.name();
         String serviceNamePath = randomAlphanumeric(40);
         String productNamePath = randomAlphanumeric(65);
-        
+
         String returnUrl = "https://some.valid.url";
 
         ImmutableMap<String, String> payload = ImmutableMap.<String, String>builder()
@@ -344,6 +346,125 @@ public class ProductResourceTest extends IntegrationTest {
                 .when()
                 .accept(APPLICATION_JSON)
                 .patch(format("/v1/api/products/%s/disable", randomUuid()))
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void updateProduct_shouldUpdateProduct_whenFound() throws Exception {
+        String externalId = randomUuid();
+        int gatewayAccountId = randomInt();
+
+        String updatedName = "updated-name";
+        String updatedDescription = "updated-description";
+        String updatedPrice = "1000";
+
+        Product existingProduct = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withName("name")
+                .withDescription("description")
+                .withPrice(500)
+                .withGatewayAccountId(gatewayAccountId)
+                .withProductPath("service-name-path", "product-name-path")
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(existingProduct);
+
+        ImmutableMap<String, String> payload = ImmutableMap.<String, String>builder()
+                .put(EXTERNAL_ID, existingProduct.getExternalId())
+                .put(GATEWAY_ACCOUNT_ID, existingProduct.getGatewayAccountId().toString())
+                .put(PAY_API_TOKEN, existingProduct.getPayApiToken())
+                .put(NAME, updatedName)
+                .put(PRICE, updatedPrice)
+                .put(DESCRIPTION, updatedDescription)
+                .put(TYPE, existingProduct.getType().toString())
+                .put(RETURN_URL, existingProduct.getReturnUrl())
+                .put(SERVICE_NAME, existingProduct.getServiceName())
+                .put(SERVICE_NAME_PATH, existingProduct.getServiceNamePath())
+                .put(PRODUCT_NAME_PATH, existingProduct.getProductNamePath())
+                .build();
+
+        ValidatableResponse response = givenSetup()
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .body(mapper.writeValueAsString(payload))
+                .put(format("/v1/api/gateway-account/%s/products/%s", gatewayAccountId, externalId))
+                .then()
+                .statusCode(200);
+
+        response
+                .body(NAME, is(updatedName))
+                .body(DESCRIPTION, is(updatedDescription))
+                .body(PRICE, is(Integer.valueOf(updatedPrice)))
+                .body(TYPE, is(existingProduct.getType().name()))
+                .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
+                .body(RETURN_URL, is(existingProduct.getReturnUrl()));
+
+        String productsUrl = "https://products.url/v1/api/products/";
+        String productsUIPayUrl = "https://products-ui.url/pay/";
+        String productFriendlyUrl = format("https://products-ui.url/products/%s/%s",
+                existingProduct.getServiceNamePath(), existingProduct.getProductNamePath());
+        response
+                .body("_links", hasSize(3))
+                .body("_links[0].href", matchesPattern(productsUrl + externalId))
+                .body("_links[0].method", is(HttpMethod.GET))
+                .body("_links[0].rel", is("self"))
+                .body("_links[1].href", matchesPattern(productsUIPayUrl + externalId))
+                .body("_links[1].method", is(HttpMethod.GET))
+                .body("_links[1].rel", is("pay"))
+                .body("_links[2].href", matchesPattern(productFriendlyUrl))
+                .body("_links[2].method", is(HttpMethod.GET))
+                .body("_links[2].rel", is("friendly"));
+
+        List<Map<String, Object>> productsRecords = databaseHelper.findProductEntityByGatewayAccountId(gatewayAccountId);
+        Assert.assertThat(productsRecords.size(), is(1));
+        Assert.assertThat(productsRecords.get(0), hasEntry("name", updatedName));
+        Assert.assertThat(productsRecords.get(0), hasEntry("description", updatedDescription));
+        Assert.assertThat(productsRecords.get(0), hasEntry("price", Long.valueOf(updatedPrice)));
+    }
+
+    @Test
+    public void updateProduct_shouldReturn404_whenNotFound() throws Exception {
+        String externalId = randomUuid();
+        int gatewayAccountId = randomInt();
+        int anotherGatewayAccountId = randomInt();
+
+        String updatedName = "updated-name";
+        String updatedDescription = "updated-description";
+        String updatedPrice = "1000";
+
+        Product existingProduct = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withName("name")
+                .withDescription("description")
+                .withPrice(500)
+                .withGatewayAccountId(gatewayAccountId)
+                .withProductPath("service-name-path", "product-name-path")
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(existingProduct);
+
+        ImmutableMap<String, String> payload = ImmutableMap.<String, String>builder()
+                .put(EXTERNAL_ID, existingProduct.getExternalId())
+                .put(GATEWAY_ACCOUNT_ID, existingProduct.getGatewayAccountId().toString())
+                .put(PAY_API_TOKEN, existingProduct.getPayApiToken())
+                .put(NAME, updatedName)
+                .put(PRICE, updatedPrice)
+                .put(DESCRIPTION, updatedDescription)
+                .put(TYPE, existingProduct.getType().toString())
+                .put(RETURN_URL, existingProduct.getReturnUrl())
+                .put(SERVICE_NAME, existingProduct.getServiceName())
+                .put(SERVICE_NAME_PATH, existingProduct.getServiceNamePath())
+                .put(PRODUCT_NAME_PATH, existingProduct.getProductNamePath())
+                .build();
+
+        givenSetup()
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .body(mapper.writeValueAsString(payload))
+                .put(format("/v1/api/gateway-account/%s/products/%s", anotherGatewayAccountId, externalId))
                 .then()
                 .statusCode(404);
     }

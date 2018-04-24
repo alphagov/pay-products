@@ -125,25 +125,25 @@ public class ProductCreatorTest {
         Long updatedPrice = 500L;
 
         Product productToUpdate = new Product(
-                "external-id",
+                "auto-generated-id",
                 updatedName,
                 updatedDescription,
-                payApiToken,
+                null,
                 updatedPrice,
                 null,
-                1,
-                SERVICE_NAME,
-                ProductType.ADHOC,
-                "http://my-return-url.com",
-                "service-name-path",
-                "product-name-path"
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
         );
 
         ProductEntity mockedProductEntity = mock(ProductEntity.class);
         when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.of(mockedProductEntity));
         when(mockedProductEntity.toProduct()).thenReturn(productToUpdate);
 
-        Optional<Product> updatedProduct = productCreator.doUpdateByGatewayAccountId(gatewayAccountId, productToUpdate);
+        Optional<Product> updatedProduct = productCreator.doUpdateByGatewayAccountId(gatewayAccountId, externalId, productToUpdate);
 
         verify(mockedProductEntity,  times(1)).setName(updatedName);
         verify(mockedProductEntity,  times(1)).setDescription(updatedDescription);
@@ -164,23 +164,23 @@ public class ProductCreatorTest {
         Long updatedPrice = 500L;
 
         Product productToUpdate = new Product(
-                "external-id",
+                "auto-generated-id",
                 updatedName,
                 updatedDescription,
-                payApiToken,
+                null,
                 updatedPrice,
                 null,
-                1,
-                SERVICE_NAME,
-                ProductType.ADHOC,
-                "http://my-return-url.com",
-                "service-name-path",
-                "product-name-path"
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
         );
 
         when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.empty());
 
-        Optional<Product> updatedProduct = productCreator.doUpdateByGatewayAccountId(gatewayAccountId, productToUpdate);
+        Optional<Product> updatedProduct = productCreator.doUpdateByGatewayAccountId(gatewayAccountId, externalId, productToUpdate);
 
         assertFalse(updatedProduct.isPresent());
     }

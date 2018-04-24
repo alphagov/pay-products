@@ -84,33 +84,24 @@ Content-Type: application/json
 | `_links.pay`             | X              | The link in `pay-products-ui` where a charge for this product will be generated and redirected to GOV.UK Pay |
 | `_links.friendly`        |                | The friendly link to be used for Adhoc payments |
 
-## PUT /v1/api/gateway-account/{gatewayAccountId}/products/{productId}
+## PATCH /v1/api/gateway-account/{gatewayAccountId}/products/{productId}
 
 
 This endpoint updates an existing product matching the specified `productId` 
 and belonging to the gateway account specified by `gatewayAccountId`.
-Note that only the following 3 fields are updatable for now, all other 
-fields passed in simply being ignored: `name`, `description` and `price`.
 
 Returns the product only if it exists and the update is successful. 
 
 ### Request example
 
 ```
-PUT /v1/api/gateway-account/1234/products/874h5c87834659q345698495
+PATCH /v1/api/gateway-account/1234/products/874h5c87834659q345698495
 Content-Type: application/json
 
 {
-    "gateway_account_id" :     "1234",
-    "pay_api_token" :           "5meusgv5ufclsbvde78mdf35bfdhnhm1307euq94kcf0lcqcqrovbjovib",
     "name" :                    "A name for the product",
     "description" :             "Description of the product",
-    "price" :                   1050,
-    "type" :                    "DEMO",
-    "service_name":             "Some awesome government service",
-    "return_url" :              "https://some.valid.url/",
-    "service_name_path" :       "some-awesome-government-service",
-    "product_name_path" :       "name-for-product"
+    "price" :                   1050
 }
 ```
 
@@ -118,15 +109,9 @@ Content-Type: application/json
 
 | Field                    | required | Description                                                      | Supported Values     |
 | ------------------------ |:--------:| ---------------------------------------------------------------- |----------------------|
-| `gateway_account_id`     |    X     | gateway account id of the Gateway Account as identified by adminusers.  |   |
-| `pay_api_token`          |    X     | valid api token for the gateway account of above service which this product takes payments for |  |
 | `name`                   |    X     | Name of the product. This will be passed as the `name` when creating the charge | |
-| `price`                  |          | Price for the product in pence. This will be passed as the  `amount` when creating charge. Mandatory for Non-ADHOC products    | |
+| `price`                  |    X     | Price for the product in pence. This will be passed as the  `amount` when creating charge. Mandatory for Non-ADHOC products    | |
 | `description`            |          | Description of the product. This will be passed as the `description` when creating the charge | |
-| `service_name`           |    X     | The name of the service associated that the product is to be associated with    |   |
-| `return_url`             |          | (https only) where to redirect to upon completion of a payment. If not provided, `pay-products` will generate a default url to itself when creating a charge | |
-| `service_name_path`      |          | Service Name Path part of Product Path. Required for Adhoc type only.  |   |
-| `product_name_path`      |          | Product Name Path part of Product Path. Required for Adhoc type only.   |   |
 
 ### Response example
 

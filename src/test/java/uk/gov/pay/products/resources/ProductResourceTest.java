@@ -372,24 +372,16 @@ public class ProductResourceTest extends IntegrationTest {
         databaseHelper.addProduct(existingProduct);
 
         ImmutableMap<String, String> payload = ImmutableMap.<String, String>builder()
-                .put(EXTERNAL_ID, existingProduct.getExternalId())
-                .put(GATEWAY_ACCOUNT_ID, existingProduct.getGatewayAccountId().toString())
-                .put(PAY_API_TOKEN, existingProduct.getPayApiToken())
                 .put(NAME, updatedName)
                 .put(PRICE, updatedPrice)
                 .put(DESCRIPTION, updatedDescription)
-                .put(TYPE, existingProduct.getType().toString())
-                .put(RETURN_URL, existingProduct.getReturnUrl())
-                .put(SERVICE_NAME, existingProduct.getServiceName())
-                .put(SERVICE_NAME_PATH, existingProduct.getServiceNamePath())
-                .put(PRODUCT_NAME_PATH, existingProduct.getProductNamePath())
                 .build();
 
         ValidatableResponse response = givenSetup()
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .body(mapper.writeValueAsString(payload))
-                .put(format("/v1/api/gateway-account/%s/products/%s", gatewayAccountId, externalId))
+                .patch(format("/v1/api/gateway-account/%s/products/%s", gatewayAccountId, externalId))
                 .then()
                 .statusCode(200);
 
@@ -447,24 +439,16 @@ public class ProductResourceTest extends IntegrationTest {
         databaseHelper.addProduct(existingProduct);
 
         ImmutableMap<String, String> payload = ImmutableMap.<String, String>builder()
-                .put(EXTERNAL_ID, existingProduct.getExternalId())
-                .put(GATEWAY_ACCOUNT_ID, existingProduct.getGatewayAccountId().toString())
-                .put(PAY_API_TOKEN, existingProduct.getPayApiToken())
                 .put(NAME, updatedName)
                 .put(PRICE, updatedPrice)
                 .put(DESCRIPTION, updatedDescription)
-                .put(TYPE, existingProduct.getType().toString())
-                .put(RETURN_URL, existingProduct.getReturnUrl())
-                .put(SERVICE_NAME, existingProduct.getServiceName())
-                .put(SERVICE_NAME_PATH, existingProduct.getServiceNamePath())
-                .put(PRODUCT_NAME_PATH, existingProduct.getProductNamePath())
                 .build();
 
         givenSetup()
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .body(mapper.writeValueAsString(payload))
-                .put(format("/v1/api/gateway-account/%s/products/%s", anotherGatewayAccountId, externalId))
+                .patch(format("/v1/api/gateway-account/%s/products/%s", anotherGatewayAccountId, externalId))
                 .then()
                 .statusCode(404);
     }

@@ -32,10 +32,10 @@ public class ProductCreator {
     }
 
     @Transactional
-    public Optional<Product> doUpdateByGatewayAccountId(Integer gatewayAccountId, Product product) {
+    public Optional<Product> doUpdateByGatewayAccountId(Integer gatewayAccountId, String productExternalId, Product product) {
 
         return productDao
-                .findByGatewayAccountIdAndExternalId(gatewayAccountId, product.getExternalId())
+                .findByGatewayAccountIdAndExternalId(gatewayAccountId, productExternalId)
                 .map(productEntity -> {
                     productEntity.setName(product.getName());
                     productEntity.setDescription(product.getDescription());

@@ -111,16 +111,16 @@ public class ProductResource {
                 .orElseGet(() -> Response.status(NOT_FOUND).build());
     }
 
-    @PUT
+    @PATCH
     @Path("/gateway-account/{gatewayAccountId}/products/{productExternalId}")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
-    public Response updateProduct(@PathParam("gatewayAccountId") Integer gatewayAccountId, JsonNode payload) {
+    public Response updateProduct(@PathParam("gatewayAccountId") Integer gatewayAccountId, @PathParam("productExternalId") String productExternalId, JsonNode payload) {
         logger.info("Updating a product - [ {} ]", payload);
-        return requestValidator.validateCreateRequest(payload)
+        return requestValidator.validateUpdateRequest(payload)
                 .map(errors -> Response.status(Status.BAD_REQUEST).entity(errors).build())
                 .orElseGet(() ->
-                    productFactory.productCreator().doUpdateByGatewayAccountId(gatewayAccountId, Product.from(payload))
+                    productFactory.productCreator().doUpdateByGatewayAccountId(gatewayAccountId, productExternalId, Product.from(payload))
                             .map(product -> Response.status(OK).entity(product).build())
                             .orElseGet(() -> Response.status(NOT_FOUND).build()));
     }

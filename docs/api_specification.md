@@ -84,6 +84,80 @@ Content-Type: application/json
 | `_links.pay`             | X              | The link in `pay-products-ui` where a charge for this product will be generated and redirected to GOV.UK Pay |
 | `_links.friendly`        |                | The friendly link to be used for Adhoc payments |
 
+## PATCH /v1/api/gateway-account/{gatewayAccountId}/products/{productId}
+
+
+This endpoint updates an existing product matching the specified `productId` 
+and belonging to the gateway account specified by `gatewayAccountId`.
+
+Returns the product only if it exists and the update is successful. 
+
+### Request example
+
+```
+PATCH /v1/api/gateway-account/1234/products/874h5c87834659q345698495
+Content-Type: application/json
+
+{
+    "name" :                    "A name for the product",
+    "description" :             "Description of the product",
+    "price" :                   1050
+}
+```
+
+#### Request body description
+
+| Field                    | required | Description                                                      | Supported Values     |
+| ------------------------ |:--------:| ---------------------------------------------------------------- |----------------------|
+| `name`                   |    X     | Name of the product. This will be passed as the `name` when creating the charge | |
+| `price`                  |    X     | Price for the product in pence. This will be passed as the  `amount` when creating charge. Mandatory for Non-ADHOC products    | |
+| `description`            |          | Description of the product. This will be passed as the `description` when creating the charge | |
+
+### Response example
+
+```
+201 OK
+Content-Type: application/json
+{
+    "external_id": "874h5c87834659q345698495",
+    "gateway_account_id" : "1234",
+    "description":         "Description of the product",
+    "price":               1050,
+    "type":                "DEMO,
+    "service_name":             "Some awesome government service",
+    "return_url" :         "https://some.valid.url/",
+    "_links": [
+    {
+        "href": "https://govukpay-products.cloudapps.digital/v1/api/products/874h5c87834659q345698495",
+        "rel" : "self",
+        "method" : "GET"
+    },
+    {
+         "href": "https://govukpay-products-ui.cloudapps.digital/pay/874h5c87834659q345698495",
+         "rel" : "pay",
+         "method" : "GET"
+    },
+    {
+        "href": "https://govukpay-products-ui.cloudapps.digital/products?serviceNamePath=some-awesome-government-service&productNamePath=pay-for-my-product",
+        "rel" : "friendly",
+        "method" : "GET"
+    }]
+}
+```
+
+#### Response field description
+
+| Field                    | always present | Description                                   |
+| ------------------------ |:--------------:| --------------------------------------------- |
+| `external_id`            | X              | external id of the new product                |
+| `gateway_account_id `    | X              | gateway account id of the Gateway    as identified by adminusers.  |
+| `description`            | X              | Description of the product |
+| `price`                  | X              | Price for the product in pence      |
+| `service_name`           | X              | The name of the service with which the product is associated  |
+| `return_url`             |                | return url provided. _(not be available if it was not provided)_   |
+| `_links.self`            | X              | self GET link to the product. |
+| `_links.pay`             | X              | The link in `pay-products-ui` where a charge for this product will be generated and redirected to GOV.UK Pay |
+| `_links.friendly`        |                | The friendly link to be used for Adhoc payments |
 
 ## GET /v1/api/products/{productId}
 

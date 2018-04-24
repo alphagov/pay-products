@@ -13,7 +13,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
-import java.util.Optional;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -112,6 +111,20 @@ public class ProductResource {
                 .orElseGet(() -> Response.status(NOT_FOUND).build());
     }
 
+    @PATCH
+    @Path("/gateway-account/{gatewayAccountId}/products/{productExternalId}")
+    @Produces(APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
+    public Response updateProduct(@PathParam("gatewayAccountId") Integer gatewayAccountId, @PathParam("productExternalId") String productExternalId, JsonNode payload) {
+        logger.info("Updating a product - [ {} ]", payload);
+        return requestValidator.validateUpdateRequest(payload)
+                .map(errors -> Response.status(Status.BAD_REQUEST).entity(errors).build())
+                .orElseGet(() ->
+                    productFactory.productCreator().doUpdateByGatewayAccountId(gatewayAccountId, productExternalId, Product.from(payload))
+                            .map(product -> Response.status(OK).entity(product).build())
+                            .orElseGet(() -> Response.status(NOT_FOUND).build()));
+    }
+
     @DELETE
     @Path("/gateway-account/{gatewayAccountId}/products/{productExternalId}")
     @Produces(APPLICATION_JSON)
@@ -136,10 +149,10 @@ public class ProductResource {
     @Produces(APPLICATION_JSON)
     public Response findProductByProductPath(
             @QueryParam("serviceNamePath") String serviceNamePath,
-            @QueryParam("productNamePath") String productNamePath ) {
+            @QueryParam("productNamePath") String productNamePath) {
         logger.info(format("Searching for product with product path - [ serviceNamePath=%s productNamePath=%s ]", serviceNamePath, productNamePath));
         return productFactory.productFinder().findByProductPath(serviceNamePath, productNamePath)
-                    .map(product -> Response.status(OK).entity(product).build())
-                            .orElseGet(() -> Response.status(NOT_FOUND).build());
+                .map(product -> Response.status(OK).entity(product).build())
+                .orElseGet(() -> Response.status(NOT_FOUND).build());
     }
 }

@@ -63,4 +63,17 @@ public class ProductRequestValidator {
 
         return errors.map(Errors::from);
     }
+
+    public Optional<Errors> validateUpdateRequest(JsonNode payload) {
+        Optional<List<String>> errors = requestValidations.checkIfExistsOrEmpty(
+                payload,
+                FIELD_NAME);
+
+        if (!errors.isPresent() && payload.get(FIELD_PRICE) != null) {
+            errors = requestValidations.checkIsBelowMaxAmount(payload, FIELD_PRICE);
+        }
+
+        return errors.map(Errors::from);
+    }
+
 }

@@ -1,11 +1,11 @@
 package uk.gov.pay.products.matchers;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import uk.gov.pay.products.model.Product;
+import uk.gov.pay.products.util.NumberUtils;
 
 public class ProductMatcher {
     public static Matcher<Product> isSame(final Product expectedProduct) {
@@ -20,10 +20,10 @@ public class ProductMatcher {
                         StringUtils.equals(actualProduct.getPayApiToken(), expectedProduct.getPayApiToken()) &&
                         StringUtils.equals(actualProduct.getDescription(), expectedProduct.getDescription()) &&
                         StringUtils.equals(actualProduct.getName(), expectedProduct.getName()) &&
-                        NumberUtils.compare(actualProduct.getPrice(), expectedProduct.getPrice()) == 0 &&
+                        NumberUtils.equals(actualProduct.getPrice(), expectedProduct.getPrice()) &&
                         actualProduct.getStatus() == expectedProduct.getStatus() &&
                         actualProduct.getType() == expectedProduct.getType() &&
-                        NumberUtils.compare(actualProduct.getGatewayAccountId(), expectedProduct.getGatewayAccountId()) == 0 &&
+                        NumberUtils.equals(actualProduct.getGatewayAccountId(), expectedProduct.getGatewayAccountId()) &&
                         StringUtils.equals(actualProduct.getReturnUrl(), expectedProduct.getReturnUrl()) &&
                         StringUtils.equals(actualProduct.getServiceName(), expectedProduct.getServiceName()));
             }

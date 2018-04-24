@@ -15,7 +15,7 @@ public class ProductEntityFixture {
     private String name = "default name";
     private String serviceName = "default service";
     private Long price = 100L;
-    private String returnUrl = "http://return.url";
+    private String returnUrl = "https://return.url";
     private ProductStatus status = ProductStatus.ACTIVE;
     private ProductType type = ProductType.DEMO;
     private String externalId = randomUuid();
@@ -51,6 +51,11 @@ public class ProductEntityFixture {
 
     public ProductEntityFixture withName(String name) {
         this.name = name;
+        return this;
+    }
+
+    public ProductEntityFixture withDescription(String description) {
+        this.description = description;
         return this;
     }
 

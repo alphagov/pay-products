@@ -6,6 +6,8 @@ import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.dao.ProductDao;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 
+import java.util.Optional;
+
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 public class ProductCreator {
@@ -27,5 +29,18 @@ public class ProductCreator {
         productDao.persist(productEntity);
 
         return linksDecorator.decorate(productEntity.toProduct());
+    }
+
+    @Transactional
+    public Optional<Product> doUpdateByGatewayAccountId(Integer gatewayAccountId, String productExternalId, Product product) {
+
+        return productDao
+                .findByGatewayAccountIdAndExternalId(gatewayAccountId, productExternalId)
+                .map(productEntity -> {
+                    productEntity.setName(product.getName());
+                    productEntity.setDescription(product.getDescription());
+                    productEntity.setPrice(product.getPrice());
+                    return linksDecorator.decorate(productEntity.toProduct());
+                });
     }
 }

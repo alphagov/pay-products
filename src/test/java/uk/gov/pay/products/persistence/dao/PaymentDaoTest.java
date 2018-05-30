@@ -151,4 +151,48 @@ public class PaymentDaoTest extends DaoTestBase {
         assertThat(exception.getMessage().contains("payments_gateway_account_id_reference_number_key"), is(true));
         assertThat(exception.getMessage().contains("duplicate key value violates unique constraint"), is(true));
     }
+
+    @Test
+    public void shouldFindPayment_whenSearchingByGatewayAccountIdAndReferenceNumber() {
+        String referenceNumber = randomUuid().substring(1,10).toUpperCase();
+        Integer gatewayAccountId = randomInt();
+        PaymentEntity payment1 = PaymentEntityFixture.aPaymentEntity()
+                .withExternalId(randomUuid())
+                .withStatus(PaymentStatus.CREATED)
+                .withProduct(productEntity)
+                .withReferenceNumber(referenceNumber)
+                .withGatewayAccountId(gatewayAccountId)
+                .build();
+        databaseHelper.addPayment(payment1.toPayment(), gatewayAccountId);
+
+        Optional<PaymentEntity> optionalPaymentEntity = paymentDao.findByGatewayAccountIdAndReferenceNumber(gatewayAccountId, referenceNumber);
+        assertThat(optionalPaymentEntity.isPresent(), is(true));
+    }
+    
+    @Test
+    public void shouldNotFindPayment_whenSearchingByDifferentGatewayAccountIdAndReferenceNumber() {
+        String referenceNumber = randomUuid().substring(1,10).toUpperCase();
+        Integer gatewayAccountId1 = randomInt();
+        Integer gatewayAccountId2 = randomInt();
+        PaymentEntity payment1 = PaymentEntityFixture.aPaymentEntity()
+                .withExternalId(randomUuid())
+                .withStatus(PaymentStatus.CREATED)
+                .withProduct(productEntity)
+                .withReferenceNumber(referenceNumber)
+                .withGatewayAccountId(gatewayAccountId1)
+                .build();
+        databaseHelper.addPayment(payment1.toPayment(), gatewayAccountId1);
+
+        PaymentEntity payment2 = PaymentEntityFixture.aPaymentEntity()
+                .withExternalId(randomUuid())
+                .withStatus(PaymentStatus.ERROR)
+                .withProduct(productEntity)
+                .withReferenceNumber(randomUuid().substring(1,10).toUpperCase())
+                .withGatewayAccountId(gatewayAccountId2)
+                .build();
+        databaseHelper.addPayment(payment2.toPayment(), gatewayAccountId2);
+        
+        Optional<PaymentEntity> optionalPaymentEntity = paymentDao.findByGatewayAccountIdAndReferenceNumber(gatewayAccountId2, referenceNumber);
+        assertThat(optionalPaymentEntity.isPresent(), is(false));
+    }
 }

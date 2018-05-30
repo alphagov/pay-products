@@ -349,4 +349,66 @@ public class PaymentResourceTest extends IntegrationTest {
                 .then()
                 .statusCode(404);
     }
+
+    @Test
+    public void findAPaymentByGatewayAccountIdAndReferenceNumber_shouldSucceed() throws Exception {
+
+        String productExternalId = randomUuid();
+
+        ProductEntity productEntity = ProductEntityFixture.aProductEntity()
+                .withGatewayAccountId(gatewayAccountId)
+                .withExternalId(productExternalId)
+                .build();
+
+        Product product = productEntity.toProduct();
+
+        databaseHelper.addProduct(product);
+
+        Integer productId = databaseHelper.findProductId(productExternalId);
+        productEntity.setId(productId);
+
+        String externalId = randomUuid();
+        String referenceNumber = externalId.substring(0, 9);
+
+        PaymentEntity payment = PaymentEntityFixture.aPaymentEntity()
+                .withExternalId(externalId)
+                .withProduct(productEntity)
+                .withNextUrl(nextUrl)
+                .withGatewayAccountId(productEntity.getGatewayAccountId())
+                .withReferenceNumber(referenceNumber)
+                .build();
+
+        databaseHelper.addPayment(payment.toPayment(), productEntity.getGatewayAccountId());
+
+        ValidatableResponse response = givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/payments/%s/%s", gatewayAccountId, referenceNumber))
+                .then()
+                .statusCode(200);
+        response
+                .body("external_id", is(payment.getExternalId()))
+                .body("govuk_payment_id", is(payment.getGovukPaymentId()))
+                .body("product_external_id", is(product.getExternalId()))
+                .body("status", is(payment.getStatus().toString()))
+                .body("amount", is(payment.getAmount().intValue()))
+                .body("reference_number", is(referenceNumber))
+                .body("_links", hasSize(2))
+                .body("_links[0].href", matchesPattern(paymentsUrl + externalId))
+                .body("_links[0].method", is(HttpMethod.GET))
+                .body("_links[0].rel", is("self"))
+                .body("_links[1].href", is(nextUrl))
+                .body("_links[1].method", is(HttpMethod.GET))
+                .body("_links[1].rel", is("next"));
+    }
+    
+    @Test
+    public void shouldReturn404_whenSearchingByGatewayAccountIdAndReferenceNumber_andPaymentIsNonExistent() {
+        givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/payments/%s/%s", gatewayAccountId, randomUuid().substring(0, 9)))
+                .then()
+                .statusCode(404);
+    }
 }

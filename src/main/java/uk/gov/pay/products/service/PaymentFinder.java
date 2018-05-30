@@ -58,6 +58,15 @@ public class PaymentFinder {
     public List<PaymentEntity> findPaymentEntitiesByProductExternalId(String productExternalId) {
         return paymentDao.findByProductExternalId(productExternalId);
     }
+    
+    @Transactional
+    public Optional<Payment> findByGatewayAccountIdAndReferenceNumber(Integer gatewayAccountId, String referenceNumber) {
+        return paymentDao.findByGatewayAccountIdAndReferenceNumber(gatewayAccountId, referenceNumber)
+                .map(paymentEntity -> {
+                    Payment payment = queryGovUKPaymentStatus(paymentEntity);
+                    return linksDecorator.decorate(payment);
+                });
+    }
 
     private Payment queryGovUKPaymentStatus(PaymentEntity paymentEntity) {
         Payment payment = paymentEntity.toPayment();

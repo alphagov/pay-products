@@ -12,6 +12,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.*;
 
@@ -72,5 +73,18 @@ public class PaymentResource {
         logger.info("Find a list of payments for product id - [ {} ]", productExternalId);
         List<Payment> payments = paymentFactory.paymentFinder().findByProductExternalId(productExternalId);
         return payments.size() > 0 ? Response.status(OK).entity(payments).build() : Response.status(NOT_FOUND).build();
+    }
+
+    @Path("/payments/{gatewayAccountId}/{referenceNumber}")
+    @GET
+    @Produces(APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
+    public Response findPaymentsByGatewayAccountIdAndReferenceNumber(@PathParam("gatewayAccountId") Integer gatewayAccountNumber,  @PathParam("referenceNumber") String referenceNumber) {
+        logger.info(format("Find a payments for gateway account and reference number - [ %s %s ]", gatewayAccountNumber, referenceNumber));
+        return paymentFactory.paymentFinder().findByGatewayAccountIdAndReferenceNumber(gatewayAccountNumber, referenceNumber)
+                .map(payment ->
+                        Response.status(OK).entity(payment).build())
+                .orElseGet(() ->
+                        Response.status(NOT_FOUND).build());
     }
 }

@@ -33,4 +33,15 @@ public class PaymentDao extends JpaDao<PaymentEntity> {
                 .setParameter("productExternalId", productExternalId)
                 .getResultList();
     }
+    
+    public Optional<PaymentEntity> findByGatewayAccountIdAndReferenceNumber(Integer gatewayAccountId, String referenceNumber) {
+        String query = "SELECT payment FROM PaymentEntity payment " +
+                "WHERE payment.gatewayAccountId = :gatewayAccountId " +
+                "AND payment.referenceNumber =:referenceNumber";
+        return entityManager.get()
+                .createQuery(query, PaymentEntity.class)
+                .setParameter("gatewayAccountId", gatewayAccountId)
+                .setParameter("referenceNumber", referenceNumber)
+                .getResultList().stream().findFirst();
+    }
 }

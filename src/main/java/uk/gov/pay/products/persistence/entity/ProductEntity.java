@@ -53,6 +53,15 @@ public class ProductEntity extends AbstractEntity {
 
     @Column(name = "product_name_path")
     private String productNamePath;
+    
+    @Column(name = "reference_enabled")
+    private Boolean referenceEnabled;
+    
+    @Column(name = "reference_label")
+    private String referenceLabel;
+    
+    @Column(name = "reference_hint")
+    private String referenceHint;
 
     public ProductEntity() {
     }
@@ -129,40 +138,17 @@ public class ProductEntity extends AbstractEntity {
         this.status = status;
     }
 
-    public static ProductEntity from(Product product) {
-        ProductEntity productEntity = new ProductEntity();
+    public Boolean getReferenceEnabled() { return referenceEnabled; }
 
-        productEntity.setStatus(product.getStatus());
-        productEntity.setPrice(product.getPrice());
-        productEntity.setName(product.getName());
-        productEntity.setPayApiToken(product.getPayApiToken());
-        productEntity.setExternalId(product.getExternalId());
-        productEntity.setDescription(product.getDescription());
-        productEntity.setGatewayAccountId(product.getGatewayAccountId());
-        productEntity.setType(product.getType());
-        productEntity.setReturnUrl(product.getReturnUrl());
-        productEntity.setServiceName(product.getServiceName());
-        productEntity.setServiceNamePath(product.getServiceNamePath());
-        productEntity.setProductNamePath(product.getProductNamePath());
+    public void setReferenceEnabled(Boolean referenceEnabled) { this.referenceEnabled = referenceEnabled; }
 
-        return productEntity;
-    }
+    public String getReferenceLabel() { return referenceLabel; }
 
-    public Product toProduct() {
-        return new Product(
-                this.externalId,
-                this.name,
-                this.description,
-                this.payApiToken,
-                this.price,
-                this.status,
-                this.gatewayAccountId,
-                this.serviceName,
-                this.type,
-                this.returnUrl,
-                this.serviceNamePath,
-                this.productNamePath);
-    }
+    public void setReferenceLabel(String referenceLabel) { this.referenceLabel = referenceLabel; }
+
+    public String getReferenceHint() { return referenceHint; }
+
+    public void setReferenceHint(String referenceHint) { this.referenceHint = referenceHint; }
 
     public String getReturnUrl() {
         return returnUrl;
@@ -187,4 +173,45 @@ public class ProductEntity extends AbstractEntity {
     public String getProductNamePath() { return productNamePath; }
 
     public void setProductNamePath(String productNamePath) { this.productNamePath = productNamePath; }
+
+    public static ProductEntity from(Product product) {
+        ProductEntity productEntity = new ProductEntity();
+
+        productEntity.setStatus(product.getStatus());
+        productEntity.setPrice(product.getPrice());
+        productEntity.setName(product.getName());
+        productEntity.setPayApiToken(product.getPayApiToken());
+        productEntity.setExternalId(product.getExternalId());
+        productEntity.setDescription(product.getDescription());
+        productEntity.setGatewayAccountId(product.getGatewayAccountId());
+        productEntity.setType(product.getType());
+        productEntity.setReturnUrl(product.getReturnUrl());
+        productEntity.setServiceName(product.getServiceName());
+        productEntity.setServiceNamePath(product.getServiceNamePath());
+        productEntity.setProductNamePath(product.getProductNamePath());
+        productEntity.setReferenceEnabled(product.getReferenceEnabled());
+        productEntity.setReferenceLabel(product.getReferenceLabel());
+        productEntity.setReferenceHint(product.getReferenceHint());
+
+        return productEntity;
+    }
+
+    public Product toProduct() {
+        return new Product(
+                this.externalId,
+                this.name,
+                this.description,
+                this.payApiToken,
+                this.price,
+                this.status,
+                this.gatewayAccountId,
+                this.serviceName,
+                this.type,
+                this.returnUrl,
+                this.serviceNamePath,
+                this.productNamePath,
+                this.referenceEnabled,
+                this.referenceLabel,
+                this.referenceHint);
+    }
 }

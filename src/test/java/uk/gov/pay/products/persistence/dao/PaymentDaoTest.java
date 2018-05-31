@@ -34,7 +34,8 @@ public class PaymentDaoTest extends DaoTestBase {
         productDao = env.getInstance(ProductDao.class);
         productExternalId = randomUuid();
         productEntity = ProductEntityFixture.aProductEntity()
-                .withExternalId(productExternalId).build();
+                .withExternalId(productExternalId)
+                .build();
         productEntity = productDao.merge(productEntity);
     }
 

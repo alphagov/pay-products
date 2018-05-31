@@ -27,6 +27,9 @@ public class ProductRequestValidatorTest {
     private static final String VALID_RETURN_URL = "https://valid.url";
     private static final String FIELD_SERVICE_NAME_PATH = "service_name_path";
     private static final String FIELD_PRODUCT_NAME_PATH = "product_name_path";
+    private static final String FIELD_REFERENCE_ENABLED = "reference_enabled";
+    private static final String FIELD_REFERENCE_LABEL = "reference_label";
+    private static final String FIELD_REFERENCE_HINT = "reference_hint";
 
     private static ProductRequestValidator productRequestValidator = new ProductRequestValidator(new RequestValidations());
 
@@ -44,6 +47,9 @@ public class ProductRequestValidatorTest {
                                 .put(FIELD_RETURN_URL, VALID_RETURN_URL)
                                 .put(FIELD_SERVICE_NAME_PATH, "service-name-path")
                                 .put(FIELD_PRODUCT_NAME_PATH, "prodcut-name-path")
+                                .put(FIELD_REFERENCE_ENABLED, Boolean.TRUE.toString())
+                                .put(FIELD_REFERENCE_LABEL, "A reference label")
+                                .put(FIELD_REFERENCE_HINT, "A hint")
                                 .build());
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
@@ -62,6 +68,7 @@ public class ProductRequestValidatorTest {
                                 .put(FIELD_SERVICE_NAME, "Example service")
                                 .put(FIELD_PRICE, "25.00")
                                 .put(FIELD_TYPE, ProductType.DEMO.name())
+                                .put(FIELD_REFERENCE_ENABLED, Boolean.FALSE.toString())
                                 .build());
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
@@ -80,6 +87,7 @@ public class ProductRequestValidatorTest {
                                 .put(FIELD_SERVICE_NAME, "Example service")
                                 .put(FIELD_PRICE, String.valueOf(MAX_PRICE - 1))
                                 .put(FIELD_TYPE, ProductType.DEMO.toString())
+                                .put(FIELD_REFERENCE_ENABLED, Boolean.FALSE.toString())
                                 .build());
 
 
@@ -98,6 +106,7 @@ public class ProductRequestValidatorTest {
                         .put(FIELD_SERVICE_NAME, "Example service")
                         .put(FIELD_RETURN_URL, VALID_RETURN_URL)
                         .put(FIELD_TYPE, ProductType.DEMO.toString())
+                        .put(FIELD_REFERENCE_ENABLED, Boolean.FALSE.toString())
                         .build());
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
@@ -118,6 +127,7 @@ public class ProductRequestValidatorTest {
                         .put(FIELD_TYPE, ProductType.ADHOC.toString())
                         .put(FIELD_SERVICE_NAME_PATH, "service-name-path")
                         .put(FIELD_PRODUCT_NAME_PATH, "product-name-path")
+                        .put(FIELD_REFERENCE_ENABLED, Boolean.FALSE.toString())
                         .build());
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
@@ -137,6 +147,7 @@ public class ProductRequestValidatorTest {
                                 .put(FIELD_SERVICE_NAME, "Example service")
                                 .put(FIELD_TYPE, ProductType.DEMO.toString())
                                 .put(FIELD_RETURN_URL, VALID_RETURN_URL)
+                                .put(FIELD_REFERENCE_ENABLED, Boolean.FALSE.toString())
                                 .build());
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
@@ -155,6 +166,7 @@ public class ProductRequestValidatorTest {
                         .put(FIELD_SERVICE_NAME, "Example service")
                         .put(FIELD_TYPE, ProductType.DEMO.toString())
                         .put(FIELD_RETURN_URL, VALID_RETURN_URL)
+                        .put(FIELD_REFERENCE_ENABLED, Boolean.FALSE.toString())
                         .build());
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
@@ -173,6 +185,7 @@ public class ProductRequestValidatorTest {
                         .put(FIELD_SERVICE_NAME, "Example service")
                         .put(FIELD_TYPE, ProductType.DEMO.toString())
                         .put(FIELD_RETURN_URL, VALID_RETURN_URL)
+                        .put(FIELD_REFERENCE_ENABLED, Boolean.FALSE.toString())
                         .build());
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
@@ -191,6 +204,7 @@ public class ProductRequestValidatorTest {
                         .put(FIELD_PRICE, "25.00")
                         .put(FIELD_TYPE, ProductType.DEMO.toString())
                         .put(FIELD_RETURN_URL, VALID_RETURN_URL)
+                        .put(FIELD_REFERENCE_ENABLED, Boolean.FALSE.toString())
                         .build());
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
@@ -209,6 +223,7 @@ public class ProductRequestValidatorTest {
                         .put(FIELD_PRICE, "25.00")
                         .put(FIELD_SERVICE_NAME, "Example service")
                         .put(FIELD_RETURN_URL, VALID_RETURN_URL)
+                        .put(FIELD_REFERENCE_ENABLED, Boolean.FALSE.toString())
                         .build());
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
@@ -229,6 +244,7 @@ public class ProductRequestValidatorTest {
                                 .put(FIELD_SERVICE_NAME, "Example service")
                                 .put(FIELD_TYPE, "UNKNOWN")
                                 .put(FIELD_RETURN_URL, VALID_RETURN_URL)
+                                .put(FIELD_REFERENCE_ENABLED, Boolean.FALSE.toString())
                                 .build());
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
@@ -249,6 +265,7 @@ public class ProductRequestValidatorTest {
                                 .put(FIELD_SERVICE_NAME, "Example service")
                                 .put(FIELD_TYPE, ProductType.DEMO.toString())
                                 .put(FIELD_RETURN_URL, "return_url")
+                                .put(FIELD_REFERENCE_ENABLED, Boolean.FALSE.toString())
                                 .build());
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
@@ -271,6 +288,7 @@ public class ProductRequestValidatorTest {
                                 .put(FIELD_SERVICE_NAME, randomAlphanumeric(50))
                                 .put(FIELD_TYPE, ProductType.DEMO.toString())
                                 .put(FIELD_RETURN_URL, "http://return.url")
+                                .put(FIELD_REFERENCE_ENABLED, Boolean.FALSE.toString())
                                 .build());
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
@@ -292,6 +310,7 @@ public class ProductRequestValidatorTest {
                         .put(FIELD_SERVICE_NAME, randomAlphanumeric(51))
                         .put(FIELD_RETURN_URL, VALID_RETURN_URL)
                         .put(FIELD_TYPE, ProductType.DEMO.toString())
+                        .put(FIELD_REFERENCE_ENABLED, Boolean.FALSE.toString())
                         .build());
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
@@ -311,6 +330,7 @@ public class ProductRequestValidatorTest {
                         .put(FIELD_SERVICE_NAME, randomAlphanumeric(50))
                         .put(FIELD_RETURN_URL, VALID_RETURN_URL)
                         .put(FIELD_TYPE, ProductType.ADHOC.toString())
+                        .put(FIELD_REFERENCE_ENABLED, Boolean.FALSE.toString())
                         .build());
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
@@ -332,11 +352,34 @@ public class ProductRequestValidatorTest {
                         .put(FIELD_TYPE, ProductType.ADHOC.toString())
                         .put(FIELD_SERVICE_NAME_PATH, "service-name-path")
                         .put(FIELD_PRODUCT_NAME_PATH, "")
+                        .put(FIELD_REFERENCE_ENABLED, Boolean.FALSE.toString())
                         .build());
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().toString(), is("[Field [product_name_path] is required]"));
+    }
+
+    @Test
+    public void shouldError_whenReferenceEnabledIsTrueAndReferenceLabelIsEmpty() {
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(ImmutableMap.<String, String>builder()
+                        .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
+                        .put(FIELD_PAY_API_TOKEN, "api_token")
+                        .put(FIELD_NAME, "name")
+                        .put(FIELD_PRICE, "25.0")
+                        .put(FIELD_SERVICE_NAME, randomAlphanumeric(50))
+                        .put(FIELD_RETURN_URL, VALID_RETURN_URL)
+                        .put(FIELD_TYPE, ProductType.ADHOC.toString())
+                        .put(FIELD_SERVICE_NAME_PATH, "service-name-path")
+                        .put(FIELD_PRODUCT_NAME_PATH, "product-name-path")
+                        .put(FIELD_REFERENCE_ENABLED, Boolean.TRUE.toString())
+                        .build());
+
+        Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
+
+        assertThat(errors.isPresent(), is(true));
+        assertThat(errors.get().getErrors().toString(), is("[Field [reference_label] is required]"));
     }
 }

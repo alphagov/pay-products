@@ -25,7 +25,11 @@ public class ProductMatcher {
                         actualProduct.getType() == expectedProduct.getType() &&
                         NumberUtils.equals(actualProduct.getGatewayAccountId(), expectedProduct.getGatewayAccountId()) &&
                         StringUtils.equals(actualProduct.getReturnUrl(), expectedProduct.getReturnUrl()) &&
-                        StringUtils.equals(actualProduct.getServiceName(), expectedProduct.getServiceName()));
+                        StringUtils.equals(actualProduct.getServiceName(), expectedProduct.getServiceName()) &&
+                        actualProduct.getReferenceEnabled() == expectedProduct.getReferenceEnabled() &&
+                        StringUtils.equals(actualProduct.getReferenceLabel(), expectedProduct.getReferenceLabel()) &&
+                        StringUtils.equals(actualProduct.getReferenceHint(), expectedProduct.getReferenceHint())
+                );
             }
 
             @Override

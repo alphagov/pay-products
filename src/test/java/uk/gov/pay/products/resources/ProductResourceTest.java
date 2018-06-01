@@ -39,6 +39,9 @@ public class ProductResourceTest extends IntegrationTest {
     private static final String SERVICE_NAME = "service_name";
     private static final String SERVICE_NAME_PATH = "service_name_path";
     private static final String PRODUCT_NAME_PATH = "product_name_path";
+    private static final String REFERENCE_ENABLED_FIELD = "reference_enabled";
+    private static final String REFERENCE_LABEL = "reference_label";
+    private static final String REFERENCE_HINT = "reference_hint";
 
     @Test
     public void shouldSuccess_whenSavingAValidProduct_withMinimumMandatoryFields() throws Exception {
@@ -102,6 +105,8 @@ public class ProductResourceTest extends IntegrationTest {
         String type = ProductType.ADHOC.name();
         String serviceNamePath = randomAlphanumeric(40);
         String productNamePath = randomAlphanumeric(65);
+        String referenceLabel = randomAlphanumeric(25);
+        String referenceHint = randomAlphanumeric(85);
 
         String returnUrl = "https://some.valid.url";
 
@@ -116,6 +121,9 @@ public class ProductResourceTest extends IntegrationTest {
                 .put(SERVICE_NAME, serviceName)
                 .put(SERVICE_NAME_PATH, serviceNamePath)
                 .put(PRODUCT_NAME_PATH, productNamePath)
+                .put(REFERENCE_ENABLED_FIELD, Boolean.TRUE.toString())
+                .put(REFERENCE_LABEL, referenceLabel)
+                .put(REFERENCE_HINT, referenceHint)
                 .build();
 
         ValidatableResponse response = givenSetup()
@@ -133,7 +141,9 @@ public class ProductResourceTest extends IntegrationTest {
                 .body(TYPE, is(type))
                 .body(DESCRIPTION, is(description))
                 .body(RETURN_URL, is(returnUrl))
-                .body(SERVICE_NAME, is(serviceName));
+                .body(SERVICE_NAME, is(serviceName))
+                .body(REFERENCE_LABEL, is(referenceLabel))
+                .body(REFERENCE_HINT, is(referenceHint));
 
         String externalId = response.extract().path(EXTERNAL_ID);
 
@@ -677,5 +687,45 @@ public class ProductResourceTest extends IntegrationTest {
                 .get(format("/v1/api/products?serviceNamePath=%s&productNamePath=%s", randomAlphanumeric(40), ""))
                 .then()
                 .statusCode(404);
+    }
+
+    @Test
+    public void shouldReturn400_whenSavingProduct_withReferenceEnabledAndNoReferenceLabel() throws Exception {
+
+        String payApiToken = randomUuid();
+        String name = "Flashy new GOV Service";
+        Long price = 1050L;
+        String description = "Some test description";
+        Integer gatewayAccountId = randomInt();
+        String serviceName = "Example Service";
+        String type = ProductType.ADHOC.name();
+        String serviceNamePath = randomAlphanumeric(40);
+        String productNamePath = randomAlphanumeric(65);
+        String referenceHint = randomAlphanumeric(85);
+
+        String returnUrl = "https://some.valid.url";
+
+        ImmutableMap<String, String> payload = ImmutableMap.<String, String>builder()
+                .put(GATEWAY_ACCOUNT_ID, gatewayAccountId.toString())
+                .put(PAY_API_TOKEN, payApiToken)
+                .put(NAME, name)
+                .put(PRICE, price.toString())
+                .put(DESCRIPTION, description)
+                .put(TYPE, type)
+                .put(RETURN_URL, returnUrl)
+                .put(SERVICE_NAME, serviceName)
+                .put(SERVICE_NAME_PATH, serviceNamePath)
+                .put(PRODUCT_NAME_PATH, productNamePath)
+                .put(REFERENCE_ENABLED_FIELD, Boolean.TRUE.toString())
+                .put(REFERENCE_HINT, referenceHint)
+                .build();
+
+        givenSetup()
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .body(mapper.writeValueAsString(payload))
+                .post("/v1/api/products")
+                .then()
+                .statusCode(400);
     }
 }

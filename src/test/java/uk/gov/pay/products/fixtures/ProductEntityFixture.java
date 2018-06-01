@@ -23,6 +23,9 @@ public class ProductEntityFixture {
     private int gatewayAccountId;
     private String serviceNamePath;
     private String productNamePath;
+    private Boolean referenceEnabled = false;
+    private String referenceLabel;
+    private String referenceHint;
 
     private ProductEntityFixture() { }
 
@@ -41,6 +44,9 @@ public class ProductEntityFixture {
         product.setServiceName(serviceName);
         product.setServiceNamePath(serviceNamePath);
         product.setProductNamePath(productNamePath);
+        product.setReferenceEnabled(referenceEnabled);
+        product.setReferenceLabel(referenceLabel);
+        product.setReferenceHint(referenceHint);
 
         return product;
     }
@@ -86,6 +92,21 @@ public class ProductEntityFixture {
 
     public ProductEntityFixture withReturnUrl(String returnUrl) {
         this.returnUrl = returnUrl;
+        return this;
+    }
+    
+    public ProductEntityFixture withReferenceEnabled(Boolean referenceEnabled) {
+        this.referenceEnabled = referenceEnabled;
+        return this;
+    }
+    
+    public ProductEntityFixture withReferenceLabel(String referenceLabel) {
+        this.referenceLabel = referenceLabel;
+        return this;
+    }
+    
+    public ProductEntityFixture withReferenceHint(String referenceHint) {
+        this.referenceHint = referenceHint;
         return this;
     }
 

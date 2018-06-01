@@ -20,6 +20,8 @@ public class ProductRequestValidator {
     private static final int FIELD_SERVICE_NAME_MAX_LENGTH = 50;
     private static final String FIELD_SERVICE_NAME_PATH = "service_name_path";
     private static final String FIELD_PRODUCT_NAME_PATH = "product_name_path";
+    private static final String FIELD_REFERENCE_ENABLED = "reference_enabled";
+    private static final String FIELD_REFERENCE_LABEL = "reference_label";
 
     private final RequestValidations requestValidations;
 
@@ -34,8 +36,7 @@ public class ProductRequestValidator {
                 FIELD_GATEWAY_ACCOUNT_ID,
                 FIELD_PAY_API_TOKEN,
                 FIELD_NAME,
-                FIELD_TYPE,
-                FIELD_SERVICE_NAME);
+                FIELD_TYPE);
 
         if (!errors.isPresent() && payload.get(FIELD_RETURN_URL) != null) {
             errors = requestValidations.checkIsUrl(payload, FIELD_RETURN_URL);
@@ -59,6 +60,10 @@ public class ProductRequestValidator {
 
         if (!errors.isPresent() && ADHOC.name().equals(payload.get(FIELD_TYPE).asText())) {
             errors = requestValidations.checkIfExistsOrEmpty(payload, FIELD_SERVICE_NAME_PATH, FIELD_PRODUCT_NAME_PATH);
+        }
+        
+        if (!errors.isPresent() && payload.get(FIELD_REFERENCE_ENABLED) != null && payload.get(FIELD_REFERENCE_ENABLED).asBoolean()) {
+            errors = requestValidations.checkIfExistsOrEmpty(payload, FIELD_REFERENCE_LABEL);
         }
 
         return errors.map(Errors::from);

@@ -30,34 +30,66 @@ public class Product {
     private static final String FIELD_SERVICE_NAME = "service_name";
     private static final String FIELD_SERVICE_NAME_PATH = "service_name_path";
     private static final String FIELD_PRODUCT_NAME_PATH = "product_name_path";
+    private static final String FIELD_REFERENCE_ENABLED = "reference_enabled";
+    private static final String FIELD_REFERENCE_LABEL = "reference_label";
+    private static final String FIELD_REFERENCE_HINT = "reference_hint";
 
+    @JsonProperty(EXTERNAL_ID)
     private String externalId;
+    @JsonProperty(FIELD_NAME)
     private String name;
+    @JsonProperty(DESCRIPTION)
     private String description;
+    @JsonProperty(FIELD_PAY_API_TOKEN)
     private String payApiToken;
+    @JsonProperty(FIELD_PRICE)
     private Long price;
+    @JsonProperty(STATUS)
     private ProductStatus status;
+    @JsonProperty(TYPE)
     private ProductType type;
+    @JsonProperty(FIELD_GATEWAY_ACCOUNT_ID)
     private Integer gatewayAccountId;
     private List<Link> links = new ArrayList<>();
+    @JsonProperty(RETURN_URL)
     private String returnUrl;
+    @JsonProperty(FIELD_SERVICE_NAME)
     private String serviceName;
+    @JsonProperty(FIELD_SERVICE_NAME_PATH)
     private String serviceNamePath;
+    @JsonProperty(FIELD_PRODUCT_NAME_PATH)
     private String productNamePath;
+    @JsonProperty(FIELD_REFERENCE_ENABLED)
+    private Boolean referenceEnabled;
+    @JsonProperty(FIELD_REFERENCE_LABEL)
+    private String referenceLabel;
+    @JsonProperty(FIELD_REFERENCE_HINT)
+    private String referenceHint;
+
+    public Product(String externalId, String name, String description, String payApiToken, Long price, 
+                   ProductStatus status, Integer gatewayAccountId, String serviceName, ProductType type,
+                   String returnUrl, String serviceNamePath, String productNamePath)
+    {
+        this(externalId, name, description, payApiToken, price, status, gatewayAccountId, serviceName, type,
+                returnUrl, serviceNamePath, productNamePath, false, null, null);
+    }
 
     public Product(
-            @JsonProperty(EXTERNAL_ID) String externalId,
-            @JsonProperty(FIELD_NAME) String name,
-            @JsonProperty(DESCRIPTION) String description,
-            @JsonProperty(FIELD_PAY_API_TOKEN) String payApiToken,
-            @JsonProperty(FIELD_PRICE) Long price,
-            @JsonProperty(STATUS) ProductStatus status,
-            @JsonProperty(FIELD_GATEWAY_ACCOUNT_ID) Integer gatewayAccountId,
-            @JsonProperty(FIELD_SERVICE_NAME) String serviceName,
-            @JsonProperty(TYPE) ProductType type,
-            @JsonProperty(RETURN_URL) String returnUrl,
+            String externalId,
+            String name,
+            String description,
+            String payApiToken,
+            Long price,
+            ProductStatus status,
+            Integer gatewayAccountId,
+            String serviceName,
+            ProductType type,
+            String returnUrl,
             String serviceNamePath,
-            String productNamePath)
+            String productNamePath,
+            Boolean referenceEnabled,
+            String referenceLabel,
+            String referenceHint)
     {
         this.externalId = externalId;
         this.name = name;
@@ -71,6 +103,9 @@ public class Product {
         this.returnUrl = returnUrl;
         this.serviceNamePath = serviceNamePath;
         this.productNamePath = productNamePath;
+        this.referenceEnabled = referenceEnabled;
+        this.referenceLabel = referenceLabel;
+        this.referenceHint = referenceHint;
     }
 
     public static Product from(JsonNode jsonPayload) {
@@ -85,10 +120,13 @@ public class Product {
         String serviceName = (jsonPayload.get(FIELD_SERVICE_NAME) != null) ? jsonPayload.get(FIELD_SERVICE_NAME).asText() : null;
         String serviceNamePath = (jsonPayload.get(FIELD_SERVICE_NAME_PATH) != null) ? jsonPayload.get(FIELD_SERVICE_NAME_PATH).asText() : null;
         String productNamePath = (jsonPayload.get(FIELD_PRODUCT_NAME_PATH) != null) ? jsonPayload.get(FIELD_PRODUCT_NAME_PATH).asText() : null;
-
+        Boolean referenceEnabled = (jsonPayload.get(FIELD_REFERENCE_ENABLED) != null) ? jsonPayload.get(FIELD_REFERENCE_ENABLED).asBoolean() : false;
+        String referenceLabel = (jsonPayload.get(FIELD_REFERENCE_LABEL) != null) ? jsonPayload.get(FIELD_REFERENCE_LABEL).asText() : null;
+        String referenceHint = (jsonPayload.get(FIELD_REFERENCE_HINT) != null) ? jsonPayload.get(FIELD_REFERENCE_HINT).asText() : null;
+        
         return new Product(externalId, name, description, payApiToken,
                 price, ProductStatus.ACTIVE, gatewayAccountId, serviceName, type, returnUrl,
-                serviceNamePath, productNamePath);
+                serviceNamePath, productNamePath, referenceEnabled, referenceLabel, referenceHint);
     }
 
     public String getName() {
@@ -143,6 +181,12 @@ public class Product {
 
     public String getProductNamePath() { return productNamePath; }
 
+    public Boolean getReferenceEnabled() { return referenceEnabled; }
+    
+    public String getReferenceLabel() { return referenceLabel; }
+    
+    public String getReferenceHint() { return referenceHint; }
+
     @Override
     public String toString() {
         return "Product{" +
@@ -157,7 +201,10 @@ public class Product {
                 ", returnUrl='" + returnUrl + '\'' +
                 ", serviceName='" + serviceName + '\'' +
                 ", serviceNamePath='" + serviceNamePath + '\'' +
-                ", productNamePath='" + productNamePath +
+                ", productNamePath='" + productNamePath + '\'' +
+                ", referenceEnabled='" + referenceEnabled +
+                (referenceEnabled ? '\'' + ", referenceLabel='" + referenceLabel : "") +
+                (referenceEnabled ? '\'' + ", referenceHint='" + referenceHint : "") +
                 '}';
     }
 }

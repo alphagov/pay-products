@@ -17,6 +17,7 @@ import uk.gov.pay.products.config.PersistenceServiceInitialiser;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.config.ProductsModule;
 import uk.gov.pay.products.config.ProxyConfiguration;
+import uk.gov.pay.products.exception.mapper.BadPaymentRequestExceptionMapper;
 import uk.gov.pay.products.exception.mapper.PaymentCreationExceptionMapper;
 import uk.gov.pay.products.exception.mapper.PaymentCreatorNotFoundExceptionMapper;
 import uk.gov.pay.products.filters.LoggingFilter;
@@ -108,6 +109,7 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
     private void attachExceptionMappersTo(JerseyEnvironment jersey) {
         jersey.register(PaymentCreationExceptionMapper.class);
         jersey.register(PaymentCreatorNotFoundExceptionMapper.class);
+        jersey.register(BadPaymentRequestExceptionMapper.class);
     }
 
     public static void main(final String[] args) throws Exception {

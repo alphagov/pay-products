@@ -18,7 +18,9 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static org.junit.Assert.assertThat;
@@ -99,6 +101,57 @@ public class PaymentResourceTest extends IntegrationTest {
                 .body("_links[1].href", is(nextUrl))
                 .body("_links[1].method", is(HttpMethod.GET))
                 .body("_links[1].rel", is("next"));
+    }
+
+    @Test
+    public void createAPaymentWithUserDefinedReference_shouldSucceed() throws Exception {
+        String referenceNumber = randomUuid().substring(1, 10);
+        String userDefinedReference = randomUuid().substring(1, 15);
+        Product product = aProductEntity()
+                .withExternalId(randomUuid())
+                .withGatewayAccountId(7)
+                .withReferenceEnabled(true)
+                .withReferenceLabel("A ref label")
+                .build()
+                .toProduct();
+
+        Long priceOverride = 500L;
+        databaseHelper.addProduct(product);
+
+        String govukPaymentId = "govukPaymentId";
+        String nextUrl = "http://next.url";
+
+        JsonObject paymentResponsePayload = PublicApiStub.createPaymentResponsePayload(
+                govukPaymentId,
+                priceOverride,
+                referenceNumber,
+                product.getName(),
+                product.getReturnUrl(),
+                nextUrl);
+        publicApiStub
+                .whenReceiveCreatedPaymentRequestWithAuthApiToken(product.getPayApiToken())
+                .respondCreatedWithBody(paymentResponsePayload);
+
+        Map<String, String> payload = ImmutableMap.of("price", priceOverride.toString(), "reference_number", userDefinedReference);
+        ValidatableResponse response = givenSetup()
+                .accept(APPLICATION_JSON)
+                .body(mapper.writeValueAsString(payload))
+                .post(format("/v1/api/products/%s/payments", product.getExternalId()))
+                .then()
+                .statusCode(201);
+        
+        List<Map<String, Object>> paymentRecords = databaseHelper.getPaymentsByProductExternalId(product.getExternalId());
+
+        assertThat(paymentRecords.size(), is(1));
+
+        assertThat(paymentRecords.get(0), hasEntry("amount", priceOverride));
+
+        response
+                .body("govuk_payment_id", is(govukPaymentId))
+                .body("product_external_id", is(product.getExternalId()))
+                .body("status", is("SUBMITTED"))
+                .body("amount", is(priceOverride.intValue()))
+                .body("reference_number", is(userDefinedReference));
     }
 
     @Test
@@ -410,5 +463,28 @@ public class PaymentResourceTest extends IntegrationTest {
                 .get(format("/v1/api/payments/%s/%s", gatewayAccountId, randomUuid().substring(0, 9)))
                 .then()
                 .statusCode(404);
+    }
+    
+    @Test
+    public void shouldReturn400_whenReferenceEnabledAndNoReferencePresent() {
+        String productExternalId = randomUuid();
+
+        ProductEntity productEntity = ProductEntityFixture.aProductEntity()
+                .withGatewayAccountId(gatewayAccountId)
+                .withExternalId(productExternalId)
+                .withReferenceEnabled(true)
+                .withReferenceLabel("A ref label")
+                .build();
+
+        Product product = productEntity.toProduct();
+        databaseHelper.addProduct(product);
+
+        givenSetup()
+                .accept(APPLICATION_JSON)
+                .post(format("/v1/api/products/%s/payments", product.getExternalId()))
+                .then()
+                .statusCode(400)
+                .body("errors", hasSize(1))
+                .body("errors[0]", is("User defined reference is enabled but missing"));
     }
 }

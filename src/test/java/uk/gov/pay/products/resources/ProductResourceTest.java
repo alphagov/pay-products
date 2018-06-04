@@ -10,7 +10,6 @@ import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
 
 import javax.ws.rs.HttpMethod;
-
 import java.util.List;
 import java.util.Map;
 
@@ -94,7 +93,73 @@ public class ProductResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void shouldSuccess_whenSavingAValidProduct_withAllFields() throws Exception {
+    public void shouldSuccess_whenSavingAValidProduct_withAllFieldsReferenceNotEnabled() throws Exception {
+
+        String payApiToken = randomUuid();
+        String name = "Flashy new GOV Service";
+        Long price = 1050L;
+        String description = "Some test description";
+        Integer gatewayAccountId = randomInt();
+        String serviceName = "Example Service";
+        String type = ProductType.ADHOC.name();
+        String serviceNamePath = randomAlphanumeric(40);
+        String productNamePath = randomAlphanumeric(65);
+
+        String returnUrl = "https://some.valid.url";
+
+        ImmutableMap<String, String> payload = ImmutableMap.<String, String>builder()
+                .put(GATEWAY_ACCOUNT_ID, gatewayAccountId.toString())
+                .put(PAY_API_TOKEN, payApiToken)
+                .put(NAME, name)
+                .put(PRICE, price.toString())
+                .put(DESCRIPTION, description)
+                .put(TYPE, type)
+                .put(RETURN_URL, returnUrl)
+                .put(SERVICE_NAME, serviceName)
+                .put(SERVICE_NAME_PATH, serviceNamePath)
+                .put(PRODUCT_NAME_PATH, productNamePath)
+                .put(REFERENCE_ENABLED_FIELD, Boolean.FALSE.toString())
+                .build();
+
+        ValidatableResponse response = givenSetup()
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .body(mapper.writeValueAsString(payload))
+                .post("/v1/api/products")
+                .then()
+                .statusCode(201);
+
+        response
+                .body(NAME, is(name))
+                .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
+                .body(PRICE, is(1050))
+                .body(TYPE, is(type))
+                .body(DESCRIPTION, is(description))
+                .body(RETURN_URL, is(returnUrl))
+                .body(SERVICE_NAME, is(serviceName))
+                .body(REFERENCE_ENABLED_FIELD, is(false));
+
+        String externalId = response.extract().path(EXTERNAL_ID);
+
+        String productsUrl = "https://products.url/v1/api/products/";
+        String productsUIPayUrl = "https://products-ui.url/pay/";
+        String urlToMatch = format("https://products-ui.url/products/%s/%s", serviceNamePath, productNamePath);
+        response
+                .body("_links", hasSize(3))
+                .body("_links[0].href", matchesPattern(productsUrl + externalId))
+                .body("_links[0].method", is(HttpMethod.GET))
+                .body("_links[0].rel", is("self"))
+                .body("_links[1].href", matchesPattern(productsUIPayUrl + externalId))
+                .body("_links[1].method", is(HttpMethod.GET))
+                .body("_links[1].rel", is("pay"))
+                .body("_links[2].href", is(urlToMatch))
+                .body("_links[2].method", is(HttpMethod.GET))
+                .body("_links[2].rel", is("friendly"));
+
+    }
+
+    @Test
+    public void shouldSuccess_whenSavingAValidProduct_withAllFieldsReferenceEnabled() throws Exception {
 
         String payApiToken = randomUuid();
         String name = "Flashy new GOV Service";
@@ -121,7 +186,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .put(SERVICE_NAME, serviceName)
                 .put(SERVICE_NAME_PATH, serviceNamePath)
                 .put(PRODUCT_NAME_PATH, productNamePath)
-                .put(REFERENCE_ENABLED_FIELD, Boolean.FALSE.toString())
+                .put(REFERENCE_ENABLED_FIELD, Boolean.TRUE.toString())
                 .put(REFERENCE_LABEL, referenceLabel)
                 .put(REFERENCE_HINT, referenceHint)
                 .build();
@@ -142,6 +207,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .body(DESCRIPTION, is(description))
                 .body(RETURN_URL, is(returnUrl))
                 .body(SERVICE_NAME, is(serviceName))
+                .body(REFERENCE_ENABLED_FIELD, is(true))
                 .body(REFERENCE_LABEL, is(referenceLabel))
                 .body(REFERENCE_HINT, is(referenceHint));
 
@@ -155,7 +221,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .body("_links[0].href", matchesPattern(productsUrl + externalId))
                 .body("_links[0].method", is(HttpMethod.GET))
                 .body("_links[0].rel", is("self"))
-                .body("_links[1].href", matchesPattern(productsUIPayUrl + externalId))
+                .body("_links[1].href", matchesPattern(productsUIPayUrl + "reference/" + externalId))
                 .body("_links[1].method", is(HttpMethod.GET))
                 .body("_links[1].rel", is("pay"))
                 .body("_links[2].href", is(urlToMatch))

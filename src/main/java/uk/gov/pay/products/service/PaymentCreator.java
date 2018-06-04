@@ -7,6 +7,7 @@ import uk.gov.pay.products.client.publicapi.PaymentRequest;
 import uk.gov.pay.products.client.publicapi.PaymentResponse;
 import uk.gov.pay.products.client.publicapi.PublicApiRestClient;
 import uk.gov.pay.products.config.ProductsConfiguration;
+import uk.gov.pay.products.exception.BadPaymentRequestException;
 import uk.gov.pay.products.exception.PaymentCreationException;
 import uk.gov.pay.products.exception.PaymentCreatorNotFoundException;
 import uk.gov.pay.products.exception.PublicApiResponseErrorException;
@@ -24,6 +25,7 @@ import uk.gov.pay.products.util.PaymentStatus;
 import javax.inject.Inject;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUserFriendlyReference;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
@@ -52,9 +54,9 @@ public class PaymentCreator {
         this.productsConfiguration = productsConfiguration;
     }
 
-    public Payment doCreate(String productExternalId, Long priceOverride) {
+    public Payment doCreate(String productExternalId, Long priceOverride, String reference) {
         PaymentEntity paymentEntity = transactionFlowProvider.get()
-                .executeNext(beforePaymentCreation(productExternalId))
+                .executeNext(beforePaymentCreation(productExternalId, reference))
                 .executeNext(paymentCreation(priceOverride))
                 .executeNext(afterPaymentCreation())
                 .complete().get(PaymentEntity.class);
@@ -65,18 +67,21 @@ public class PaymentCreator {
         return linksDecorator.decorate(paymentEntity.toPayment());
     }
 
-    private TransactionalOperation<TransactionContext, PaymentEntity> beforePaymentCreation(String productExternalId) {
+    private TransactionalOperation<TransactionContext, PaymentEntity> beforePaymentCreation(String productExternalId, String reference) {
         return context -> {
             logger.info("Creating a new payment for product external id {}", productExternalId);
             ProductEntity productEntity = productDao.findByExternalId(productExternalId)
                     .orElseThrow(() -> new PaymentCreatorNotFoundException(productExternalId));
-
+            if (productEntity.getReferenceEnabled() && isEmpty(reference)) {
+                throw new BadPaymentRequestException("User defined reference is enabled but missing");
+            }
+            String referenceToBeUsed = productEntity.getReferenceEnabled() ? reference : randomUserFriendlyReference();
             PaymentEntity paymentEntity = new PaymentEntity();
             paymentEntity.setExternalId(randomUuid());
             paymentEntity.setProductEntity(productEntity);
             paymentEntity.setStatus(PaymentStatus.CREATED);
             paymentEntity.setGatewayAccountId(productEntity.getGatewayAccountId());
-            paymentEntity.setReferenceNumber(randomUserFriendlyReference());
+            paymentEntity.setReferenceNumber(referenceToBeUsed);
 
             int counter = 0;
             return mergePaymentEntityWithReferenceNumberCheck(paymentEntity, counter);

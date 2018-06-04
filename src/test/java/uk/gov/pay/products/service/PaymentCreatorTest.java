@@ -1,7 +1,9 @@
 package uk.gov.pay.products.service;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
@@ -13,6 +15,7 @@ import uk.gov.pay.products.client.publicapi.PublicApiRestClient;
 import uk.gov.pay.products.client.publicapi.model.Link;
 import uk.gov.pay.products.client.publicapi.model.Links;
 import uk.gov.pay.products.config.ProductsConfiguration;
+import uk.gov.pay.products.exception.BadPaymentRequestException;
 import uk.gov.pay.products.exception.PaymentCreationException;
 import uk.gov.pay.products.exception.PaymentCreatorNotFoundException;
 import uk.gov.pay.products.exception.PublicApiResponseErrorException;
@@ -33,9 +36,14 @@ import java.util.UUID;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import static uk.gov.pay.products.util.PaymentStatus.ERROR;
 import static uk.gov.pay.products.util.PaymentStatus.SUBMITTED;
@@ -63,6 +71,8 @@ public class PaymentCreatorTest {
 
     private PaymentCreator paymentCreator;
 
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setup() throws Exception {
@@ -94,7 +104,8 @@ public class PaymentCreatorTest {
                 productExternalId,
                 productName,
                 productReturnUrl,
-                productApiToken);
+                productApiToken,
+                false);
         PaymentRequest expectedPaymentRequest = createPaymentRequest(
                 productPrice,
                 referenceNumber,
@@ -113,7 +124,7 @@ public class PaymentCreatorTest {
         when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest)))).thenReturn(paymentResponse);
         when(productsConfiguration.getProductsUiConfirmUrl()).thenReturn(productsUIConfirmUri);
 
-        Payment payment = paymentCreator.doCreate(productExternalId, null);
+        Payment payment = paymentCreator.doCreate(productExternalId, null, null);
 
         assertNotNull(payment);
         assertNotNull(payment.getExternalId());
@@ -162,7 +173,8 @@ public class PaymentCreatorTest {
                 productExternalId,
                 productName,
                 "",
-                productApiToken);
+                productApiToken,
+                false);
         PaymentRequest expectedPaymentRequest = createPaymentRequest(
                 productPrice,
                 referenceNumber,
@@ -181,7 +193,7 @@ public class PaymentCreatorTest {
         when(productsConfiguration.getProductsUiConfirmUrl()).thenReturn(productReturnUrl);
         when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest)))).thenReturn(paymentResponse);
 
-        Payment payment = paymentCreator.doCreate(productExternalId, null);
+        Payment payment = paymentCreator.doCreate(productExternalId, null, null);
 
         assertNotNull(payment);
         assertNotNull(payment.getExternalId());
@@ -208,6 +220,67 @@ public class PaymentCreatorTest {
     }
 
     @Test
+    public void shouldCreateASuccessfulPayment_withUserDefinedReference_whenReferencePresent() throws Exception {
+        PowerMockito.mockStatic(RandomIdGenerator.class);
+        
+        int productId = 1;
+        String productExternalId = "product-external-id";
+        long productPrice = 100L;
+        String productName = "name";
+        String productReturnUrl = "https://return.url";
+        String productApiToken = "api-token";
+        String userDefinedReference = "user-defined-reference";
+
+        String paymentId = "payment-id";
+        String paymentExternalId = "random-external-id";
+        String paymentNextUrl = "http://next.url";
+
+        Long priceOverride = 500L;
+
+        ProductEntity productEntity = createProductEntity(
+                productId,
+                productPrice,
+                productExternalId,
+                productName,
+                "",
+                productApiToken,
+                true);
+        PaymentRequest expectedPaymentRequest = createPaymentRequest(
+                priceOverride,
+                userDefinedReference,
+                productName,
+                productReturnUrl + "/" + paymentExternalId);
+        PaymentResponse paymentResponse = createPaymentResponse(
+                paymentId,
+                priceOverride,
+                paymentNextUrl,
+                productReturnUrl);
+
+
+        when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
+        when(randomUuid()).thenReturn(paymentExternalId);
+        when(productsConfiguration.getProductsUiConfirmUrl()).thenReturn(productReturnUrl);
+        when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest)))).thenReturn(paymentResponse);
+
+        Payment payment = paymentCreator.doCreate(productExternalId, priceOverride, userDefinedReference);
+
+        assertNotNull(payment);
+        assertNotNull(payment.getExternalId());
+        assertThat(payment.getGovukPaymentId(), is(paymentResponse.getPaymentId()));
+        assertThat(payment.getAmount(), is(500L));
+        assertThat(payment.getReferenceNumber(), is(userDefinedReference));
+
+        PaymentEntity expectedPaymentEntity = createPaymentEntity(
+                paymentId,
+                userDefinedReference,
+                paymentNextUrl,
+                productEntity,
+                SUBMITTED,
+                priceOverride);
+        verify(paymentDao).merge(argThat(PaymentEntityMatcher.isSame(expectedPaymentEntity)));
+    }
+
+    @Test
     public void shouldCreateASuccessfulPayment_withOverridePrice_whenPriceOverridePresent() throws Exception {
         PowerMockito.mockStatic(RandomIdGenerator.class);
         int productId = 1;
@@ -230,7 +303,8 @@ public class PaymentCreatorTest {
                 productExternalId,
                 productName,
                 "",
-                productApiToken);
+                productApiToken,
+                false);
         PaymentRequest expectedPaymentRequest = createPaymentRequest(
                 priceOverride,
                 referenceNumber,
@@ -249,7 +323,7 @@ public class PaymentCreatorTest {
         when(productsConfiguration.getProductsUiConfirmUrl()).thenReturn(productReturnUrl);
         when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest)))).thenReturn(paymentResponse);
 
-        Payment payment = paymentCreator.doCreate(productExternalId, priceOverride);
+        Payment payment = paymentCreator.doCreate(productExternalId, priceOverride, null);
 
         assertNotNull(payment);
         assertNotNull(payment.getExternalId());
@@ -288,7 +362,8 @@ public class PaymentCreatorTest {
                 productExternalId,
                 productName,
                 productReturnUrl,
-                productApiToken);
+                productApiToken,
+                false);
         PaymentRequest expectedPaymentRequest = createPaymentRequest(
                 productPrice,
                 referenceNumber,
@@ -303,7 +378,7 @@ public class PaymentCreatorTest {
                 .thenThrow(PublicApiResponseErrorException.class);
 
         try {
-            paymentCreator.doCreate(productExternalId, null);
+            paymentCreator.doCreate(productExternalId, null, null);
             fail("Expected an PaymentCreationException to be thrown");
         } catch (PaymentCreationException e) {
             assertThat(e.getProductExternalId(), is(productExternalId));
@@ -324,12 +399,45 @@ public class PaymentCreatorTest {
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.empty());
 
         try {
-            paymentCreator.doCreate(productExternalId, null);
+            paymentCreator.doCreate(productExternalId, null, null);
             fail("Expected an PaymentCreatorNotFoundException to be thrown");
         } catch (PaymentCreatorNotFoundException e) {
             assertThat(e.getProductExternalId(), is(productExternalId));
         }
 
+    }
+    
+    @Test
+    public void shouldThrowPaymentCreationException_whenReferenceEnabledAndNoReferencePresent() {
+        int productId = 1;
+        String productExternalId = "product-external-id";
+        long productPrice = 100L;
+        String productName = "name";
+        String productReturnUrl = "https://return.url";
+        String productApiToken = "api-token";
+
+        Integer gatewayAccountId = 1;
+
+        ProductEntity productEntity = createProductEntity(
+                productId,
+                productPrice,
+                productExternalId,
+                productName,
+                productReturnUrl,
+                productApiToken,
+                true);
+
+        PaymentRequest paymentRequest = createPaymentRequest(
+                productPrice,
+                null,
+                productName,
+                "https://return.url");
+
+        when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
+
+        thrown.expect(BadPaymentRequestException.class);
+        thrown.expectMessage("User defined reference is enabled but missing");
+        paymentCreator.doCreate(productExternalId, null, null);
     }
 
     @Test
@@ -357,7 +465,7 @@ public class PaymentCreatorTest {
 
         Exception exception = null;
         try {
-            paymentCreator.doCreate(productExternalId, null);
+            paymentCreator.doCreate(productExternalId, null, null);
         } catch (RuntimeException ex) {
             exception = ex;
         }
@@ -366,15 +474,15 @@ public class PaymentCreatorTest {
         assertThat(exception.getMessage().contains("Too many conflicts generating unique user friendly reference numbers for gateway account"), is(true));
         verify(paymentDao, times(3)).persist(any(PaymentEntity.class));
     }
-
+    
     private ProductEntity createProductEntity(int id, long price, String externalId, String name, String returnUrl, String apiToken, Integer gatewayAccountId) {
-        ProductEntity productEntity = createProductEntity(id, price, externalId, name, returnUrl, apiToken);
+        ProductEntity productEntity = createProductEntity(id, price, externalId, name, returnUrl, apiToken, false);
         productEntity.setGatewayAccountId(gatewayAccountId);
 
         return productEntity;
     }
 
-    private ProductEntity createProductEntity(int id, long price, String externalId, String name, String returnUrl, String apiToken) {
+    private ProductEntity createProductEntity(int id, long price, String externalId, String name, String returnUrl, String apiToken, Boolean referenceEnabled) {
         ProductEntity productEntity = new ProductEntity();
         productEntity.setId(id);
         productEntity.setPrice(price);
@@ -382,6 +490,7 @@ public class PaymentCreatorTest {
         productEntity.setName(name);
         productEntity.setReturnUrl(returnUrl);
         productEntity.setPayApiToken(apiToken);
+        productEntity.setReferenceEnabled(referenceEnabled);
 
         return productEntity;
     }
@@ -405,6 +514,17 @@ public class PaymentCreatorTest {
     private PaymentEntity createPaymentEntity(String paymentId, String nextUrl, ProductEntity productEntity, PaymentStatus status, Long amount) {
         PaymentEntity paymentEntity = new PaymentEntity();
         paymentEntity.setGovukPaymentId(paymentId);
+        paymentEntity.setNextUrl(nextUrl);
+        paymentEntity.setProductEntity(productEntity);
+        paymentEntity.setStatus(status);
+        paymentEntity.setAmount(amount);
+        return paymentEntity;
+    }
+
+    private PaymentEntity createPaymentEntity(String paymentId, String referenceNumber, String nextUrl, ProductEntity productEntity, PaymentStatus status, Long amount) {
+        PaymentEntity paymentEntity = new PaymentEntity();
+        paymentEntity.setGovukPaymentId(paymentId);
+        paymentEntity.setReferenceNumber(referenceNumber);
         paymentEntity.setNextUrl(nextUrl);
         paymentEntity.setProductEntity(productEntity);
         paymentEntity.setStatus(status);

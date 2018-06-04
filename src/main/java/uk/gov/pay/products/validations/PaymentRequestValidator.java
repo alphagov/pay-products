@@ -11,7 +11,7 @@ import static com.google.common.collect.Lists.newArrayList;
 
 public class PaymentRequestValidator {
 
-    public static final String FIELD_PRICE = "price";
+    private static final String FIELD_PRICE = "price";
 
     private final RequestValidations requestValidations;
 

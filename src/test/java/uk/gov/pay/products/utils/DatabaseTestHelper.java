@@ -3,7 +3,6 @@ package uk.gov.pay.products.utils;
 import org.skife.jdbi.v2.DBI;
 import uk.gov.pay.products.model.Payment;
 import uk.gov.pay.products.model.Product;
-import uk.gov.pay.products.persistence.entity.ProductEntity;
 
 import java.util.List;
 import java.util.Map;
@@ -20,11 +19,13 @@ public class DatabaseTestHelper {
         jdbi.withHandle(handle -> handle.createStatement("INSERT INTO products " +
                 "(external_id, name, description, pay_api_token, price, " +
                 "status, return_url, type, gateway_account_id, service_name, " +
-                "service_name_path, product_name_path) " +
+                "service_name_path, product_name_path, reference_enabled, reference_label, reference_hint) " +
                 "VALUES " +
                 "(:external_id, :name, :description, :pay_api_token, :price, " +
                 ":status, :return_url, :type, :gateway_account_id, :service_name, " +
-                ":service_name_path, :product_name_path)")
+                ":service_name_path, :product_name_path, :reference_enabled, " + 
+                ":reference_label, :reference_hint" +
+                ")")
                 .bind("external_id", product.getExternalId())
                 .bind("name", product.getName())
                 .bind("description", product.getDescription())
@@ -37,6 +38,9 @@ public class DatabaseTestHelper {
                 .bind("service_name", product.getServiceName())
                 .bind("service_name_path", product.getServiceNamePath())
                 .bind("product_name_path", product.getProductNamePath())
+                .bind("reference_enabled", product.getReferenceEnabled())
+                .bind("reference_label", product.getReferenceLabel())
+                .bind("reference_hint", product.getReferenceHint())
                 .execute());
 
         return this;

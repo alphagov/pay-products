@@ -29,7 +29,7 @@ public class LinksDecorator {
         Link selfLink = makeSelfLink(GET, "v1/api/products", product.getExternalId());
         product.getLinks().add(selfLink);
 
-        Link payLink = makeProductsUIUri(GET, product.getExternalId());
+        Link payLink = makeProductsUIUri(GET, product.getExternalId(), product.getReferenceEnabled());
         product.getLinks().add(payLink);
 
         if(product.getServiceNamePath() != null && product.getProductNamePath() != null) {
@@ -59,8 +59,9 @@ public class LinksDecorator {
         return Link.from(Link.Rel.next, method, nextUrl);
     }
 
-    private Link makeProductsUIUri(String method, String externalId){
-        URI productsUIUri = fromUri(productsUIUrl).path(externalId).build();
+    private Link makeProductsUIUri(String method, String externalId, Boolean referenceEnabled){
+        URI productsUIUri = referenceEnabled ?
+                fromUri(productsUIUrl).path("reference").path(externalId).build() : fromUri(productsUIUrl).path(externalId).build();
         return Link.from(Link.Rel.pay, method, productsUIUri.toString());
     }
 

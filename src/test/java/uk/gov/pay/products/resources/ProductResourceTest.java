@@ -121,7 +121,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .put(SERVICE_NAME, serviceName)
                 .put(SERVICE_NAME_PATH, serviceNamePath)
                 .put(PRODUCT_NAME_PATH, productNamePath)
-                .put(REFERENCE_ENABLED_FIELD, Boolean.TRUE.toString())
+                .put(REFERENCE_ENABLED_FIELD, Boolean.FALSE.toString())
                 .put(REFERENCE_LABEL, referenceLabel)
                 .put(REFERENCE_HINT, referenceHint)
                 .build();

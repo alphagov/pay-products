@@ -38,6 +38,7 @@ public class ProductFinderTest {
         String externalId = "1";
         ProductEntity productEntity = new ProductEntity();
         productEntity.setExternalId(externalId);
+        productEntity.setReferenceEnabled(false);
         when(productDao.findByExternalId(externalId)).thenReturn(Optional.of(productEntity));
 
         Optional<Product> productOptional = productFinder.findByExternalId(externalId);
@@ -63,6 +64,7 @@ public class ProductFinderTest {
         ProductEntity productEntity = new ProductEntity();
         productEntity.setExternalId(externalId);
         productEntity.setGatewayAccountId(gatewayAccountId);
+        productEntity.setReferenceEnabled(false);
         when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.of(productEntity));
 
         Optional<Product> productOptional = productFinder.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId);
@@ -87,6 +89,7 @@ public class ProductFinderTest {
         String externalId = "1";
         ProductEntity productEntity = new ProductEntity();
         productEntity.setExternalId(externalId);
+        productEntity.setReferenceEnabled(false);
         when(productDao.findByExternalId(externalId)).thenReturn(Optional.of(productEntity));
 
         Optional<Product> productOptional = productFinder.findByExternalId(externalId);
@@ -116,6 +119,7 @@ public class ProductFinderTest {
         String externalId = "1";
         ProductEntity productEntity = new ProductEntity();
         productEntity.setExternalId(externalId);
+        productEntity.setReferenceEnabled(false);
         when(productDao.findByExternalId(externalId)).thenReturn(Optional.of(productEntity));
 
         Optional<Product> productOptional = productFinder.findByExternalId(externalId);
@@ -146,6 +150,7 @@ public class ProductFinderTest {
         ProductEntity productEntity = new ProductEntity();
         productEntity.setExternalId(externalId);
         productEntity.setGatewayAccountId(gatewayAccountId);
+        productEntity.setReferenceEnabled(false);
         when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.of(productEntity));
 
         Optional<Product> productOptional = productFinder.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId);
@@ -165,6 +170,7 @@ public class ProductFinderTest {
         ProductEntity productEntity = new ProductEntity();
         productEntity.setExternalId(externalId);
         productEntity.setGatewayAccountId(gatewayAccountId);
+        productEntity.setReferenceEnabled(false);
         when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.of(productEntity));
 
         Optional<Product> productOptional = productFinder.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId);
@@ -207,6 +213,7 @@ public class ProductFinderTest {
         productEntity.setExternalId(externalId);
         productEntity.setServiceNamePath(serviceNamePath);
         productEntity.setProductNamePath(productNamePath);
+        productEntity.setReferenceEnabled(false);
 
         when(productDao.findByProductPath(serviceNamePath, productNamePath)).thenReturn(Optional.of(productEntity));
 

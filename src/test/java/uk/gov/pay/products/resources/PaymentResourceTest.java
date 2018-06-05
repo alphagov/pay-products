@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.products.fixtures.PaymentEntityFixture;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
+import uk.gov.pay.products.model.Payment;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.entity.PaymentEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
@@ -24,6 +25,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static org.junit.Assert.assertThat;
+import static uk.gov.pay.products.fixtures.PaymentEntityFixture.aPaymentEntity;
 import static uk.gov.pay.products.fixtures.ProductEntityFixture.aProductEntity;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
@@ -155,6 +157,61 @@ public class PaymentResourceTest extends IntegrationTest {
     }
 
     @Test
+    public void shouldReturn409_whenReferenceAlreadyExists() throws Exception {
+        String userDefinedReference = randomUuid().substring(1, 15);
+        String productExternalId = randomUuid();
+
+        ProductEntity productEntity = ProductEntityFixture.aProductEntity()
+                .withGatewayAccountId(gatewayAccountId)
+                .withExternalId(productExternalId)
+                .withReferenceEnabled(true)
+                .withReferenceLabel("Reference label")
+                .build();
+
+        Product product = productEntity.toProduct();
+
+        databaseHelper.addProduct(product);
+
+        Integer productId = databaseHelper.findProductId(productExternalId);
+        productEntity.setId(productId);
+
+        String externalId = randomUuid();
+
+        PaymentEntity payment = aPaymentEntity()
+                .withExternalId(externalId)
+                .withProduct(productEntity)
+                .withNextUrl(nextUrl)
+                .withGatewayAccountId(productEntity.getGatewayAccountId())
+                .withReferenceNumber(userDefinedReference)
+                .build();
+
+        databaseHelper.addPayment(payment.toPayment(), productEntity.getGatewayAccountId());
+
+        String govukPaymentId = "govukPaymentId";
+        String nextUrl = "http://next.url";
+        Long priceOverride = 501L;
+
+        JsonObject paymentResponsePayload = PublicApiStub.createPaymentResponsePayload(
+                govukPaymentId,
+                priceOverride,
+                userDefinedReference,
+                productEntity.getName(),
+                productEntity.getReturnUrl(),
+                nextUrl);
+        publicApiStub
+                .whenReceiveCreatedPaymentRequestWithAuthApiToken(productEntity.getPayApiToken())
+                .respondCreatedWithBody(paymentResponsePayload);
+
+        Map<String, String> payload = ImmutableMap.of("price", priceOverride.toString(), "reference_number", userDefinedReference);
+        givenSetup()
+                .accept(APPLICATION_JSON)
+                .body(mapper.writeValueAsString(payload))
+                .post(format("/v1/api/products/%s/payments", productEntity.getExternalId()))
+                .then()
+                .statusCode(409);
+    }
+
+    @Test
     public void createAPayment_shouldSucceed_whenPriceOverrideIsPresent() throws Exception {
         String referenceNumber = randomUuid().substring(1, 10);
         Product product = aProductEntity()
@@ -277,7 +334,7 @@ public class PaymentResourceTest extends IntegrationTest {
         String externalId = randomUuid();
         String referenceNumber = externalId.substring(0, 9);
 
-        PaymentEntity payment = PaymentEntityFixture.aPaymentEntity()
+        PaymentEntity payment = aPaymentEntity()
                 .withExternalId(externalId)
                 .withProduct(productEntity)
                 .withNextUrl(nextUrl)
@@ -339,7 +396,7 @@ public class PaymentResourceTest extends IntegrationTest {
         Integer productId = databaseHelper.findProductId(productExternalId);
         productEntity.setId(productId);
 
-        PaymentEntity payment1 = PaymentEntityFixture.aPaymentEntity()
+        PaymentEntity payment1 = aPaymentEntity()
                 .withExternalId(paymentExternalId1)
                 .withProduct(productEntity)
                 .withNextUrl(nextUrl)
@@ -348,7 +405,7 @@ public class PaymentResourceTest extends IntegrationTest {
 
         databaseHelper.addPayment(payment1.toPayment(), gatewayAccountId);
 
-        PaymentEntity payment2 = PaymentEntityFixture.aPaymentEntity()
+        PaymentEntity payment2 = aPaymentEntity()
                 .withExternalId(paymentExternalId2)
                 .withProduct(productEntity)
                 .withNextUrl(nextUrl)
@@ -423,7 +480,7 @@ public class PaymentResourceTest extends IntegrationTest {
         String externalId = randomUuid();
         String referenceNumber = externalId.substring(0, 9);
 
-        PaymentEntity payment = PaymentEntityFixture.aPaymentEntity()
+        PaymentEntity payment = aPaymentEntity()
                 .withExternalId(externalId)
                 .withProduct(productEntity)
                 .withNextUrl(nextUrl)

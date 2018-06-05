@@ -8,6 +8,7 @@ import uk.gov.pay.products.client.publicapi.PaymentResponse;
 import uk.gov.pay.products.client.publicapi.PublicApiRestClient;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.exception.BadPaymentRequestException;
+import uk.gov.pay.products.exception.ConflictingPaymentRequestException;
 import uk.gov.pay.products.exception.PaymentCreationException;
 import uk.gov.pay.products.exception.PaymentCreatorNotFoundException;
 import uk.gov.pay.products.exception.PublicApiResponseErrorException;
@@ -72,20 +73,32 @@ public class PaymentCreator {
             logger.info("Creating a new payment for product external id {}", productExternalId);
             ProductEntity productEntity = productDao.findByExternalId(productExternalId)
                     .orElseThrow(() -> new PaymentCreatorNotFoundException(productExternalId));
-            if (productEntity.getReferenceEnabled() && isEmpty(reference)) {
-                throw new BadPaymentRequestException("User defined reference is enabled but missing");
+            if (productEntity.getReferenceEnabled()) {
+                if (isEmpty(reference)) {
+                    throw new BadPaymentRequestException("User defined reference is enabled but missing");
+                }
+                if (paymentDao.findByGatewayAccountIdAndReferenceNumber(productEntity.getGatewayAccountId(), reference).isPresent()) {
+                    throw new ConflictingPaymentRequestException("Payment reference is not unique");
+                }
+                return mergePaymentEntityWithoutReferenceCheck(setupPaymentEntity(productEntity, reference));
             }
-            String referenceToBeUsed = productEntity.getReferenceEnabled() ? reference : randomUserFriendlyReference();
-            PaymentEntity paymentEntity = new PaymentEntity();
-            paymentEntity.setExternalId(randomUuid());
-            paymentEntity.setProductEntity(productEntity);
-            paymentEntity.setStatus(PaymentStatus.CREATED);
-            paymentEntity.setGatewayAccountId(productEntity.getGatewayAccountId());
-            paymentEntity.setReferenceNumber(referenceToBeUsed);
-
+            PaymentEntity paymentEntity = setupPaymentEntity(productEntity, randomUserFriendlyReference());
+            
             int counter = 0;
             return mergePaymentEntityWithReferenceNumberCheck(paymentEntity, counter);
         };
+    }
+
+    private PaymentEntity mergePaymentEntityWithoutReferenceCheck(PaymentEntity paymentEntity) {
+        try {
+            paymentDao.persist(paymentEntity);
+        } catch (Exception ex) {
+            if (ex instanceof javax.persistence.RollbackException) {
+                throw new ConflictingPaymentRequestException("Payment reference is not unique");
+            }
+            throw ex;
+        }
+        return paymentEntity;
     }
 
     private PaymentEntity mergePaymentEntityWithReferenceNumberCheck(PaymentEntity paymentEntity, int counter) {
@@ -105,7 +118,6 @@ public class PaymentCreator {
                     && ex.getMessage().contains("duplicate key value violates unique constraint")) {
                 paymentEntity.setReferenceNumber(randomUserFriendlyReference());
                 mergePaymentEntityWithReferenceNumberCheck(paymentEntity, counter);
-
             } else {
                 throw ex;
             }
@@ -159,5 +171,15 @@ public class PaymentCreator {
             return paymentResponse.getLinks().getNextUrl().getHref();
         }
         return "";
+    }
+
+    private PaymentEntity setupPaymentEntity(ProductEntity productEntity, String referenceToBeUsed) {
+        PaymentEntity paymentEntity = new PaymentEntity();
+        paymentEntity.setExternalId(randomUuid());
+        paymentEntity.setProductEntity(productEntity);
+        paymentEntity.setStatus(PaymentStatus.CREATED);
+        paymentEntity.setGatewayAccountId(productEntity.getGatewayAccountId());
+        paymentEntity.setReferenceNumber(referenceToBeUsed);
+        return paymentEntity;
     }
 }

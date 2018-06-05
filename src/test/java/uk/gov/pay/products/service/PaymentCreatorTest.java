@@ -16,6 +16,7 @@ import uk.gov.pay.products.client.publicapi.model.Link;
 import uk.gov.pay.products.client.publicapi.model.Links;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.exception.BadPaymentRequestException;
+import uk.gov.pay.products.exception.ConflictingPaymentRequestException;
 import uk.gov.pay.products.exception.PaymentCreationException;
 import uk.gov.pay.products.exception.PaymentCreatorNotFoundException;
 import uk.gov.pay.products.exception.PublicApiResponseErrorException;
@@ -91,7 +92,7 @@ public class PaymentCreatorTest {
         String productReturnUrl = "https://return.url";
         String productApiToken = "api-token";
         String referenceNumber = createRandomReferenceNumber();
-
+        Integer gatewayAccountId = 1;
         String paymentId = "payment-id";
         Long paymentAmount = 50L;
         String paymentNextUrl = "http://next.url";
@@ -105,6 +106,7 @@ public class PaymentCreatorTest {
                 productName,
                 productReturnUrl,
                 productApiToken,
+                gatewayAccountId,
                 false);
         PaymentRequest expectedPaymentRequest = createPaymentRequest(
                 productPrice,
@@ -160,7 +162,7 @@ public class PaymentCreatorTest {
         String productName = "name";
         String productReturnUrl = "https://return.url";
         String productApiToken = "api-token";
-
+        Integer gatewayAccountId = 1;
         String paymentId = "payment-id";
         String paymentExternalId = "random-external-id";
         Long paymentAmount = 50L;
@@ -174,6 +176,7 @@ public class PaymentCreatorTest {
                 productName,
                 "",
                 productApiToken,
+                gatewayAccountId,
                 false);
         PaymentRequest expectedPaymentRequest = createPaymentRequest(
                 productPrice,
@@ -230,7 +233,7 @@ public class PaymentCreatorTest {
         String productReturnUrl = "https://return.url";
         String productApiToken = "api-token";
         String userDefinedReference = "user-defined-reference";
-
+        Integer gatewayAccountId = 1;
         String paymentId = "payment-id";
         String paymentExternalId = "random-external-id";
         String paymentNextUrl = "http://next.url";
@@ -244,6 +247,7 @@ public class PaymentCreatorTest {
                 productName,
                 "",
                 productApiToken,
+                gatewayAccountId,
                 true);
         PaymentRequest expectedPaymentRequest = createPaymentRequest(
                 priceOverride,
@@ -289,7 +293,7 @@ public class PaymentCreatorTest {
         String productName = "name";
         String productReturnUrl = "https://return.url";
         String productApiToken = "api-token";
-
+        Integer gatewayAccountId = 1;
         String paymentId = "payment-id";
         String paymentExternalId = "random-external-id";
         String paymentNextUrl = "http://next.url";
@@ -304,6 +308,7 @@ public class PaymentCreatorTest {
                 productName,
                 "",
                 productApiToken,
+                gatewayAccountId,
                 false);
         PaymentRequest expectedPaymentRequest = createPaymentRequest(
                 priceOverride,
@@ -349,7 +354,7 @@ public class PaymentCreatorTest {
         String productName = "name";
         String productReturnUrl = "https://return.url";
         String productApiToken = "api-token";
-
+        Integer gatewayAccountId = 1;
         String paymentExternalId = "random-external-id";
         String referenceNumber = createRandomReferenceNumber();
         String productsUIConfirmUri = "https://products-ui/payment-complete";
@@ -363,6 +368,7 @@ public class PaymentCreatorTest {
                 productName,
                 productReturnUrl,
                 productApiToken,
+                gatewayAccountId,
                 false);
         PaymentRequest expectedPaymentRequest = createPaymentRequest(
                 productPrice,
@@ -425,6 +431,7 @@ public class PaymentCreatorTest {
                 productName,
                 productReturnUrl,
                 productApiToken,
+                gatewayAccountId,
                 true);
 
         PaymentRequest paymentRequest = createPaymentRequest(
@@ -441,7 +448,43 @@ public class PaymentCreatorTest {
     }
 
     @Test
-    public void shouldThrowRuntimeException_whenTooManyConflictsInReferenceNumbers() {
+    public void shouldThrowPaymentCreationException_whenReferenceExists() {
+        int productId = 1;
+        String productExternalId = "product-external-id";
+        long productPrice = 100L;
+        String productName = "name";
+        String productReturnUrl = "https://return.url";
+        String productApiToken = "api-token";
+        String paymentReference = "payment-reference";
+        Integer gatewayAccountId = 1;
+
+        ProductEntity productEntity = createProductEntity(
+                productId,
+                productPrice,
+                productExternalId,
+                productName,
+                productReturnUrl,
+                productApiToken,
+                gatewayAccountId,
+                true);
+
+        createPaymentRequest(
+                productPrice,
+                paymentReference,
+                productName,
+                "https://return.url");
+
+        when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
+        doThrow(new BadPaymentRequestException("Payment reference is not unique"))
+                .when(paymentDao).persist(any(PaymentEntity.class));
+
+        thrown.expect(BadPaymentRequestException.class);
+        thrown.expectMessage("Payment reference is not unique");
+        paymentCreator.doCreate(productExternalId, null, paymentReference);
+    }
+
+    @Test
+    public void shouldThrowRuntimeException_whenTooManyConflictsInUserFriendlyReferenceNumbers() {
         int productId = 1;
         String productExternalId = "product-external-id";
         long productPrice = 100L;
@@ -474,15 +517,56 @@ public class PaymentCreatorTest {
         assertThat(exception.getMessage().contains("Too many conflicts generating unique user friendly reference numbers for gateway account"), is(true));
         verify(paymentDao, times(3)).persist(any(PaymentEntity.class));
     }
-    
+
+    @Test
+    public void shouldThrowRuntimeException_whenConflictsInUserDefinedReferenceNumbers() {
+        int productId = 1;
+        String productExternalId = "product-external-id";
+        long productPrice = 100L;
+        String productName = "name";
+        String productApiToken = "api-token";
+        String referenceNumber = randomUserFriendlyReference();
+
+        Integer gatewayAccountId = 1;
+
+        ProductEntity productEntity = createProductEntity(
+                productId,
+                productPrice,
+                productExternalId,
+                productName,
+                "",
+                productApiToken,
+                gatewayAccountId,
+                true);
+
+        PaymentEntity paymentRequest = createPaymentEntity(
+                "payment-id",
+                "",
+                productEntity,
+                SUBMITTED,
+                500L);
+
+        when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
+        when(paymentDao.findByGatewayAccountIdAndReferenceNumber(gatewayAccountId, referenceNumber)).thenReturn(Optional.of(paymentRequest));
+        Exception exception = null;
+        try {
+            paymentCreator.doCreate(productExternalId, null, referenceNumber);
+        } catch (RuntimeException ex) {
+            exception = ex;
+        }
+        assertThat(isNull(exception), is(false));
+        assertThat(exception instanceof ConflictingPaymentRequestException, is(true));
+        assertThat(exception.getMessage(), is("Payment reference is not unique"));
+    }
+
     private ProductEntity createProductEntity(int id, long price, String externalId, String name, String returnUrl, String apiToken, Integer gatewayAccountId) {
-        ProductEntity productEntity = createProductEntity(id, price, externalId, name, returnUrl, apiToken, false);
+        ProductEntity productEntity = createProductEntity(id, price, externalId, name, returnUrl, apiToken, gatewayAccountId, false);
         productEntity.setGatewayAccountId(gatewayAccountId);
 
         return productEntity;
     }
 
-    private ProductEntity createProductEntity(int id, long price, String externalId, String name, String returnUrl, String apiToken, Boolean referenceEnabled) {
+    private ProductEntity createProductEntity(int id, long price, String externalId, String name, String returnUrl, String apiToken, Integer gatewayAccountId, Boolean referenceEnabled) {
         ProductEntity productEntity = new ProductEntity();
         productEntity.setId(id);
         productEntity.setPrice(price);
@@ -491,6 +575,7 @@ public class PaymentCreatorTest {
         productEntity.setReturnUrl(returnUrl);
         productEntity.setPayApiToken(apiToken);
         productEntity.setReferenceEnabled(referenceEnabled);
+        productEntity.setGatewayAccountId(gatewayAccountId);
 
         return productEntity;
     }

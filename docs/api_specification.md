@@ -20,7 +20,10 @@ Content-Type: application/json
     "service_name":             "Some awesome government service",
     "return_url" :              "https://some.valid.url/",
     "service_name_path" :       "some-awesome-government-service",
-    "product_name_path" :       "name-for-product"
+    "product_name_path" :       "name-for-product",
+    "reference_enabled":        "true",
+    "reference_label":          "Reference label",
+    "reference_hint":           "Hint for the above reference"
 }
 ```
 
@@ -37,6 +40,9 @@ Content-Type: application/json
 | `return_url`             |          | (https only) where to redirect to upon completion of a payment. If not provided, `pay-products` will generate a default url to itself when creating a charge | |
 | `service_name_path`      |          | Service Name Path part of Product Path. Required for Adhoc type only.  |   |
 | `product_name_path`      |          | Product Name Path part of Product Path. Required for Adhoc type only.   |   |
+| `reference_enabled`      |    X     | Flag to set whether payment reference is auto generated or entered by user. True means that user enters reference at the beginning of a user journey.   |   |
+| `reference_label`        |    O     | Only required if `reference_enabled` is true. Label for the reference entry text box.   |   |
+| `reference_hint`         |          | Hint text for reference entry text box. Optional field when reference enabled. Ignored if `reference_enabled` is set to false. |   |
 
 ### Response example
 
@@ -51,6 +57,9 @@ Content-Type: application/json
     "type":                "DEMO,
     "service_name":             "Some awesome government service",
     "return_url" :         "https://some.valid.url/",
+    "reference_enabled":   "true",
+    "reference_label":     "Amount for your licence",
+    "reference_hint":     "This can be found on your letter",
     "_links": [
     {
         "href": "https://govukpay-products.cloudapps.digital/v1/api/products/874h5c87834659q345698495",
@@ -83,6 +92,9 @@ Content-Type: application/json
 | `_links.self`            | X              | self GET link to the product. |
 | `_links.pay`             | X              | The link in `pay-products-ui` where a charge for this product will be generated and redirected to GOV.UK Pay |
 | `_links.friendly`        |                | The friendly link to be used for Adhoc payments |
+| `reference_enabled`      | X              | The settings for auto generated (false) or user entry (true) payment reference.   |
+| `reference_label`        |                | Present when `reference_enabled` is true. Label text for the reference entry box. |
+| `reference_hint`         |                | Hint for the `reference_enabled` text box. Optional field when reference enabled. |
 
 ## PATCH /v1/api/gateway-account/{gatewayAccountId}/products/{productId}
 
@@ -220,6 +232,7 @@ Content-Type: application/json
     "price":               1050,
     "return_url" :         "https://some.valid.url/"
     "service_name":        "Some awesome government service",
+    "reference_enabled":        "false",
     "_links": [
     {
         "href": "https://govukpay-products.cloudapps.digital/v1/api/products/874h5c87834659q345698495",

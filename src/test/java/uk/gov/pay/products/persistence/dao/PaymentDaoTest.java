@@ -121,39 +121,6 @@ public class PaymentDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void shouldThrowExceptionOnMerge_whenSameGatewayAndReferenceNumber() {
-        String referenceNumber = randomUuid().substring(1,10).toUpperCase();
-        Integer gatewayAccountId = randomInt();
-        PaymentEntity payment1 = PaymentEntityFixture.aPaymentEntity()
-                .withExternalId(randomUuid())
-                .withStatus(PaymentStatus.CREATED)
-                .withProduct(productEntity)
-                .withReferenceNumber(referenceNumber)
-                .withGatewayAccountId(gatewayAccountId)
-                .build();
-        databaseHelper.addPayment(payment1.toPayment(), gatewayAccountId);
-
-        PaymentEntity payment2 = PaymentEntityFixture.aPaymentEntity()
-                .withExternalId(randomUuid())
-                .withStatus(PaymentStatus.ERROR)
-                .withProduct(productEntity)
-                .withReferenceNumber(referenceNumber)
-                .withGatewayAccountId(gatewayAccountId)
-                .build();
-
-        Exception exception = null;
-        try {
-            paymentDao.merge(payment2);
-        } catch (Exception ex) {
-            exception = ex;
-        }
-        assertThat(isNull(exception), is(false));
-        assertThat(exception instanceof javax.persistence.RollbackException, is(true));
-        assertThat(exception.getMessage().contains("payments_gateway_account_id_reference_number_key"), is(true));
-        assertThat(exception.getMessage().contains("duplicate key value violates unique constraint"), is(true));
-    }
-
-    @Test
     public void shouldFindPayment_whenSearchingByGatewayAccountIdAndReferenceNumber() {
         String referenceNumber = randomUuid().substring(1,10).toUpperCase();
         Integer gatewayAccountId = randomInt();

@@ -16,7 +16,6 @@ import uk.gov.pay.products.client.publicapi.model.Link;
 import uk.gov.pay.products.client.publicapi.model.Links;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.exception.BadPaymentRequestException;
-import uk.gov.pay.products.exception.ConflictingPaymentRequestException;
 import uk.gov.pay.products.exception.PaymentCreationException;
 import uk.gov.pay.products.exception.PaymentCreatorNotFoundException;
 import uk.gov.pay.products.exception.PublicApiResponseErrorException;
@@ -35,13 +34,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static java.lang.String.format;
-import static java.util.Objects.isNull;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -448,14 +444,16 @@ public class PaymentCreatorTest {
     }
 
     @Test
-    public void shouldThrowPaymentCreationException_whenReferenceExists() {
+    public void shouldThrowRuntimeException_whenUniqueReferenceExists_andTried3Times() {
+        PowerMockito.mockStatic(RandomIdGenerator.class);
         int productId = 1;
+        String randomUserFriendlyReference = "MBK-1WER-3RT";
         String productExternalId = "product-external-id";
         long productPrice = 100L;
         String productName = "name";
         String productReturnUrl = "https://return.url";
         String productApiToken = "api-token";
-        String paymentReference = "payment-reference";
+        String paymentId = "abcd1234";
         Integer gatewayAccountId = 1;
 
         ProductEntity productEntity = createProductEntity(
@@ -466,104 +464,24 @@ public class PaymentCreatorTest {
                 productReturnUrl,
                 productApiToken,
                 gatewayAccountId,
-                true);
+                false);
 
-        createPaymentRequest(
-                productPrice,
-                paymentReference,
-                productName,
-                "https://return.url");
+        PaymentEntity paymentEntity = createPaymentEntity(
+                paymentId,
+                randomUserFriendlyReference,
+                productEntity,
+                PaymentStatus.SUBMITTED,
+                productPrice);
 
+        when(RandomIdGenerator.randomUserFriendlyReference()).thenReturn(randomUserFriendlyReference);
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
-        doThrow(new BadPaymentRequestException("Payment reference is not unique"))
-                .when(paymentDao).persist(any(PaymentEntity.class));
-
-        thrown.expect(BadPaymentRequestException.class);
-        thrown.expectMessage("Payment reference is not unique");
-        paymentCreator.doCreate(productExternalId, null, paymentReference);
-    }
-
-    @Test
-    public void shouldThrowRuntimeException_whenTooManyConflictsInUserFriendlyReferenceNumbers() {
-        int productId = 1;
-        String productExternalId = "product-external-id";
-        long productPrice = 100L;
-        String productName = "name";
-        String productApiToken = "api-token";
-
-        Integer gatewayAccountId = 1;
-
-        ProductEntity productEntity = createProductEntity(
-                productId,
-                productPrice,
-                productExternalId,
-                productName,
-                "",
-                productApiToken,
-                gatewayAccountId);
-
-        when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
-        doThrow(new javax.persistence.RollbackException("payments_gateway_account_id_reference_number_key duplicate key value violates unique constraint"))
-                .when(paymentDao).persist(any(PaymentEntity.class));
-
-        Exception exception = null;
+        when(paymentDao.findByGatewayAccountIdAndReferenceNumber(gatewayAccountId, randomUserFriendlyReference)).thenReturn(Optional.of(paymentEntity));
         try {
             paymentCreator.doCreate(productExternalId, null, null);
         } catch (RuntimeException ex) {
-            exception = ex;
+            assertThat(ex.getMessage(), is("Too many conflicts generating unique user friendly reference numbers for gateway account 1"));
         }
-        assertThat(isNull(exception), is(false));
-        assertThat(exception instanceof RuntimeException, is(true));
-        assertThat(exception.getMessage().contains("Too many conflicts generating unique user friendly reference numbers for gateway account"), is(true));
-        verify(paymentDao, times(3)).persist(any(PaymentEntity.class));
-    }
-
-    @Test
-    public void shouldThrowRuntimeException_whenConflictsInUserDefinedReferenceNumbers() {
-        int productId = 1;
-        String productExternalId = "product-external-id";
-        long productPrice = 100L;
-        String productName = "name";
-        String productApiToken = "api-token";
-        String referenceNumber = randomUserFriendlyReference();
-
-        Integer gatewayAccountId = 1;
-
-        ProductEntity productEntity = createProductEntity(
-                productId,
-                productPrice,
-                productExternalId,
-                productName,
-                "",
-                productApiToken,
-                gatewayAccountId,
-                true);
-
-        PaymentEntity paymentRequest = createPaymentEntity(
-                "payment-id",
-                "",
-                productEntity,
-                SUBMITTED,
-                500L);
-
-        when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
-        when(paymentDao.findByGatewayAccountIdAndReferenceNumber(gatewayAccountId, referenceNumber)).thenReturn(Optional.of(paymentRequest));
-        Exception exception = null;
-        try {
-            paymentCreator.doCreate(productExternalId, null, referenceNumber);
-        } catch (RuntimeException ex) {
-            exception = ex;
-        }
-        assertThat(isNull(exception), is(false));
-        assertThat(exception instanceof ConflictingPaymentRequestException, is(true));
-        assertThat(exception.getMessage(), is("Payment reference is not unique"));
-    }
-
-    private ProductEntity createProductEntity(int id, long price, String externalId, String name, String returnUrl, String apiToken, Integer gatewayAccountId) {
-        ProductEntity productEntity = createProductEntity(id, price, externalId, name, returnUrl, apiToken, gatewayAccountId, false);
-        productEntity.setGatewayAccountId(gatewayAccountId);
-
-        return productEntity;
+        verify(paymentDao, times(3)).findByGatewayAccountIdAndReferenceNumber(gatewayAccountId, randomUserFriendlyReference);
     }
 
     private ProductEntity createProductEntity(int id, long price, String externalId, String name, String returnUrl, String apiToken, Integer gatewayAccountId, Boolean referenceEnabled) {

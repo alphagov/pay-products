@@ -8,7 +8,6 @@ import uk.gov.pay.products.client.publicapi.PaymentResponse;
 import uk.gov.pay.products.client.publicapi.PublicApiRestClient;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.exception.BadPaymentRequestException;
-import uk.gov.pay.products.exception.ConflictingPaymentRequestException;
 import uk.gov.pay.products.exception.PaymentCreationException;
 import uk.gov.pay.products.exception.PaymentCreatorNotFoundException;
 import uk.gov.pay.products.exception.PublicApiResponseErrorException;
@@ -77,11 +76,9 @@ public class PaymentCreator {
                 if (isEmpty(reference)) {
                     throw new BadPaymentRequestException("User defined reference is enabled but missing");
                 }
-                if (paymentDao.findByGatewayAccountIdAndReferenceNumber(productEntity.getGatewayAccountId(), reference).isPresent()) {
-                    throw new ConflictingPaymentRequestException("Payment reference is not unique");
-                }
                 return mergePaymentEntityWithoutReferenceCheck(setupPaymentEntity(productEntity, reference));
             }
+            
             PaymentEntity paymentEntity = setupPaymentEntity(productEntity, randomUserFriendlyReference());
             
             int counter = 0;
@@ -89,15 +86,8 @@ public class PaymentCreator {
         };
     }
 
-    private PaymentEntity mergePaymentEntityWithoutReferenceCheck(PaymentEntity paymentEntity) {
-        try {
-            paymentDao.persist(paymentEntity);
-        } catch (Exception ex) {
-            if (ex instanceof javax.persistence.RollbackException) {
-                throw new ConflictingPaymentRequestException("Payment reference is not unique");
-            }
-            throw ex;
-        }
+    private PaymentEntity mergePaymentEntityWithoutReferenceCheck(PaymentEntity paymentEntity) { 
+        paymentDao.persist(paymentEntity);
         return paymentEntity;
     }
 
@@ -109,18 +99,12 @@ public class PaymentCreator {
             logger.error(exceptionMsg, runtimeException);
             throw runtimeException;
         }
-
-        try {
+        String reference = randomUserFriendlyReference();
+        if ( paymentDao.findByGatewayAccountIdAndReferenceNumber(paymentEntity.getGatewayAccountId(), reference).isPresent()) {
+            paymentEntity = mergePaymentEntityWithReferenceNumberCheck(paymentEntity, counter); 
+        } else {
+            paymentEntity.setReferenceNumber(reference);
             paymentDao.persist(paymentEntity);
-        } catch (Exception ex) {
-            if (ex instanceof javax.persistence.RollbackException
-                    && ex.getMessage().contains("payments_gateway_account_id_reference_number_key")
-                    && ex.getMessage().contains("duplicate key value violates unique constraint")) {
-                paymentEntity.setReferenceNumber(randomUserFriendlyReference());
-                mergePaymentEntityWithReferenceNumberCheck(paymentEntity, counter);
-            } else {
-                throw ex;
-            }
         }
         return paymentEntity;
     }

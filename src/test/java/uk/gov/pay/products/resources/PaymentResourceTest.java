@@ -4,9 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.Test;
-import uk.gov.pay.products.fixtures.PaymentEntityFixture;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
-import uk.gov.pay.products.model.Payment;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.entity.PaymentEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
@@ -157,7 +155,7 @@ public class PaymentResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void shouldReturn409_whenReferenceAlreadyExists() throws Exception {
+    public void shouldSucceed_whenUserEnteredReferenceIsEnabled_andReferenceAlreadyExists() throws Exception {
         String userDefinedReference = randomUuid().substring(1, 15);
         String productExternalId = randomUuid();
 
@@ -208,7 +206,7 @@ public class PaymentResourceTest extends IntegrationTest {
                 .body(mapper.writeValueAsString(payload))
                 .post(format("/v1/api/products/%s/payments", productEntity.getExternalId()))
                 .then()
-                .statusCode(409);
+                .statusCode(201);
     }
 
     @Test

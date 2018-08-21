@@ -100,6 +100,7 @@ public class PublicApiStub {
                                                 .add("href", "https://an.example.link/from/payment/platform")
                                                 .add("method", "GET")))
                 .add("card_brand", "Visa")
+                .add("Do not add this property to PaymentResponse", "To test deserialisation handles new/unknown properties")
                 .build();
     }
 

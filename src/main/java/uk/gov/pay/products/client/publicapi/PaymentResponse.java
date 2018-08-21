@@ -1,5 +1,6 @@
 package uk.gov.pay.products.client.publicapi;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -11,6 +12,7 @@ import uk.gov.pay.products.client.publicapi.model.RefundSummary;
 import uk.gov.pay.products.client.publicapi.model.SettlementSummary;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PaymentResponse {
     private String paymentId;
     private String paymentProvider;

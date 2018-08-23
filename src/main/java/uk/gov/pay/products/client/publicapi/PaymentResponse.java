@@ -193,11 +193,9 @@ public class PaymentResponse {
                 ", description='" + description + '\'' +
                 ", returnUrl='" + returnUrl + '\'' +
                 ", reference='" + reference + '\'' +
-                ", email='" + email + '\'' +
                 ", createdDate='" + createdDate + '\'' +
                 ", refundSummary=" + refundSummary +
                 ", settlementSummary=" + settlementSummary +
-                ", cardDetails=" + cardDetails +
                 ", links=" + links +
                 ", cardBrand='" + cardBrand + '\'' +
                 '}';

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 public class CardDetails {
 
     private final String lastDigitsCardNumber;
+    private final String firstDigitsCardNumber;
     private final String cardHolderName;
     private final String expiryDate;
     private final Address billingAddress;
@@ -15,11 +16,13 @@ public class CardDetails {
 
     public CardDetails(
             @JsonProperty("last_digits_card_number") String lastDigitsCardNumber,
+            @JsonProperty("first_digits_card_number") String firstDigitsCardNumber,
             @JsonProperty("cardholder_name") String cardHolderName,
             @JsonProperty("expiry_date") String expiryDate,
             @JsonProperty("billing_address") Address billingAddress,
             @JsonProperty("card_brand") CardBrand cardBrand) {
         this.lastDigitsCardNumber = lastDigitsCardNumber;
+        this.firstDigitsCardNumber = firstDigitsCardNumber;
         this.cardHolderName = cardHolderName;
         this.expiryDate = expiryDate;
         this.billingAddress = billingAddress;
@@ -28,6 +31,10 @@ public class CardDetails {
 
     public String getLastDigitsCardNumber() {
         return lastDigitsCardNumber;
+    }
+    
+    public String getFirstDigitsCardNumber() {
+        return firstDigitsCardNumber;
     }
 
     public String getCardHolderName() {
@@ -50,6 +57,7 @@ public class CardDetails {
     public String toString() {
         return "CardDetails{" +
                 "lastDigitsCardNumber='" + lastDigitsCardNumber + '\'' +
+                ", firstDigitsCardNumber='" + firstDigitsCardNumber + '\'' +
                 ", cardHolderName='" + cardHolderName + '\'' +
                 ", expiryDate='" + expiryDate + '\'' +
                 ", billingAddress=" + billingAddress +

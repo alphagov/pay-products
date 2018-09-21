@@ -63,6 +63,7 @@ public class PaymentResponseMatcher {
                 if (actualCardDetails == null) return false;
 
                 matched = matched && StringUtils.equals(actualCardDetails.getLastDigitsCardNumber(), expectedCardDetails.getString("last_digits_card_number"));
+                matched = matched && StringUtils.equals(actualCardDetails.getFirstDigitsCardNumber(), expectedCardDetails.getString("first_digits_card_number"));
                 matched = matched && StringUtils.equals(actualCardDetails.getCardHolderName(), expectedCardDetails.getString("cardholder_name"));
                 matched = matched && StringUtils.equals(actualCardDetails.getExpiryDate(), expectedCardDetails.getString("expiry_date"));
 

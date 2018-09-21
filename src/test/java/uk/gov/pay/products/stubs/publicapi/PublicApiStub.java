@@ -61,6 +61,7 @@ public class PublicApiStub {
                 .add("card_details",
                         Json.createObjectBuilder()
                                 .add("last_digits_card_number", "1234")
+                                .add("first_digits_card_number", "123456")
                                 .add("cardholder_name", "Mr. Card holder")
                                 .add("expiry_date", "12/20")
                                 .add("billing_address",

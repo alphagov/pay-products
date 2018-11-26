@@ -21,7 +21,7 @@
         <mainClass>uk.gov.pay.products.ProductsApplication</mainClass>
         <powermock.version>1.7.4</powermock.version>
         <docker-client.version>8.14.4</docker-client.version>
-        <jackson.version>2.9.6</jackson.version>
+        <jackson.version>2.9.7</jackson.version>
     </properties>
 
     <dependencyManagement>

@@ -1,6 +1,6 @@
 package uk.gov.pay.products.stubs.publicapi;
 
-import org.mockserver.client.server.MockServerClient;
+import org.mockserver.client.MockServerClient;
 
 import javax.json.Json;
 import javax.json.JsonObject;

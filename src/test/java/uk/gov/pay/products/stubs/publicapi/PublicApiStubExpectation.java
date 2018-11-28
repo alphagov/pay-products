@@ -1,6 +1,6 @@
 package uk.gov.pay.products.stubs.publicapi;
 
-import org.mockserver.client.server.ForwardChainExpectation;
+import org.mockserver.client.ForwardChainExpectation;
 
 import javax.json.JsonObject;
 

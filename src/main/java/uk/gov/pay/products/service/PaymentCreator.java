@@ -81,8 +81,7 @@ public class PaymentCreator {
             
             PaymentEntity paymentEntity = setupPaymentEntity(productEntity, randomUserFriendlyReference());
             
-            int counter = 0;
-            return mergePaymentEntityWithReferenceNumberCheck(paymentEntity, counter);
+            return mergePaymentEntityWithReferenceNumberCheck(paymentEntity);
         };
     }
 
@@ -91,22 +90,20 @@ public class PaymentCreator {
         return paymentEntity;
     }
 
-    private PaymentEntity mergePaymentEntityWithReferenceNumberCheck(PaymentEntity paymentEntity, int counter) {
-        int count = counter++;
-        if (count == MAX_NUMBER_OF_RETRY_FOR_UNIQUE_REF_NUMBER) {
-            String exceptionMsg = format("Too many conflicts generating unique user friendly reference numbers for gateway account %s", paymentEntity.getGatewayAccountId());
-            RuntimeException runtimeException = new RuntimeException(exceptionMsg);
-            logger.error(exceptionMsg, runtimeException);
-            throw runtimeException;
+    private PaymentEntity mergePaymentEntityWithReferenceNumberCheck(PaymentEntity paymentEntity) {
+        for (int i = 0; i < MAX_NUMBER_OF_RETRY_FOR_UNIQUE_REF_NUMBER; i++) {
+            String reference = randomUserFriendlyReference();
+            if (!paymentDao.findByGatewayAccountIdAndReferenceNumber(paymentEntity.getGatewayAccountId(), reference).isPresent()) {
+                paymentEntity.setReferenceNumber(reference);
+                paymentDao.persist(paymentEntity);
+                return paymentEntity;
+            }
         }
-        String reference = randomUserFriendlyReference();
-        if ( paymentDao.findByGatewayAccountIdAndReferenceNumber(paymentEntity.getGatewayAccountId(), reference).isPresent()) {
-            paymentEntity = mergePaymentEntityWithReferenceNumberCheck(paymentEntity, counter); 
-        } else {
-            paymentEntity.setReferenceNumber(reference);
-            paymentDao.persist(paymentEntity);
-        }
-        return paymentEntity;
+
+        String exceptionMsg = format("Too many conflicts generating unique user friendly reference numbers for gateway account %s", paymentEntity.getGatewayAccountId());
+        RuntimeException runtimeException = new RuntimeException(exceptionMsg);
+        logger.error(exceptionMsg, runtimeException);
+        throw runtimeException;
     }
 
     private NonTransactionalOperation<TransactionContext, PaymentEntity> paymentCreation(Long priceOverride) {

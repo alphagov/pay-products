@@ -10,8 +10,8 @@ import org.junit.ClassRule;
 import org.skife.jdbi.v2.DBI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.commons.testing.db.PostgresDockerRule;
 import uk.gov.pay.products.infra.GuicedTestEnvironment;
-import uk.gov.pay.products.infra.PostgresDockerRule;
 import uk.gov.pay.products.utils.DatabaseTestHelper;
 
 import java.sql.Connection;

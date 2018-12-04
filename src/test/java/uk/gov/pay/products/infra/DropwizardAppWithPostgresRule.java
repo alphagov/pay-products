@@ -15,6 +15,7 @@ import org.junit.runners.model.Statement;
 import org.skife.jdbi.v2.DBI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.commons.testing.db.PostgresDockerRule;
 import uk.gov.pay.products.ProductsApplication;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.utils.DatabaseTestHelper;

@@ -20,7 +20,7 @@
         <hamcrest.version>2.1</hamcrest.version>
         <mainClass>uk.gov.pay.products.ProductsApplication</mainClass>
         <powermock.version>1.7.4</powermock.version>
-        <jackson.version>2.9.7</jackson.version>
+        <jackson.version>2.9.8</jackson.version>
         <dependency-check.skip>true</dependency-check.skip>
     </properties>
 

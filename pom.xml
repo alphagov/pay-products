@@ -20,6 +20,7 @@
         <hamcrest.version>2.1</hamcrest.version>
         <mainClass>uk.gov.pay.products.ProductsApplication</mainClass>
         <powermock.version>2.0.0</powermock.version>
+        <mockserver.version>5.5.1</mockserver.version>
         <jackson.version>2.9.8</jackson.version>
         <pay-java-commons.version>1.0.20190118181040</pay-java-commons.version>
         <dependency-check.skip>true</dependency-check.skip>
@@ -183,13 +184,13 @@
         <dependency>
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-netty</artifactId>
-            <version>5.5.1</version>
+            <version>${mockserver.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-client-java</artifactId>
-            <version>5.5.1</version>
+            <version>${mockserver.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

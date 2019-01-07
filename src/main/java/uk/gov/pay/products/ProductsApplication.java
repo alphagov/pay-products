@@ -16,7 +16,6 @@ import io.dropwizard.setup.Environment;
 import uk.gov.pay.products.config.PersistenceServiceInitialiser;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.config.ProductsModule;
-import uk.gov.pay.products.config.ProxyConfiguration;
 import uk.gov.pay.products.exception.mapper.BadPaymentRequestExceptionMapper;
 import uk.gov.pay.products.exception.mapper.ConflictingPaymentRequestExceptionMapper;
 import uk.gov.pay.products.exception.mapper.PaymentCreationExceptionMapper;
@@ -32,7 +31,6 @@ import uk.gov.pay.products.resources.ProductResource;
 import uk.gov.pay.products.util.TrustingSSLSocketFactory;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLSocketFactory;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.EnumSet.of;
@@ -84,18 +82,7 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
         environment.jersey().register(injector.getInstance(GatewayAccountResource.class));
 
         attachExceptionMappersTo(environment.jersey());
-        setGlobalProxies(configuration);
-    }
-
-    private void setGlobalProxies(ProductsConfiguration configuration) {
-        SSLSocketFactory socketFactory = new TrustingSSLSocketFactory();
-        HttpsURLConnection.setDefaultSSLSocketFactory(socketFactory);
-
-        ProxyConfiguration proxyConfiguration = configuration.getProxyConfiguration();
-        if (proxyConfiguration.getEnabled()) {
-            System.setProperty("https.proxyHost", proxyConfiguration.getHost());
-            System.setProperty("https.proxyPort", proxyConfiguration.getPort().toString());
-        }
+        HttpsURLConnection.setDefaultSSLSocketFactory(new TrustingSSLSocketFactory());
     }
 
     private void initialiseMetrics(ProductsConfiguration configuration, Environment environment) {

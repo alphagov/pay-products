@@ -26,12 +26,12 @@ public class GatewayAccountUpdaterTest {
     private GatewayAccountUpdater updater;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         updater = new GatewayAccountUpdater(productDao);
     }
 
     @Test
-    public void shouldUpdateServiceName() throws Exception {
+    public void shouldUpdateServiceName() {
         Integer gatewayAccountId = 1000;
         String newServiceName = "New Service Name";
         PatchRequest request = PatchRequest.from(new ObjectMapper().valueToTree(ImmutableMap.of("op", "replace",
@@ -45,7 +45,7 @@ public class GatewayAccountUpdaterTest {
     }
 
     @Test
-    public void shouldNotUpdateServiceName_whenNoProduct() throws Exception {
+    public void shouldNotUpdateServiceName_whenNoProduct() {
         Integer gatewayAccountId = 1000;
         String serviceName = "New Service Name";
         PatchRequest request = PatchRequest.from(new ObjectMapper().valueToTree(ImmutableMap.of("op", "replace",

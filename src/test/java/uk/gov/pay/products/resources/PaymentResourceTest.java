@@ -42,7 +42,7 @@ public class PaymentResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void createAPayment_shouldSucceed() throws Exception {
+    public void createAPayment_shouldSucceed() {
         String referenceNumber = randomUuid().substring(1, 10);
         Product product = aProductEntity()
                 .withExternalId(randomUuid())
@@ -257,7 +257,7 @@ public class PaymentResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void createAPayment_shouldFail_whenProductIsNotFound() throws Exception {
+    public void createAPayment_shouldFail_whenProductIsNotFound() {
         String unknownProductId = "unknown-product-id";
 
         givenSetup()
@@ -270,7 +270,7 @@ public class PaymentResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void createAPayment_shouldFail_whenDownstreamError() throws Exception {
+    public void createAPayment_shouldFail_whenDownstreamError() {
         Product product = aProductEntity()
                 .withExternalId(randomUuid())
                 .withGatewayAccountId(0)
@@ -313,7 +313,7 @@ public class PaymentResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void findAPayment_shouldSucceed() throws Exception {
+    public void findAPayment_shouldSucceed() {
 
         String productExternalId = randomUuid();
 
@@ -367,7 +367,7 @@ public class PaymentResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void findAPayment_shouldFail_WhenPaymentIsNotFound() throws Exception {
+    public void findAPayment_shouldFail_WhenPaymentIsNotFound() {
         givenSetup()
                 .accept(APPLICATION_JSON)
                 .get(format("/v1/api/payments/%s", randomUuid()))
@@ -376,7 +376,7 @@ public class PaymentResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void findAllPaymentsOfAProduct_shouldSucceed() throws Exception {
+    public void findAllPaymentsOfAProduct_shouldSucceed() {
 
         String productExternalId = randomUuid();
         String paymentExternalId1 = randomUuid();
@@ -450,7 +450,7 @@ public class PaymentResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void findAllPaymentsOfAProduct_shouldFail_whenProductIsNotFound() throws Exception {
+    public void findAllPaymentsOfAProduct_shouldFail_whenProductIsNotFound() {
         givenSetup()
                 .accept(APPLICATION_JSON)
                 .get(format("/v1/api/products/%s/payments", randomUuid()))
@@ -459,7 +459,7 @@ public class PaymentResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void findAPaymentByGatewayAccountIdAndReferenceNumber_shouldSucceed() throws Exception {
+    public void findAPaymentByGatewayAccountIdAndReferenceNumber_shouldSucceed() {
 
         String productExternalId = randomUuid();
 

@@ -23,7 +23,7 @@ public class RestClientLoggingFilter implements ClientRequestFilter, ClientRespo
     private static ThreadLocal<Stopwatch> timer = new ThreadLocal<>();
 
     @Override
-    public void filter(ClientRequestContext requestContext) throws IOException {
+    public void filter(ClientRequestContext requestContext) {
         timer.set(Stopwatch.createStarted());
         requestId.set(StringUtils.defaultString(MDC.get(HEADER_REQUEST_ID)));
 
@@ -36,7 +36,7 @@ public class RestClientLoggingFilter implements ClientRequestFilter, ClientRespo
     }
 
     @Override
-    public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException {
+    public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) {
         long elapsed = timer.get().elapsed(TimeUnit.MILLISECONDS);
         responseContext.getHeaders().add(HEADER_REQUEST_ID, requestId.get());
         logger.info(format("[%s] - %s to %s ended - total time %dms",

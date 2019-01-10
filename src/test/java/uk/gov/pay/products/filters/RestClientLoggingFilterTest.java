@@ -60,7 +60,7 @@ public class RestClientLoggingFilterTest {
     }
 
     @Test
-    public void shouldLogRestClientStartEventWithRequestId() throws Exception {
+    public void shouldLogRestClientStartEventWithRequestId() {
 
         String requestId = UUID.randomUUID().toString();
         URI requestUrl = URI.create("/products-request");
@@ -82,7 +82,7 @@ public class RestClientLoggingFilterTest {
     }
 
     @Test
-    public void shouldLogRestClientEndEventWithRequestIdAndElapsedTime() throws Exception {
+    public void shouldLogRestClientEndEventWithRequestIdAndElapsedTime() {
 
         String requestId = UUID.randomUUID().toString();
         URI requestUrl = URI.create("/products-request");

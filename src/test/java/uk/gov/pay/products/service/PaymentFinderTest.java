@@ -39,13 +39,13 @@ public class PaymentFinderTest {
     private LinksDecorator linksDecorator;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         linksDecorator = new LinksDecorator("http://localhost", "http://localhost/pay", "http://localhost/payments");
         paymentFinder = new PaymentFinder(paymentDao, linksDecorator, publicApiRestClient);
     }
 
     @Test
-    public void shouldReturnPayment_whenFoundByExternalId() throws Exception{
+    public void shouldReturnPayment_whenFoundByExternalId() {
         String externalId = randomUuid();
         PaymentEntity paymentEntity = new PaymentEntity();
         paymentEntity.setExternalId(externalId);
@@ -58,7 +58,7 @@ public class PaymentFinderTest {
     }
 
     @Test
-    public void shouldReturnEmpty_whenNoPaymentFound() throws Exception {
+    public void shouldReturnEmpty_whenNoPaymentFound() {
         String externalId = randomUuid();
         when(paymentFinder.findByExternalId(externalId)).thenReturn(Optional.empty());
 
@@ -68,7 +68,7 @@ public class PaymentFinderTest {
     }
 
     @Test
-    public void shouldReturnAList_whenFoundByProductExternalId() throws Exception{
+    public void shouldReturnAList_whenFoundByProductExternalId() {
         String productExternalId = randomUuid();
         String paymentExternalId_1 = randomUuid();
         String paymentExternalId_2 = randomUuid();
@@ -110,7 +110,7 @@ public class PaymentFinderTest {
     }
 
     @Test
-    public void shouldReturnAnEmptyList_whenThereQueriedByProductExternalIdAndThereAreNoCorrespondingPayments() throws Exception {
+    public void shouldReturnAnEmptyList_whenThereQueriedByProductExternalIdAndThereAreNoCorrespondingPayments() {
         String productExternalId = randomUuid();
         List<PaymentEntity> paymentList = new ArrayList<>();
         when(paymentDao.findByProductExternalId(productExternalId)).thenReturn(paymentList);
@@ -121,7 +121,7 @@ public class PaymentFinderTest {
     }
 
     @Test
-    public void shouldReturnPaymentWithExternalStatus_whenFoundByExternalIdAndStatusIsSubmitted() throws Exception {
+    public void shouldReturnPaymentWithExternalStatus_whenFoundByExternalIdAndStatusIsSubmitted() {
         String externalId = randomUuid();
         PaymentEntity paymentEntity = new PaymentEntity();
         ProductEntity productEntity = ProductEntityFixture.aProductEntity().build();
@@ -143,7 +143,7 @@ public class PaymentFinderTest {
     }
 
     @Test
-    public void shouldReturnPaymentWithNoExternalStatus_whenFoundByExternalIdAndStatusIsCreated() throws Exception {
+    public void shouldReturnPaymentWithNoExternalStatus_whenFoundByExternalIdAndStatusIsCreated() {
         String externalId = randomUuid();
         PaymentEntity paymentEntity = new PaymentEntity();
         ProductEntity productEntity = ProductEntityFixture.aProductEntity().build();
@@ -161,7 +161,7 @@ public class PaymentFinderTest {
     }
 
     @Test
-    public void shouldReturnPaymentWithNoExternalStatus_whenFoundByExternalIdAndStatusIsError() throws Exception {
+    public void shouldReturnPaymentWithNoExternalStatus_whenFoundByExternalIdAndStatusIsError() {
         String externalId = randomUuid();
         PaymentEntity paymentEntity = new PaymentEntity();
         ProductEntity productEntity = ProductEntityFixture.aProductEntity().build();

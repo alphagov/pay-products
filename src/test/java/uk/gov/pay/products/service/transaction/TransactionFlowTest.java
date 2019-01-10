@@ -11,7 +11,7 @@ import static org.mockito.Mockito.verify;
 public class TransactionFlowTest {
 
     @Test
-    public void shouldExecuteANonTransactionalOperationAndPreserveResultInContext() throws Exception {
+    public void shouldExecuteANonTransactionalOperationAndPreserveResultInContext() {
         TransactionContext mockContext = mock(TransactionContext.class);
         TransactionFlow flow = new TransactionFlow(mockContext);
         flow.executeNext((NonTransactionalOperation<TransactionContext, String>) ctx -> "Foo");
@@ -21,7 +21,7 @@ public class TransactionFlowTest {
     }
 
     @Test
-    public void shouldExecuteATransactionalOperationAndPreserveResultInContext() throws Exception {
+    public void shouldExecuteATransactionalOperationAndPreserveResultInContext() {
         TransactionContext mockContext = mock(TransactionContext.class);
         TransactionFlow flow = new TransactionFlow(mockContext);
         flow.executeNext((TransactionalOperation<TransactionContext, String>) ctx -> "Bar");
@@ -31,14 +31,14 @@ public class TransactionFlowTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void shouldErrorIfProvidedOperationIsNull_forTransactionalOperation() throws Exception {
+    public void shouldErrorIfProvidedOperationIsNull_forTransactionalOperation() {
         TransactionContext mockContext = mock(TransactionContext.class);
         TransactionFlow flow = new TransactionFlow(mockContext);
         flow.executeNext((TransactionalOperation<TransactionContext, String>) null);
     }
 
     @Test(expected = NullPointerException.class)
-    public void shouldErrorIfProvidedOperationIsNull_forNonTransactionalOperation() throws Exception {
+    public void shouldErrorIfProvidedOperationIsNull_forNonTransactionalOperation() {
         TransactionContext mockContext = mock(TransactionContext.class);
         TransactionFlow flow = new TransactionFlow(mockContext);
         flow.executeNext((NonTransactionalOperation<TransactionContext, String>) null);

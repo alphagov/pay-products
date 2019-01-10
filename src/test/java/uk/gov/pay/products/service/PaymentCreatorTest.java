@@ -72,13 +72,13 @@ public class PaymentCreatorTest {
     public ExpectedException thrown = ExpectedException.none();
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         LinksDecorator linksDecorator = new LinksDecorator(PRODUCT_URL, PRODUCT_UI_URL, FRIENDLY_URL);
         paymentCreator = new PaymentCreator(TransactionFlow::new, productDao, paymentDao, publicApiRestClient, linksDecorator, productsConfiguration);
     }
 
     @Test
-    public void shouldCreateASuccessfulPayment_whenReturnUrlIsPresent() throws Exception {
+    public void shouldCreateASuccessfulPayment_whenReturnUrlIsPresent() {
         PowerMockito.mockStatic(RandomIdGenerator.class);
         int productId = 1;
         String productExternalId = "product-external-id";
@@ -149,7 +149,7 @@ public class PaymentCreatorTest {
     }
 
     @Test
-    public void shouldCreateASuccessfulPayment_whenReturnUrlIsNotPresent() throws Exception {
+    public void shouldCreateASuccessfulPayment_whenReturnUrlIsNotPresent() {
         PowerMockito.mockStatic(RandomIdGenerator.class);
 
         int productId = 1;
@@ -219,7 +219,7 @@ public class PaymentCreatorTest {
     }
 
     @Test
-    public void shouldCreateASuccessfulPayment_withUserDefinedReference_whenReferencePresent() throws Exception {
+    public void shouldCreateASuccessfulPayment_withUserDefinedReference_whenReferencePresent() {
         PowerMockito.mockStatic(RandomIdGenerator.class);
         
         int productId = 1;
@@ -281,7 +281,7 @@ public class PaymentCreatorTest {
     }
 
     @Test
-    public void shouldCreateASuccessfulPayment_withOverridePrice_whenPriceOverridePresent() throws Exception {
+    public void shouldCreateASuccessfulPayment_withOverridePrice_whenPriceOverridePresent() {
         PowerMockito.mockStatic(RandomIdGenerator.class);
         int productId = 1;
         String productExternalId = "product-external-id";
@@ -341,7 +341,7 @@ public class PaymentCreatorTest {
     }
 
     @Test
-    public void shouldCreateAnErrorPayment_whenPublicApiCallFails() throws Exception {
+    public void shouldCreateAnErrorPayment_whenPublicApiCallFails() {
         PowerMockito.mockStatic(RandomIdGenerator.class);
 
         int productId = 1;
@@ -395,7 +395,7 @@ public class PaymentCreatorTest {
     }
 
     @Test
-    public void shouldThrowPaymentCreatorNotFoundException_whenProductIsNotFound() throws Exception {
+    public void shouldThrowPaymentCreatorNotFoundException_whenProductIsNotFound() {
         String productExternalId = "product-external-id";
 
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.empty());

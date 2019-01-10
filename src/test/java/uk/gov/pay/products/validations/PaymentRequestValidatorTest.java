@@ -20,12 +20,12 @@ public class PaymentRequestValidatorTest {
     private PaymentRequestValidator requestValidator;
 
     @Before
-    public void before() throws Exception {
+    public void before() {
         requestValidator = new PaymentRequestValidator(new RequestValidations());
     }
 
     @Test
-    public void shouldSuccess_onCreatePayment_ifJsonPayloadIsNull() throws Exception {
+    public void shouldSuccess_onCreatePayment_ifJsonPayloadIsNull() {
         Optional<Errors> errors = requestValidator.validatePriceOverrideRequest(null);
         assertFalse(errors.isPresent());
     }
@@ -37,13 +37,13 @@ public class PaymentRequestValidatorTest {
     }
 
     @Test
-    public void shouldSuccess_onCreatePayment_ifJsonPayloadHasValidPrice() throws Exception {
+    public void shouldSuccess_onCreatePayment_ifJsonPayloadHasValidPrice() {
         Optional<Errors> errors = requestValidator.validatePriceOverrideRequest(objectMapper.valueToTree(ImmutableMap.of("price", "1900")));
         assertFalse(errors.isPresent());
     }
 
     @Test
-    public void shouldError_onCreatePayment_ifJsonPayloadHasInvalidField() throws Exception {
+    public void shouldError_onCreatePayment_ifJsonPayloadHasInvalidField() {
         Optional<Errors> errors = requestValidator.validatePriceOverrideRequest(objectMapper.valueToTree(ImmutableMap.of("blah", "1900")));
         assertTrue(errors.isPresent());
 
@@ -52,7 +52,7 @@ public class PaymentRequestValidatorTest {
     }
 
     @Test
-    public void shouldError_onCreatePayment_ifJsonPayloadHasNonNumeric() throws Exception {
+    public void shouldError_onCreatePayment_ifJsonPayloadHasNonNumeric() {
         Optional<Errors> errors = requestValidator.validatePriceOverrideRequest(objectMapper.valueToTree(ImmutableMap.of("price", "blah")));
         assertTrue(errors.isPresent());
 
@@ -61,7 +61,7 @@ public class PaymentRequestValidatorTest {
     }
 
     @Test
-    public void shouldError_onCreatePayment_ifJsonPayloadBiggerThanMaxAmount() throws Exception {
+    public void shouldError_onCreatePayment_ifJsonPayloadBiggerThanMaxAmount() {
         Optional<Errors> errors = requestValidator.validatePriceOverrideRequest(objectMapper.valueToTree(ImmutableMap.of("price", "100000001")));
         assertTrue(errors.isPresent());
 

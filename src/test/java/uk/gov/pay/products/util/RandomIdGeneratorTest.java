@@ -8,7 +8,7 @@ import static org.hamcrest.core.Is.is;
 public class RandomIdGeneratorTest {
 
     @Test
-    public void shouldGenerateARandomUserFriendlyReference() throws Exception {
+    public void shouldGenerateARandomUserFriendlyReference() {
         String reference = RandomIdGenerator.randomUserFriendlyReference();
         assertThat(reference.length(), is(10));
 

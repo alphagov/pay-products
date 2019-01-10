@@ -40,7 +40,7 @@ public class PaymentDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void shouldSuccess_whenFindingAValidPayment() throws Exception {
+    public void shouldSuccess_whenFindingAValidPayment() {
         PaymentEntity payment = PaymentEntityFixture.aPaymentEntity()
                 .withExternalId(randomUuid())
                 .withStatus(PaymentStatus.CREATED)
@@ -61,7 +61,7 @@ public class PaymentDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void shouldSuccess_whenSavingAValidPayment() throws Exception {
+    public void shouldSuccess_whenSavingAValidPayment() {
         String externalId = randomUuid();
 
         PaymentEntity payment = PaymentEntityFixture.aPaymentEntity()
@@ -79,7 +79,7 @@ public class PaymentDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void shouldSuccess_whenSearchingForPaymentsByProductId() throws Exception{
+    public void shouldSuccess_whenSearchingForPaymentsByProductId() {
         Integer gatewayAccountId = randomInt();
         PaymentEntity payment1 = PaymentEntityFixture.aPaymentEntity()
                 .withExternalId(randomUuid())

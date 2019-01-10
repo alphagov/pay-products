@@ -25,9 +25,8 @@ public class DaoTestBase {
     @ClassRule
     public static PostgresDockerRule postgres = new PostgresDockerRule();
 
-    protected static DatabaseTestHelper databaseHelper;
-    private static JpaPersistModule jpaModule;
-    protected static GuicedTestEnvironment env;
+    static DatabaseTestHelper databaseHelper;
+    static GuicedTestEnvironment env;
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -37,19 +36,14 @@ public class DaoTestBase {
         properties.put("javax.persistence.jdbc.user", postgres.getUsername());
         properties.put("javax.persistence.jdbc.password", postgres.getPassword());
 
-        jpaModule = new JpaPersistModule("ProductsUnit");
+        JpaPersistModule jpaModule = new JpaPersistModule("ProductsUnit");
         jpaModule.properties(properties);
 
         databaseHelper = new DatabaseTestHelper(new DBI(postgres.getConnectionUrl(), postgres.getUsername(), postgres.getPassword()));
 
-        Connection connection = null;
-        try {
-            connection = DriverManager.getConnection(postgres.getConnectionUrl(), postgres.getUsername(), postgres.getPassword());
+        try (Connection connection = DriverManager.getConnection(postgres.getConnectionUrl(), postgres.getUsername(), postgres.getPassword())) {
             Liquibase migrator = new Liquibase("migrations.xml", new ClassLoaderResourceAccessor(), new JdbcConnection(connection));
             migrator.update("");
-        } finally {
-            if(connection != null)
-                connection.close();
         }
 
         env = GuicedTestEnvironment.from(jpaModule).start();
@@ -57,14 +51,11 @@ public class DaoTestBase {
 
     @AfterClass
     public static void tearDown() {
-        Connection connection = null;
-        try {
-            connection = DriverManager.getConnection(postgres.getConnectionUrl(), postgres.getUsername(), postgres.getPassword());
+        try (Connection connection = DriverManager.getConnection(postgres.getConnectionUrl(), postgres.getUsername(), postgres.getPassword())) {
             Liquibase migrator = new Liquibase("migrations.xml", new ClassLoaderResourceAccessor(), new JdbcConnection(connection));
             migrator.dropAll();
-            connection.close();
         } catch (Exception e) {
-            logger.error("Error stopping docker", e);
+            logger.error("Error reverting migrations", e);
         }
         env.stop();
     }

@@ -12,7 +12,6 @@ import uk.gov.pay.products.utils.DatabaseTestHelper;
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import static io.restassured.http.Headers.headers;
 
 public class IntegrationTest {
 

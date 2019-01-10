@@ -8,11 +8,9 @@ import uk.gov.pay.products.persistence.entity.PaymentEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.PaymentStatus;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Objects.isNull;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;

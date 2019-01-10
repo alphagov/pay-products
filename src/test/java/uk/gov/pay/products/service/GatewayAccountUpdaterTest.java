@@ -5,19 +5,13 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.products.model.PatchRequest;
-import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.dao.ProductDao;
-import uk.gov.pay.products.persistence.entity.ProductEntity;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class GatewayAccountUpdaterTest {

@@ -2,7 +2,6 @@ package uk.gov.pay.products.persistence.dao;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import uk.gov.pay.products.model.PatchRequest;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductStatus;
 

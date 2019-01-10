@@ -10,7 +10,6 @@ import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseContext;
 import javax.ws.rs.client.ClientResponseFilter;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;

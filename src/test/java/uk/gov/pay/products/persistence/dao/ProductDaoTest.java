@@ -29,7 +29,7 @@ public class ProductDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void findByExternalId_shouldReturnAProduct_whenExists() throws Exception {
+    public void findByExternalId_shouldReturnAProduct_whenExists() {
         String externalId = randomUuid();
         Integer gatewayAccountId = randomInt();
 
@@ -47,7 +47,7 @@ public class ProductDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void findByExternalId_shouldNotReturnAProduct_whenDoesNotExist() throws Exception {
+    public void findByExternalId_shouldNotReturnAProduct_whenDoesNotExist() {
         String externalId = "xxx";
         String anotherExternalId = "yyy";
         Integer gatewayAccountId = randomInt();
@@ -65,7 +65,7 @@ public class ProductDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void findByGatewayAccountIdAndExternalId_shouldReturnAProduct_whenExists() throws Exception {
+    public void findByGatewayAccountIdAndExternalId_shouldReturnAProduct_whenExists() {
         String externalId = randomUuid();
         Integer gatewayAccountId = randomInt();
 
@@ -83,7 +83,7 @@ public class ProductDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void findByGatewayAccountIdAndExternalId_shouldNotReturnAProduct_whenDoesNotExist() throws Exception {
+    public void findByGatewayAccountIdAndExternalId_shouldNotReturnAProduct_whenDoesNotExist() {
         String externalId = randomUuid();
         Integer gatewayAccountId = 0;
         Integer anotherGatewayAccountId = 1;
@@ -102,7 +102,7 @@ public class ProductDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void findByGatewayAccountId_shouldReturnActiveProductsForTheGivenAccount() throws Exception {
+    public void findByGatewayAccountId_shouldReturnActiveProductsForTheGivenAccount() {
         String externalId = randomUuid();
         Integer gatewayAccountId = randomInt();
 
@@ -128,7 +128,7 @@ public class ProductDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void persist_shouldSucceed_whenTheProductIsValid() throws Exception {
+    public void persist_shouldSucceed_whenTheProductIsValid() {
         String externalId = randomUuid();
         Integer gatewayAccountId = randomInt();
 
@@ -146,7 +146,7 @@ public class ProductDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void updateGatewayAccount_shouldUpdateTheServiceNameOfAllProductOfGivenGatewayAccount() throws Exception {
+    public void updateGatewayAccount_shouldUpdateTheServiceNameOfAllProductOfGivenGatewayAccount() {
         Integer gatewayAccountId = randomInt();
         Integer anotherGatewayAccountId = randomInt();
         String oldServiceName = "Old Service Name";
@@ -190,7 +190,7 @@ public class ProductDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void findByProductPath_shouldReturnAProduct_whenExists() throws Exception {
+    public void findByProductPath_shouldReturnAProduct_whenExists() {
         String externalId = randomUuid();
         Integer gatewayAccountId = randomInt();
         String serviceNamePath = randomAlphanumeric(40);
@@ -211,7 +211,7 @@ public class ProductDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void findByProductPath_shouldNotReturnAProduct_whenDoesNotExists() throws Exception {
+    public void findByProductPath_shouldNotReturnAProduct_whenDoesNotExists() {
         String externalId = randomUuid();
         Integer gatewayAccountId = randomInt();
         String serviceNamePath = randomAlphanumeric(40);

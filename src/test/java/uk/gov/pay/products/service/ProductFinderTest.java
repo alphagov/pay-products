@@ -28,13 +28,13 @@ public class ProductFinderTest {
     private LinksDecorator linksDecorator;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         linksDecorator = new LinksDecorator("http://localhost", "http://localhost/pay", "http://localhost/payments");
         productFinder = new ProductFinder(productDao, linksDecorator);
     }
 
     @Test
-    public void findByExternalId_shouldReturnProduct_whenFound() throws Exception{
+    public void findByExternalId_shouldReturnProduct_whenFound() {
         String externalId = "1";
         ProductEntity productEntity = new ProductEntity();
         productEntity.setExternalId(externalId);
@@ -48,7 +48,7 @@ public class ProductFinderTest {
     }
 
     @Test
-    public void findByExternalId_shouldReturnEmpty_whenNotFound() throws Exception {
+    public void findByExternalId_shouldReturnEmpty_whenNotFound() {
         String externalId = "1";
         when(productDao.findByExternalId(externalId)).thenReturn(Optional.empty());
 
@@ -58,7 +58,7 @@ public class ProductFinderTest {
     }
 
     @Test
-    public void findByGatewayAccountIdAndExternalId_shouldReturnProduct_whenFound() throws Exception{
+    public void findByGatewayAccountIdAndExternalId_shouldReturnProduct_whenFound() {
         Integer gatewayAccountId = 1;
         String externalId = "1";
         ProductEntity productEntity = new ProductEntity();
@@ -74,7 +74,7 @@ public class ProductFinderTest {
     }
 
     @Test
-    public void findByGatewayAccountIdAndExternalId_shouldReturnEmpty_whenNotFound() throws Exception {
+    public void findByGatewayAccountIdAndExternalId_shouldReturnEmpty_whenNotFound() {
         Integer gatewayAccountId = 1;
         String externalId = "1";
         when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.empty());
@@ -85,7 +85,7 @@ public class ProductFinderTest {
     }
 
     @Test
-    public void disableByExternalId_shouldDisableProduct_whenFound() throws Exception{
+    public void disableByExternalId_shouldDisableProduct_whenFound() {
         String externalId = "1";
         ProductEntity productEntity = new ProductEntity();
         productEntity.setExternalId(externalId);
@@ -103,7 +103,7 @@ public class ProductFinderTest {
     }
 
     @Test
-    public void disableByExternalId_shouldReturnEmpty_whenNotFound() throws Exception{
+    public void disableByExternalId_shouldReturnEmpty_whenNotFound() {
         String externalId = "1";
         ProductEntity productEntity = new ProductEntity();
         productEntity.setExternalId(externalId);
@@ -115,7 +115,7 @@ public class ProductFinderTest {
     }
 
     @Test
-    public void deleteByExternalId_shouldDeleteProduct_whenFound() throws Exception{
+    public void deleteByExternalId_shouldDeleteProduct_whenFound() {
         String externalId = "1";
         ProductEntity productEntity = new ProductEntity();
         productEntity.setExternalId(externalId);
@@ -132,7 +132,7 @@ public class ProductFinderTest {
     }
 
     @Test
-    public void deleteByExternalId_shouldReturnFalse_whenNotFound() throws Exception{
+    public void deleteByExternalId_shouldReturnFalse_whenNotFound() {
         String externalId = "1";
         ProductEntity productEntity = new ProductEntity();
         productEntity.setExternalId(externalId);
@@ -144,7 +144,7 @@ public class ProductFinderTest {
     }
 
     @Test
-    public void disableByGatewayAccountIdAndExternalId_shouldDisableProduct_whenFound() throws Exception{
+    public void disableByGatewayAccountIdAndExternalId_shouldDisableProduct_whenFound() {
         Integer gatewayAccountId = 1;
         String externalId = "1";
         ProductEntity productEntity = new ProductEntity();
@@ -164,7 +164,7 @@ public class ProductFinderTest {
     }
 
     @Test
-    public void deleteByGatewayAccountIdAndExternalId_shouldDeleteProduct_whenFound() throws Exception{
+    public void deleteByGatewayAccountIdAndExternalId_shouldDeleteProduct_whenFound() {
         Integer gatewayAccountId = 1;
         String externalId = "1";
         ProductEntity productEntity = new ProductEntity();
@@ -183,7 +183,7 @@ public class ProductFinderTest {
     }
 
     @Test
-    public void deleteByGatewayAccountIdAndExternalId_shouldReturnFalse_whenNotFound() throws Exception{
+    public void deleteByGatewayAccountIdAndExternalId_shouldReturnFalse_whenNotFound() {
         Integer gatewayAccountId = 1;
         String externalId = "1";
         when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.empty());
@@ -194,7 +194,7 @@ public class ProductFinderTest {
     }
 
     @Test
-    public void disableByGatewayAccountIdAndExternalId_shouldReturnEmpty_whenNotFound() throws Exception{
+    public void disableByGatewayAccountIdAndExternalId_shouldReturnEmpty_whenNotFound() {
         Integer gatewayAccountId = 1;
         String externalId = "1";
         when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.empty());
@@ -205,7 +205,7 @@ public class ProductFinderTest {
     }
 
     @Test
-    public void findByProductPath_shouldReturnProduct_whenFound() throws Exception {
+    public void findByProductPath_shouldReturnProduct_whenFound() {
         String externalId = "1";
         String serviceNamePath = "service-name-path";
         String productNamePath = "product-name-path";
@@ -225,7 +225,7 @@ public class ProductFinderTest {
     }
 
     @Test
-    public void findByProductPath_shouldReturnEmpty_whenNotFound() throws Exception {
+    public void findByProductPath_shouldReturnEmpty_whenNotFound() {
         String serviceNamePath = "service-name-path";
         String productNamePath = "product-name-path";
         when(productDao.findByProductPath(serviceNamePath, productNamePath)).thenReturn(Optional.empty());

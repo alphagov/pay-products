@@ -38,7 +38,7 @@ public class ProductCreatorTest {
     private static final String SERVICE_NAME = "Example Service";
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         LinksDecorator linksDecorator = new LinksDecorator("http://localhost", "http://localhost/pay", "http://localhost/payments");
         productCreator = new ProductCreator(productDao, linksDecorator);
         gatewayAccountId = randomInt();
@@ -46,7 +46,7 @@ public class ProductCreatorTest {
     }
 
     @Test
-    public void shouldSuccess_whenProvidedAProductWithMinimumRequiredFields() throws Exception {
+    public void shouldSuccess_whenProvidedAProductWithMinimumRequiredFields() {
         Product basicProduct = new Product(
                 null,
                 PRODUCT_NAME,
@@ -83,7 +83,7 @@ public class ProductCreatorTest {
     }
 
     @Test
-    public void shouldSuccess_whenProvidedAllFields() throws Exception {
+    public void shouldSuccess_whenProvidedAllFields() {
         String description = "Test description";
         String returnUrl = "http://my-return-url.com";
         String serviceNamePath = "service-name-path";

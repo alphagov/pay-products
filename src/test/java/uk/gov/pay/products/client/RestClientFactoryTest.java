@@ -45,7 +45,7 @@ public class RestClientFactoryTest {
     }
 
     @Test
-    public void jerseyClient_shouldUseSSLWhenSecureInternalCommunicationIsOn() throws Exception {
+    public void jerseyClient_shouldUseSSLWhenSecureInternalCommunicationIsOn() {
         //given
         RestClientConfiguration clientConfiguration = mock(RestClientConfiguration.class);
         when(clientConfiguration.isDisabledSecureConnection()).thenReturn(false);
@@ -60,7 +60,7 @@ public class RestClientFactoryTest {
     }
 
     @Test
-    public void jerseyClient_shouldNotUseSSLWhenSecureInternalCommunicationIsOff() throws Exception {
+    public void jerseyClient_shouldNotUseSSLWhenSecureInternalCommunicationIsOff() {
         //given
         RestClientConfiguration clientConfiguration = mock(RestClientConfiguration.class);
         when(clientConfiguration.isDisabledSecureConnection()).thenReturn(true);

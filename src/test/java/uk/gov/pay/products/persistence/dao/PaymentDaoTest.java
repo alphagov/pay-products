@@ -8,11 +8,9 @@ import uk.gov.pay.products.persistence.entity.PaymentEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.PaymentStatus;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Objects.isNull;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -40,7 +38,7 @@ public class PaymentDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void shouldSuccess_whenFindingAValidPayment() throws Exception {
+    public void shouldSuccess_whenFindingAValidPayment() {
         PaymentEntity payment = PaymentEntityFixture.aPaymentEntity()
                 .withExternalId(randomUuid())
                 .withStatus(PaymentStatus.CREATED)
@@ -61,7 +59,7 @@ public class PaymentDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void shouldSuccess_whenSavingAValidPayment() throws Exception {
+    public void shouldSuccess_whenSavingAValidPayment() {
         String externalId = randomUuid();
 
         PaymentEntity payment = PaymentEntityFixture.aPaymentEntity()
@@ -79,7 +77,7 @@ public class PaymentDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void shouldSuccess_whenSearchingForPaymentsByProductId() throws Exception{
+    public void shouldSuccess_whenSearchingForPaymentsByProductId() {
         Integer gatewayAccountId = randomInt();
         PaymentEntity payment1 = PaymentEntityFixture.aPaymentEntity()
                 .withExternalId(randomUuid())

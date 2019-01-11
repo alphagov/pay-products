@@ -14,7 +14,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.mockserver.model.HttpRequest.request;
 
 public class PublicApiStub {
-    public static final String API_VERSION_PATH = "/v1";
+    private static final String API_VERSION_PATH = "/v1";
     private static final String PAYMENTS_PATH = API_VERSION_PATH + "/payments";
     private static final String PAYMENT_PATH = PAYMENTS_PATH + "/%s";
 
@@ -52,8 +52,8 @@ public class PublicApiStub {
                 .add("refund_summary",
                         Json.createObjectBuilder()
                                 .add("status", "available")
-                                .add("amount_available", 1000l)
-                                .add("amount_submitted", 2000l))
+                                .add("amount_available", 1000L)
+                                .add("amount_submitted", 2000L))
                 .add("settlement_summary",
                         Json.createObjectBuilder()
                                 .add("capture_submit_time", "2016-01-21T17:15:00Z")

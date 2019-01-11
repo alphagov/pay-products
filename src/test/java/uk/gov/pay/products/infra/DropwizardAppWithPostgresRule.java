@@ -38,10 +38,6 @@ public class DropwizardAppWithPostgresRule implements TestRule {
 
     private DatabaseTestHelper databaseTestHelper;
 
-    public DropwizardAppWithPostgresRule() {
-        this("config/test-it-config.yaml");
-    }
-
     public DropwizardAppWithPostgresRule(String configPath, ConfigOverride... configOverrides) {
         configFilePath = resourceFilePath(configPath);
         postgres = new PostgresDockerRule();
@@ -53,7 +49,7 @@ public class DropwizardAppWithPostgresRule implements TestRule {
         app = new DropwizardAppRule<>(
                 ProductsApplication.class,
                 configFilePath,
-                cfgOverrideList.toArray(new ConfigOverride[cfgOverrideList.size()])
+                cfgOverrideList.toArray(new ConfigOverride[0])
         );
         rules = RuleChain.outerRule(postgres).around(app);
         registerShutdownHook();
@@ -78,14 +74,9 @@ public class DropwizardAppWithPostgresRule implements TestRule {
     }
 
     private void doDatabaseMigration() throws SQLException, LiquibaseException {
-        Connection connection = null;
-        try {
-            connection = DriverManager.getConnection(postgres.getConnectionUrl(), postgres.getUsername(), postgres.getPassword());
+        try (Connection connection = DriverManager.getConnection(postgres.getConnectionUrl(), postgres.getUsername(), postgres.getPassword())) {
             Liquibase migrator = new Liquibase("migrations.xml", new ClassLoaderResourceAccessor(), new JdbcConnection(connection));
             migrator.update("");
-        } finally {
-            if (connection != null)
-                connection.close();
         }
     }
 
@@ -98,9 +89,7 @@ public class DropwizardAppWithPostgresRule implements TestRule {
     }
 
     private void registerShutdownHook() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            postgres.stop();
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(postgres::stop));
     }
 
     private void restoreDropwizardsLogging() {

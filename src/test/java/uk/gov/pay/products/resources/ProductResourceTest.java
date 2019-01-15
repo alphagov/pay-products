@@ -337,7 +337,7 @@ public class ProductResourceTest extends IntegrationTest {
     public void findProductByExternalId_shouldReturn404_whenNotFound() {
         givenSetup()
                 .accept(APPLICATION_JSON)
-                .get(format("/v1/api/products/%s", randomInt(), randomUuid()))
+                .get("/v1/api/products/999999999")
                 .then()
                 .statusCode(404);
     }

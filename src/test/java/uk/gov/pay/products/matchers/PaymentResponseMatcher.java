@@ -24,7 +24,7 @@ public class PaymentResponseMatcher {
 
                 boolean matched = true;
                 matched = matched && StringUtils.equals(actualPaymentResponse.getPaymentId(), expectedPaymentResponse.getString("payment_id"));
-                matched = matched && (actualPaymentResponse.getAmount() == Long.valueOf(expectedPaymentResponse.getInt("amount")));
+                matched = matched && (actualPaymentResponse.getAmount() == (long) expectedPaymentResponse.getInt("amount"));
 
                 JsonObject expectedState = expectedPaymentResponse.getJsonObject("state");
                 PaymentState actualState = actualPaymentResponse.getState();
@@ -48,8 +48,8 @@ public class PaymentResponseMatcher {
                 if (actualRefundSummary == null) return false;
 
                 matched = matched && StringUtils.equals(actualRefundSummary.getStatus(), expectedRefundSummary.getString("status"));
-                matched = matched && (actualRefundSummary.getAmountAvailable() == Long.valueOf(expectedRefundSummary.getInt("amount_available")));
-                matched = matched && (actualRefundSummary.getAmountSubmitted() == Long.valueOf(expectedRefundSummary.getInt("amount_submitted")));
+                matched = matched && (actualRefundSummary.getAmountAvailable() == (long) expectedRefundSummary.getInt("amount_available"));
+                matched = matched && (actualRefundSummary.getAmountSubmitted() == (long) expectedRefundSummary.getInt("amount_submitted"));
 
                 JsonObject expectedSettlementSummary = expectedPaymentResponse.getJsonObject("settlement_summary");
                 SettlementSummary actualSettlementSummary = actualPaymentResponse.getSettlementSummary();

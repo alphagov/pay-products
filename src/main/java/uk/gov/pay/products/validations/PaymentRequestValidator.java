@@ -33,9 +33,6 @@ public class PaymentRequestValidator {
             return Optional.of(Errors.from(errors.get()));
         }
         errors = requestValidations.checkIsBelowMaxAmount(payload, FIELD_PRICE);
-        if (errors.isPresent()) {
-            return Optional.of(Errors.from(errors.get()));
-        }
-        return Optional.empty();
+        return errors.map(Errors::from);
     }
 }

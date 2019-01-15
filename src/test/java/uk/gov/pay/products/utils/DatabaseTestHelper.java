@@ -15,7 +15,7 @@ public class DatabaseTestHelper {
         this.jdbi = jdbi;
     }
 
-    public DatabaseTestHelper addProduct(Product product) {
+    public void addProduct(Product product) {
         jdbi.withHandle(handle -> handle.createStatement("INSERT INTO products " +
                 "(external_id, name, description, pay_api_token, price, " +
                 "status, return_url, type, gateway_account_id, service_name, " +
@@ -43,10 +43,9 @@ public class DatabaseTestHelper {
                 .bind("reference_hint", product.getReferenceHint())
                 .execute());
 
-        return this;
     }
 
-    public DatabaseTestHelper addPayment(Payment payment, Integer gatewayAccountId) {
+    public void addPayment(Payment payment, Integer gatewayAccountId) {
         jdbi.withHandle(handle -> handle.createStatement("INSERT INTO payments " +
                 "(external_id, govuk_payment_id, next_url, product_id, status, amount, gateway_account_id, reference_number)" +
                 "VALUES " +
@@ -61,7 +60,6 @@ public class DatabaseTestHelper {
                 .bind("reference_number", payment.getReferenceNumber())
                 .execute());
 
-        return this;
     }
 
     public Integer findProductId(String externalId){

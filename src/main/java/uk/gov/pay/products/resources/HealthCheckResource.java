@@ -19,7 +19,7 @@ import java.util.SortedMap;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.status;
-import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 @Path("/")
 public class HealthCheckResource {
@@ -64,7 +64,7 @@ public class HealthCheckResource {
         for (SortedMap.Entry<String, HealthCheck.Result> entry : results.entrySet()) {
             response.put(entry.getKey(), ImmutableMap.of(
                     HEALTHY, entry.getValue().isHealthy(),
-                    MESSAGE, isBlank(entry.getValue().getMessage()) ? "Healthy" : entry.getValue().getMessage()));
+                    MESSAGE, defaultIfBlank(entry.getValue().getMessage(), "Healthy")));
         }
         return response;
     }

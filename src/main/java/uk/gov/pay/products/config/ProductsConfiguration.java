@@ -38,8 +38,7 @@ public class ProductsConfiguration extends Configuration {
     private String friendlyBaseUri;
 
     public String getVcapServices() {
-        String vcapServices = System.getenv("VCAP_SERVICES");
-        return vcapServices;
+        return System.getenv("VCAP_SERVICES");
     }
 
     @Valid

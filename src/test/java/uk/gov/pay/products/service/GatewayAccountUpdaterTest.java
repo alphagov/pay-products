@@ -7,7 +7,7 @@ import org.junit.Test;
 import uk.gov.pay.products.model.PatchRequest;
 import uk.gov.pay.products.persistence.dao.ProductDao;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -46,7 +46,7 @@ public class GatewayAccountUpdaterTest {
                 "path", "service_name",
                 "value", serviceName)));
 
-        when(productDao.findByGatewayAccountId(gatewayAccountId)).thenReturn(Arrays.asList());
+        when(productDao.findByGatewayAccountId(gatewayAccountId)).thenReturn(Collections.emptyList());
         Boolean success = updater.doPatch(gatewayAccountId, request);
         assertThat(success, is(false));
     }

@@ -82,7 +82,7 @@ public class ProductFinder {
                 .map(ProductEntity::toProduct)
                 .collect(Collectors.toList())
                 .stream()
-                .map(product -> linksDecorator.decorate(product))
+                .map(linksDecorator::decorate)
                 .collect(Collectors.toList());
     }
 

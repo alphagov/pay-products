@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
@@ -42,7 +41,7 @@ public class PatchRequest {
         if (value != null && value.isArray()) {
             return newArrayList(value.elements())
                     .stream()
-                    .map(node -> node.textValue())
+                    .map(JsonNode::textValue)
                     .collect(toList());
         }
         return null;
@@ -54,7 +53,7 @@ public class PatchRequest {
                 try {
                     return new ObjectMapper().readValue(value.traverse(), new TypeReference<Map<String, String>>() {});
                 } catch (IOException e) {
-                    throw new RuntimeException(format("Malformed JSON object in PatchRequest.value"), e);
+                    throw new RuntimeException("Malformed JSON object in PatchRequest.value", e);
                 }
             }
         }

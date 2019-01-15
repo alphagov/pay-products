@@ -1,6 +1,5 @@
 package uk.gov.pay.products.infra;
 
-import com.google.inject.persist.jpa.JpaPersistModule;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.testing.ConfigOverride;
 import io.dropwizard.testing.junit.DropwizardAppRule;
@@ -24,7 +23,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Properties;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static io.dropwizard.testing.ConfigOverride.config;
@@ -32,7 +30,6 @@ import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 
 public class DropwizardAppWithPostgresRule implements TestRule {
     private static final Logger logger = LoggerFactory.getLogger(DropwizardAppWithPostgresRule.class);
-    private static final String JPA_UNIT = "ProductsUnit";
 
     private final String configFilePath;
     private final PostgresDockerRule postgres;
@@ -40,10 +37,6 @@ public class DropwizardAppWithPostgresRule implements TestRule {
     private final RuleChain rules;
 
     private DatabaseTestHelper databaseTestHelper;
-
-    public DropwizardAppWithPostgresRule() {
-        this("config/test-it-config.yaml");
-    }
 
     public DropwizardAppWithPostgresRule(String configPath, ConfigOverride... configOverrides) {
         configFilePath = resourceFilePath(configPath);
@@ -56,9 +49,8 @@ public class DropwizardAppWithPostgresRule implements TestRule {
         app = new DropwizardAppRule<>(
                 ProductsApplication.class,
                 configFilePath,
-                cfgOverrideList.toArray(new ConfigOverride[cfgOverrideList.size()])
+                cfgOverrideList.toArray(new ConfigOverride[0])
         );
-        createJpaModule(postgres);
         rules = RuleChain.outerRule(postgres).around(app);
         registerShutdownHook();
     }
@@ -82,14 +74,9 @@ public class DropwizardAppWithPostgresRule implements TestRule {
     }
 
     private void doDatabaseMigration() throws SQLException, LiquibaseException {
-        Connection connection = null;
-        try {
-            connection = DriverManager.getConnection(postgres.getConnectionUrl(), postgres.getUsername(), postgres.getPassword());
+        try (Connection connection = DriverManager.getConnection(postgres.getConnectionUrl(), postgres.getUsername(), postgres.getPassword())) {
             Liquibase migrator = new Liquibase("migrations.xml", new ClassLoaderResourceAccessor(), new JdbcConnection(connection));
             migrator.update("");
-        } finally {
-            if (connection != null)
-                connection.close();
         }
     }
 
@@ -102,22 +89,7 @@ public class DropwizardAppWithPostgresRule implements TestRule {
     }
 
     private void registerShutdownHook() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            postgres.stop();
-        }));
-    }
-
-    private JpaPersistModule createJpaModule(final PostgresDockerRule postgres) {
-        final Properties properties = new Properties();
-        properties.put("javax.persistence.jdbc.driver", postgres.getDriverClass());
-        properties.put("javax.persistence.jdbc.url", postgres.getConnectionUrl());
-        properties.put("javax.persistence.jdbc.user", postgres.getUsername());
-        properties.put("javax.persistence.jdbc.password", postgres.getPassword());
-
-        final JpaPersistModule jpaModule = new JpaPersistModule(JPA_UNIT);
-        jpaModule.properties(properties);
-
-        return jpaModule;
+        Runtime.getRuntime().addShutdownHook(new Thread(postgres::stop));
     }
 
     private void restoreDropwizardsLogging() {

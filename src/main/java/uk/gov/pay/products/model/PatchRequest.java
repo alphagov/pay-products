@@ -41,7 +41,7 @@ public class PatchRequest {
         if (value != null && value.isArray()) {
             return newArrayList(value.elements())
                     .stream()
-                    .map(node -> node.textValue())
+                    .map(JsonNode::textValue)
                     .collect(toList());
         }
         return null;

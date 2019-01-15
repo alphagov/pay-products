@@ -120,7 +120,7 @@ public class Product {
         String serviceName = (jsonPayload.get(FIELD_SERVICE_NAME) != null) ? jsonPayload.get(FIELD_SERVICE_NAME).asText() : null;
         String serviceNamePath = (jsonPayload.get(FIELD_SERVICE_NAME_PATH) != null) ? jsonPayload.get(FIELD_SERVICE_NAME_PATH).asText() : null;
         String productNamePath = (jsonPayload.get(FIELD_PRODUCT_NAME_PATH) != null) ? jsonPayload.get(FIELD_PRODUCT_NAME_PATH).asText() : null;
-        Boolean referenceEnabled = (jsonPayload.get(FIELD_REFERENCE_ENABLED) != null) ? jsonPayload.get(FIELD_REFERENCE_ENABLED).asBoolean() : false;
+        Boolean referenceEnabled = (jsonPayload.get(FIELD_REFERENCE_ENABLED) != null) && jsonPayload.get(FIELD_REFERENCE_ENABLED).asBoolean();
         String referenceLabel = (jsonPayload.get(FIELD_REFERENCE_LABEL) != null) ? jsonPayload.get(FIELD_REFERENCE_LABEL).asText() : null;
         String referenceHint = (jsonPayload.get(FIELD_REFERENCE_HINT) != null) ? jsonPayload.get(FIELD_REFERENCE_HINT).asText() : null;
         

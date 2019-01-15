@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static uk.gov.pay.products.model.PatchRequest.FIELD_OPERATION;
 import static uk.gov.pay.products.model.PatchRequest.FIELD_OPERATION_PATH;
 import static uk.gov.pay.products.model.PatchRequest.FIELD_VALUE;
@@ -20,7 +20,7 @@ public class GatewayAccountRequestValidator {
     private final RequestValidations requestValidations;
 
     private static final Map<String, List<String>> VALID_ATTRIBUTE_UPDATE_OPERATIONS = new HashMap<String, List<String>>() {{
-        put(FIELD_OPERATION, asList("replace"));
+        put(FIELD_OPERATION, singletonList("replace"));
     }};
     public static final String FIELD_SERVICE_NAME = "service_name";
 
@@ -44,12 +44,12 @@ public class GatewayAccountRequestValidator {
 
     private Optional<List<String>> validateServiceNameRequest(JsonNode payload){
         if(!payload.findValue(FIELD_OPERATION_PATH).asText().equals(FIELD_SERVICE_NAME)) {
-            return  Optional.of(asList(format("Path %s not supported / invalid",
+            return  Optional.of(singletonList(format("Path %s not supported / invalid",
                     payload.findValue(FIELD_OPERATION_PATH).asText())));
         }
         String op = payload.get(FIELD_OPERATION).asText();
         if (!VALID_ATTRIBUTE_UPDATE_OPERATIONS.get(FIELD_OPERATION).contains(op)) {
-            return Optional.of(asList(format("Operation [%s] is not valid for path [%s]", op, FIELD_OPERATION)));
+            return Optional.of(singletonList(format("Operation [%s] is not valid for path [%s]", op, FIELD_OPERATION)));
         }
 
         return Optional.empty();

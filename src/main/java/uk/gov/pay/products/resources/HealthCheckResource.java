@@ -13,13 +13,13 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.status;
-import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 @Path("/")
 public class HealthCheckResource {
@@ -43,12 +43,17 @@ public class HealthCheckResource {
     public Response healthCheck() throws JsonProcessingException {
         SortedMap<String, HealthCheck.Result> results = environment.healthChecks().runHealthChecks();
 
-        Map<String, Map<String, Object>> response = getResponse(results);
-
-        boolean healthy = results.size() == results.values()
+        Map<String, Map<String, Object>> response = results.entrySet()
                 .stream()
-                .filter(HealthCheck.Result::isHealthy)
-                .count();
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        healthCheck -> ImmutableMap.of(
+                                HEALTHY, healthCheck.getValue().isHealthy(),
+                                MESSAGE, defaultIfBlank(healthCheck.getValue().getMessage(), "Healthy"))));
+
+        boolean healthy = results.values()
+                .stream()
+                .allMatch(HealthCheck.Result::isHealthy);
 
         if (healthy) {
             logger.info("Healthcheck OK: {}", mapper.writeValueAsString(response));
@@ -57,15 +62,5 @@ public class HealthCheckResource {
 
         logger.error("Healthcheck ERROR: {}", mapper.writeValueAsString(response));
         return status(503).entity(response).build();
-    }
-
-    private Map<String, Map<String, Object>> getResponse(SortedMap<String, HealthCheck.Result> results) {
-        Map<String, Map<String, Object>> response = new HashMap<>();
-        for (SortedMap.Entry<String, HealthCheck.Result> entry : results.entrySet()) {
-            response.put(entry.getKey(), ImmutableMap.of(
-                    HEALTHY, entry.getValue().isHealthy(),
-                    MESSAGE, isBlank(entry.getValue().getMessage()) ? "Healthy" : entry.getValue().getMessage()));
-        }
-        return response;
     }
 }

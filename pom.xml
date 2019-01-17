@@ -21,6 +21,7 @@
         <mainClass>uk.gov.pay.products.ProductsApplication</mainClass>
         <powermock.version>1.7.4</powermock.version>
         <jackson.version>2.9.8</jackson.version>
+        <pay-java-commons.version>1.0.20190116171117</pay-java-commons.version>
         <dependency-check.skip>true</dependency-check.skip>
     </properties>
 
@@ -126,6 +127,11 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
             <version>${jackson.version}</version>
         </dependency>
+        <dependency>
+            <groupId>uk.gov.pay</groupId>
+            <artifactId>utils</artifactId>
+            <version>${pay-java-commons.version}</version>
+        </dependency>
 
         <!-- testing -->
         <dependency>
@@ -219,7 +225,7 @@
         <dependency>
             <groupId>uk.gov.pay</groupId>
             <artifactId>testing</artifactId>
-            <version>1.0.0-f6097986677849386f283bb84072198b57931b1b</version>
+            <version>${pay-java-commons.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

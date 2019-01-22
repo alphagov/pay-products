@@ -30,13 +30,12 @@ import static org.mockito.Mockito.when;
 public class RestClientFactoryTest {
 
     private File keyStoreDir;
-    private final String keyStoreFile = "tempKeystore.jks";
-    private String keyStorePassword = "password";
 
     @Before
     public void before() throws Exception {
         keyStoreDir = Files.createTempDir();
-        KeyStoreUtil.createKeyStoreWithCerts(keyStoreDir, keyStoreFile, keyStorePassword.toCharArray());
+        String keyStorePassword = "password";
+        KeyStoreUtil.createKeyStoreWithCerts(keyStoreDir, "tempKeystore.jks", keyStorePassword.toCharArray());
     }
 
     @After

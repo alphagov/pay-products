@@ -25,11 +25,10 @@ public class ProductFinderTest {
     private ProductDao productDao;
 
     private ProductFinder productFinder;
-    private LinksDecorator linksDecorator;
 
     @Before
     public void setup() {
-        linksDecorator = new LinksDecorator("http://localhost", "http://localhost/pay", "http://localhost/payments");
+        LinksDecorator linksDecorator = new LinksDecorator("http://localhost", "http://localhost/pay", "http://localhost/payments");
         productFinder = new ProductFinder(productDao, linksDecorator);
     }
 

@@ -51,8 +51,6 @@ import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 @PrepareForTest(RandomIdGenerator.class)
 public class PaymentCreatorTest {
     static private String PRODUCT_URL = "https://products.url";
-    static private String PRODUCT_UI_URL = "https://products-ui.url";
-    static private String FRIENDLY_URL = "https://products-ui.url/payments";
 
     @Mock
     private ProductDao productDao;
@@ -73,7 +71,7 @@ public class PaymentCreatorTest {
 
     @Before
     public void setup() {
-        LinksDecorator linksDecorator = new LinksDecorator(PRODUCT_URL, PRODUCT_UI_URL, FRIENDLY_URL);
+        LinksDecorator linksDecorator = new LinksDecorator(PRODUCT_URL, "https://products-ui.url", "https://products-ui.url/payments");
         paymentCreator = new PaymentCreator(TransactionFlow::new, productDao, paymentDao, publicApiRestClient, linksDecorator, productsConfiguration);
     }
 
@@ -429,12 +427,6 @@ public class PaymentCreatorTest {
                 productApiToken,
                 gatewayAccountId,
                 true);
-
-        PaymentRequest paymentRequest = createPaymentRequest(
-                productPrice,
-                null,
-                productName,
-                "https://return.url");
 
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
 

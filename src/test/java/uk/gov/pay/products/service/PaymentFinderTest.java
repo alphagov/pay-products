@@ -36,11 +36,10 @@ public class PaymentFinderTest {
     private PublicApiRestClient publicApiRestClient;
 
     private PaymentFinder paymentFinder;
-    private LinksDecorator linksDecorator;
 
     @Before
     public void setup() {
-        linksDecorator = new LinksDecorator("http://localhost", "http://localhost/pay", "http://localhost/payments");
+        LinksDecorator linksDecorator = new LinksDecorator("http://localhost", "http://localhost/pay", "http://localhost/payments");
         paymentFinder = new PaymentFinder(paymentDao, linksDecorator, publicApiRestClient);
     }
 

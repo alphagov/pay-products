@@ -23,14 +23,12 @@ public class PaymentDaoTest extends DaoTestBase {
 
     private PaymentDao paymentDao;
     private ProductEntity productEntity;
-    private ProductDao productDao;
-    private String productExternalId;
 
     @Before
     public void before(){
         paymentDao = env.getInstance(PaymentDao.class);
-        productDao = env.getInstance(ProductDao.class);
-        productExternalId = randomUuid();
+        ProductDao productDao = env.getInstance(ProductDao.class);
+        String productExternalId = randomUuid();
         productEntity = ProductEntityFixture.aProductEntity()
                 .withExternalId(productExternalId)
                 .build();

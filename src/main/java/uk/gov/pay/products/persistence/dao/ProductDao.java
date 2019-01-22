@@ -13,7 +13,7 @@ public class ProductDao extends JpaDao<ProductEntity> {
 
     @Inject
     protected ProductDao(Provider<EntityManager> entityManager) {
-        super(entityManager, ProductEntity.class);
+        super(entityManager);
     }
 
     public Optional<ProductEntity> findByExternalId(String externalId) {

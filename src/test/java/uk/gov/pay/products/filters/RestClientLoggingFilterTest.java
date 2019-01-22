@@ -33,7 +33,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.pay.products.filters.LoggingFilter.HEADER_REQUEST_ID;
+import static uk.gov.pay.products.filters.RestClientLoggingFilter.HEADER_REQUEST_ID;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RestClientLoggingFilterTest {

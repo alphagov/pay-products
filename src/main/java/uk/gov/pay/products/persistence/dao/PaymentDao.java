@@ -12,7 +12,7 @@ public class PaymentDao extends JpaDao<PaymentEntity> {
 
     @Inject
     PaymentDao(Provider<EntityManager> entityManager) {
-        super(entityManager, PaymentEntity.class);
+        super(entityManager);
     }
 
     public Optional<PaymentEntity> findByExternalId(String externalId) {

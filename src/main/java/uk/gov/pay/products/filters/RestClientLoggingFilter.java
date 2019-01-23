@@ -13,13 +13,14 @@ import javax.ws.rs.client.ClientResponseFilter;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
-import static uk.gov.pay.products.filters.LoggingFilter.HEADER_REQUEST_ID;
 
 public class RestClientLoggingFilter implements ClientRequestFilter, ClientResponseFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(RestClientLoggingFilter.class);
     private static ThreadLocal<String> requestId = new ThreadLocal<>();
     private static ThreadLocal<Stopwatch> timer = new ThreadLocal<>();
+
+    static final String HEADER_REQUEST_ID = "X-Request-Id";
 
     @Override
     public void filter(ClientRequestContext requestContext) {

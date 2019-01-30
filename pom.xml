@@ -19,7 +19,7 @@
         <guice.version>4.2.2</guice.version>
         <hamcrest.version>2.1</hamcrest.version>
         <mainClass>uk.gov.pay.products.ProductsApplication</mainClass>
-        <powermock.version>1.7.4</powermock.version>
+        <powermock.version>2.0.0</powermock.version>
         <jackson.version>2.9.8</jackson.version>
         <pay-java-commons.version>1.0.20190118181040</pay-java-commons.version>
         <dependency-check.skip>true</dependency-check.skip>

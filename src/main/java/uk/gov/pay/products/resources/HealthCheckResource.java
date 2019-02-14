@@ -1,35 +1,26 @@
 package uk.gov.pay.products.resources;
 
 import com.codahale.metrics.health.HealthCheck;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import io.dropwizard.setup.Environment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import java.util.Collection;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.status;
+import static javax.ws.rs.core.Response.Status.OK;
+import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 @Path("/")
 public class HealthCheckResource {
-    private static final String HEALTHCHECK = "healthcheck";
-    private static final String HEALTHY = "healthy";
-    private static final String MESSAGE = "message";
-
-    private static Logger logger = LoggerFactory.getLogger(HealthCheckResource.class);
-    private static ObjectMapper mapper = new ObjectMapper();
-
     private Environment environment;
 
     @Inject
@@ -38,9 +29,9 @@ public class HealthCheckResource {
     }
 
     @GET
-    @Path(HEALTHCHECK)
+    @Path("healthcheck")
     @Produces(APPLICATION_JSON)
-    public Response healthCheck() throws JsonProcessingException {
+    public Response healthCheck() {
         SortedMap<String, HealthCheck.Result> results = environment.healthChecks().runHealthChecks();
 
         Map<String, Map<String, Object>> response = results.entrySet()
@@ -48,19 +39,15 @@ public class HealthCheckResource {
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         healthCheck -> ImmutableMap.of(
-                                HEALTHY, healthCheck.getValue().isHealthy(),
-                                MESSAGE, defaultIfBlank(healthCheck.getValue().getMessage(), "Healthy"))));
+                                "healthy", healthCheck.getValue().isHealthy(),
+                                "message", defaultIfBlank(healthCheck.getValue().getMessage(), "Healthy"))));
 
-        boolean healthy = results.values()
-                .stream()
-                .allMatch(HealthCheck.Result::isHealthy);
+        Response.Status status = allHealthy(results.values()) ? OK : SERVICE_UNAVAILABLE;
 
-        if (healthy) {
-            logger.info("Healthcheck OK: {}", mapper.writeValueAsString(response));
-            return Response.ok().build();
-        }
+        return Response.status(status).entity(response).build();
+    }
 
-        logger.error("Healthcheck ERROR: {}", mapper.writeValueAsString(response));
-        return status(503).entity(response).build();
+    private boolean allHealthy(Collection<HealthCheck.Result> results) {
+        return results.stream().allMatch(HealthCheck.Result::isHealthy);
     }
 }

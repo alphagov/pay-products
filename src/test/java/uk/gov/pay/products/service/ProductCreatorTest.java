@@ -74,7 +74,7 @@ public class ProductCreatorTest {
         assertThat(productEntity.getName(), is("Test product name"));
         assertThat(productEntity.getPrice(), is(1050L));
         assertThat(productEntity.getPayApiToken(), is(payApiToken));
-        assertThat(productEntity.getExternalId(), is(not(isEmptyOrNullString())));
+        assertThat(productEntity.getExternalId(), is(not(emptyOrNullString())));
         assertThat(productEntity.getDateCreated(), is(notNullValue()));
         assertThat(productEntity.getGatewayAccountId(), is(notNullValue()));
         assertThat(productEntity.getGatewayAccountId(), is(gatewayAccountId));

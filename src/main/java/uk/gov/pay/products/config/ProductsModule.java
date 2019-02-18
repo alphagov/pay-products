@@ -65,8 +65,12 @@ public class ProductsModule extends AbstractModule {
         final Properties properties = new Properties();
         properties.put("javax.persistence.jdbc.driver", dbConfig.getDriverClass());
         properties.put("javax.persistence.jdbc.url", dbConfig.getUrl());
-        properties.put("javax.persistence.jdbc.user", dbConfig.getUser());
-        properties.put("javax.persistence.jdbc.password", dbConfig.getPassword());
+        if (dbConfig.getUser() != null) {
+            properties.put("javax.persistence.jdbc.user", dbConfig.getUser());
+        }
+        if (dbConfig.getPassword() != null) {
+            properties.put("javax.persistence.jdbc.password", dbConfig.getPassword());
+        }
 
         JPAConfiguration jpaConfiguration = configuration.getJpaConfiguration();
         properties.put("eclipselink.logging.level", jpaConfiguration.getJpaLoggingLevel());

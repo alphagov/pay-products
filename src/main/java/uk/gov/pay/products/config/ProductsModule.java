@@ -74,7 +74,7 @@ public class ProductsModule extends AbstractModule {
         properties.put("eclipselink.query-results-cache", jpaConfiguration.getCacheSharedDefault());
         properties.put("eclipselink.cache.shared.default", jpaConfiguration.getCacheSharedDefault());
         properties.put("eclipselink.ddl-generation.output-mode", jpaConfiguration.getDdlGenerationOutputMode());
-        properties.put("eclipselink.session.customizer", "uk.gov.pay.products.config.ProductsSessionCustomiser");
+        properties.put("eclipselink.session.customizer", ProductsSessionCustomiser.class.getCanonicalName());
 
         final JpaPersistModule jpaModule = new JpaPersistModule("ProductsUnit");
         jpaModule.properties(properties);

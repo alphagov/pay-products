@@ -9,7 +9,7 @@ import java.time.ZonedDateTime;
 @Converter
 public class UTCDateTimeConverter implements AttributeConverter<ZonedDateTime, Timestamp> {
 
-    public static final ZoneId UTC = ZoneId.of("UTC");
+    private static final ZoneId UTC = ZoneId.of("UTC");
 
     @Override
     public Timestamp convertToDatabaseColumn(ZonedDateTime dateTime) {

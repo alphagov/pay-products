@@ -24,8 +24,8 @@ import java.util.Properties;
 
 public class ProductsModule extends AbstractModule {
 
-    final ProductsConfiguration configuration;
-    final Environment environment;
+    private final ProductsConfiguration configuration;
+    private final Environment environment;
 
     public ProductsModule(ProductsConfiguration configuration, Environment environment) {
         this.configuration = configuration;

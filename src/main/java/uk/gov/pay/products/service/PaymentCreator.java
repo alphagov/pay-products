@@ -39,8 +39,7 @@ public class PaymentCreator {
     private final PublicApiRestClient publicApiRestClient;
     private final LinksDecorator linksDecorator;
     private final ProductsConfiguration productsConfiguration;
-    private final Integer MAX_NUMBER_OF_RETRY_FOR_UNIQUE_REF_NUMBER = 3;
-
+    private static final int MAX_NUMBER_OF_RETRY_FOR_UNIQUE_REF_NUMBER = 3;
 
     @Inject
     public PaymentCreator(Provider<TransactionFlow> transactionFlowProvider, ProductDao productDao, PaymentDao paymentDao,

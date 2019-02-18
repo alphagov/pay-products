@@ -12,7 +12,7 @@ import static uk.gov.pay.products.util.TrustStoreLoader.getTrustStore;
 import static uk.gov.pay.products.util.TrustStoreLoader.getTrustStorePassword;
 
 public class RestClientFactory {
-    public static final String TLSV1_2 = "TLSv1.2";
+    private static final String TLSV1_2 = "TLSv1.2";
 
     public static Client buildClient(RestClientConfiguration clientConfig) {
         Client client;

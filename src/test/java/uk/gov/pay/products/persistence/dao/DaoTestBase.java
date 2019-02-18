@@ -18,7 +18,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
 
-public class DaoTestBase {
+class DaoTestBase {
 
     private static Logger logger = LoggerFactory.getLogger(DaoTestBase.class);
 

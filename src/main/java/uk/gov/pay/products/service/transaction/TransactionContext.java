@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class TransactionContext {
 
-    Map<Class<?>, Object> params;
+    private Map<Class<?>, Object> params;
 
     /**
      * only to be constructed by TransactionFlow

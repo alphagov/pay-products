@@ -15,10 +15,10 @@ import static io.restassured.http.ContentType.JSON;
 public class IntegrationTest {
 
     @Rule
-    public MockServerRule mockServerRule = new MockServerRule(this);
+    public final MockServerRule mockServerRule = new MockServerRule(this);
 
     @Rule
-    public DropwizardAppWithPostgresRule app =
+    public final DropwizardAppWithPostgresRule app =
             new DropwizardAppWithPostgresRule("config/test-it-config.yaml",
                     config("publicApiUrl", "http://localhost:" + mockServerRule.getPort()));
 

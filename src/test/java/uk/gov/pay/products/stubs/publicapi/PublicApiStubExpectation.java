@@ -15,7 +15,7 @@ import static org.mockserver.model.HttpResponse.response;
 
 public class PublicApiStubExpectation {
 
-    private ForwardChainExpectation expectation;
+    private final ForwardChainExpectation expectation;
 
     public PublicApiStubExpectation(ForwardChainExpectation expectation) {
         this.expectation = expectation;

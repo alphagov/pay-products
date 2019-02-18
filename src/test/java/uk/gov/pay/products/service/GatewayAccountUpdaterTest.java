@@ -16,7 +16,7 @@ import static org.mockito.Mockito.when;
 
 public class GatewayAccountUpdaterTest {
 
-    private ProductDao productDao = mock(ProductDao.class);
+    private final ProductDao productDao = mock(ProductDao.class);
     private GatewayAccountUpdater updater;
 
     @Before

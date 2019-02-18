@@ -24,7 +24,7 @@ import static uk.gov.pay.products.matchers.PaymentResponseMatcher.hasAllPaymentP
 public class PublicApiRestClientTest {
 
     @Rule
-    public MockServerRule mockServerRule = new MockServerRule(this);
+    public final MockServerRule mockServerRule = new MockServerRule(this);
 
     private PublicApiRestClient publicApiRestClient;
     private PublicApiStub publicApiStub;

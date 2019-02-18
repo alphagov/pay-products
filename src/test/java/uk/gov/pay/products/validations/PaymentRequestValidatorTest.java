@@ -16,7 +16,7 @@ import static org.hamcrest.core.Is.is;
 
 public class PaymentRequestValidatorTest {
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private PaymentRequestValidator requestValidator;
 
     @Before

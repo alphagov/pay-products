@@ -21,7 +21,7 @@ import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 @Path("/")
 public class HealthCheckResource {
-    private Environment environment;
+    private final Environment environment;
 
     @Inject
     public HealthCheckResource(Environment environment) {

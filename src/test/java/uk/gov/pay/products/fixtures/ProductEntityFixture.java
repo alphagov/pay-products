@@ -18,7 +18,7 @@ public class ProductEntityFixture {
     private ProductStatus status = ProductStatus.ACTIVE;
     private ProductType type = ProductType.DEMO;
     private String externalId = randomUuid();
-    private ZonedDateTime dateCreated = ZonedDateTime.now();
+    private final ZonedDateTime dateCreated = ZonedDateTime.now();
     private int gatewayAccountId;
     private String serviceNamePath;
     private String productNamePath;

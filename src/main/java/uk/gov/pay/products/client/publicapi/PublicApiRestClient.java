@@ -23,7 +23,7 @@ public class PublicApiRestClient {
     private static final String PAYMENT_PATH = PAYMENTS_PATH + "/%s";
 
     private final Client client;
-    private String publicApiUrl;
+    private final String publicApiUrl;
 
     @Inject
     public PublicApiRestClient(Client client, String publicApiUrl) {

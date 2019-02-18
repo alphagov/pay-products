@@ -50,7 +50,7 @@ import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(RandomIdGenerator.class)
 public class PaymentCreatorTest {
-    static private String PRODUCT_URL = "https://products.url";
+    static private final String PRODUCT_URL = "https://products.url";
 
     @Mock
     private ProductDao productDao;
@@ -67,7 +67,7 @@ public class PaymentCreatorTest {
     private PaymentCreator paymentCreator;
 
     @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    public final ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setup() {

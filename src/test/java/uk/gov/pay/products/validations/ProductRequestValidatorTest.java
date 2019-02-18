@@ -31,7 +31,7 @@ public class ProductRequestValidatorTest {
     private static final String FIELD_REFERENCE_LABEL = "reference_label";
     private static final String FIELD_REFERENCE_HINT = "reference_hint";
 
-    private static ProductRequestValidator productRequestValidator = new ProductRequestValidator(new RequestValidations());
+    private static final ProductRequestValidator productRequestValidator = new ProductRequestValidator(new RequestValidations());
 
     @Test
     public void shouldPass_whenAllFieldsPresent() {

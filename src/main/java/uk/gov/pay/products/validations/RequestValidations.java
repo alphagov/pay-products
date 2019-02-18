@@ -2,7 +2,6 @@ package uk.gov.pay.products.validations;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.google.common.collect.ImmutableList;
 import uk.gov.pay.products.util.ProductType;
 
 import java.net.MalformedURLException;
@@ -115,9 +114,5 @@ public class RequestValidations {
             }
             return false;
         };
-    }
-
-    public static Function<JsonNode, Boolean> isNotBoolean() {
-        return jsonNode -> !ImmutableList.of("true", "false").contains(jsonNode.asText().toLowerCase());
     }
 }

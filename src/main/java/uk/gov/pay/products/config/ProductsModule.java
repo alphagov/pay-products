@@ -24,8 +24,8 @@ import java.util.Properties;
 
 public class ProductsModule extends AbstractModule {
 
-    final ProductsConfiguration configuration;
-    final Environment environment;
+    private final ProductsConfiguration configuration;
+    private final Environment environment;
 
     public ProductsModule(ProductsConfiguration configuration, Environment environment) {
         this.configuration = configuration;
@@ -65,8 +65,12 @@ public class ProductsModule extends AbstractModule {
         final Properties properties = new Properties();
         properties.put("javax.persistence.jdbc.driver", dbConfig.getDriverClass());
         properties.put("javax.persistence.jdbc.url", dbConfig.getUrl());
-        properties.put("javax.persistence.jdbc.user", dbConfig.getUser());
-        properties.put("javax.persistence.jdbc.password", dbConfig.getPassword());
+        if (dbConfig.getUser() != null) {
+            properties.put("javax.persistence.jdbc.user", dbConfig.getUser());
+        }
+        if (dbConfig.getPassword() != null) {
+            properties.put("javax.persistence.jdbc.password", dbConfig.getPassword());
+        }
 
         JPAConfiguration jpaConfiguration = configuration.getJpaConfiguration();
         properties.put("eclipselink.logging.level", jpaConfiguration.getJpaLoggingLevel());
@@ -74,7 +78,7 @@ public class ProductsModule extends AbstractModule {
         properties.put("eclipselink.query-results-cache", jpaConfiguration.getCacheSharedDefault());
         properties.put("eclipselink.cache.shared.default", jpaConfiguration.getCacheSharedDefault());
         properties.put("eclipselink.ddl-generation.output-mode", jpaConfiguration.getDdlGenerationOutputMode());
-        properties.put("eclipselink.session.customizer", "uk.gov.pay.products.config.ProductsSessionCustomiser");
+        properties.put("eclipselink.session.customizer", ProductsSessionCustomiser.class.getCanonicalName());
 
         final JpaPersistModule jpaModule = new JpaPersistModule("ProductsUnit");
         jpaModule.properties(properties);

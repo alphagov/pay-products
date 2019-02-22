@@ -14,8 +14,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.mockserver.model.HttpRequest.request;
 
 public class PublicApiStub {
-    private static final String API_VERSION_PATH = "/v1";
-    private static final String PAYMENTS_PATH = API_VERSION_PATH + "/payments";
+    private static final String PAYMENTS_PATH = "/v1/payments";
     private static final String PAYMENT_PATH = PAYMENTS_PATH + "/%s";
 
     private final MockServerClient mockClient;

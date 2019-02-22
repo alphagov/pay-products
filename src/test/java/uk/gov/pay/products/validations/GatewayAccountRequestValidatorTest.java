@@ -17,7 +17,7 @@ public class GatewayAccountRequestValidatorTest {
     private static final String FIELD_PATH = "path";
     private static final String FIELD_VALUE = "value";
 
-    private GatewayAccountRequestValidator requestValidator = new GatewayAccountRequestValidator(new RequestValidations());
+    private final GatewayAccountRequestValidator requestValidator = new GatewayAccountRequestValidator(new RequestValidations());
 
     @Test
     public void shouldPass_whenAllFieldsPresent() {

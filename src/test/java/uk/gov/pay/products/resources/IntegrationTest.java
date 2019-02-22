@@ -1,7 +1,6 @@
 package uk.gov.pay.products.resources;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.http.Header;
 import io.restassured.specification.RequestSpecification;
 import org.junit.Before;
 import org.junit.Rule;
@@ -16,27 +15,23 @@ import static io.restassured.http.ContentType.JSON;
 public class IntegrationTest {
 
     @Rule
-    public MockServerRule mockServerRule = new MockServerRule(this);
+    public final MockServerRule mockServerRule = new MockServerRule(this);
 
     @Rule
-    public DropwizardAppWithPostgresRule app =
+    public final DropwizardAppWithPostgresRule app =
             new DropwizardAppWithPostgresRule("config/test-it-config.yaml",
                     config("publicApiUrl", "http://localhost:" + mockServerRule.getPort()));
 
-    protected DatabaseTestHelper databaseHelper;
-    protected ObjectMapper mapper;
-    protected Header validAuthHeader;
-
-    protected static final String DEFAULT_AUTH_TOKEN = "default-local-api-token";
+    DatabaseTestHelper databaseHelper;
+    ObjectMapper mapper;
 
     @Before
     public void setUp() {
         databaseHelper = app.getDatabaseTestHelper();
         mapper = new ObjectMapper();
-        validAuthHeader = new Header("Authorization", "Bearer " + DEFAULT_AUTH_TOKEN);
     }
 
-    protected RequestSpecification givenSetup() {
+    RequestSpecification givenSetup() {
         return given().port(app.getLocalPort())
                 .contentType(JSON);
     }

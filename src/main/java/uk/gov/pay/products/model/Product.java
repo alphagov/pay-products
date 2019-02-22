@@ -35,36 +35,36 @@ public class Product {
     private static final String FIELD_REFERENCE_HINT = "reference_hint";
 
     @JsonProperty(EXTERNAL_ID)
-    private String externalId;
+    private final String externalId;
     @JsonProperty(FIELD_NAME)
-    private String name;
+    private final String name;
     @JsonProperty(DESCRIPTION)
-    private String description;
+    private final String description;
     @JsonProperty(FIELD_PAY_API_TOKEN)
-    private String payApiToken;
+    private final String payApiToken;
     @JsonProperty(FIELD_PRICE)
-    private Long price;
+    private final Long price;
     @JsonProperty(STATUS)
-    private ProductStatus status;
+    private final ProductStatus status;
     @JsonProperty(TYPE)
-    private ProductType type;
+    private final ProductType type;
     @JsonProperty(FIELD_GATEWAY_ACCOUNT_ID)
-    private Integer gatewayAccountId;
+    private final Integer gatewayAccountId;
     private List<Link> links = new ArrayList<>();
     @JsonProperty(RETURN_URL)
-    private String returnUrl;
+    private final String returnUrl;
     @JsonProperty(FIELD_SERVICE_NAME)
-    private String serviceName;
+    private final String serviceName;
     @JsonProperty(FIELD_SERVICE_NAME_PATH)
-    private String serviceNamePath;
+    private final String serviceNamePath;
     @JsonProperty(FIELD_PRODUCT_NAME_PATH)
-    private String productNamePath;
+    private final String productNamePath;
     @JsonProperty(FIELD_REFERENCE_ENABLED)
-    private Boolean referenceEnabled;
+    private final Boolean referenceEnabled;
     @JsonProperty(FIELD_REFERENCE_LABEL)
-    private String referenceLabel;
+    private final String referenceLabel;
     @JsonProperty(FIELD_REFERENCE_HINT)
-    private String referenceHint;
+    private final String referenceHint;
 
     public Product(String externalId, String name, String description, String payApiToken, Long price, 
                    ProductStatus status, Integer gatewayAccountId, String serviceName, ProductType type,

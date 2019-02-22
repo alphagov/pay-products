@@ -26,7 +26,7 @@ import static javax.ws.rs.core.Response.Status.OK;
 @Path("/v1/api")
 public class PaymentResource {
 
-    private static Logger logger = LoggerFactory.getLogger(PaymentResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(PaymentResource.class);
 
     private final PaymentFactory paymentFactory;
     private final PaymentRequestValidator requestValidator;

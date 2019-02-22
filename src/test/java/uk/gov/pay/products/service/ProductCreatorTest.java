@@ -33,8 +33,8 @@ public class ProductCreatorTest {
     private ArgumentCaptor<ProductEntity> persistedProductEntity;
     private String payApiToken;
     private Integer gatewayAccountId = randomInt();
-    public static final String PRODUCT_NAME = "Test product name";
-    public static final Long PRICE = 1050L;
+    private static final String PRODUCT_NAME = "Test product name";
+    private static final Long PRICE = 1050L;
     private static final String SERVICE_NAME = "Example Service";
 
     @Before

@@ -32,9 +32,9 @@ public class PaymentResourceTest extends IntegrationTest {
 
     private PublicApiStub publicApiStub;
 
-    private String paymentsUrl = "https://products.url/v1/api/payments/";
-    private String nextUrl = "www.gov.uk/pay";
-    private int gatewayAccountId = randomInt();
+    private final String paymentsUrl = "https://products.url/v1/api/payments/";
+    private final String nextUrl = "www.gov.uk/pay";
+    private final int gatewayAccountId = randomInt();
 
     @Before
     public void setup() {

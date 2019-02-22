@@ -74,9 +74,9 @@ public class RestClientFactoryTest {
 
     static class KeyStoreUtil {
 
-        public static final String CERT_FILE = "gds-test.pem";
+        static final String CERT_FILE = "gds-test.pem";
 
-        public static void createKeyStoreWithCerts(File keyStoreDir, String keyStoreName, char[] keyStorePassword) throws Exception {
+        static void createKeyStoreWithCerts(File keyStoreDir, String keyStoreName, char[] keyStorePassword) throws Exception {
 
             File keyStore = new File(keyStoreDir, keyStoreName);
             FileOutputStream os = new FileOutputStream(keyStore);

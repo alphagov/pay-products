@@ -2,7 +2,6 @@ package uk.gov.pay.products.validations;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.google.common.collect.ImmutableList;
 import uk.gov.pay.products.util.ProductType;
 
 import java.net.MalformedURLException;
@@ -18,29 +17,29 @@ import static org.apache.commons.lang3.math.NumberUtils.isDigits;
 
 public class RequestValidations {
 
-    protected static final Long MAX_PRICE = 10000000L;
+    static final Long MAX_PRICE = 10000000L;
 
-    public Optional<List<String>> checkIsNumeric(JsonNode payload, String... fieldNames) {
+    Optional<List<String>> checkIsNumeric(JsonNode payload, String... fieldNames) {
         return applyCheck(payload, isNotNumeric(), fieldNames, "Field [%s] must be a number");
     }
 
-    public Optional<List<String>> checkIsUrl(JsonNode payload, String... fieldNames) {
+    Optional<List<String>> checkIsUrl(JsonNode payload, String... fieldNames) {
         return applyCheck(payload, isNotUrl(), fieldNames, "Field [%s] must be a https url");
     }
 
-    public Optional<List<String>> checkIfExistsOrEmpty(JsonNode payload, String... fieldNames) {
+    Optional<List<String>> checkIfExistsOrEmpty(JsonNode payload, String... fieldNames) {
         return applyCheck(payload, notExistAndNotEmpty(), fieldNames, "Field [%s] is required");
     }
 
-    public Optional<List<String>> checkMaxLength(JsonNode payload, int maxLength, String... fieldNames) {
+    Optional<List<String>> checkMaxLength(JsonNode payload, int maxLength, String... fieldNames) {
         return applyCheck(payload, exceedsMaxLength(maxLength), fieldNames, "Field [%s] must have a maximum length of " + maxLength + " characters");
     }
 
-    public Optional<List<String>> checkIsBelowMaxAmount(JsonNode payload, String... fieldNames) {
+    Optional<List<String>> checkIsBelowMaxAmount(JsonNode payload, String... fieldNames) {
         return applyCheck(payload, isBelowMax(), fieldNames, "Field [%s] must be a number below " + MAX_PRICE);
     }
 
-    public Optional<List<String>> checkIsProductType(JsonNode payload, String... fieldNames) {
+    Optional<List<String>> checkIsProductType(JsonNode payload, String... fieldNames) {
         return applyCheck(payload, isNotProductType(), fieldNames, "Field [%s] must be a valid product type ");
     }
 
@@ -48,7 +47,7 @@ public class RequestValidations {
         return jsonNode -> jsonNode.asText().length() > maxLength;
     }
 
-    public Optional<List<String>> applyCheck(JsonNode payload, Function<JsonNode, Boolean> check, String[] fieldNames, String errorMessage) {
+    private Optional<List<String>> applyCheck(JsonNode payload, Function<JsonNode, Boolean> check, String[] fieldNames, String errorMessage) {
         List<String> errors = newArrayList();
         for (String fieldName : fieldNames) {
             if (check.apply(payload.get(fieldName))) {
@@ -58,7 +57,7 @@ public class RequestValidations {
         return errors.size() > 0 ? Optional.of(errors) : Optional.empty();
     }
 
-    public Function<JsonNode, Boolean> notExistAndNotEmpty() {
+    private Function<JsonNode, Boolean> notExistAndNotEmpty() {
         return (jsonElement) -> {
             if (jsonElement instanceof ArrayNode) {
                 return notExistOrEmptyArray().apply(jsonElement);
@@ -68,7 +67,7 @@ public class RequestValidations {
         };
     }
 
-    public Function<JsonNode, Boolean> notExistOrEmptyArray() {
+    private Function<JsonNode, Boolean> notExistOrEmptyArray() {
         return jsonElement -> (
                 jsonElement == null ||
                         ((jsonElement instanceof ArrayNode) && (jsonElement.size() == 0))
@@ -82,15 +81,15 @@ public class RequestValidations {
         );
     }
 
-    public static Function<JsonNode, Boolean> isNotNumeric() {
+    private static Function<JsonNode, Boolean> isNotNumeric() {
         return jsonNode -> !isDigits(jsonNode.asText());
     }
 
-    public static Function<JsonNode, Boolean> isBelowMax() {
+    private static Function<JsonNode, Boolean> isBelowMax() {
         return jsonNode -> isDigits(jsonNode.asText()) && jsonNode.asLong() > MAX_PRICE;
     }
 
-    public static Function<JsonNode, Boolean> isNotProductType() {
+    private static Function<JsonNode, Boolean> isNotProductType() {
         return jsonNode -> {
             try {
                 ProductType.valueOf(jsonNode.asText());
@@ -102,7 +101,7 @@ public class RequestValidations {
         };
     }
 
-    public static Function<JsonNode, Boolean> isNotUrl() {
+    private static Function<JsonNode, Boolean> isNotUrl() {
         return jsonNode -> {
             if (jsonNode == null || isBlank(jsonNode.asText()) || !jsonNode.asText().startsWith("https")) {
                 return true;
@@ -115,9 +114,5 @@ public class RequestValidations {
             }
             return false;
         };
-    }
-
-    public static Function<JsonNode, Boolean> isNotBoolean() {
-        return jsonNode -> !ImmutableList.of("true", "false").contains(jsonNode.asText().toLowerCase());
     }
 }

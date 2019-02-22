@@ -20,10 +20,10 @@ import java.util.Properties;
 
 public class DaoTestBase {
 
-    private static Logger logger = LoggerFactory.getLogger(DaoTestBase.class);
+    private static final Logger logger = LoggerFactory.getLogger(DaoTestBase.class);
 
     @ClassRule
-    public static PostgresDockerRule postgres = new PostgresDockerRule();
+    public static final PostgresDockerRule postgres = new PostgresDockerRule();
 
     static DatabaseTestHelper databaseHelper;
     static GuicedTestEnvironment env;

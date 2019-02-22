@@ -34,7 +34,7 @@ import java.util.Objects;
  */
 public class TransactionFlow {
 
-    private TransactionContext context;
+    private final TransactionContext context;
 
     //for Guice
     public TransactionFlow() {

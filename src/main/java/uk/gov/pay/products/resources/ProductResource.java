@@ -20,7 +20,7 @@ import static javax.ws.rs.core.Response.Status.*;
 
 @Path("/v1/api")
 public class ProductResource {
-    private static Logger logger = LoggerFactory.getLogger(ProductResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProductResource.class);
 
     private final ProductRequestValidator requestValidator;
     private final ProductFactory productFactory;

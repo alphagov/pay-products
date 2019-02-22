@@ -34,7 +34,7 @@ public class GuicedTestEnvironment {
         return injector.getInstance(daoClass);
     }
 
-    public class DataAccessModule extends AbstractModule {
+    class DataAccessModule extends AbstractModule {
 
         @Override
         protected void configure() {

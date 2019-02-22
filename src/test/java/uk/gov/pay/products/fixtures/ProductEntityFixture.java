@@ -11,7 +11,6 @@ import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 public class ProductEntityFixture {
 
     private String description = "default description";
-    private String apiKey = "default api key";
     private String name = "default name";
     private String serviceName = "default service";
     private Long price = 100L;
@@ -19,7 +18,7 @@ public class ProductEntityFixture {
     private ProductStatus status = ProductStatus.ACTIVE;
     private ProductType type = ProductType.DEMO;
     private String externalId = randomUuid();
-    private ZonedDateTime dateCreated = ZonedDateTime.now();
+    private final ZonedDateTime dateCreated = ZonedDateTime.now();
     private int gatewayAccountId;
     private String serviceNamePath;
     private String productNamePath;
@@ -31,7 +30,7 @@ public class ProductEntityFixture {
 
     public ProductEntity build() {
         ProductEntity product = new ProductEntity();
-        product.setPayApiToken(apiKey);
+        product.setPayApiToken("default api key");
         product.setDateCreated(dateCreated);
         product.setDescription(description);
         product.setName(name);

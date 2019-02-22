@@ -19,12 +19,11 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 public class PublicApiRestClient {
     private static final Logger logger = LoggerFactory.getLogger(PublicApiRestClient.class);
 
-    public static final String API_VERSION_PATH = "/v1";
-    private static final String PAYMENTS_PATH = API_VERSION_PATH + "/payments";
+    private static final String PAYMENTS_PATH = "/v1/payments";
     private static final String PAYMENT_PATH = PAYMENTS_PATH + "/%s";
 
     private final Client client;
-    private String publicApiUrl;
+    private final String publicApiUrl;
 
     @Inject
     public PublicApiRestClient(Client client, String publicApiUrl) {

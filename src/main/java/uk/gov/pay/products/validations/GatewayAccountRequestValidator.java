@@ -22,7 +22,7 @@ public class GatewayAccountRequestValidator {
     private static final Map<String, List<String>> VALID_ATTRIBUTE_UPDATE_OPERATIONS = new HashMap<String, List<String>>() {{
         put(FIELD_OPERATION, singletonList("replace"));
     }};
-    public static final String FIELD_SERVICE_NAME = "service_name";
+    private static final String FIELD_SERVICE_NAME = "service_name";
 
     @Inject
     public GatewayAccountRequestValidator(RequestValidations requestValidations) {

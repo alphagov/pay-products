@@ -22,7 +22,7 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 @Path("/v1/api")
 public class GatewayAccountResource {
 
-    private static Logger logger = LoggerFactory.getLogger(GatewayAccountResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(GatewayAccountResource.class);
 
     private final GatewayAccountRequestValidator requestValidator;
     private final GatewayAccountFactory gatewayAccountFactory;

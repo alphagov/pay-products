@@ -18,9 +18,9 @@ public class PatchRequest {
     public static final String FIELD_OPERATION_PATH = "path";
     public static final String FIELD_VALUE = "value";
 
-    private String op;
-    private String path;
-    private JsonNode value;
+    private final String op;
+    private final String path;
+    private final JsonNode value;
 
     public String getOp() {
         return op;

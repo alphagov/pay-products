@@ -24,18 +24,18 @@ public class Payment {
     private static final String FIELD_GOVUK_STATUS = "govuk_status";
     private static final String FIELD_REFERENCE_NUMBER = "reference_number";
 
-    private String externalId;
-    private String govukPaymentId;
+    private final String externalId;
+    private final String govukPaymentId;
     @JsonIgnore
-    private String nextUrl;
-    private String productExternalId;
+    private final String nextUrl;
+    private final String productExternalId;
     private List<Link> links = new ArrayList<>();
     @JsonIgnore
-    private Integer productId;
+    private final Integer productId;
     private Long amount;
     @JsonProperty(FIELD_GOVUK_STATUS)
     private String govUkStatus;
-    private String referenceNumber;
+    private final String referenceNumber;
 
     private PaymentStatus status;
 

@@ -2,9 +2,9 @@ package uk.gov.pay.products.client.publicapi;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.apache.http.HttpStatus;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.mockserver.socket.PortFactory;
 import uk.gov.pay.products.client.RestClientFactory;
 import uk.gov.pay.products.config.RestClientConfiguration;
 import uk.gov.pay.products.exception.PublicApiResponseErrorException;
@@ -12,7 +12,6 @@ import uk.gov.pay.products.stubs.publicapi.PublicApiStub;
 
 import javax.json.JsonObject;
 import javax.ws.rs.client.Client;
-
 import java.util.Optional;
 
 import static junit.framework.TestCase.assertTrue;
@@ -29,16 +28,13 @@ import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.setupResponseToG
 
 public class PublicApiRestClientTest {
 
+    private final static int PUBLIC_API_PORT = PortFactory.findFreePort();
+    
     @ClassRule
-    public static final WireMockRule PUBLIC_API_RULE = new WireMockRule();
+    public static final WireMockRule PUBLIC_API_RULE = new WireMockRule(PUBLIC_API_PORT);
 
-    private PublicApiRestClient publicApiRestClient;
-
-    @Before
-    public void setup() {
-        Client client = RestClientFactory.buildClient(mock(RestClientConfiguration.class));
-        publicApiRestClient = new PublicApiRestClient(client, "http://localhost:" + PUBLIC_API_RULE.port());
-    }
+    private static Client client = RestClientFactory.buildClient(mock(RestClientConfiguration.class));
+    private static PublicApiRestClient publicApiRestClient = new PublicApiRestClient(client, "http://localhost:" + PUBLIC_API_PORT);
 
     @Test
     public void createPayment_shouldCreateANewPayment() {

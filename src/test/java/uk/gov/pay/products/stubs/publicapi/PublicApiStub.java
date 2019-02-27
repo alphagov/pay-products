@@ -1,28 +1,26 @@
 package uk.gov.pay.products.stubs.publicapi;
 
-import org.mockserver.client.MockServerClient;
+import org.apache.http.HttpStatus;
 
 import javax.json.Json;
 import javax.json.JsonObject;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.matching;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static java.lang.String.format;
-import static javax.ws.rs.HttpMethod.GET;
-import static javax.ws.rs.HttpMethod.POST;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.mockserver.model.HttpRequest.request;
 
 public class PublicApiStub {
     private static final String PAYMENTS_PATH = "/v1/payments";
     private static final String PAYMENT_PATH = PAYMENTS_PATH + "/%s";
-
-    private final MockServerClient mockClient;
-
-    public PublicApiStub(int mockServerPort) {
-        this.mockClient = new MockServerClient("localhost", mockServerPort);
-    }
-
+    
     public static JsonObject createPaymentRequestPayload(long amount, String reference, String description, String returnUrl) {
         return Json.createObjectBuilder()
                 .add("amount", amount)
@@ -112,26 +110,47 @@ public class PublicApiStub {
                 .build();
     }
 
-    public PublicApiStubExpectation whenReceiveCreatedPaymentRequestWithAuthApiTokenAndWithBody(String authApiToken, JsonObject requestBody) {
-        return new PublicApiStubExpectation(mockClient.when(request()
-                .withMethod(POST)
-                .withPath(PAYMENTS_PATH)
-                .withHeader(AUTHORIZATION, "Bearer " + authApiToken)
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                .withBody(requestBody.toString())));
+    public static void setupResponseToCreatePaymentRequest(String authApiToken, JsonObject responseBody) {
+        setupResponseToCreatePaymentRequest(authApiToken, responseBody, HttpStatus.SC_CREATED);
     }
 
-    public PublicApiStubExpectation whenReceiveCreatedPaymentRequestWithAuthApiToken(String authApiToken) {
-        return new PublicApiStubExpectation(mockClient.when(request()
-                .withMethod(POST)
-                .withPath(PAYMENTS_PATH)
-                .withHeader(AUTHORIZATION, "Bearer " + authApiToken)
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON)));
+    public static void setupResponseToCreatePaymentRequest(String authApiToken, JsonObject responseBody, int responseStatusCode) {
+        stubFor(post(urlPathEqualTo(PAYMENTS_PATH))
+                .withHeader(AUTHORIZATION, matching("Bearer " + authApiToken))
+                .withHeader(CONTENT_TYPE, matching(APPLICATION_JSON))
+                .willReturn(aResponse().withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withStatus(responseStatusCode)
+                        .withBody(responseBody.toString())));
     }
 
-    public PublicApiStubExpectation whenReceiveGetPaymentRequest(String paymentId) {
-        return new PublicApiStubExpectation(mockClient.when(request()
-                .withMethod(GET)
-                .withPath(format(PAYMENT_PATH, paymentId))));
+    public static void setupResponseToCreatePaymentRequest(String authApiToken, JsonObject requestBody, JsonObject responseBody) {
+        setupResponseToCreatePaymentRequest(authApiToken, requestBody, responseBody, HttpStatus.SC_CREATED);
+    }
+
+    public static void setupResponseToCreatePaymentRequest(String authApiToken, JsonObject requestBody, JsonObject responseBody, int responseStatusCode) {
+        stubFor(post(urlPathEqualTo(PAYMENTS_PATH))
+                .withHeader(AUTHORIZATION, matching("Bearer " + authApiToken))
+                .withHeader(CONTENT_TYPE, matching(APPLICATION_JSON))
+                .withRequestBody(equalToJson(requestBody.toString()))
+                .willReturn(aResponse().withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withStatus(responseStatusCode)
+                        .withBody(responseBody.toString())));
+    }
+
+    public static void setupResponseToGetPaymentRequest(String paymentId, JsonObject paymentResponsePayload) {
+        setupResponseToGetPaymentRequest(paymentId, paymentResponsePayload, HttpStatus.SC_OK);
+    }
+
+    public static void setupResponseToGetPaymentRequest(String paymentId, JsonObject paymentResponsePayload, int responseStatus) {
+        stubFor(get(urlPathEqualTo(format(PAYMENT_PATH, paymentId)))
+                .willReturn(aResponse().withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withStatus(responseStatus)
+                        .withBody(paymentResponsePayload.toString())));
+    }
+
+    public static void setupResponseToGetPaymentRequest(String paymentId, int responseStatus) {
+        stubFor(get(urlPathEqualTo(format(PAYMENT_PATH, paymentId)))
+                .willReturn(aResponse().withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withStatus(responseStatus)));
     }
 }

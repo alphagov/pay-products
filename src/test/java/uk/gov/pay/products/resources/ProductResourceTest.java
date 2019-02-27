@@ -441,7 +441,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .withDescription("description")
                 .withPrice(500)
                 .withGatewayAccountId(gatewayAccountId)
-                .withProductPath("service-name-path", "product-name-path")
+                .withProductPath("service-name-path" + externalId, "product-name-path"+ externalId)
                 .build()
                 .toProduct();
 
@@ -508,7 +508,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .withDescription("description")
                 .withPrice(500)
                 .withGatewayAccountId(gatewayAccountId)
-                .withProductPath("service-name-path", "product-name-path")
+                .withProductPath("service-name-path" + externalId, "product-name-path" + externalId)
                 .build()
                 .toProduct();
 

@@ -1,9 +1,10 @@
 package uk.gov.pay.products.client.publicapi;
 
-import org.junit.Before;
-import org.junit.Rule;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import org.apache.http.HttpStatus;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.mockserver.junit.MockServerRule;
+import org.mockserver.socket.PortFactory;
 import uk.gov.pay.products.client.RestClientFactory;
 import uk.gov.pay.products.config.RestClientConfiguration;
 import uk.gov.pay.products.exception.PublicApiResponseErrorException;
@@ -14,31 +15,29 @@ import javax.ws.rs.client.Client;
 import java.util.Optional;
 
 import static junit.framework.TestCase.assertTrue;
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static uk.gov.pay.products.matchers.PaymentResponseMatcher.hasAllPaymentProperties;
+import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.createPaymentRequestPayload;
+import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.setupResponseToCreatePaymentRequest;
+import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.setupResponseToGetPaymentRequest;
 
 public class PublicApiRestClientTest {
 
-    @Rule
-    public final MockServerRule mockServerRule = new MockServerRule(this);
+    private final static int PUBLIC_API_PORT = PortFactory.findFreePort();
+    
+    @ClassRule
+    public static final WireMockRule PUBLIC_API_RULE = new WireMockRule(PUBLIC_API_PORT);
 
-    private PublicApiRestClient publicApiRestClient;
-    private PublicApiStub publicApiStub;
-
-    @Before
-    public void setup() {
-        Client client = RestClientFactory.buildClient(mock(RestClientConfiguration.class));
-        publicApiRestClient = new PublicApiRestClient(client, "http://localhost:" + mockServerRule.getPort());
-
-        publicApiStub = new PublicApiStub(mockServerRule.getPort());
-    }
+    private static Client client = RestClientFactory.buildClient(mock(RestClientConfiguration.class));
+    private static PublicApiRestClient publicApiRestClient = new PublicApiRestClient(client, "http://localhost:" + PUBLIC_API_PORT);
 
     @Test
-         public void createPayment_shouldCreateANewPayment() {
+    public void createPayment_shouldCreateANewPayment() {
         String paymentId = "hu20sqlact5260q2nanm0q8u93";
         long amount = 2000;
         String reference = "a-reference";
@@ -47,12 +46,10 @@ public class PublicApiRestClientTest {
         String nextUrl = "http://next.url";
         String apiToken = "api-token";
 
-        JsonObject expectedPaymentRequestPayload = PublicApiStub.createPaymentRequestPayload(amount, reference, description, returnUrl);
+        JsonObject expectedPaymentRequestPayload = createPaymentRequestPayload(amount, reference, description, returnUrl);
         JsonObject paymentResponsePayload = PublicApiStub.createPaymentResponsePayload(paymentId, amount, reference, description, returnUrl, nextUrl);
 
-        publicApiStub
-                .whenReceiveCreatedPaymentRequestWithAuthApiTokenAndWithBody(apiToken, expectedPaymentRequestPayload)
-                .respondCreatedWithBody(paymentResponsePayload);
+        setupResponseToCreatePaymentRequest(apiToken, expectedPaymentRequestPayload, paymentResponsePayload);
 
         PaymentRequest paymentRequest = new PaymentRequest(amount, reference, description, returnUrl);
         PaymentResponse actualPaymentResponse = publicApiRestClient.createPayment(apiToken, paymentRequest);
@@ -67,15 +64,12 @@ public class PublicApiRestClientTest {
         String returnUrl = "http://return.url";
         String apiToken = "api-token";
 
-        JsonObject expectedPaymentRequestPayload = PublicApiStub.createPaymentRequestPayload(amount, reference, description, returnUrl);
+        JsonObject expectedPaymentRequestPayload = createPaymentRequestPayload(amount, reference, description, returnUrl);
         JsonObject errorPayload = PublicApiStub.createErrorPayload();
 
-        publicApiStub
-                .whenReceiveCreatedPaymentRequestWithAuthApiTokenAndWithBody(apiToken, expectedPaymentRequestPayload)
-                .respondBadRequestWithBody(errorPayload);
+        setupResponseToCreatePaymentRequest(apiToken, expectedPaymentRequestPayload, errorPayload, SC_BAD_REQUEST);
 
         PaymentRequest paymentRequest = new PaymentRequest(amount, reference, description, returnUrl);
-
 
         try {
             publicApiRestClient.createPayment(apiToken, paymentRequest);
@@ -89,20 +83,15 @@ public class PublicApiRestClientTest {
 
     @Test
     public void createPayment_shouldThrowAnExceptionWhenUnauthorized() {
-        String paymentId = "hu20sqlact5260q2nanm0q8u93";
         long amount = 2000;
         String reference = "a-reference";
         String description = "A Service Description";
         String returnUrl = "http://return.url";
-        String nextUrl = "http://next.url";
         String apiToken = "invalid-token";
 
-        JsonObject expectedPaymentRequestPayload = PublicApiStub.createPaymentRequestPayload(amount, reference, description, returnUrl);
-        PublicApiStub.createPaymentResponsePayload(paymentId, amount, reference, description, returnUrl, nextUrl);
+        JsonObject expectedPaymentRequestPayload = createPaymentRequestPayload(amount, reference, description, returnUrl);
 
-        publicApiStub
-                .whenReceiveCreatedPaymentRequestWithAuthApiTokenAndWithBody(apiToken, expectedPaymentRequestPayload)
-                .respondUnauthorized();
+        setupResponseToCreatePaymentRequest(apiToken, expectedPaymentRequestPayload, HttpStatus.SC_UNAUTHORIZED);
 
         PaymentRequest paymentRequest = new PaymentRequest(amount, reference, description, returnUrl);
         try {
@@ -125,9 +114,7 @@ public class PublicApiRestClientTest {
 
         JsonObject paymentResponsePayload = PublicApiStub.createPaymentResponsePayload(paymentId, amount, reference, description, returnUrl, nextUrl);
 
-        publicApiStub
-                .whenReceiveGetPaymentRequest(paymentId)
-                .respondOkWithBody(paymentResponsePayload);
+        setupResponseToGetPaymentRequest(paymentId, paymentResponsePayload);
 
         Optional<PaymentResponse> actualPaymentResponse = publicApiRestClient.getPayment(apiToken, paymentId);
         assertTrue(actualPaymentResponse.isPresent());
@@ -139,9 +126,7 @@ public class PublicApiRestClientTest {
         String paymentId = "hu20sqlact5260q2nanm0q8u93";
         String apiToken = "api-token";
 
-        publicApiStub
-                .whenReceiveGetPaymentRequest(paymentId)
-                .respondNotFound();
+        setupResponseToGetPaymentRequest(paymentId, HttpStatus.SC_NOT_FOUND);
 
         Optional<PaymentResponse> actualPaymentResponse = publicApiRestClient.getPayment(apiToken, paymentId);
         assertFalse(actualPaymentResponse.isPresent());
@@ -154,9 +139,7 @@ public class PublicApiRestClientTest {
 
         JsonObject errorPayload = PublicApiStub.createErrorPayload();
 
-        publicApiStub
-                .whenReceiveGetPaymentRequest(paymentId)
-                .respondBadRequestWithBody(errorPayload);
+        setupResponseToGetPaymentRequest(paymentId, errorPayload, SC_BAD_REQUEST);
 
         try {
             publicApiRestClient.getPayment(apiToken, paymentId);

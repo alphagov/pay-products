@@ -1,10 +1,11 @@
 package uk.gov.pay.products.resources;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.restassured.specification.RequestSpecification;
-import org.junit.Before;
-import org.junit.Rule;
-import org.mockserver.junit.MockServerRule;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.mockserver.socket.PortFactory;
 import uk.gov.pay.products.infra.DropwizardAppWithPostgresRule;
 import uk.gov.pay.products.utils.DatabaseTestHelper;
 
@@ -14,19 +15,21 @@ import static io.restassured.http.ContentType.JSON;
 
 public class IntegrationTest {
 
-    @Rule
-    public final MockServerRule mockServerRule = new MockServerRule(this);
+    public final static int PUBLIC_API_PORT = PortFactory.findFreePort();
+    
+    @ClassRule
+    public static final WireMockRule publicApiRule = new WireMockRule(PUBLIC_API_PORT);
 
-    @Rule
-    public final DropwizardAppWithPostgresRule app =
+    @ClassRule
+    public static final DropwizardAppWithPostgresRule app =
             new DropwizardAppWithPostgresRule("config/test-it-config.yaml",
-                    config("publicApiUrl", "http://localhost:" + mockServerRule.getPort()));
+                    config("publicApiUrl", "http://localhost:" + PUBLIC_API_PORT));
 
-    DatabaseTestHelper databaseHelper;
-    ObjectMapper mapper;
+    protected static DatabaseTestHelper databaseHelper;
+    protected static ObjectMapper mapper;
 
-    @Before
-    public void setUp() {
+    @BeforeClass
+    public static void setUp() {
         databaseHelper = app.getDatabaseTestHelper();
         mapper = new ObjectMapper();
     }

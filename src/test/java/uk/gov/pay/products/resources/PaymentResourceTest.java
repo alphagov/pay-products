@@ -2,15 +2,13 @@ package uk.gov.pay.products.resources;
 
 import com.google.common.collect.ImmutableMap;
 import io.restassured.response.ValidatableResponse;
-import org.junit.Before;
+import org.apache.http.HttpStatus;
 import org.junit.Test;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.entity.PaymentEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
-import uk.gov.pay.products.stubs.publicapi.PublicApiStub;
 
-import javax.json.JsonObject;
 import javax.ws.rs.HttpMethod;
 import java.util.List;
 import java.util.Map;
@@ -25,21 +23,17 @@ import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static org.junit.Assert.assertThat;
 import static uk.gov.pay.products.fixtures.PaymentEntityFixture.aPaymentEntity;
 import static uk.gov.pay.products.fixtures.ProductEntityFixture.aProductEntity;
+import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.createErrorPayload;
+import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.createPaymentResponsePayload;
+import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.setupResponseToCreatePaymentRequest;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 public class PaymentResourceTest extends IntegrationTest {
 
-    private PublicApiStub publicApiStub;
-
     private final String paymentsUrl = "https://products.url/v1/api/payments/";
     private final String nextUrl = "www.gov.uk/pay";
     private final int gatewayAccountId = randomInt();
-
-    @Before
-    public void setup() {
-        publicApiStub = new PublicApiStub(mockServerRule.getPort());
-    }
 
     @Test
     public void createAPayment_shouldSucceed() {
@@ -55,16 +49,13 @@ public class PaymentResourceTest extends IntegrationTest {
         String govukPaymentId = "govukPaymentId";
         String nextUrl = "http://next.url";
 
-        JsonObject paymentResponsePayload = PublicApiStub.createPaymentResponsePayload(
+        setupResponseToCreatePaymentRequest(product.getPayApiToken(), createPaymentResponsePayload(
                 govukPaymentId,
                 product.getPrice(),
                 referenceNumber,
                 product.getName(),
                 product.getReturnUrl(),
-                nextUrl);
-        publicApiStub
-                .whenReceiveCreatedPaymentRequestWithAuthApiToken(product.getPayApiToken())
-                .respondCreatedWithBody(paymentResponsePayload);
+                nextUrl));
 
         ValidatableResponse response = givenSetup()
                 .accept(APPLICATION_JSON)
@@ -121,16 +112,13 @@ public class PaymentResourceTest extends IntegrationTest {
         String govukPaymentId = "govukPaymentId";
         String nextUrl = "http://next.url";
 
-        JsonObject paymentResponsePayload = PublicApiStub.createPaymentResponsePayload(
+        setupResponseToCreatePaymentRequest(product.getPayApiToken(), createPaymentResponsePayload(
                 govukPaymentId,
                 priceOverride,
                 referenceNumber,
                 product.getName(),
                 product.getReturnUrl(),
-                nextUrl);
-        publicApiStub
-                .whenReceiveCreatedPaymentRequestWithAuthApiToken(product.getPayApiToken())
-                .respondCreatedWithBody(paymentResponsePayload);
+                nextUrl));
 
         Map<String, String> payload = ImmutableMap.of("price", priceOverride.toString(), "reference_number", userDefinedReference);
         ValidatableResponse response = givenSetup()
@@ -139,7 +127,7 @@ public class PaymentResourceTest extends IntegrationTest {
                 .post(format("/v1/api/products/%s/payments", product.getExternalId()))
                 .then()
                 .statusCode(201);
-        
+
         List<Map<String, Object>> paymentRecords = databaseHelper.getPaymentsByProductExternalId(product.getExternalId());
 
         assertThat(paymentRecords.size(), is(1));
@@ -188,17 +176,14 @@ public class PaymentResourceTest extends IntegrationTest {
         String govukPaymentId = "govukPaymentId";
         String nextUrl = "http://next.url";
         Long priceOverride = 501L;
-
-        JsonObject paymentResponsePayload = PublicApiStub.createPaymentResponsePayload(
+        
+        setupResponseToCreatePaymentRequest(productEntity.getPayApiToken(), createPaymentResponsePayload(
                 govukPaymentId,
                 priceOverride,
                 userDefinedReference,
                 productEntity.getName(),
                 productEntity.getReturnUrl(),
-                nextUrl);
-        publicApiStub
-                .whenReceiveCreatedPaymentRequestWithAuthApiToken(productEntity.getPayApiToken())
-                .respondCreatedWithBody(paymentResponsePayload);
+                nextUrl));
 
         Map<String, String> payload = ImmutableMap.of("price", priceOverride.toString(), "reference_number", userDefinedReference);
         givenSetup()
@@ -223,17 +208,14 @@ public class PaymentResourceTest extends IntegrationTest {
 
         String govukPaymentId = "govukPaymentId";
         String nextUrl = "http://next.url";
-
-        JsonObject paymentResponsePayload = PublicApiStub.createPaymentResponsePayload(
+        
+        setupResponseToCreatePaymentRequest(product.getPayApiToken(), createPaymentResponsePayload(
                 govukPaymentId,
                 priceOverride,
                 referenceNumber,
                 product.getName(),
                 product.getReturnUrl(),
-                nextUrl);
-        publicApiStub
-                .whenReceiveCreatedPaymentRequestWithAuthApiToken(product.getPayApiToken())
-                .respondCreatedWithBody(paymentResponsePayload);
+                nextUrl));
 
         Map<String, Long> payload = ImmutableMap.of("price", priceOverride);
         ValidatableResponse response = givenSetup()
@@ -279,16 +261,7 @@ public class PaymentResourceTest extends IntegrationTest {
 
         databaseHelper.addProduct(product);
 
-        JsonObject expectedPaymentRequestPayload = PublicApiStub.createPaymentRequestPayload(
-                product.getPrice(),
-                product.getExternalId(),
-                product.getDescription(),
-                product.getReturnUrl());
-        JsonObject errorPayload = PublicApiStub.createErrorPayload();
-
-        publicApiStub
-                .whenReceiveCreatedPaymentRequestWithAuthApiTokenAndWithBody(product.getPayApiToken(), expectedPaymentRequestPayload)
-                .respondBadRequestWithBody(errorPayload);
+        setupResponseToCreatePaymentRequest(product.getPayApiToken(), createErrorPayload(), HttpStatus.SC_BAD_REQUEST);
 
         givenSetup()
                 .accept(APPLICATION_JSON)
@@ -509,7 +482,7 @@ public class PaymentResourceTest extends IntegrationTest {
                 .body("_links[1].method", is(HttpMethod.GET))
                 .body("_links[1].rel", is("next"));
     }
-    
+
     @Test
     public void shouldReturn404_whenSearchingByGatewayAccountIdAndReferenceNumber_andPaymentIsNonExistent() {
         givenSetup()
@@ -519,7 +492,7 @@ public class PaymentResourceTest extends IntegrationTest {
                 .then()
                 .statusCode(404);
     }
-    
+
     @Test
     public void shouldReturn400_whenReferenceEnabledAndNoReferencePresent() {
         String productExternalId = randomUuid();

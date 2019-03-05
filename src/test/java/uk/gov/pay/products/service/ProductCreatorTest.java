@@ -55,7 +55,6 @@ public class ProductCreatorTest {
                 PRICE,
                 null,
                 gatewayAccountId,
-                null,
                 ProductType.DEMO,
                 null,
                 null,
@@ -97,7 +96,6 @@ public class ProductCreatorTest {
                 PRICE,
                 null,
                 gatewayAccountId,
-                SERVICE_NAME,
                 ProductType.DEMO,
                 returnUrl,
                 serviceNamePath,
@@ -107,14 +105,12 @@ public class ProductCreatorTest {
         Product product = productCreator.doCreate(productRequest);
         assertThat(product.getDescription(), is(description));
         assertThat(product.getReturnUrl(), is(returnUrl));
-        assertThat(product.getServiceName(), is(SERVICE_NAME));
 
         verify(productDao, times(1)).persist(persistedProductEntity.capture());
         ProductEntity productEntityValue = persistedProductEntity.getValue();
 
         assertThat(productEntityValue.getDescription(), is(description));
         assertThat(productEntityValue.getReturnUrl(), is(returnUrl));
-        assertThat(productEntityValue.getServiceName(), is(SERVICE_NAME));
     }
 
     @Test
@@ -130,7 +126,6 @@ public class ProductCreatorTest {
                 updatedDescription,
                 null,
                 updatedPrice,
-                null,
                 null,
                 null,
                 null,
@@ -169,7 +164,6 @@ public class ProductCreatorTest {
                 updatedDescription,
                 null,
                 updatedPrice,
-                null,
                 null,
                 null,
                 null,

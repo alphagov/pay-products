@@ -24,7 +24,6 @@ import uk.gov.pay.products.exception.mapper.PaymentCreatorNotFoundExceptionMappe
 import uk.gov.pay.products.healthchecks.DatabaseHealthCheck;
 import uk.gov.pay.products.healthchecks.DependentResourceWaitCommand;
 import uk.gov.pay.products.healthchecks.Ping;
-import uk.gov.pay.products.resources.GatewayAccountResource;
 import uk.gov.pay.products.resources.HealthCheckResource;
 import uk.gov.pay.products.resources.PaymentResource;
 import uk.gov.pay.products.resources.ProductResource;
@@ -79,7 +78,6 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
         environment.jersey().register(injector.getInstance(HealthCheckResource.class));
         environment.jersey().register(injector.getInstance(ProductResource.class));
         environment.jersey().register(injector.getInstance(PaymentResource.class));
-        environment.jersey().register(injector.getInstance(GatewayAccountResource.class));
 
         attachExceptionMappersTo(environment.jersey());
         HttpsURLConnection.setDefaultSSLSocketFactory(new TrustingSSLSocketFactory());

@@ -51,15 +51,6 @@ public class ProductDao extends JpaDao<ProductEntity> {
                 .getResultList();
     }
 
-    public Integer updateGatewayAccount(Integer gatewayAccountId, String serviceName) {
-        String query = "UPDATE ProductEntity p SET p.serviceName = :serviceName WHERE p.gatewayAccountId = :gatewayAccountId";
-
-        return entityManager.get().createQuery(query)
-                .setParameter("serviceName", serviceName)
-                .setParameter("gatewayAccountId", gatewayAccountId)
-                .executeUpdate();
-    }
-
     public Optional<ProductEntity> findByProductPath(String serviceNamePath, String productNamePath) {
         String query = "SELECT product FROM ProductEntity product " +
                 "WHERE product.serviceNamePath = :serviceNamePath " +

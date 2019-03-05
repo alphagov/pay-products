@@ -45,9 +45,6 @@ public class ProductEntity extends AbstractEntity {
     @Column(name = "return_url")
     private String returnUrl;
 
-    @Column(name = "service_name")
-    private String serviceName;
-
     @Column(name = "service_name_path")
     private String serviceNamePath;
 
@@ -158,14 +155,6 @@ public class ProductEntity extends AbstractEntity {
         this.returnUrl = returnUrl;
     }
 
-    public String getServiceName() {
-        return serviceName;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
-
     public String getServiceNamePath() { return serviceNamePath; }
 
     public void setServiceNamePath(String serviceNamePath) { this.serviceNamePath = serviceNamePath; }
@@ -186,7 +175,6 @@ public class ProductEntity extends AbstractEntity {
         productEntity.setGatewayAccountId(product.getGatewayAccountId());
         productEntity.setType(product.getType());
         productEntity.setReturnUrl(product.getReturnUrl());
-        productEntity.setServiceName(product.getServiceName());
         productEntity.setServiceNamePath(product.getServiceNamePath());
         productEntity.setProductNamePath(product.getProductNamePath());
         productEntity.setReferenceEnabled(product.getReferenceEnabled());
@@ -205,7 +193,6 @@ public class ProductEntity extends AbstractEntity {
                 this.price,
                 this.status,
                 this.gatewayAccountId,
-                this.serviceName,
                 this.type,
                 this.returnUrl,
                 this.serviceNamePath,

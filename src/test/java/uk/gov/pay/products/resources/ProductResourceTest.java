@@ -35,7 +35,6 @@ public class ProductResourceTest extends IntegrationTest {
     private static final String TYPE = "type";
     private static final String RETURN_URL = "return_url";
     private static final String GATEWAY_ACCOUNT_ID = "gateway_account_id";
-    private static final String SERVICE_NAME = "service_name";
     private static final String SERVICE_NAME_PATH = "service_name_path";
     private static final String PRODUCT_NAME_PATH = "product_name_path";
     private static final String REFERENCE_ENABLED_FIELD = "reference_enabled";
@@ -49,7 +48,6 @@ public class ProductResourceTest extends IntegrationTest {
         String name = "Flashy new GOV Service";
         Long price = 1050L;
         Integer gatewayAccountId = randomInt();
-        String serviceName = "Example Name";
         String type = ProductType.DEMO.name();
 
         ImmutableMap<Object, Object> payload = ImmutableMap.builder()
@@ -57,7 +55,6 @@ public class ProductResourceTest extends IntegrationTest {
                 .put(PAY_API_TOKEN, payApiToken)
                 .put(NAME, name)
                 .put(PRICE, price)
-                .put(SERVICE_NAME, serviceName)
                 .put(TYPE, type)
                 .put(RETURN_URL, "https://return.url")
                 .build();
@@ -75,8 +72,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
                 .body(PRICE, is(1050))
                 .body(EXTERNAL_ID, matchesPattern("^[0-9a-z]{32}$"))
-                .body(TYPE, is(type))
-                .body(SERVICE_NAME, is(serviceName));
+                .body(TYPE, is(type));
 
         String externalId = response.extract().path(EXTERNAL_ID);
 
@@ -100,7 +96,6 @@ public class ProductResourceTest extends IntegrationTest {
         Long price = 1050L;
         String description = "Some test description";
         Integer gatewayAccountId = randomInt();
-        String serviceName = "Example Service";
         String type = ProductType.ADHOC.name();
         String serviceNamePath = randomAlphanumeric(40);
         String productNamePath = randomAlphanumeric(65);
@@ -115,7 +110,6 @@ public class ProductResourceTest extends IntegrationTest {
                 .put(DESCRIPTION, description)
                 .put(TYPE, type)
                 .put(RETURN_URL, returnUrl)
-                .put(SERVICE_NAME, serviceName)
                 .put(SERVICE_NAME_PATH, serviceNamePath)
                 .put(PRODUCT_NAME_PATH, productNamePath)
                 .put(REFERENCE_ENABLED_FIELD, Boolean.FALSE.toString())
@@ -136,7 +130,6 @@ public class ProductResourceTest extends IntegrationTest {
                 .body(TYPE, is(type))
                 .body(DESCRIPTION, is(description))
                 .body(RETURN_URL, is(returnUrl))
-                .body(SERVICE_NAME, is(serviceName))
                 .body(REFERENCE_ENABLED_FIELD, is(false));
 
         String externalId = response.extract().path(EXTERNAL_ID);
@@ -166,7 +159,6 @@ public class ProductResourceTest extends IntegrationTest {
         Long price = 1050L;
         String description = "Some test description";
         Integer gatewayAccountId = randomInt();
-        String serviceName = "Example Service";
         String type = ProductType.ADHOC.name();
         String serviceNamePath = randomAlphanumeric(40);
         String productNamePath = randomAlphanumeric(65);
@@ -183,7 +175,6 @@ public class ProductResourceTest extends IntegrationTest {
                 .put(DESCRIPTION, description)
                 .put(TYPE, type)
                 .put(RETURN_URL, returnUrl)
-                .put(SERVICE_NAME, serviceName)
                 .put(SERVICE_NAME_PATH, serviceNamePath)
                 .put(PRODUCT_NAME_PATH, productNamePath)
                 .put(REFERENCE_ENABLED_FIELD, Boolean.TRUE.toString())
@@ -206,7 +197,6 @@ public class ProductResourceTest extends IntegrationTest {
                 .body(TYPE, is(type))
                 .body(DESCRIPTION, is(description))
                 .body(RETURN_URL, is(returnUrl))
-                .body(SERVICE_NAME, is(serviceName))
                 .body(REFERENCE_ENABLED_FIELD, is(true))
                 .body(REFERENCE_LABEL, is(referenceLabel))
                 .body(REFERENCE_HINT, is(referenceHint));
@@ -263,7 +253,6 @@ public class ProductResourceTest extends IntegrationTest {
         String name = "Existing product path product attempt";
         Long price = 1050L;
         String description = "Some test description";
-        String serviceName = "Example Service";
         String type = ProductType.ADHOC.name();
 
         String returnUrl = "https://some.valid.url";
@@ -276,7 +265,6 @@ public class ProductResourceTest extends IntegrationTest {
                 .put(DESCRIPTION, description)
                 .put(TYPE, type)
                 .put(RETURN_URL, returnUrl)
-                .put(SERVICE_NAME, serviceName)
                 .put(SERVICE_NAME_PATH, serviceNamePath)
                 .put(PRODUCT_NAME_PATH, productNamePath)
                 .build();
@@ -763,7 +751,6 @@ public class ProductResourceTest extends IntegrationTest {
         Long price = 1050L;
         String description = "Some test description";
         Integer gatewayAccountId = randomInt();
-        String serviceName = "Example Service";
         String type = ProductType.ADHOC.name();
         String serviceNamePath = randomAlphanumeric(40);
         String productNamePath = randomAlphanumeric(65);
@@ -779,7 +766,6 @@ public class ProductResourceTest extends IntegrationTest {
                 .put(DESCRIPTION, description)
                 .put(TYPE, type)
                 .put(RETURN_URL, returnUrl)
-                .put(SERVICE_NAME, serviceName)
                 .put(SERVICE_NAME_PATH, serviceNamePath)
                 .put(PRODUCT_NAME_PATH, productNamePath)
                 .put(REFERENCE_ENABLED_FIELD, Boolean.TRUE.toString())

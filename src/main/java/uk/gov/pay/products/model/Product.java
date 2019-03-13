@@ -27,7 +27,6 @@ public class Product {
     private static final String TYPE = "type";
     private static final String FIELD_GATEWAY_ACCOUNT_ID = "gateway_account_id";
     private static final String RETURN_URL = "return_url";
-    private static final String FIELD_SERVICE_NAME = "service_name";
     private static final String FIELD_SERVICE_NAME_PATH = "service_name_path";
     private static final String FIELD_PRODUCT_NAME_PATH = "product_name_path";
     private static final String FIELD_REFERENCE_ENABLED = "reference_enabled";
@@ -53,8 +52,6 @@ public class Product {
     private List<Link> links = new ArrayList<>();
     @JsonProperty(RETURN_URL)
     private final String returnUrl;
-    @JsonProperty(FIELD_SERVICE_NAME)
-    private final String serviceName;
     @JsonProperty(FIELD_SERVICE_NAME_PATH)
     private final String serviceNamePath;
     @JsonProperty(FIELD_PRODUCT_NAME_PATH)
@@ -67,10 +64,10 @@ public class Product {
     private final String referenceHint;
 
     public Product(String externalId, String name, String description, String payApiToken, Long price, 
-                   ProductStatus status, Integer gatewayAccountId, String serviceName, ProductType type,
+                   ProductStatus status, Integer gatewayAccountId, ProductType type,
                    String returnUrl, String serviceNamePath, String productNamePath)
     {
-        this(externalId, name, description, payApiToken, price, status, gatewayAccountId, serviceName, type,
+        this(externalId, name, description, payApiToken, price, status, gatewayAccountId, type,
                 returnUrl, serviceNamePath, productNamePath, false, null, null);
     }
 
@@ -82,7 +79,6 @@ public class Product {
             Long price,
             ProductStatus status,
             Integer gatewayAccountId,
-            String serviceName,
             ProductType type,
             String returnUrl,
             String serviceNamePath,
@@ -98,7 +94,6 @@ public class Product {
         this.price = price;
         this.status = status;
         this.gatewayAccountId = gatewayAccountId;
-        this.serviceName = serviceName;
         this.type = type;
         this.returnUrl = returnUrl;
         this.serviceNamePath = serviceNamePath;
@@ -117,7 +112,6 @@ public class Product {
         String description = (jsonPayload.get(DESCRIPTION) != null) ? jsonPayload.get(DESCRIPTION).asText() : null;
         ProductType type = (jsonPayload.get(TYPE) != null) ? ProductType.valueOf(jsonPayload.get(TYPE).asText()) : null;
         String returnUrl = (jsonPayload.get(RETURN_URL) != null) ? jsonPayload.get(RETURN_URL).asText() : null;
-        String serviceName = (jsonPayload.get(FIELD_SERVICE_NAME) != null) ? jsonPayload.get(FIELD_SERVICE_NAME).asText() : null;
         String serviceNamePath = (jsonPayload.get(FIELD_SERVICE_NAME_PATH) != null) ? jsonPayload.get(FIELD_SERVICE_NAME_PATH).asText() : null;
         String productNamePath = (jsonPayload.get(FIELD_PRODUCT_NAME_PATH) != null) ? jsonPayload.get(FIELD_PRODUCT_NAME_PATH).asText() : null;
         Boolean referenceEnabled = (jsonPayload.get(FIELD_REFERENCE_ENABLED) != null) && jsonPayload.get(FIELD_REFERENCE_ENABLED).asBoolean();
@@ -125,7 +119,7 @@ public class Product {
         String referenceHint = (jsonPayload.get(FIELD_REFERENCE_HINT) != null) ? jsonPayload.get(FIELD_REFERENCE_HINT).asText() : null;
         
         return new Product(externalId, name, description, payApiToken,
-                price, ProductStatus.ACTIVE, gatewayAccountId, serviceName, type, returnUrl,
+                price, ProductStatus.ACTIVE, gatewayAccountId, type, returnUrl,
                 serviceNamePath, productNamePath, referenceEnabled, referenceLabel, referenceHint);
     }
 
@@ -154,10 +148,6 @@ public class Product {
 
     public String getExternalId() {
         return externalId;
-    }
-
-    public String getServiceName() {
-        return serviceName;
     }
 
     public void setLinks(List<Link> links) {
@@ -199,7 +189,6 @@ public class Product {
                 ", gatewayAccountId=" + gatewayAccountId +
                 ", links=" + links +
                 ", returnUrl='" + returnUrl + '\'' +
-                ", serviceName='" + serviceName + '\'' +
                 ", serviceNamePath='" + serviceNamePath + '\'' +
                 ", productNamePath='" + productNamePath + '\'' +
                 ", referenceEnabled='" + referenceEnabled +

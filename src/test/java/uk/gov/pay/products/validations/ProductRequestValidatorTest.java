@@ -299,27 +299,6 @@ public class ProductRequestValidatorTest {
     }
 
     @Test
-    public void shouldError_whenServiceNameFieldLengthIsGreaterThan50() {
-
-        JsonNode payload = new ObjectMapper()
-                .valueToTree(ImmutableMap.<String, String>builder()
-                        .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
-                        .put(FIELD_PAY_API_TOKEN, "api_token")
-                        .put(FIELD_NAME, "name")
-                        .put(FIELD_PRICE, "25.0")
-                        .put(FIELD_SERVICE_NAME, randomAlphanumeric(51))
-                        .put(FIELD_RETURN_URL, VALID_RETURN_URL)
-                        .put(FIELD_TYPE, ProductType.DEMO.toString())
-                        .put(FIELD_REFERENCE_ENABLED, Boolean.FALSE.toString())
-                        .build());
-
-        Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
-
-        assertThat(errors.isPresent(), is(true));
-        assertThat(errors.get().getErrors().toString(), is("[Field [service_name] must have a maximum length of 50 characters]"));
-    }
-
-    @Test
     public void shouldError_whenTypeIsAdhocAndNoProductPathIsPresent() {
         JsonNode payload = new ObjectMapper()
                 .valueToTree(ImmutableMap.<String, String>builder()

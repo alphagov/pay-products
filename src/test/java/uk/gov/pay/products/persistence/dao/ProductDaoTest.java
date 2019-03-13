@@ -146,50 +146,6 @@ public class ProductDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void updateGatewayAccount_shouldUpdateTheServiceNameOfAllProductOfGivenGatewayAccount() {
-        Integer gatewayAccountId = randomInt();
-        Integer anotherGatewayAccountId = randomInt();
-        String oldServiceName = "Old Service Name";
-        String newServiceName = "New Service Name";
-
-        Product product1 = ProductEntityFixture.aProductEntity()
-                .withGatewayAccountId(gatewayAccountId)
-                .withServiceName(oldServiceName)
-                .build()
-                .toProduct();
-
-        databaseHelper.addProduct(product1);
-
-        Product product2 = ProductEntityFixture.aProductEntity()
-                .withGatewayAccountId(gatewayAccountId)
-                .withServiceName(oldServiceName)
-                .build()
-                .toProduct();
-
-        databaseHelper.addProduct(product2);
-
-        Product product3 = ProductEntityFixture.aProductEntity()
-                .withGatewayAccountId(anotherGatewayAccountId)
-                .withServiceName(oldServiceName)
-                .build()
-                .toProduct();
-
-        databaseHelper.addProduct(product3);
-
-        Integer updatedRows = productDao.updateGatewayAccount(gatewayAccountId, newServiceName);
-        assertThat(updatedRows, is(2));
-
-        List<ProductEntity> products = productDao.findByGatewayAccountId(gatewayAccountId);
-        assertThat(products.size(), is(2));
-        assertThat(products.get(0).getServiceName(), is(newServiceName));
-        assertThat(products.get(1).getServiceName(), is(newServiceName));
-
-        products = productDao.findByGatewayAccountId(anotherGatewayAccountId);
-        assertThat(products.size(), is(1));
-        assertThat(products.get(0).getServiceName(), is(oldServiceName));
-    }
-
-    @Test
     public void findByProductPath_shouldReturnAProduct_whenExists() {
         String externalId = randomUuid();
         Integer gatewayAccountId = randomInt();

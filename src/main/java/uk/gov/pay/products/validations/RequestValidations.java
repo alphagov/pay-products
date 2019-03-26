@@ -2,16 +2,17 @@ package uk.gov.pay.products.validations;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import uk.gov.pay.products.util.ProductType;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
+import static java.util.Collections.singletonList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.math.NumberUtils.isDigits;
 
@@ -22,7 +23,11 @@ public class RequestValidations {
     Optional<List<String>> checkIsNumeric(JsonNode payload, String... fieldNames) {
         return applyCheck(payload, isNotNumeric(), fieldNames, "Field [%s] must be a number");
     }
-
+    
+    Optional<List<String>> checkIsString(JsonNode payload, String... fieldNames) {
+        return applyCheck(payload, isNotString(), fieldNames, "Field [%s] must be a string");
+    }
+    
     Optional<List<String>> checkIsUrl(JsonNode payload, String... fieldNames) {
         return applyCheck(payload, isNotUrl(), fieldNames, "Field [%s] must be a https url");
     }
@@ -31,20 +36,16 @@ public class RequestValidations {
         return applyCheck(payload, notExistAndNotEmpty(), fieldNames, "Field [%s] is required");
     }
 
-    Optional<List<String>> checkMaxLength(JsonNode payload, int maxLength, String... fieldNames) {
-        return applyCheck(payload, exceedsMaxLength(maxLength), fieldNames, "Field [%s] must have a maximum length of " + maxLength + " characters");
-    }
-
     Optional<List<String>> checkIsBelowMaxAmount(JsonNode payload, String... fieldNames) {
         return applyCheck(payload, isBelowMax(), fieldNames, "Field [%s] must be a number below " + MAX_PRICE);
     }
 
-    Optional<List<String>> checkIsProductType(JsonNode payload, String... fieldNames) {
-        return applyCheck(payload, isNotProductType(), fieldNames, "Field [%s] must be a valid product type ");
-    }
-
-    private Function<JsonNode, Boolean> exceedsMaxLength(int maxLength) {
-        return jsonNode -> jsonNode.asText().length() > maxLength;
+    Optional<List<String>> checkIsValidEnumValue(JsonNode payload, EnumSet<?> enumSet, String field) {
+        String value = payload.get(field).asText();
+        if (enumSet.stream().noneMatch(constant -> constant.toString().equals(value))) {
+            return Optional.of(singletonList(format("Field [%s] must be one of %s", field, enumSet)));
+        }
+        return Optional.empty();
     }
 
     private Optional<List<String>> applyCheck(JsonNode payload, Function<JsonNode, Boolean> check, String[] fieldNames, String errorMessage) {
@@ -85,20 +86,12 @@ public class RequestValidations {
         return jsonNode -> !isDigits(jsonNode.asText());
     }
 
+    private static Function<JsonNode, Boolean> isNotString() {
+        return jsonNode -> !jsonNode.isTextual();
+    }
+    
     private static Function<JsonNode, Boolean> isBelowMax() {
         return jsonNode -> isDigits(jsonNode.asText()) && jsonNode.asLong() > MAX_PRICE;
-    }
-
-    private static Function<JsonNode, Boolean> isNotProductType() {
-        return jsonNode -> {
-            try {
-                ProductType.valueOf(jsonNode.asText());
-            } catch (Exception e) {
-
-                return true;
-            }
-            return false;
-        };
     }
 
     private static Function<JsonNode, Boolean> isNotUrl() {

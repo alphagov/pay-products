@@ -18,39 +18,40 @@ import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Product {
 
-    private static final String FIELD_PAY_API_TOKEN = "pay_api_token";
-    private static final String FIELD_NAME = "name";
-    private static final String FIELD_PRICE = "price";
-    private static final String EXTERNAL_ID = "external_id";
-    private static final String DESCRIPTION = "description";
-    private static final String STATUS = "status";
-    private static final String TYPE = "type";
-    private static final String FIELD_GATEWAY_ACCOUNT_ID = "gateway_account_id";
-    private static final String RETURN_URL = "return_url";
-    private static final String FIELD_SERVICE_NAME_PATH = "service_name_path";
-    private static final String FIELD_PRODUCT_NAME_PATH = "product_name_path";
-    private static final String FIELD_REFERENCE_ENABLED = "reference_enabled";
-    private static final String FIELD_REFERENCE_LABEL = "reference_label";
-    private static final String FIELD_REFERENCE_HINT = "reference_hint";
+    public static final String FIELD_PAY_API_TOKEN = "pay_api_token";
+    public static final String FIELD_NAME = "name";
+    public static final String FIELD_PRICE = "price";
+    public static final String FIELD_EXTERNAL_ID = "external_id";
+    public static final String FIELD_DESCRIPTION = "description";
+    public static final String FIELD_STATUS = "status";
+    public static final String FIELD_TYPE = "type";
+    public static final String FIELD_GATEWAY_ACCOUNT_ID = "gateway_account_id";
+    public static final String FIELD_RETURN_URL = "return_url";
+    public static final String FIELD_SERVICE_NAME_PATH = "service_name_path";
+    public static final String FIELD_PRODUCT_NAME_PATH = "product_name_path";
+    public static final String FIELD_REFERENCE_ENABLED = "reference_enabled";
+    public static final String FIELD_REFERENCE_LABEL = "reference_label";
+    public static final String FIELD_REFERENCE_HINT = "reference_hint";
+    public static final String FIELD_LANGUAGE = "language";
 
-    @JsonProperty(EXTERNAL_ID)
+    @JsonProperty(FIELD_EXTERNAL_ID)
     private final String externalId;
     @JsonProperty(FIELD_NAME)
     private final String name;
-    @JsonProperty(DESCRIPTION)
+    @JsonProperty(FIELD_DESCRIPTION)
     private final String description;
     @JsonProperty(FIELD_PAY_API_TOKEN)
     private final String payApiToken;
     @JsonProperty(FIELD_PRICE)
     private final Long price;
-    @JsonProperty(STATUS)
+    @JsonProperty(FIELD_STATUS)
     private final ProductStatus status;
-    @JsonProperty(TYPE)
+    @JsonProperty(FIELD_TYPE)
     private final ProductType type;
     @JsonProperty(FIELD_GATEWAY_ACCOUNT_ID)
     private final Integer gatewayAccountId;
     private List<Link> links = new ArrayList<>();
-    @JsonProperty(RETURN_URL)
+    @JsonProperty(FIELD_RETURN_URL)
     private final String returnUrl;
     @JsonProperty(FIELD_SERVICE_NAME_PATH)
     private final String serviceNamePath;
@@ -104,14 +105,14 @@ public class Product {
     }
 
     public static Product from(JsonNode jsonPayload) {
-        String externalId = (jsonPayload.get(EXTERNAL_ID) != null) ? jsonPayload.get(EXTERNAL_ID).asText() : randomUuid();
+        String externalId = (jsonPayload.get(FIELD_EXTERNAL_ID) != null) ? jsonPayload.get(FIELD_EXTERNAL_ID).asText() : randomUuid();
         String payApiToken = (jsonPayload.get(FIELD_PAY_API_TOKEN) != null) ? jsonPayload.get(FIELD_PAY_API_TOKEN).asText() : null;
         String name = (jsonPayload.get(FIELD_NAME) != null) ? jsonPayload.get(FIELD_NAME).asText() : null;
         Long price = (jsonPayload.get(FIELD_PRICE) != null) ? jsonPayload.get(FIELD_PRICE).asLong() : null;
         Integer gatewayAccountId = (jsonPayload.get(FIELD_GATEWAY_ACCOUNT_ID) != null ? jsonPayload.get(FIELD_GATEWAY_ACCOUNT_ID).asInt() : null);
-        String description = (jsonPayload.get(DESCRIPTION) != null) ? jsonPayload.get(DESCRIPTION).asText() : null;
-        ProductType type = (jsonPayload.get(TYPE) != null) ? ProductType.valueOf(jsonPayload.get(TYPE).asText()) : null;
-        String returnUrl = (jsonPayload.get(RETURN_URL) != null) ? jsonPayload.get(RETURN_URL).asText() : null;
+        String description = (jsonPayload.get(FIELD_DESCRIPTION) != null) ? jsonPayload.get(FIELD_DESCRIPTION).asText() : null;
+        ProductType type = (jsonPayload.get(FIELD_TYPE) != null) ? ProductType.valueOf(jsonPayload.get(FIELD_TYPE).asText()) : null;
+        String returnUrl = (jsonPayload.get(FIELD_RETURN_URL) != null) ? jsonPayload.get(FIELD_RETURN_URL).asText() : null;
         String serviceNamePath = (jsonPayload.get(FIELD_SERVICE_NAME_PATH) != null) ? jsonPayload.get(FIELD_SERVICE_NAME_PATH).asText() : null;
         String productNamePath = (jsonPayload.get(FIELD_PRODUCT_NAME_PATH) != null) ? jsonPayload.get(FIELD_PRODUCT_NAME_PATH).asText() : null;
         Boolean referenceEnabled = (jsonPayload.get(FIELD_REFERENCE_ENABLED) != null) && jsonPayload.get(FIELD_REFERENCE_ENABLED).asBoolean();

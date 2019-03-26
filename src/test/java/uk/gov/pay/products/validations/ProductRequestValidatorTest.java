@@ -30,6 +30,7 @@ public class ProductRequestValidatorTest {
     private static final String FIELD_REFERENCE_ENABLED = "reference_enabled";
     private static final String FIELD_REFERENCE_LABEL = "reference_label";
     private static final String FIELD_REFERENCE_HINT = "reference_hint";
+    private static final String FIELD_LANGUAGE = "language";
 
     private static final ProductRequestValidator productRequestValidator = new ProductRequestValidator(new RequestValidations());
 
@@ -250,7 +251,7 @@ public class ProductRequestValidatorTest {
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
         assertThat(errors.isPresent(), is(true));
-        assertThat(errors.get().getErrors().toString(), is("[Field [type] must be a valid product type ]"));
+        assertThat(errors.get().getErrors().toString(), is("[Field [type] must be one of [DEMO, PROTOTYPE, ADHOC]]"));
     }
 
     @Test
@@ -360,5 +361,94 @@ public class ProductRequestValidatorTest {
 
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().toString(), is("[Field [reference_label] is required]"));
+    }
+
+    @Test
+    public void shouldError_whenLanguageIsPresentAndEmpty() {
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(ImmutableMap.<String, String>builder()
+                        .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
+                        .put(FIELD_PAY_API_TOKEN, "api_token")
+                        .put(FIELD_NAME, "name")
+                        .put(FIELD_PRICE, "25.0")
+                        .put(FIELD_SERVICE_NAME, randomAlphanumeric(50))
+                        .put(FIELD_RETURN_URL, VALID_RETURN_URL)
+                        .put(FIELD_TYPE, ProductType.ADHOC.toString())
+                        .put(FIELD_SERVICE_NAME_PATH, "service-name-path")
+                        .put(FIELD_PRODUCT_NAME_PATH, "product-name-path")
+                        .put(FIELD_REFERENCE_ENABLED, Boolean.FALSE.toString())
+                        .put(FIELD_LANGUAGE, "")
+                        .build());
+
+        Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
+
+        assertThat(errors.isPresent(), is(true));
+        assertThat(errors.get().getErrors().toString(), is("[Field [language] must be one of [en, cy]]"));
+    }
+
+    @Test
+    public void shouldError_whenLanguageIsPresentAndNotSupportedLanguage() {
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(ImmutableMap.<String, String>builder()
+                        .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
+                        .put(FIELD_PAY_API_TOKEN, "api_token")
+                        .put(FIELD_NAME, "name")
+                        .put(FIELD_PRICE, "25.0")
+                        .put(FIELD_SERVICE_NAME, randomAlphanumeric(50))
+                        .put(FIELD_RETURN_URL, VALID_RETURN_URL)
+                        .put(FIELD_TYPE, ProductType.ADHOC.toString())
+                        .put(FIELD_SERVICE_NAME_PATH, "service-name-path")
+                        .put(FIELD_PRODUCT_NAME_PATH, "product-name-path")
+                        .put(FIELD_REFERENCE_ENABLED, Boolean.FALSE.toString())
+                        .put(FIELD_LANGUAGE, "ie")
+                        .build());
+
+        Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
+
+        assertThat(errors.isPresent(), is(true));
+        assertThat(errors.get().getErrors().toString(), is("[Field [language] must be one of [en, cy]]"));
+    }
+
+    @Test
+    public void shouldNotError_whenLanguageIsNotPresent() {
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(ImmutableMap.<String, String>builder()
+                        .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
+                        .put(FIELD_PAY_API_TOKEN, "api_token")
+                        .put(FIELD_NAME, "name")
+                        .put(FIELD_PRICE, "25.0")
+                        .put(FIELD_SERVICE_NAME, randomAlphanumeric(50))
+                        .put(FIELD_RETURN_URL, VALID_RETURN_URL)
+                        .put(FIELD_TYPE, ProductType.ADHOC.toString())
+                        .put(FIELD_SERVICE_NAME_PATH, "service-name-path")
+                        .put(FIELD_PRODUCT_NAME_PATH, "product-name-path")
+                        .put(FIELD_REFERENCE_ENABLED, Boolean.FALSE.toString())
+                        .build());
+
+        Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
+
+        assertThat(errors.isPresent(), is(false));
+    }
+
+    @Test
+    public void shouldNotError_whenLanguageIsSupportedLanguage() {
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(ImmutableMap.<String, String>builder()
+                        .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
+                        .put(FIELD_PAY_API_TOKEN, "api_token")
+                        .put(FIELD_NAME, "name")
+                        .put(FIELD_PRICE, "25.0")
+                        .put(FIELD_SERVICE_NAME, randomAlphanumeric(50))
+                        .put(FIELD_RETURN_URL, VALID_RETURN_URL)
+                        .put(FIELD_TYPE, ProductType.ADHOC.toString())
+                        .put(FIELD_SERVICE_NAME_PATH, "service-name-path")
+                        .put(FIELD_PRODUCT_NAME_PATH, "product-name-path")
+                        .put(FIELD_REFERENCE_ENABLED, Boolean.FALSE.toString())
+                        .put(FIELD_LANGUAGE, "cy")
+                        .build());
+
+        Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
+
+        assertThat(errors.isPresent(), is(false));
     }
 }

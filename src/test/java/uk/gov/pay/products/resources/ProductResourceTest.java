@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Assert;
 import org.junit.Test;
+import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.util.ProductStatus;
@@ -40,6 +41,7 @@ public class ProductResourceTest extends IntegrationTest {
     private static final String REFERENCE_ENABLED_FIELD = "reference_enabled";
     private static final String REFERENCE_LABEL = "reference_label";
     private static final String REFERENCE_HINT = "reference_hint";
+    private static final String LANGUAGE = "language";
 
     @Test
     public void shouldSuccess_whenSavingAValidProduct_withMinimumMandatoryFields() throws Exception {
@@ -72,7 +74,8 @@ public class ProductResourceTest extends IntegrationTest {
                 .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
                 .body(PRICE, is(1050))
                 .body(EXTERNAL_ID, matchesPattern("^[0-9a-z]{32}$"))
-                .body(TYPE, is(type));
+                .body(TYPE, is(type))
+                .body(LANGUAGE, is("en"));
 
         String externalId = response.extract().path(EXTERNAL_ID);
 
@@ -99,9 +102,9 @@ public class ProductResourceTest extends IntegrationTest {
         String type = ProductType.ADHOC.name();
         String serviceNamePath = randomAlphanumeric(40);
         String productNamePath = randomAlphanumeric(65);
-
         String returnUrl = "https://some.valid.url";
-
+        String language = "cy";
+        
         ImmutableMap<String, String> payload = ImmutableMap.<String, String>builder()
                 .put(GATEWAY_ACCOUNT_ID, gatewayAccountId.toString())
                 .put(PAY_API_TOKEN, payApiToken)
@@ -113,6 +116,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .put(SERVICE_NAME_PATH, serviceNamePath)
                 .put(PRODUCT_NAME_PATH, productNamePath)
                 .put(REFERENCE_ENABLED_FIELD, Boolean.FALSE.toString())
+                .put(LANGUAGE, language)
                 .build();
 
         ValidatableResponse response = givenSetup()
@@ -130,7 +134,8 @@ public class ProductResourceTest extends IntegrationTest {
                 .body(TYPE, is(type))
                 .body(DESCRIPTION, is(description))
                 .body(RETURN_URL, is(returnUrl))
-                .body(REFERENCE_ENABLED_FIELD, is(false));
+                .body(REFERENCE_ENABLED_FIELD, is(false))
+                .body(LANGUAGE, is(language));
 
         String externalId = response.extract().path(EXTERNAL_ID);
 
@@ -164,9 +169,9 @@ public class ProductResourceTest extends IntegrationTest {
         String productNamePath = randomAlphanumeric(65);
         String referenceLabel = randomAlphanumeric(25);
         String referenceHint = randomAlphanumeric(85);
-
         String returnUrl = "https://some.valid.url";
-
+        String language = "en";
+        
         ImmutableMap<String, String> payload = ImmutableMap.<String, String>builder()
                 .put(GATEWAY_ACCOUNT_ID, gatewayAccountId.toString())
                 .put(PAY_API_TOKEN, payApiToken)
@@ -180,6 +185,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .put(REFERENCE_ENABLED_FIELD, Boolean.TRUE.toString())
                 .put(REFERENCE_LABEL, referenceLabel)
                 .put(REFERENCE_HINT, referenceHint)
+                .put(LANGUAGE, language)
                 .build();
 
         ValidatableResponse response = givenSetup()
@@ -199,7 +205,8 @@ public class ProductResourceTest extends IntegrationTest {
                 .body(RETURN_URL, is(returnUrl))
                 .body(REFERENCE_ENABLED_FIELD, is(true))
                 .body(REFERENCE_LABEL, is(referenceLabel))
-                .body(REFERENCE_HINT, is(referenceHint));
+                .body(REFERENCE_HINT, is(referenceHint))
+                .body(LANGUAGE, is(language));
 
         String externalId = response.extract().path(EXTERNAL_ID);
 
@@ -359,7 +366,8 @@ public class ProductResourceTest extends IntegrationTest {
                 .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
                 .body(TYPE, is(product.getType().name()))
                 .body(DESCRIPTION, is(product.getDescription()))
-                .body(RETURN_URL, is(product.getReturnUrl()));
+                .body(RETURN_URL, is(product.getReturnUrl()))
+                .body(LANGUAGE, is("en"));
 
         String productsUrl = "https://products.url/v1/api/products/";
         String productsUIPayUrl = "https://products-ui.url/pay/";
@@ -455,7 +463,8 @@ public class ProductResourceTest extends IntegrationTest {
                 .body(PRICE, is(Integer.valueOf(updatedPrice)))
                 .body(TYPE, is(existingProduct.getType().name()))
                 .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
-                .body(RETURN_URL, is(existingProduct.getReturnUrl()));
+                .body(RETURN_URL, is(existingProduct.getReturnUrl()))
+                .body(LANGUAGE, is("en"));
 
         String productsUrl = "https://products.url/v1/api/products/";
         String productsUIPayUrl = "https://products-ui.url/pay/";
@@ -699,6 +708,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .withType(ProductType.ADHOC)
                 .withPrice(1000)
                 .withProductPath(serviceNamePath, productNamePath)
+                .withLanguage(SupportedLanguage.WELSH)
                 .build()
                 .toProduct();
 
@@ -718,7 +728,8 @@ public class ProductResourceTest extends IntegrationTest {
                 .body("_links", hasSize(3))
                 .body("_links[2].href", is(urlToMatch))
                 .body("_links[2].method", is(HttpMethod.GET))
-                .body("_links[2].rel", is("friendly"));
+                .body("_links[2].rel", is("friendly"))
+                .body(LANGUAGE, is("cy"));
 
 
     }

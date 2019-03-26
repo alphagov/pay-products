@@ -1,10 +1,17 @@
 package uk.gov.pay.products.persistence.entity;
 
+import uk.gov.pay.commons.model.SupportedLanguage;
+import uk.gov.pay.commons.model.SupportedLanguageJpaConverter;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Table;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
@@ -59,6 +66,10 @@ public class ProductEntity extends AbstractEntity {
     
     @Column(name = "reference_hint")
     private String referenceHint;
+    
+    @Column(name = "language", nullable = false)
+    @Convert(converter = SupportedLanguageJpaConverter.class)
+    private SupportedLanguage language;
 
     public ProductEntity() {
     }
@@ -163,6 +174,14 @@ public class ProductEntity extends AbstractEntity {
 
     public void setProductNamePath(String productNamePath) { this.productNamePath = productNamePath; }
 
+    public SupportedLanguage getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(SupportedLanguage language) {
+        this.language = language;
+    }
+
     public static ProductEntity from(Product product) {
         ProductEntity productEntity = new ProductEntity();
 
@@ -180,6 +199,7 @@ public class ProductEntity extends AbstractEntity {
         productEntity.setReferenceEnabled(product.getReferenceEnabled());
         productEntity.setReferenceLabel(product.getReferenceLabel());
         productEntity.setReferenceHint(product.getReferenceHint());
+        productEntity.setLanguage(product.getLanguage());
 
         return productEntity;
     }
@@ -199,6 +219,7 @@ public class ProductEntity extends AbstractEntity {
                 this.productNamePath,
                 this.referenceEnabled,
                 this.referenceLabel,
-                this.referenceHint);
+                this.referenceHint,
+                this.language);
     }
 }

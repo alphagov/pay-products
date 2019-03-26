@@ -2,27 +2,28 @@ package uk.gov.pay.products.validations;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
+import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.products.util.Errors;
+import uk.gov.pay.products.util.ProductType;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
+import static uk.gov.pay.products.model.Product.FIELD_GATEWAY_ACCOUNT_ID;
+import static uk.gov.pay.products.model.Product.FIELD_LANGUAGE;
+import static uk.gov.pay.products.model.Product.FIELD_NAME;
+import static uk.gov.pay.products.model.Product.FIELD_PAY_API_TOKEN;
+import static uk.gov.pay.products.model.Product.FIELD_PRICE;
+import static uk.gov.pay.products.model.Product.FIELD_PRODUCT_NAME_PATH;
+import static uk.gov.pay.products.model.Product.FIELD_REFERENCE_ENABLED;
+import static uk.gov.pay.products.model.Product.FIELD_REFERENCE_LABEL;
+import static uk.gov.pay.products.model.Product.FIELD_RETURN_URL;
+import static uk.gov.pay.products.model.Product.FIELD_SERVICE_NAME_PATH;
+import static uk.gov.pay.products.model.Product.FIELD_TYPE;
 import static uk.gov.pay.products.util.ProductType.ADHOC;
 
 public class ProductRequestValidator {
-    private static final String FIELD_GATEWAY_ACCOUNT_ID = "gateway_account_id";
-    private static final String FIELD_PAY_API_TOKEN = "pay_api_token";
-    private static final String FIELD_NAME = "name";
-    private static final String FIELD_PRICE = "price";
-    private static final String FIELD_RETURN_URL = "return_url";
-    private static final String FIELD_SERVICE_NAME = "service_name";
-    private static final String FIELD_TYPE = "type";
-    private static final int FIELD_SERVICE_NAME_MAX_LENGTH = 50;
-    private static final String FIELD_SERVICE_NAME_PATH = "service_name_path";
-    private static final String FIELD_PRODUCT_NAME_PATH = "product_name_path";
-    private static final String FIELD_REFERENCE_ENABLED = "reference_enabled";
-    private static final String FIELD_REFERENCE_LABEL = "reference_label";
-
     private final RequestValidations requestValidations;
 
     @Inject
@@ -47,15 +48,11 @@ public class ProductRequestValidator {
         }
 
         if (!errors.isPresent() && payload.get(FIELD_TYPE) != null) {
-            errors = requestValidations.checkIsProductType(payload, FIELD_TYPE);
+            errors = requestValidations.checkIsValidEnumValue(payload, EnumSet.allOf(ProductType.class), FIELD_TYPE);
         }
 
         if (!errors.isPresent() && !ADHOC.name().equals(payload.get(FIELD_TYPE).asText())) {
             errors = requestValidations.checkIfExistsOrEmpty(payload, FIELD_PRICE);
-        }
-
-        if (!errors.isPresent() && payload.get(FIELD_SERVICE_NAME) != null) {
-            errors = requestValidations.checkMaxLength(payload, FIELD_SERVICE_NAME_MAX_LENGTH, FIELD_SERVICE_NAME);
         }
 
         if (!errors.isPresent() && ADHOC.name().equals(payload.get(FIELD_TYPE).asText())) {
@@ -65,7 +62,14 @@ public class ProductRequestValidator {
         if (!errors.isPresent() && payload.get(FIELD_REFERENCE_ENABLED) != null && payload.get(FIELD_REFERENCE_ENABLED).asBoolean()) {
             errors = requestValidations.checkIfExistsOrEmpty(payload, FIELD_REFERENCE_LABEL);
         }
-
+        
+        if (!errors.isPresent() && payload.get(FIELD_LANGUAGE) != null ) { 
+            errors = requestValidations.checkIsString(payload, FIELD_LANGUAGE);
+            if (!errors.isPresent()) {
+                errors = requestValidations.checkIsValidEnumValue(payload, EnumSet.allOf(SupportedLanguage.class), FIELD_LANGUAGE);
+            }
+        }
+        
         return errors.map(Errors::from);
     }
 

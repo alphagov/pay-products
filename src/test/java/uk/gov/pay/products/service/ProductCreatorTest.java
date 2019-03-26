@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.products.matchers.ProductMatcher;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.dao.ProductDao;
@@ -35,7 +36,6 @@ public class ProductCreatorTest {
     private Integer gatewayAccountId = randomInt();
     private static final String PRODUCT_NAME = "Test product name";
     private static final Long PRICE = 1050L;
-    private static final String SERVICE_NAME = "Example Service";
 
     @Before
     public void setup() {
@@ -58,7 +58,8 @@ public class ProductCreatorTest {
                 ProductType.DEMO,
                 null,
                 null,
-                null
+                null,
+                SupportedLanguage.ENGLISH
         );
 
         Product product = productCreator.doCreate(basicProduct);
@@ -79,6 +80,7 @@ public class ProductCreatorTest {
         assertThat(productEntity.getGatewayAccountId(), is(gatewayAccountId));
         assertThat(productEntity.getType(), is(notNullValue()));
         assertThat(productEntity.getType(), is(ProductType.DEMO));
+        assertThat(productEntity.getLanguage(), is(SupportedLanguage.ENGLISH));
     }
 
     @Test
@@ -99,7 +101,8 @@ public class ProductCreatorTest {
                 ProductType.DEMO,
                 returnUrl,
                 serviceNamePath,
-                productNamePath
+                productNamePath,
+                SupportedLanguage.ENGLISH
         );
 
         Product product = productCreator.doCreate(productRequest);
@@ -131,7 +134,8 @@ public class ProductCreatorTest {
                 null,
                 null,
                 null,
-                null
+                null,
+                SupportedLanguage.ENGLISH
         );
 
         ProductEntity mockedProductEntity = mock(ProductEntity.class);
@@ -169,7 +173,8 @@ public class ProductCreatorTest {
                 null,
                 null,
                 null,
-                null
+                null,
+                SupportedLanguage.ENGLISH
         );
 
         when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.empty());

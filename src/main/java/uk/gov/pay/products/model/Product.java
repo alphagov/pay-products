@@ -6,11 +6,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
@@ -63,13 +67,26 @@ public class Product {
     private final String referenceLabel;
     @JsonProperty(FIELD_REFERENCE_HINT)
     private final String referenceHint;
+    @JsonProperty(FIELD_LANGUAGE)
+    @JsonSerialize(using = ToStringSerializer.class)
+    private final SupportedLanguage language;
 
-    public Product(String externalId, String name, String description, String payApiToken, Long price, 
-                   ProductStatus status, Integer gatewayAccountId, ProductType type,
-                   String returnUrl, String serviceNamePath, String productNamePath)
-    {
-        this(externalId, name, description, payApiToken, price, status, gatewayAccountId, type,
-                returnUrl, serviceNamePath, productNamePath, false, null, null);
+
+    public Product(String externalId,
+                   String name,
+                   String description,
+                   String payApiToken,
+                   Long price,
+                   ProductStatus status,
+                   Integer gatewayAccountId,
+                   ProductType type,
+                   String returnUrl,
+                   String serviceNamePath,
+                   String productNamePath,
+                   SupportedLanguage language) {
+        this(externalId, name, description, payApiToken, price, status, gatewayAccountId, type, returnUrl,
+                serviceNamePath, productNamePath, false, null, null,
+                language);
     }
 
     public Product(
@@ -86,8 +103,8 @@ public class Product {
             String productNamePath,
             Boolean referenceEnabled,
             String referenceLabel,
-            String referenceHint)
-    {
+            String referenceHint,
+            SupportedLanguage language) {
         this.externalId = externalId;
         this.name = name;
         this.description = description;
@@ -102,6 +119,7 @@ public class Product {
         this.referenceEnabled = referenceEnabled;
         this.referenceLabel = referenceLabel;
         this.referenceHint = referenceHint;
+        this.language = language;
     }
 
     public static Product from(JsonNode jsonPayload) {
@@ -119,9 +137,14 @@ public class Product {
         String referenceLabel = (jsonPayload.get(FIELD_REFERENCE_LABEL) != null) ? jsonPayload.get(FIELD_REFERENCE_LABEL).asText() : null;
         String referenceHint = (jsonPayload.get(FIELD_REFERENCE_HINT) != null) ? jsonPayload.get(FIELD_REFERENCE_HINT).asText() : null;
         
-        return new Product(externalId, name, description, payApiToken,
-                price, ProductStatus.ACTIVE, gatewayAccountId, type, returnUrl,
-                serviceNamePath, productNamePath, referenceEnabled, referenceLabel, referenceHint);
+        SupportedLanguage language = Optional.ofNullable(jsonPayload.get(FIELD_LANGUAGE))
+                .map(JsonNode::asText)
+                .map(SupportedLanguage::fromIso639AlphaTwoCode)
+                .orElse(SupportedLanguage.ENGLISH);
+
+        return new Product(externalId, name, description, payApiToken, price, ProductStatus.ACTIVE, gatewayAccountId,
+                type, returnUrl, serviceNamePath, productNamePath, referenceEnabled, referenceLabel, referenceHint,
+                language);
     }
 
     public String getName() {
@@ -145,7 +168,9 @@ public class Product {
         return status;
     }
 
-    public Integer getGatewayAccountId() { return gatewayAccountId; }
+    public Integer getGatewayAccountId() {
+        return gatewayAccountId;
+    }
 
     public String getExternalId() {
         return externalId;
@@ -168,15 +193,29 @@ public class Product {
         return returnUrl;
     }
 
-    public String getServiceNamePath() { return serviceNamePath; }
+    public String getServiceNamePath() {
+        return serviceNamePath;
+    }
 
-    public String getProductNamePath() { return productNamePath; }
+    public String getProductNamePath() {
+        return productNamePath;
+    }
 
-    public Boolean getReferenceEnabled() { return referenceEnabled; }
-    
-    public String getReferenceLabel() { return referenceLabel; }
-    
-    public String getReferenceHint() { return referenceHint; }
+    public Boolean getReferenceEnabled() {
+        return referenceEnabled;
+    }
+
+    public String getReferenceLabel() {
+        return referenceLabel;
+    }
+
+    public String getReferenceHint() {
+        return referenceHint;
+    }
+
+    public SupportedLanguage getLanguage() {
+        return language;
+    }
 
     @Override
     public String toString() {
@@ -195,6 +234,7 @@ public class Product {
                 ", referenceEnabled='" + referenceEnabled +
                 (referenceEnabled ? '\'' + ", referenceLabel='" + referenceLabel : "") +
                 (referenceEnabled ? '\'' + ", referenceHint='" + referenceHint : "") +
+                ", language='" + language + '\'' +
                 '}';
     }
 }

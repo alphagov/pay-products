@@ -23,6 +23,7 @@ Content-Type: application/json
     "reference_enabled":        "true",
     "reference_label":          "Reference label",
     "reference_hint":           "Hint for the above reference"
+    "language":                 "The language pages for the product will be in"
 }
 ```
 
@@ -41,6 +42,7 @@ Content-Type: application/json
 | `reference_enabled`      |    X     | Flag to set whether payment reference is auto generated or entered by user. True means that user enters reference at the beginning of a user journey.   |   |
 | `reference_label`        |    O     | Only required if `reference_enabled` is true. Label for the reference entry text box.   |   |
 | `reference_hint`         |          | Hint text for reference entry text box. Optional field when reference enabled. Ignored if `reference_enabled` is set to false. |   |
+| `language`               |          | The language pages for the product will be in. If not provided, defaults to 'en' | 'en', 'cy'          |
 
 ### Response example
 
@@ -52,11 +54,12 @@ Content-Type: application/json
     "gateway_account_id" : "1234",
     "description":         "Description of the product",
     "price":               1050,
-    "type":                "DEMO,
+    "type":                "DEMO",
     "return_url" :         "https://some.valid.url/",
     "reference_enabled":   "true",
     "reference_label":     "Amount for your licence",
-    "reference_hint":     "This can be found on your letter",
+    "reference_hint":      "This can be found on your letter",
+    "language":            "en"
     "_links": [
     {
         "href": "https://govukpay-products.cloudapps.digital/v1/api/products/874h5c87834659q345698495",
@@ -91,6 +94,7 @@ Content-Type: application/json
 | `reference_enabled`      | X              | The settings for auto generated (false) or user entry (true) payment reference.   |
 | `reference_label`        |                | Present when `reference_enabled` is true. Label text for the reference entry box. |
 | `reference_hint`         |                | Hint for the `reference_enabled` text box. Optional field when reference enabled. |
+| `language`               | X              | The language to display pages for the product in |
 
 ## PATCH /v1/api/gateway-account/{gatewayAccountId}/products/{productId}
 

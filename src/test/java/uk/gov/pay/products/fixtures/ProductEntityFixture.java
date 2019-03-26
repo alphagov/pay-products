@@ -1,5 +1,6 @@
 package uk.gov.pay.products.fixtures;
 
+import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
@@ -24,6 +25,7 @@ public class ProductEntityFixture {
     private Boolean referenceEnabled = false;
     private String referenceLabel;
     private String referenceHint;
+    private SupportedLanguage language = SupportedLanguage.ENGLISH;
 
     private ProductEntityFixture() { }
 
@@ -44,6 +46,7 @@ public class ProductEntityFixture {
         product.setReferenceEnabled(referenceEnabled);
         product.setReferenceLabel(referenceLabel);
         product.setReferenceHint(referenceHint);
+        product.setLanguage(language);
 
         return product;
     }
@@ -110,6 +113,11 @@ public class ProductEntityFixture {
 
     public ProductEntityFixture withPrice(long price) {
         this.price = price;
+        return this;
+    }
+    
+    public ProductEntityFixture withLanguage(SupportedLanguage language) {
+        this.language = language;
         return this;
     }
 }

@@ -19,12 +19,13 @@ public class DatabaseTestHelper {
         jdbi.withHandle(handle -> handle.createStatement("INSERT INTO products " +
                 "(external_id, name, description, pay_api_token, price, " +
                 "status, return_url, type, gateway_account_id, " +
-                "service_name_path, product_name_path, reference_enabled, reference_label, reference_hint) " +
+                "service_name_path, product_name_path, reference_enabled, " +
+                "reference_label, reference_hint, language) " +
                 "VALUES " +
                 "(:external_id, :name, :description, :pay_api_token, :price, " +
                 ":status, :return_url, :type, :gateway_account_id, " +
                 ":service_name_path, :product_name_path, :reference_enabled, " + 
-                ":reference_label, :reference_hint" +
+                ":reference_label, :reference_hint, :language" +
                 ")")
                 .bind("external_id", product.getExternalId())
                 .bind("name", product.getName())
@@ -40,6 +41,7 @@ public class DatabaseTestHelper {
                 .bind("reference_enabled", product.getReferenceEnabled())
                 .bind("reference_label", product.getReferenceLabel())
                 .bind("reference_hint", product.getReferenceHint())
+                .bind("language", product.getLanguage().toString())
                 .execute());
 
     }

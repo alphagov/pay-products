@@ -204,7 +204,7 @@ public class PaymentResponse {
                 ", settlementSummary=" + settlementSummary +
                 ", links=" + links +
                 ", cardBrand='" + cardBrand + '\'' +
-                ", language='" + language + '\'' +
+                ", language='" + language.toString() + '\'' +
                 '}';
     }
 }

@@ -76,7 +76,7 @@ public class PaymentRequest {
                 ", reference='" + reference + '\'' +
                 ", description='" + description + '\'' +
                 ", returnUrl='" + returnUrl + '\'' +
-                ", language='" + language + '\'' +
+                ", language='" + language.toString() + '\'' +
                 '}';
     }
 }

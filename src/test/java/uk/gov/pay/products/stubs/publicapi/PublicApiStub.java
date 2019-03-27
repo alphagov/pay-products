@@ -21,16 +21,23 @@ public class PublicApiStub {
     private static final String PAYMENTS_PATH = "/v1/payments";
     private static final String PAYMENT_PATH = PAYMENTS_PATH + "/%s";
     
-    public static JsonObject createPaymentRequestPayload(long amount, String reference, String description, String returnUrl) {
+    public static JsonObject createPaymentRequestPayload(long amount, String reference, String description, String returnUrl, String language) {
         return Json.createObjectBuilder()
                 .add("amount", amount)
                 .add("reference", reference)
                 .add("description", description)
                 .add("return_url", returnUrl)
+                .add("language", language)
                 .build();
     }
 
-    public static JsonObject createPaymentResponsePayload(String paymentId, long amount, String reference, String description, String returnUrl, String nextUrl) {
+    public static JsonObject createPaymentResponsePayload(String paymentId,
+                                                          long amount,
+                                                          String reference,
+                                                          String description,
+                                                          String returnUrl,
+                                                          String nextUrl,
+                                                          String language) {
         return Json.createObjectBuilder()
                 .add("amount", amount)
                 .add("state",
@@ -41,6 +48,7 @@ public class PublicApiStub {
                                 .add("code", "P010"))
                 .add("description", description)
                 .add("reference", reference)
+                .add("language", language)
                 .add("email", "your email")
                 .add("payment_id", paymentId)
                 .add("payment_provider", "worldpay")

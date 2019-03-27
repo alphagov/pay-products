@@ -10,6 +10,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.products.client.publicapi.PaymentRequest;
 import uk.gov.pay.products.client.publicapi.PaymentResponse;
 import uk.gov.pay.products.client.publicapi.PublicApiRestClient;
@@ -94,6 +95,7 @@ public class PaymentCreatorTest {
         String paymentNextUrl = "http://next.url";
         String productsUIConfirmUri = "https://products-ui/payment-complete";
         String paymentReturnUrl = format("%s/%s", productsUIConfirmUri, paymentExernalId);
+        SupportedLanguage language = SupportedLanguage.WELSH;
 
         ProductEntity productEntity = createProductEntity(
                 productId,
@@ -103,12 +105,14 @@ public class PaymentCreatorTest {
                 productReturnUrl,
                 productApiToken,
                 gatewayAccountId,
-                false);
+                false,
+                language);
         PaymentRequest expectedPaymentRequest = createPaymentRequest(
                 productPrice,
                 referenceNumber,
                 productName,
-                paymentReturnUrl);
+                paymentReturnUrl,
+                language);
         PaymentResponse paymentResponse = createPaymentResponse(
                 paymentId,
                 paymentAmount,
@@ -164,6 +168,7 @@ public class PaymentCreatorTest {
         Long paymentAmount = 50L;
         String paymentNextUrl = "http://next.url";
         String referenceNumber = createRandomReferenceNumber();
+        SupportedLanguage language = SupportedLanguage.WELSH;
 
         ProductEntity productEntity = createProductEntity(
                 productId,
@@ -173,12 +178,14 @@ public class PaymentCreatorTest {
                 "",
                 productApiToken,
                 gatewayAccountId,
-                false);
+                false,
+                language);
         PaymentRequest expectedPaymentRequest = createPaymentRequest(
                 productPrice,
                 referenceNumber,
                 productName,
-                productReturnUrl + "/" + paymentExternalId);
+                productReturnUrl + "/" + paymentExternalId,
+                language);
         PaymentResponse paymentResponse = createPaymentResponse(
                 paymentId,
                 paymentAmount,
@@ -233,6 +240,7 @@ public class PaymentCreatorTest {
         String paymentId = "payment-id";
         String paymentExternalId = "random-external-id";
         String paymentNextUrl = "http://next.url";
+        SupportedLanguage language = SupportedLanguage.WELSH;
 
         Long priceOverride = 500L;
 
@@ -244,12 +252,14 @@ public class PaymentCreatorTest {
                 "",
                 productApiToken,
                 gatewayAccountId,
-                true);
+                true,
+                language);
         PaymentRequest expectedPaymentRequest = createPaymentRequest(
                 priceOverride,
                 userDefinedReference,
                 productName,
-                productReturnUrl + "/" + paymentExternalId);
+                productReturnUrl + "/" + paymentExternalId,
+                language);
         PaymentResponse paymentResponse = createPaymentResponse(
                 paymentId,
                 priceOverride,
@@ -294,6 +304,7 @@ public class PaymentCreatorTest {
         String paymentExternalId = "random-external-id";
         String paymentNextUrl = "http://next.url";
         String referenceNumber = createRandomReferenceNumber();
+        SupportedLanguage language = SupportedLanguage.WELSH;
 
         Long priceOverride = 500L;
 
@@ -305,12 +316,14 @@ public class PaymentCreatorTest {
                 "",
                 productApiToken,
                 gatewayAccountId,
-                false);
+                false,
+                language);
         PaymentRequest expectedPaymentRequest = createPaymentRequest(
                 priceOverride,
                 referenceNumber,
                 productName,
-                productReturnUrl + "/" + paymentExternalId);
+                productReturnUrl + "/" + paymentExternalId,
+                language);
         PaymentResponse paymentResponse = createPaymentResponse(
                 paymentId,
                 priceOverride,
@@ -355,7 +368,7 @@ public class PaymentCreatorTest {
         String referenceNumber = createRandomReferenceNumber();
         String productsUIConfirmUri = "https://products-ui/payment-complete";
         String paymentReturnUrl = format("%s/%s", productsUIConfirmUri, paymentExternalId);
-
+        SupportedLanguage language = SupportedLanguage.WELSH;
 
         ProductEntity productEntity = createProductEntity(
                 productId,
@@ -365,12 +378,14 @@ public class PaymentCreatorTest {
                 productReturnUrl,
                 productApiToken,
                 gatewayAccountId,
-                false);
+                false,
+                language);
         PaymentRequest expectedPaymentRequest = createPaymentRequest(
                 productPrice,
                 referenceNumber,
                 productName,
-                paymentReturnUrl);
+                paymentReturnUrl,
+                language);
 
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
         when(randomUuid()).thenReturn(paymentExternalId);
@@ -417,6 +432,7 @@ public class PaymentCreatorTest {
         String productName = "name";
         String productReturnUrl = "https://return.url";
         String productApiToken = "api-token";
+        SupportedLanguage language = SupportedLanguage.WELSH;
 
         Integer gatewayAccountId = 1;
 
@@ -428,7 +444,8 @@ public class PaymentCreatorTest {
                 productReturnUrl,
                 productApiToken,
                 gatewayAccountId,
-                true);
+                true,
+                language);
 
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
 
@@ -449,6 +466,7 @@ public class PaymentCreatorTest {
         String productApiToken = "api-token";
         String paymentId = "abcd1234";
         Integer gatewayAccountId = 1;
+        SupportedLanguage language = SupportedLanguage.WELSH;
 
         ProductEntity productEntity = createProductEntity(
                 productId,
@@ -458,7 +476,8 @@ public class PaymentCreatorTest {
                 productReturnUrl,
                 productApiToken,
                 gatewayAccountId,
-                false);
+                false,
+                language);
 
         PaymentEntity paymentEntity = createPaymentEntity(
                 paymentId,
@@ -478,7 +497,15 @@ public class PaymentCreatorTest {
         verify(paymentDao, times(3)).findByGatewayAccountIdAndReferenceNumber(gatewayAccountId, randomUserFriendlyReference);
     }
 
-    private ProductEntity createProductEntity(int id, long price, String externalId, String name, String returnUrl, String apiToken, Integer gatewayAccountId, Boolean referenceEnabled) {
+    private ProductEntity createProductEntity(int id,
+                                              long price,
+                                              String externalId,
+                                              String name,
+                                              String returnUrl,
+                                              String apiToken,
+                                              Integer gatewayAccountId,
+                                              Boolean referenceEnabled,
+                                              SupportedLanguage language) {
         ProductEntity productEntity = new ProductEntity();
         productEntity.setId(id);
         productEntity.setPrice(price);
@@ -488,6 +515,7 @@ public class PaymentCreatorTest {
         productEntity.setPayApiToken(apiToken);
         productEntity.setReferenceEnabled(referenceEnabled);
         productEntity.setGatewayAccountId(gatewayAccountId);
+        productEntity.setLanguage(language);
 
         return productEntity;
     }
@@ -504,8 +532,12 @@ public class PaymentCreatorTest {
         return paymentResponse;
     }
 
-    private PaymentRequest createPaymentRequest(long price, String externalId, String description, String returnUrl) {
-        return new PaymentRequest(price, externalId, description, returnUrl);
+    private PaymentRequest createPaymentRequest(long price,
+                                                String externalId,
+                                                String description,
+                                                String returnUrl,
+                                                SupportedLanguage language) {
+        return new PaymentRequest(price, externalId, description, returnUrl, language);
     }
 
     private PaymentEntity createPaymentEntity(String paymentId, String nextUrl, ProductEntity productEntity, PaymentStatus status, Long amount) {

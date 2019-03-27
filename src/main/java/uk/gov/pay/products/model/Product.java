@@ -234,7 +234,7 @@ public class Product {
                 ", referenceEnabled='" + referenceEnabled +
                 (referenceEnabled ? '\'' + ", referenceLabel='" + referenceLabel : "") +
                 (referenceEnabled ? '\'' + ", referenceHint='" + referenceHint : "") +
-                ", language='" + language + '\'' +
+                ", language='" + language.toString() + '\'' +
                 '}';
     }
 }

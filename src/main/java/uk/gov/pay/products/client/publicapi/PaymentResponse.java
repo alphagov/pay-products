@@ -3,7 +3,10 @@ package uk.gov.pay.products.client.publicapi;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import uk.gov.pay.commons.model.SupportedLanguage;
+import uk.gov.pay.commons.model.SupportedLanguageJsonDeserializer;
 import uk.gov.pay.products.client.publicapi.model.CardBrand;
 import uk.gov.pay.products.client.publicapi.model.CardDetails;
 import uk.gov.pay.products.client.publicapi.model.Links;
@@ -16,26 +19,19 @@ import uk.gov.pay.products.client.publicapi.model.SettlementSummary;
 public class PaymentResponse {
     private String paymentId;
     private String paymentProvider;
-
     private long amount;
     private PaymentState state;
     private String description;
-
     private String returnUrl;
     private String reference;
     private String email;
-
     private String createdDate;
-
     private RefundSummary refundSummary;
-
     private SettlementSummary settlementSummary;
-
     private CardDetails cardDetails;
-
     private Links links;
-
     private CardBrand cardBrand;
+    private SupportedLanguage language;
 
     public PaymentResponse() {
     }
@@ -54,7 +50,8 @@ public class PaymentResponse {
             @JsonProperty("settlement_summary") SettlementSummary settlementSummary,
             @JsonProperty("card_details") CardDetails cardDetails,
             @JsonProperty("_links") Links links,
-            @JsonProperty("card_brand") CardBrand cardBrand) {
+            @JsonProperty("card_brand") CardBrand cardBrand,
+            @JsonProperty("language") @JsonDeserialize(using = SupportedLanguageJsonDeserializer.class) SupportedLanguage language) {
         this.paymentId = paymentId;
         this.amount = amount;
         this.state = state;
@@ -67,8 +64,9 @@ public class PaymentResponse {
         this.refundSummary = refundSummary;
         this.settlementSummary = settlementSummary;
         this.cardDetails = cardDetails;
-        this.links= links;
+        this.links = links;
         this.cardBrand = cardBrand;
+        this.language = language;
     }
 
     public String getPaymentId() {
@@ -183,6 +181,14 @@ public class PaymentResponse {
         this.cardBrand = cardBrand;
     }
 
+    public SupportedLanguage getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(SupportedLanguage language) {
+        this.language = language;
+    }
+
     @Override
     public String toString() {
         return "PaymentResponse{" +
@@ -198,6 +204,7 @@ public class PaymentResponse {
                 ", settlementSummary=" + settlementSummary +
                 ", links=" + links +
                 ", cardBrand='" + cardBrand + '\'' +
+                ", language='" + language.toString() + '\'' +
                 '}';
     }
 }

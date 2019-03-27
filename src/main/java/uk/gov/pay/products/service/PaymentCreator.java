@@ -116,7 +116,8 @@ public class PaymentCreator {
                     paymentPrice,
                     paymentEntity.getReferenceNumber(),
                     productEntity.getName(),
-                    returnUrl);
+                    returnUrl,
+                    productEntity.getLanguage());
 
             try {
                 PaymentResponse paymentResponse = publicApiRestClient.createPayment(productEntity.getPayApiToken(), paymentRequest);

@@ -21,10 +21,9 @@ pipeline {
       steps {
         script {
           long stepBuildTime = System.currentTimeMillis()
-
           sh 'docker pull govukpay/postgres:9.4.4'
           sh 'mvn clean package'
-
+          runProviderContractTests()
           postSuccessfulMetrics("products.maven-build", stepBuildTime)
         }
       }
@@ -73,6 +72,15 @@ pipeline {
       }
       steps {
         deployEcs("products")
+      }
+    }
+    stage('Pact Tag') {
+      when {
+        branch 'master'
+      }
+      steps {
+        echo 'Tagging provider pact with "test"'
+        tagPact("products", gitCommit(), "test")
       }
     }
     stage('Smoke Tests') {

@@ -23,6 +23,7 @@
         <wiremock.version>2.22.0</wiremock.version>
         <jackson.version>2.9.8</jackson.version>
         <pay-java-commons.version>1.0.20190318074858</pay-java-commons.version>
+        <surefire.version>2.22.1</surefire.version>
         <dependency-check.skip>true</dependency-check.skip>
     </properties>
 
@@ -250,6 +251,12 @@
             <version>${pay-java-commons.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>au.com.dius</groupId>
+            <artifactId>pact-jvm-provider-junit_2.12</artifactId>
+            <version>3.6.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -371,4 +378,49 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <property>
+                    <name>!runContractTests</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${surefire.version}</version>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/*ContractTest.java</exclude>
+                                <exclude>**/*ContractTestSuite.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>contract-tests</id>
+            <activation>
+                <property>
+                    <name>runContractTests</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${surefire.version}</version>
+                        <configuration>
+                            <includes>
+                                <include>**/*ContractTestSuite.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

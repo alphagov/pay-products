@@ -38,6 +38,10 @@ public class DropwizardAppWithPostgresRule implements TestRule {
 
     private DatabaseTestHelper databaseTestHelper;
 
+    public DropwizardAppWithPostgresRule() {
+        this("config/test-it-config.yaml");
+    }
+    
     public DropwizardAppWithPostgresRule(String configPath, ConfigOverride... configOverrides) {
         configFilePath = resourceFilePath(configPath);
         postgres = new PostgresDockerRule();

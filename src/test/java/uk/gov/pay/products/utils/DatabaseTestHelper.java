@@ -88,4 +88,9 @@ public class DatabaseTestHelper {
                 .bind("gateway_account_id", gatewayAccountId)
                 .list());
     }
+    
+    public void truncateAllData() {
+        jdbi.withHandle(handle -> handle.createStatement("TRUNCATE TABLE products CASCADE").execute());
+        jdbi.withHandle(handle -> handle.createStatement("TRUNCATE TABLE payments CASCADE").execute());
+    }
 }

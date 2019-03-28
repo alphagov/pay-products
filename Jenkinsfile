@@ -71,6 +71,7 @@ pipeline {
         branch 'master'
       }
       steps {
+        checkPactCompatibility("products", gitCommit(), "test")
         deployEcs("products")
       }
     }

@@ -27,9 +27,7 @@ import uk.gov.pay.products.healthchecks.Ping;
 import uk.gov.pay.products.resources.HealthCheckResource;
 import uk.gov.pay.products.resources.PaymentResource;
 import uk.gov.pay.products.resources.ProductResource;
-import uk.gov.pay.products.util.TrustingSSLSocketFactory;
 
-import javax.net.ssl.HttpsURLConnection;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.EnumSet.of;
@@ -80,7 +78,6 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
         environment.jersey().register(injector.getInstance(PaymentResource.class));
 
         attachExceptionMappersTo(environment.jersey());
-        HttpsURLConnection.setDefaultSSLSocketFactory(new TrustingSSLSocketFactory());
     }
 
     private void initialiseMetrics(ProductsConfiguration configuration, Environment environment) {

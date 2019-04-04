@@ -14,6 +14,7 @@ pipeline {
   environment {
     DOCKER_HOST = "unix:///var/run/docker.sock"
     AWS_DEFAULT_REGION = "eu-west-1"
+    JAVA_HOME="/usr/lib/jvm/java-1.11.0-openjdk-amd64"
   }
 
   stages {
@@ -22,6 +23,7 @@ pipeline {
         script {
           long stepBuildTime = System.currentTimeMillis()
           sh 'docker pull govukpay/postgres:9.4.4'
+          sh 'mvn -version'
           sh 'mvn clean package'
           runProviderContractTests()
           postSuccessfulMetrics("products.maven-build", stepBuildTime)

@@ -46,18 +46,20 @@ public class ProviderContractTest {
     @State("default")
     public void noSetUp() {
     }
-    
-    @State({"a product with external id existing-id exists"})
+
+    @State({"a product with external id existing-id exists",
+            "a product with external id existing-id and gateway account id 42 exists"})
     public void aProductExists() {
         Product product = aProductEntity()
                 .withExternalId("existing-id")
+                .withGatewayAccountId(42)
                 .build()
                 .toProduct();
 
         dbHelper.addProduct(product);
     }
 
-    @State({"a product with path service-name-path/product-name-path exists"})
+    @State("a product with path service-name-path/product-name-path exists")
     public void aProductWithPathExists() {
         Product product = aProductEntity()
                 .withProductPath("service-name-path", "product-name-path")
@@ -66,7 +68,7 @@ public class ProviderContractTest {
 
         dbHelper.addProduct(product);
     }
-    
+
     @State("three products with gateway account id 42 exist")
     public void threeProductsExistForGatewayAccount() {
         dbHelper.addProduct(aProductEntity()

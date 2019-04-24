@@ -141,7 +141,7 @@ public class PaymentCreator {
             PaymentEntity paymentEntity = context.get(PaymentEntity.class);
             paymentDao.merge(paymentEntity);
 
-            logger.info("Payment creation for product external id {} completed {}", paymentEntity.getProductEntity().getExternalId());
+            logger.info("Payment creation for product external id {} completed", paymentEntity.getProductEntity().getExternalId());
             return paymentEntity;
         };
     }

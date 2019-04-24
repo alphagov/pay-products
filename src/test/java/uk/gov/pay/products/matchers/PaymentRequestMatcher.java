@@ -9,7 +9,7 @@ import uk.gov.pay.products.client.publicapi.PaymentRequest;
 
 public class PaymentRequestMatcher {
     public static Matcher<PaymentRequest> isSame(final PaymentRequest expectedPaymentRequest) {
-        return new BaseMatcher<PaymentRequest>() {
+        return new BaseMatcher<>() {
             @Override
             public boolean matches(final Object obj) {
                 final PaymentRequest actualPaymentRequest = (PaymentRequest) obj;

@@ -17,7 +17,7 @@ import javax.json.JsonObject;
 
 public class PaymentResponseMatcher {
     public static Matcher<PaymentResponse> hasAllPaymentProperties(final JsonObject expectedPaymentResponse) {
-        return new BaseMatcher<PaymentResponse>() {
+        return new BaseMatcher<>() {
             @Override
             public boolean matches(final Object obj) {
                 final PaymentResponse actualPaymentResponse = (PaymentResponse) obj;

@@ -92,7 +92,7 @@ public class PaymentCreator {
     private PaymentEntity mergePaymentEntityWithReferenceNumberCheck(PaymentEntity paymentEntity) {
         for (int i = 0; i < MAX_NUMBER_OF_RETRY_FOR_UNIQUE_REF_NUMBER; i++) {
             String reference = randomUserFriendlyReference();
-            if (!paymentDao.findByGatewayAccountIdAndReferenceNumber(paymentEntity.getGatewayAccountId(), reference).isPresent()) {
+            if (paymentDao.findByGatewayAccountIdAndReferenceNumber(paymentEntity.getGatewayAccountId(), reference).isEmpty()) {
                 paymentEntity.setReferenceNumber(reference);
                 paymentDao.persist(paymentEntity);
                 return paymentEntity;

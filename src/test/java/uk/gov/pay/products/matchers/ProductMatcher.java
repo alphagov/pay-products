@@ -9,7 +9,7 @@ import uk.gov.pay.products.util.NumberUtils;
 
 public class ProductMatcher {
     public static Matcher<Product> isSame(final Product expectedProduct) {
-        return new BaseMatcher<Product>() {
+        return new BaseMatcher<>() {
             @Override
             public boolean matches(final Object obj) {
                 final Product actualProduct = (Product) obj;

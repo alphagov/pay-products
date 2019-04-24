@@ -39,33 +39,33 @@ public class ProductRequestValidator {
                 FIELD_NAME,
                 FIELD_TYPE);
 
-        if (!errors.isPresent() && payload.get(FIELD_RETURN_URL) != null) {
+        if (errors.isEmpty() && payload.get(FIELD_RETURN_URL) != null) {
             errors = requestValidations.checkIsUrl(payload, FIELD_RETURN_URL);
         }
 
-        if (!errors.isPresent() && payload.get(FIELD_PRICE) != null) {
+        if (errors.isEmpty() && payload.get(FIELD_PRICE) != null) {
             errors = requestValidations.checkIsBelowMaxAmount(payload, FIELD_PRICE);
         }
 
-        if (!errors.isPresent() && payload.get(FIELD_TYPE) != null) {
+        if (errors.isEmpty() && payload.get(FIELD_TYPE) != null) {
             errors = requestValidations.checkIsValidEnumValue(payload, EnumSet.allOf(ProductType.class), FIELD_TYPE);
         }
 
-        if (!errors.isPresent() && !ADHOC.name().equals(payload.get(FIELD_TYPE).asText())) {
+        if (errors.isEmpty() && !ADHOC.name().equals(payload.get(FIELD_TYPE).asText())) {
             errors = requestValidations.checkIfExistsOrEmpty(payload, FIELD_PRICE);
         }
 
-        if (!errors.isPresent() && ADHOC.name().equals(payload.get(FIELD_TYPE).asText())) {
+        if (errors.isEmpty() && ADHOC.name().equals(payload.get(FIELD_TYPE).asText())) {
             errors = requestValidations.checkIfExistsOrEmpty(payload, FIELD_SERVICE_NAME_PATH, FIELD_PRODUCT_NAME_PATH);
         }
         
-        if (!errors.isPresent() && payload.get(FIELD_REFERENCE_ENABLED) != null && payload.get(FIELD_REFERENCE_ENABLED).asBoolean()) {
+        if (errors.isEmpty() && payload.get(FIELD_REFERENCE_ENABLED) != null && payload.get(FIELD_REFERENCE_ENABLED).asBoolean()) {
             errors = requestValidations.checkIfExistsOrEmpty(payload, FIELD_REFERENCE_LABEL);
         }
         
-        if (!errors.isPresent() && payload.get(FIELD_LANGUAGE) != null ) { 
+        if (errors.isEmpty() && payload.get(FIELD_LANGUAGE) != null ) {
             errors = requestValidations.checkIsString(payload, FIELD_LANGUAGE);
-            if (!errors.isPresent()) {
+            if (errors.isEmpty()) {
                 errors = requestValidations.checkIsValidEnumValue(payload, EnumSet.allOf(SupportedLanguage.class), FIELD_LANGUAGE);
             }
         }
@@ -78,7 +78,7 @@ public class ProductRequestValidator {
                 payload,
                 FIELD_NAME);
 
-        if (!errors.isPresent() && payload.get(FIELD_PRICE) != null) {
+        if (errors.isEmpty() && payload.get(FIELD_PRICE) != null) {
             errors = requestValidations.checkIsBelowMaxAmount(payload, FIELD_PRICE);
         }
 

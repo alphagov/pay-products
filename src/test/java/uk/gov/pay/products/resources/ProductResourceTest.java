@@ -306,7 +306,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .statusCode(200);
 
         Integer intPrice = response.extract().path(PRICE);
-        Long price = new Long(intPrice);
+        Long price = Long.valueOf(intPrice);
         assertThat(price, equalTo(product.getPrice()));
 
         response
@@ -358,7 +358,7 @@ public class ProductResourceTest extends IntegrationTest {
                 .statusCode(200);
 
         Integer intPrice = response.extract().path(PRICE);
-        Long price = new Long(intPrice);
+        Long price = Long.valueOf(intPrice);
         assertThat(price, equalTo(product.getPrice()));
 
         response

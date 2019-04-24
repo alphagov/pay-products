@@ -9,7 +9,7 @@ import uk.gov.pay.products.persistence.entity.PaymentEntity;
 
 public class PaymentEntityMatcher {
     public static Matcher<PaymentEntity> isSame(final PaymentEntity expectedPaymentEntity) {
-        return new BaseMatcher<PaymentEntity>() {
+        return new BaseMatcher<>() {
             @Override
             public boolean matches(final Object obj) {
                 final PaymentEntity actualPaymentEntity = (PaymentEntity) obj;

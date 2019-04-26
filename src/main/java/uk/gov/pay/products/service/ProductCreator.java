@@ -40,6 +40,10 @@ public class ProductCreator {
                     productEntity.setName(product.getName());
                     productEntity.setDescription(product.getDescription());
                     productEntity.setPrice(product.getPrice());
+                    productEntity.setReferenceEnabled(product.getReferenceEnabled());
+                    productEntity.setReferenceLabel(product.getReferenceLabel());
+                    productEntity.setReferenceHint(product.getReferenceHint());
+
                     return linksDecorator.decorate(productEntity.toProduct());
                 });
     }

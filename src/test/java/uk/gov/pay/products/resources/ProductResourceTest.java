@@ -423,7 +423,144 @@ public class ProductResourceTest extends IntegrationTest {
     }
 
     @Test
-    public void updateProduct_shouldUpdateProduct_whenFound() throws Exception {
+    public void updateProduct_shouldUpdateProduct_whenFound_referenceEnabled() throws Exception {
+        String externalId = randomUuid();
+        int gatewayAccountId = randomInt();
+
+        String updatedName = "updated-name";
+        String updatedDescription = "updated-description";
+        String updatedPrice = "1000";
+        String updatedReferenceLabel = "updated-reference-label";
+        String updatedReferenceHint = "updated-reference-hint";
+
+        Product existingProduct = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withName("name")
+                .withDescription("description")
+                .withPrice(500)
+                .withGatewayAccountId(gatewayAccountId)
+                .withProductPath("service-name-path" + externalId, "product-name-path"+ externalId)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(existingProduct);
+
+        ImmutableMap<String, Object> payload = ImmutableMap.<String, Object>builder()
+                .put(NAME, updatedName)
+                .put(PRICE, updatedPrice)
+                .put(DESCRIPTION, updatedDescription)
+                .put(REFERENCE_ENABLED_FIELD, true)
+                .put(REFERENCE_LABEL, updatedReferenceLabel)
+                .put(REFERENCE_HINT, updatedReferenceHint)
+                .build();
+
+        ValidatableResponse response = givenSetup()
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .body(mapper.writeValueAsString(payload))
+                .patch(format("/v1/api/gateway-account/%s/products/%s", gatewayAccountId, externalId))
+                .then()
+                .statusCode(200);
+
+        response
+                .body(NAME, is(updatedName))
+                .body(DESCRIPTION, is(updatedDescription))
+                .body(PRICE, is(Integer.valueOf(updatedPrice)))
+                .body(REFERENCE_ENABLED_FIELD, is(true))
+                .body(REFERENCE_LABEL, is(updatedReferenceLabel))
+                .body(REFERENCE_HINT, is(updatedReferenceHint))
+                .body(TYPE, is(existingProduct.getType().name()))
+                .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
+                .body(RETURN_URL, is(existingProduct.getReturnUrl()))
+                .body(LANGUAGE, is("en"));
+
+        String productsUrl = "https://products.url/v1/api/products/";
+        String productsUIPayUrl = "https://products-ui.url/pay/";
+        String productFriendlyUrl = format("https://products-ui.url/products/%s/%s",
+                existingProduct.getServiceNamePath(), existingProduct.getProductNamePath());
+        response
+                .body("_links", hasSize(3))
+                .body("_links[0].href", matchesPattern(productsUrl + externalId))
+                .body("_links[0].method", is(HttpMethod.GET))
+                .body("_links[0].rel", is("self"))
+                .body("_links[1].href", matchesPattern(productsUIPayUrl + "reference/" + externalId))
+                .body("_links[1].method", is(HttpMethod.GET))
+                .body("_links[1].rel", is("pay"))
+                .body("_links[2].href", matchesPattern(productFriendlyUrl))
+                .body("_links[2].method", is(HttpMethod.GET))
+                .body("_links[2].rel", is("friendly"));
+
+        List<Map<String, Object>> productsRecords = databaseHelper.findProductEntityByGatewayAccountId(gatewayAccountId);
+        Assert.assertThat(productsRecords.size(), is(1));
+        Assert.assertThat(productsRecords.get(0), hasEntry("name", updatedName));
+        Assert.assertThat(productsRecords.get(0), hasEntry("description", updatedDescription));
+        Assert.assertThat(productsRecords.get(0), hasEntry("price", Long.valueOf(updatedPrice)));
+        Assert.assertThat(productsRecords.get(0), hasEntry("reference_enabled", true));
+        Assert.assertThat(productsRecords.get(0), hasEntry("reference_label", updatedReferenceLabel));
+        Assert.assertThat(productsRecords.get(0), hasEntry("reference_hint", updatedReferenceHint));
+    }
+
+    @Test
+    public void updateProduct_shouldUpdateProduct_whenFound_referenceEnabledNoHint() throws Exception {
+        String externalId = randomUuid();
+        int gatewayAccountId = randomInt();
+
+        String updatedName = "updated-name";
+        String updatedDescription = "updated-description";
+        String updatedPrice = "1000";
+        String updatedReferenceLabel = "updated-reference-label";
+
+        Product existingProduct = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withName("name")
+                .withDescription("description")
+                .withPrice(500)
+                .withGatewayAccountId(gatewayAccountId)
+                .withProductPath("service-name-path" + externalId, "product-name-path"+ externalId)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(existingProduct);
+
+        ImmutableMap<String, Object> payload = ImmutableMap.<String, Object>builder()
+                .put(NAME, updatedName)
+                .put(PRICE, updatedPrice)
+                .put(DESCRIPTION, updatedDescription)
+                .put(REFERENCE_ENABLED_FIELD, true)
+                .put(REFERENCE_LABEL, updatedReferenceLabel)
+                .build();
+
+        ValidatableResponse response = givenSetup()
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .body(mapper.writeValueAsString(payload))
+                .patch(format("/v1/api/gateway-account/%s/products/%s", gatewayAccountId, externalId))
+                .then()
+                .statusCode(200);
+
+        response
+                .body(NAME, is(updatedName))
+                .body(DESCRIPTION, is(updatedDescription))
+                .body(PRICE, is(Integer.valueOf(updatedPrice)))
+                .body(REFERENCE_ENABLED_FIELD, is(true))
+                .body(REFERENCE_LABEL, is(updatedReferenceLabel))
+                .body(TYPE, is(existingProduct.getType().name()))
+                .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
+                .body(RETURN_URL, is(existingProduct.getReturnUrl()))
+                .body(LANGUAGE, is("en"));
+
+        List<Map<String, Object>> productsRecords = databaseHelper.findProductEntityByGatewayAccountId(gatewayAccountId);
+        Assert.assertThat(productsRecords.size(), is(1));
+        Assert.assertThat(productsRecords.get(0), hasEntry("name", updatedName));
+        Assert.assertThat(productsRecords.get(0), hasEntry("description", updatedDescription));
+        Assert.assertThat(productsRecords.get(0), hasEntry("price", Long.valueOf(updatedPrice)));
+        Assert.assertThat(productsRecords.get(0), hasEntry("reference_enabled", true));
+        Assert.assertThat(productsRecords.get(0), hasEntry("reference_label", updatedReferenceLabel));
+        Assert.assertThat(productsRecords.get(0), hasEntry("reference_hint", null));
+    }
+
+    @Test
+    public void updateProduct_shouldUpdateProduct_whenFound_referenceDisabled() throws Exception {
         String externalId = randomUuid();
         int gatewayAccountId = randomInt();
 
@@ -443,10 +580,11 @@ public class ProductResourceTest extends IntegrationTest {
 
         databaseHelper.addProduct(existingProduct);
 
-        ImmutableMap<String, String> payload = ImmutableMap.<String, String>builder()
+        ImmutableMap<String, Object> payload = ImmutableMap.<String, Object>builder()
                 .put(NAME, updatedName)
                 .put(PRICE, updatedPrice)
                 .put(DESCRIPTION, updatedDescription)
+                .put(REFERENCE_ENABLED_FIELD, false)
                 .build();
 
         ValidatableResponse response = givenSetup()
@@ -461,32 +599,20 @@ public class ProductResourceTest extends IntegrationTest {
                 .body(NAME, is(updatedName))
                 .body(DESCRIPTION, is(updatedDescription))
                 .body(PRICE, is(Integer.valueOf(updatedPrice)))
+                .body(REFERENCE_ENABLED_FIELD, is(false))
                 .body(TYPE, is(existingProduct.getType().name()))
                 .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
                 .body(RETURN_URL, is(existingProduct.getReturnUrl()))
                 .body(LANGUAGE, is("en"));
-
-        String productsUrl = "https://products.url/v1/api/products/";
-        String productsUIPayUrl = "https://products-ui.url/pay/";
-        String productFriendlyUrl = format("https://products-ui.url/products/%s/%s",
-                existingProduct.getServiceNamePath(), existingProduct.getProductNamePath());
-        response
-                .body("_links", hasSize(3))
-                .body("_links[0].href", matchesPattern(productsUrl + externalId))
-                .body("_links[0].method", is(HttpMethod.GET))
-                .body("_links[0].rel", is("self"))
-                .body("_links[1].href", matchesPattern(productsUIPayUrl + externalId))
-                .body("_links[1].method", is(HttpMethod.GET))
-                .body("_links[1].rel", is("pay"))
-                .body("_links[2].href", matchesPattern(productFriendlyUrl))
-                .body("_links[2].method", is(HttpMethod.GET))
-                .body("_links[2].rel", is("friendly"));
 
         List<Map<String, Object>> productsRecords = databaseHelper.findProductEntityByGatewayAccountId(gatewayAccountId);
         Assert.assertThat(productsRecords.size(), is(1));
         Assert.assertThat(productsRecords.get(0), hasEntry("name", updatedName));
         Assert.assertThat(productsRecords.get(0), hasEntry("description", updatedDescription));
         Assert.assertThat(productsRecords.get(0), hasEntry("price", Long.valueOf(updatedPrice)));
+        Assert.assertThat(productsRecords.get(0), hasEntry("reference_enabled", false));
+        Assert.assertThat(productsRecords.get(0), hasEntry("reference_label", null));
+        Assert.assertThat(productsRecords.get(0), hasEntry("reference_hint", null));
     }
 
     @Test
@@ -511,10 +637,11 @@ public class ProductResourceTest extends IntegrationTest {
 
         databaseHelper.addProduct(existingProduct);
 
-        ImmutableMap<String, String> payload = ImmutableMap.<String, String>builder()
+        ImmutableMap<String, Object> payload = ImmutableMap.<String, Object>builder()
                 .put(NAME, updatedName)
                 .put(PRICE, updatedPrice)
                 .put(DESCRIPTION, updatedDescription)
+                .put(REFERENCE_ENABLED_FIELD, false)
                 .build();
 
         givenSetup()

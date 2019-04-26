@@ -68,7 +68,7 @@ public class ProductCreatorTest {
         assertThat(product.getPayApiToken(), is(payApiToken));
         assertThat(product.getGatewayAccountId(), is(gatewayAccountId));
 
-        verify(productDao, times(1)).persist(persistedProductEntity.capture());
+        verify(productDao).persist(persistedProductEntity.capture());
         ProductEntity productEntity = persistedProductEntity.getValue();
 
         assertThat(productEntity.getName(), is("Test product name"));
@@ -109,7 +109,7 @@ public class ProductCreatorTest {
         assertThat(product.getDescription(), is(description));
         assertThat(product.getReturnUrl(), is(returnUrl));
 
-        verify(productDao, times(1)).persist(persistedProductEntity.capture());
+        verify(productDao).persist(persistedProductEntity.capture());
         ProductEntity productEntityValue = persistedProductEntity.getValue();
 
         assertThat(productEntityValue.getDescription(), is(description));
@@ -117,7 +117,53 @@ public class ProductCreatorTest {
     }
 
     @Test
-    public void doUpdateByGatewayAccountId_shouldUpdateProduct() {
+    public void doUpdateByGatewayAccountId_referenceEnabled_shouldUpdateProduct() {
+        String externalId = "external-id";
+        String updatedName = "updated-name";
+        String updatedDescription = "updated-description";
+        Long updatedPrice = 500L;
+        String updatedReferenceLabel = "updated-reference-label";
+        String updatedReferenceHint = "updated-reference-hint";
+
+        Product productToUpdate = new Product(
+                "auto-generated-id",
+                updatedName,
+                updatedDescription,
+                null,
+                updatedPrice,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                true,
+                updatedReferenceLabel,
+                updatedReferenceHint,
+                SupportedLanguage.ENGLISH
+        );
+
+        ProductEntity mockedProductEntity = mock(ProductEntity.class);
+        when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.of(mockedProductEntity));
+        when(mockedProductEntity.toProduct()).thenReturn(productToUpdate);
+
+        Optional<Product> updatedProduct = productCreator.doUpdateByGatewayAccountId(gatewayAccountId, externalId, productToUpdate);
+
+        verify(mockedProductEntity).setName(updatedName);
+        verify(mockedProductEntity).setDescription(updatedDescription);
+        verify(mockedProductEntity).setPrice(updatedPrice);
+        verify(mockedProductEntity).setReferenceEnabled(true);
+        verify(mockedProductEntity).setReferenceLabel(updatedReferenceLabel);
+        verify(mockedProductEntity).setReferenceHint(updatedReferenceHint);
+        verify(mockedProductEntity).toProduct();
+        verifyNoMoreInteractions(mockedProductEntity);
+
+        assertTrue(updatedProduct.isPresent());
+        assertThat(productToUpdate, ProductMatcher.isSame(updatedProduct.get()));
+    }
+
+    @Test
+    public void doUpdateByGatewayAccountId_referenceDisabled_shouldUpdateProduct() {
         String externalId = "external-id";
         String updatedName = "updated-name";
         String updatedDescription = "updated-description";
@@ -135,6 +181,9 @@ public class ProductCreatorTest {
                 null,
                 null,
                 null,
+                false,
+                null,
+                null,
                 SupportedLanguage.ENGLISH
         );
 
@@ -144,17 +193,19 @@ public class ProductCreatorTest {
 
         Optional<Product> updatedProduct = productCreator.doUpdateByGatewayAccountId(gatewayAccountId, externalId, productToUpdate);
 
-        verify(mockedProductEntity,  times(1)).setName(updatedName);
-        verify(mockedProductEntity,  times(1)).setDescription(updatedDescription);
-        verify(mockedProductEntity,  times(1)).setPrice(updatedPrice);
-        verify(mockedProductEntity,  times(1)).toProduct();
+        verify(mockedProductEntity).setName(updatedName);
+        verify(mockedProductEntity).setDescription(updatedDescription);
+        verify(mockedProductEntity).setPrice(updatedPrice);
+        verify(mockedProductEntity).setReferenceEnabled(false);
+        verify(mockedProductEntity).setReferenceLabel(null);
+        verify(mockedProductEntity).setReferenceHint(null);
+        verify(mockedProductEntity).toProduct();
         verifyNoMoreInteractions(mockedProductEntity);
-
 
         assertTrue(updatedProduct.isPresent());
         assertThat(productToUpdate, ProductMatcher.isSame(updatedProduct.get()));
     }
-
+    
     @Test
     public void doUpdateByGatewayAccountId_shouldNotUpdateProduct_whenNotFound() {
         String externalId = "external-id";

@@ -8,7 +8,7 @@ pipeline {
   }
 
   libraries {
-    lib("pay-jenkins-library@master")
+    lib("pay-jenkins-library@PP-5199-use-pact-broker-cli")
   }
 
   environment {
@@ -18,6 +18,11 @@ pipeline {
   }
 
   stages {
+    stage('TEST PACT BROKER CLI') {
+      steps{
+        checkPactCompatibility("products", gitCommit(), "test")
+      }
+    }
     stage('Maven Build') {
       steps {
         script {

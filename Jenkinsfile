@@ -29,7 +29,7 @@ pipeline {
           long stepBuildTime = System.currentTimeMillis()
           sh 'docker pull govukpay/postgres:9.4.4'
           sh 'mvn -version'
-          sh 'mvn clean package'
+          sh 'mvn clean verify'
           runProviderContractTests()
           postSuccessfulMetrics("products.maven-build", stepBuildTime)
         }

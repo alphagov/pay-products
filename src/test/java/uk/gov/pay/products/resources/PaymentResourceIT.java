@@ -30,7 +30,7 @@ import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.setupResponseToC
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
-public class PaymentResourceTest extends IntegrationTest {
+public class PaymentResourceIT extends IntegrationTest {
 
     private final String paymentsUrl = "https://products.url/v1/api/payments/";
     private final String nextUrl = "www.gov.uk/pay";

@@ -3,6 +3,10 @@
 pipeline {
   agent any
 
+  parameters {
+    booleanParam(defaultValue: false, description: '', name: 'runEndToEndTestsOnPR')
+  }
+
   options {
     timestamps()
   }
@@ -14,6 +18,7 @@ pipeline {
   environment {
     DOCKER_HOST = "unix:///var/run/docker.sock"
     AWS_DEFAULT_REGION = "eu-west-1"
+    RUN_END_TO_END_ON_PR = "${params.runEndToEndTestsOnPR}"
     JAVA_HOME="/usr/lib/jvm/java-1.11.0-openjdk-amd64"
   }
 
@@ -50,6 +55,12 @@ pipeline {
       }
     }
     stage('Test') {
+      when {
+        anyOf {
+          branch 'master'
+          environment name: 'RUN_END_TO_END_ON_PR', value: 'true'
+        }
+      }
       steps {
         runProductsE2E("products")
       }

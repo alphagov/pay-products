@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
-public class ProductDaoTest extends DaoTestBase {
+public class ProductDaoIT extends DaoTestBase {
 
     private ProductDao productDao;
 

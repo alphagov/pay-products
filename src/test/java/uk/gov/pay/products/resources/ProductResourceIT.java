@@ -26,7 +26,7 @@ import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
-public class ProductResourceTest extends IntegrationTest {
+public class ProductResourceIT extends IntegrationTest {
 
     private static final String PAY_API_TOKEN = "pay_api_token";
     private static final String NAME = "name";

@@ -5,7 +5,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.restassured.specification.RequestSpecification;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.mockserver.socket.PortFactory;
+import uk.gov.pay.commons.testing.port.PortFactory;
 import uk.gov.pay.products.infra.DropwizardAppWithPostgresRule;
 import uk.gov.pay.products.utils.DatabaseTestHelper;
 

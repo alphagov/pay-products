@@ -13,14 +13,15 @@ import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import uk.gov.pay.commons.utils.healthchecks.DatabaseHealthCheck;
 import uk.gov.pay.commons.utils.logging.LoggingFilter;
+import uk.gov.pay.commons.utils.metrics.DatabaseMetricsService;
 import uk.gov.pay.products.config.PersistenceServiceInitialiser;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.config.ProductsModule;
 import uk.gov.pay.products.exception.mapper.BadPaymentRequestExceptionMapper;
 import uk.gov.pay.products.exception.mapper.PaymentCreationExceptionMapper;
 import uk.gov.pay.products.exception.mapper.PaymentCreatorNotFoundExceptionMapper;
-import uk.gov.pay.products.healthchecks.DatabaseHealthCheck;
 import uk.gov.pay.products.healthchecks.DependentResourceWaitCommand;
 import uk.gov.pay.products.healthchecks.Ping;
 import uk.gov.pay.products.resources.HealthCheckResource;
@@ -71,7 +72,7 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
         environment.servlets().addFilter("LoggingFilter", new LoggingFilter())
                 .addMappingForUrlPatterns(of(REQUEST), true, API_VERSION_PATH + "/*");
         environment.healthChecks().register("ping", new Ping());
-        environment.healthChecks().register("database", injector.getInstance(DatabaseHealthCheck.class));
+        environment.healthChecks().register("database", new DatabaseHealthCheck(configuration.getDataSourceFactory()));
         environment.jersey().register(injector.getInstance(HealthCheckResource.class));
         environment.jersey().register(injector.getInstance(ProductResource.class));
         environment.jersey().register(injector.getInstance(PaymentResource.class));
@@ -80,6 +81,15 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
     }
 
     private void initialiseMetrics(ProductsConfiguration configuration, Environment environment) {
+        DatabaseMetricsService metricsService = new DatabaseMetricsService(configuration.getDataSourceFactory(), environment.metrics(), "products");
+
+        environment
+                .lifecycle()
+                .scheduledExecutorService("metricscollector")
+                .threads(1)
+                .build()
+                .scheduleAtFixedRate(metricsService::updateMetricData, 0, GRAPHITE_SENDING_PERIOD_SECONDS / 2, TimeUnit.SECONDS);
+
         GraphiteSender graphiteUDP = new GraphiteUDP(configuration.getGraphiteHost(), Integer.valueOf(configuration.getGraphitePort()));
         GraphiteReporter.forRegistry(environment.metrics())
                 .prefixedWith(SERVICE_METRICS_NODE)

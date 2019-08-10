@@ -29,7 +29,11 @@ public class RequestValidations {
     }
     
     Optional<List<String>> checkIsUrl(JsonNode payload, String... fieldNames) {
-        return applyCheck(payload, isNotUrl(), fieldNames, "Field [%s] must be a https url");
+        return applyCheck(payload, isNotUrl(), fieldNames, "Field [%s] must be a valid URL");
+    }
+
+    Optional<List<String>> checkIsHttpsUrl(JsonNode payload, String... fieldNames) {
+        return applyCheck(payload, isNotHttpsUrl(), fieldNames, "Field [%s] must be a https URL");
     }
 
     Optional<List<String>> checkIfExistsOrEmpty(JsonNode payload, String... fieldNames) {
@@ -96,16 +100,26 @@ public class RequestValidations {
 
     private static Function<JsonNode, Boolean> isNotUrl() {
         return jsonNode -> {
-            if (jsonNode == null || isBlank(jsonNode.asText()) || !jsonNode.asText().startsWith("https")) {
-                return true;
-            }
-
             try {
-                new URL(jsonNode.asText());
-            } catch (MalformedURLException e) {
-                return true;
+                if (jsonNode != null) {
+                    new URL(jsonNode.asText());
+                    return false;
+                }
+            } catch (MalformedURLException ignored) {
             }
-            return false;
+            return true;
+        };
+    }
+
+    private static Function<JsonNode, Boolean> isNotHttpsUrl() {
+        return jsonNode -> {
+            try {
+                if (jsonNode != null) {
+                    return !"https".equals(new URL(jsonNode.asText()).getProtocol());
+                }
+            } catch (MalformedURLException ignored) {
+            }
+            return true;
         };
     }
 }

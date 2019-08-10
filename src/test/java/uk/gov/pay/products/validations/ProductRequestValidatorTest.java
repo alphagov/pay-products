@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
+import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.util.Errors;
 import uk.gov.pay.products.util.ProductType;
 
@@ -32,7 +33,7 @@ public class ProductRequestValidatorTest {
     private static final String FIELD_REFERENCE_HINT = "reference_hint";
     private static final String FIELD_LANGUAGE = "language";
 
-    private static final ProductRequestValidator productRequestValidator = new ProductRequestValidator(new RequestValidations());
+    private static final ProductRequestValidator productRequestValidator = new ProductRequestValidator(new RequestValidations(), new ProductsConfiguration());
 
     @Test
     public void shouldPass_whenAllFieldsPresent() {
@@ -273,7 +274,7 @@ public class ProductRequestValidatorTest {
 
 
         assertThat(errors.isPresent(), is(true));
-        assertThat(errors.get().getErrors().toString(), is("[Field [return_url] must be a https url]"));
+        assertThat(errors.get().getErrors().toString(), is("[Field [return_url] must be a https URL]"));
     }
 
     @Test
@@ -296,7 +297,7 @@ public class ProductRequestValidatorTest {
 
 
         assertThat(errors.isPresent(), is(true));
-        assertThat(errors.get().getErrors().toString(), is("[Field [return_url] must be a https url]"));
+        assertThat(errors.get().getErrors().toString(), is("[Field [return_url] must be a https URL]"));
     }
 
     @Test

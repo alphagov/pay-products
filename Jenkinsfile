@@ -113,7 +113,7 @@ pipeline {
             branch 'master'
           }
           steps {
-            tagDeployment("products")
+            tagDeployment()
           }
         }
         stage('Trigger Deploy Notification') {

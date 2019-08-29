@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.products.util.Errors;
 
+import java.net.URL;
 import java.util.Optional;
 
 import static junit.framework.TestCase.assertFalse;
@@ -25,7 +26,7 @@ public class PaymentRequestValidatorTest {
     }
 
     @Test
-    public void shouldSuccess_onCreatePayment_ifJsonPayloadIsNull() {
+    public void shouldSuccess_onCreatePayment_ifJsonPayloadIsNull() throws Exception {
         Optional<Errors> errors = requestValidator.validatePriceOverrideRequest(null);
         assertFalse(errors.isPresent());
     }

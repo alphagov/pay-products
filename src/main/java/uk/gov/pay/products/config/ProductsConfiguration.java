@@ -37,6 +37,9 @@ public class ProductsConfiguration extends Configuration {
     @NotNull
     private String friendlyBaseUri;
 
+    @NotNull
+    private boolean returnUrlMustBeSecure = true;
+
     public String getVcapServices() {
         return System.getenv("VCAP_SERVICES");
     }
@@ -84,4 +87,8 @@ public class ProductsConfiguration extends Configuration {
     }
 
     public String getFriendlyBaseUri() { return friendlyBaseUri; }
+
+    public boolean getReturnUrlMustBeSecure() {
+        return returnUrlMustBeSecure;
+    }
 }

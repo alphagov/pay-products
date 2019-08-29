@@ -30,6 +30,7 @@ These products are integrated with GOV.UK Pay so that a user can make payments u
 | `PUBLICAPI_URL`               | The URL to the [publicapi](https://github.com/alphagov/pay-publicapi) microservice |
 | `RUN_APP`                     | Set to `true` to run the application. Defaults to `true`. |
 | `RUN_MIGRATION`               | Set to `true` to run a database migration. Defaults to `false`. |
+| `SECURE_RETURN_URLS`          | Set to `false` to allow non-HTTPS URLs for the `return_url` field of a product. Defaults to `true`. |
 
 ## API Specification
 

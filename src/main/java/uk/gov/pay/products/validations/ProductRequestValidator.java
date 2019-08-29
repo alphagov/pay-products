@@ -3,6 +3,7 @@ package uk.gov.pay.products.validations;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import uk.gov.pay.commons.model.SupportedLanguage;
+import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.util.Errors;
 import uk.gov.pay.products.util.ProductType;
 
@@ -25,10 +26,12 @@ import static uk.gov.pay.products.util.ProductType.ADHOC;
 
 public class ProductRequestValidator {
     private final RequestValidations requestValidations;
+    private final boolean returnUrlMustBeSecure;
 
     @Inject
-    public ProductRequestValidator(RequestValidations requestValidations) {
+    public ProductRequestValidator(RequestValidations requestValidations, ProductsConfiguration configuration) {
         this.requestValidations = requestValidations;
+        this.returnUrlMustBeSecure = configuration.getReturnUrlMustBeSecure();
     }
 
     public Optional<Errors> validateCreateRequest(JsonNode payload) {
@@ -40,7 +43,9 @@ public class ProductRequestValidator {
                 FIELD_TYPE);
 
         if (errors.isEmpty() && payload.get(FIELD_RETURN_URL) != null) {
-            errors = requestValidations.checkIsUrl(payload, FIELD_RETURN_URL);
+            errors = returnUrlMustBeSecure
+                    ? requestValidations.checkIsHttpsUrl(payload, FIELD_RETURN_URL)
+                    : requestValidations.checkIsUrl(payload, FIELD_RETURN_URL);
         }
 
         if (errors.isEmpty() && payload.get(FIELD_PRICE) != null) {

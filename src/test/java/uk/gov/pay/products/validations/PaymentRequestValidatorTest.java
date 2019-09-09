@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.products.util.Errors;
 
-import java.net.URL;
 import java.util.Optional;
 
 import static junit.framework.TestCase.assertFalse;

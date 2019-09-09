@@ -12,7 +12,7 @@ public class ProductsConfiguration extends Configuration {
     @NotNull
     private String graphiteHost;
     @NotNull
-    private String graphitePort;
+    private Integer graphitePort;
 
     @Valid
     @NotNull
@@ -53,7 +53,7 @@ public class ProductsConfiguration extends Configuration {
         return graphiteHost;
     }
 
-    public String getGraphitePort() {
+    public Integer getGraphitePort() {
         return graphitePort;
     }
 

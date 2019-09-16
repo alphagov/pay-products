@@ -12,7 +12,6 @@ These products are integrated with GOV.UK Pay so that a user can make payments u
 |----------|-------------|
 | `ADMIN_PORT`                  | The port number to listen for Dropwizard admin requests on. Defaults to `8081`. |
 | `BASE_URL`                    | The base URL of the [products-ui](https://github.com/alphagov/pay-products-ui) microservice. |
-| `CERTS_PATH`                  | If set, add all certificates in this directory to the default Java truststore. |
 | `DB_HOST`                     | The hostname of the database server. Defaults to `products.db.pymnt.localdomain` |
 | `DB_PASSWORD`                 | The password for the `DB_USER` user. |
 | `DB_SSL_OPTION`               | To turn TLS on this value must be set as `ssl=true`. Otherwise must be empty. |

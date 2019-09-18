@@ -21,7 +21,7 @@
         <mainClass>uk.gov.pay.products.ProductsApplication</mainClass>
         <powermock.version>2.0.2</powermock.version>
         <wiremock.version>2.24.1</wiremock.version>
-        <jackson.version>2.9.9</jackson.version>
+        <jackson.version>2.10.0.pr3</jackson.version>
         <pay-java-commons.version>1.0.20190828103217</pay-java-commons.version>
         <surefire.version>2.22.2</surefire.version>
     </properties>

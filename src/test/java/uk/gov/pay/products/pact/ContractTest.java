@@ -1,28 +1,19 @@
 package uk.gov.pay.products.pact;
 
-import au.com.dius.pact.provider.junit.PactRunner;
-import au.com.dius.pact.provider.junit.Provider;
 import au.com.dius.pact.provider.junit.State;
-import au.com.dius.pact.provider.junit.loader.PactBroker;
-import au.com.dius.pact.provider.junit.loader.PactBrokerAuth;
 import au.com.dius.pact.provider.junit.target.HttpTarget;
 import au.com.dius.pact.provider.junit.target.Target;
 import au.com.dius.pact.provider.junit.target.TestTarget;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.runner.RunWith;
 import uk.gov.pay.products.infra.DropwizardAppWithPostgresRule;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.utils.DatabaseTestHelper;
 
 import static uk.gov.pay.products.fixtures.ProductEntityFixture.aProductEntity;
 
-@RunWith(PactRunner.class)
-@Provider("products")
-@PactBroker(scheme = "https", host = "pact-broker-test.cloudapps.digital", tags = {"${PACT_CONSUMER_TAG}", "test"},
-        authentication = @PactBrokerAuth(username = "${PACT_BROKER_USERNAME}", password = "${PACT_BROKER_PASSWORD}"))
-public class ProviderContractTest {
+public abstract class ContractTest {
     @ClassRule
     public static DropwizardAppWithPostgresRule app = new DropwizardAppWithPostgresRule();
 

@@ -144,6 +144,11 @@
             <version>${pay-java-commons.version}</version>
         </dependency>
         <dependency>
+            <groupId>uk.gov.pay</groupId>
+            <artifactId>logging</artifactId>
+            <version>${pay-java-commons.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.dhatim</groupId>
             <artifactId>dropwizard-sentry</artifactId>
             <version>1.3.9-2</version>

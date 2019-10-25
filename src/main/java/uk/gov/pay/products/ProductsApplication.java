@@ -16,6 +16,7 @@ import io.dropwizard.setup.Environment;
 import uk.gov.pay.commons.utils.healthchecks.DatabaseHealthCheck;
 import uk.gov.pay.commons.utils.logging.LoggingFilter;
 import uk.gov.pay.commons.utils.metrics.DatabaseMetricsService;
+import uk.gov.pay.logging.GovUkPayDropwizardRequestJsonLogLayoutFactory;
 import uk.gov.pay.logging.LogstashConsoleAppenderFactory;
 import uk.gov.pay.products.config.PersistenceServiceInitialiser;
 import uk.gov.pay.products.config.ProductsConfiguration;
@@ -61,6 +62,7 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
 
         bootstrap.addCommand(new DependentResourceWaitCommand());
         bootstrap.getObjectMapper().getSubtypeResolver().registerSubtypes(LogstashConsoleAppenderFactory.class);
+        bootstrap.getObjectMapper().getSubtypeResolver().registerSubtypes(GovUkPayDropwizardRequestJsonLogLayoutFactory.class);
     }
 
     @Override

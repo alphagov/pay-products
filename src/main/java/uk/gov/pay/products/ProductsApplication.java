@@ -24,6 +24,8 @@ import uk.gov.pay.products.config.ProductsModule;
 import uk.gov.pay.products.exception.mapper.BadPaymentRequestExceptionMapper;
 import uk.gov.pay.products.exception.mapper.PaymentCreationExceptionMapper;
 import uk.gov.pay.products.exception.mapper.PaymentCreatorNotFoundExceptionMapper;
+import uk.gov.pay.products.filters.LoggingMDCRequestFilter;
+import uk.gov.pay.products.filters.LoggingMDCResponseFilter;
 import uk.gov.pay.products.healthchecks.DependentResourceWaitCommand;
 import uk.gov.pay.products.healthchecks.Ping;
 import uk.gov.pay.products.resources.HealthCheckResource;
@@ -74,6 +76,8 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
         initialiseMetrics(configuration, environment);
         environment.servlets().addFilter("LoggingFilter", new LoggingFilter())
                 .addMappingForUrlPatterns(of(REQUEST), true, API_VERSION_PATH + "/*");
+        environment.jersey().register(injector.getInstance(LoggingMDCRequestFilter.class));
+        environment.jersey().register(injector.getInstance(LoggingMDCResponseFilter.class));
         environment.healthChecks().register("ping", new Ping());
         environment.healthChecks().register("database", new DatabaseHealthCheck(configuration.getDataSourceFactory()));
         environment.jersey().register(injector.getInstance(HealthCheckResource.class));

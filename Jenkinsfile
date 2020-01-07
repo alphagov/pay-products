@@ -27,7 +27,6 @@ pipeline {
       steps {
         script {
           long stepBuildTime = System.currentTimeMillis()
-          sh 'docker pull govukpay/postgres:9.6.6'
           sh 'mvn -version'
           sh 'mvn clean verify'
           runProviderContractTests()

@@ -1,6 +1,6 @@
 package uk.gov.pay.products.utils;
 
-import org.skife.jdbi.v2.DBI;
+import org.jdbi.v3.core.Jdbi;
 import uk.gov.pay.products.model.Payment;
 import uk.gov.pay.products.model.Product;
 
@@ -9,14 +9,14 @@ import java.util.Map;
 
 public class DatabaseTestHelper {
 
-    private final DBI jdbi;
+    private final Jdbi jdbi;
 
-    public DatabaseTestHelper(DBI jdbi) {
+    public DatabaseTestHelper(Jdbi jdbi) {
         this.jdbi = jdbi;
     }
 
     public void addProduct(Product product) {
-        jdbi.withHandle(handle -> handle.createStatement("INSERT INTO products " +
+        jdbi.withHandle(handle -> handle.createUpdate("INSERT INTO products " +
                 "(external_id, name, description, pay_api_token, price, " +
                 "status, return_url, type, gateway_account_id, " +
                 "service_name_path, product_name_path, reference_enabled, " +
@@ -24,7 +24,7 @@ public class DatabaseTestHelper {
                 "VALUES " +
                 "(:external_id, :name, :description, :pay_api_token, :price, " +
                 ":status, :return_url, :type, :gateway_account_id, " +
-                ":service_name_path, :product_name_path, :reference_enabled, " + 
+                ":service_name_path, :product_name_path, :reference_enabled, " +
                 ":reference_label, :reference_hint, :language" +
                 ")")
                 .bind("external_id", product.getExternalId())
@@ -47,14 +47,14 @@ public class DatabaseTestHelper {
     }
 
     public void addPayment(Payment payment, Integer gatewayAccountId) {
-        jdbi.withHandle(handle -> handle.createStatement("INSERT INTO payments " +
+        jdbi.withHandle(handle -> handle.createUpdate("INSERT INTO payments " +
                 "(external_id, govuk_payment_id, next_url, product_id, status, amount, gateway_account_id, reference_number)" +
                 "VALUES " +
                 "(:external_id, :govuk_payment_id, :next_url, :product_id, :status, :amount, :gateway_account_id, :reference_number)")
                 .bind("external_id", payment.getExternalId())
                 .bind("govuk_payment_id", payment.getGovukPaymentId())
                 .bind("next_url", payment.getNextUrl())
-                .bind("product_id",payment.getProductId())
+                .bind("product_id", payment.getProductId())
                 .bind("status", payment.getStatus())
                 .bind("amount", payment.getAmount())
                 .bind("gateway_account_id", gatewayAccountId)
@@ -63,12 +63,12 @@ public class DatabaseTestHelper {
 
     }
 
-    public Integer findProductId(String externalId){
+    public Integer findProductId(String externalId) {
         return jdbi.withHandle(handle -> handle.createQuery("SELECT id " +
                 "FROM products WHERE external_id = :externalId")
                 .bind("externalId", externalId)
                 .mapTo(Integer.class)
-                .first());
+                .findOnly());
     }
 
     public List<Map<String, Object>> getPaymentsByProductExternalId(String productExternalId) {
@@ -78,19 +78,21 @@ public class DatabaseTestHelper {
                         "WHERE pr.id = pa.product_id " +
                         "AND pr.external_id = :product_external_id")
                         .bind("product_external_id", productExternalId)
+                        .mapToMap()
                         .list());
     }
 
     public List<Map<String, Object>> findProductEntityByGatewayAccountId(Integer gatewayAccountId) {
         return jdbi.withHandle(h ->
                 h.createQuery("SELECT * FROM products " +
-                    "WHERE gateway_account_id = :gateway_account_id")
-                .bind("gateway_account_id", gatewayAccountId)
-                .list());
+                        "WHERE gateway_account_id = :gateway_account_id")
+                        .bind("gateway_account_id", gatewayAccountId)
+                        .mapToMap()
+                        .list());
     }
-    
+
     public void truncateAllData() {
-        jdbi.withHandle(handle -> handle.createStatement("TRUNCATE TABLE products CASCADE").execute());
-        jdbi.withHandle(handle -> handle.createStatement("TRUNCATE TABLE payments CASCADE").execute());
+        jdbi.withHandle(handle -> handle.execute("TRUNCATE TABLE products CASCADE"));
+        jdbi.withHandle(handle -> handle.execute("TRUNCATE TABLE payments CASCADE"));
     }
 }

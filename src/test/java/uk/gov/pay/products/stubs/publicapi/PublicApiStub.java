@@ -28,6 +28,7 @@ public class PublicApiStub {
                 .add("description", description)
                 .add("return_url", returnUrl)
                 .add("language", language)
+                .add("internal", Json.createObjectBuilder().add("source","CARD_PAYMENT_LINK"))
                 .build();
     }
 

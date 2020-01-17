@@ -10,6 +10,8 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import uk.gov.pay.commons.model.Source;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.products.client.publicapi.PaymentRequest;
 import uk.gov.pay.products.client.publicapi.PaymentResponse;
@@ -44,6 +46,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
+import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;
 import static uk.gov.pay.products.util.PaymentStatus.ERROR;
 import static uk.gov.pay.products.util.PaymentStatus.SUBMITTED;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUserFriendlyReference;
@@ -112,7 +115,8 @@ public class PaymentCreatorTest {
                 referenceNumber,
                 productName,
                 paymentReturnUrl,
-                language);
+                language,
+                CARD_PAYMENT_LINK);
         PaymentResponse paymentResponse = createPaymentResponse(
                 paymentId,
                 paymentAmount,
@@ -185,7 +189,8 @@ public class PaymentCreatorTest {
                 referenceNumber,
                 productName,
                 productReturnUrl + "/" + paymentExternalId,
-                language);
+                language,
+                CARD_PAYMENT_LINK);
         PaymentResponse paymentResponse = createPaymentResponse(
                 paymentId,
                 paymentAmount,
@@ -259,7 +264,8 @@ public class PaymentCreatorTest {
                 userDefinedReference,
                 productName,
                 productReturnUrl + "/" + paymentExternalId,
-                language);
+                language,
+                CARD_PAYMENT_LINK);
         PaymentResponse paymentResponse = createPaymentResponse(
                 paymentId,
                 priceOverride,
@@ -323,7 +329,8 @@ public class PaymentCreatorTest {
                 referenceNumber,
                 productName,
                 productReturnUrl + "/" + paymentExternalId,
-                language);
+                language,
+                CARD_PAYMENT_LINK);
         PaymentResponse paymentResponse = createPaymentResponse(
                 paymentId,
                 priceOverride,
@@ -385,7 +392,8 @@ public class PaymentCreatorTest {
                 referenceNumber,
                 productName,
                 paymentReturnUrl,
-                language);
+                language,
+                CARD_PAYMENT_LINK);
 
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
         when(randomUuid()).thenReturn(paymentExternalId);
@@ -536,8 +544,9 @@ public class PaymentCreatorTest {
                                                 String externalId,
                                                 String description,
                                                 String returnUrl,
-                                                SupportedLanguage language) {
-        return new PaymentRequest(price, externalId, description, returnUrl, language);
+                                                SupportedLanguage language,
+                                                Source source) {
+        return new PaymentRequest(price, externalId, description, returnUrl, language, source);
     }
 
     private PaymentEntity createPaymentEntity(String paymentId, String nextUrl, ProductEntity productEntity, PaymentStatus status, Long amount) {

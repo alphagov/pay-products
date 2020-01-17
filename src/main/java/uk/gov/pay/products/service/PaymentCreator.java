@@ -26,6 +26,7 @@ import javax.inject.Inject;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUserFriendlyReference;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
@@ -117,7 +118,8 @@ public class PaymentCreator {
                     paymentEntity.getReferenceNumber(),
                     productEntity.getName(),
                     returnUrl,
-                    productEntity.getLanguage());
+                    productEntity.getLanguage(),
+                    CARD_PAYMENT_LINK);
 
             try {
                 PaymentResponse paymentResponse = publicApiRestClient.createPayment(productEntity.getPayApiToken(), paymentRequest);

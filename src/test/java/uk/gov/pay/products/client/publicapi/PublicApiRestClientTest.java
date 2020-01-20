@@ -22,6 +22,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
+import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;
 import static uk.gov.pay.products.matchers.PaymentResponseMatcher.hasAllPaymentProperties;
 import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.createPaymentRequestPayload;
 import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.setupResponseToCreatePaymentRequest;
@@ -55,8 +56,9 @@ public class PublicApiRestClientTest {
 
         setupResponseToCreatePaymentRequest(apiToken, expectedPaymentRequestPayload, paymentResponsePayload);
 
-        PaymentRequest paymentRequest = new PaymentRequest(amount, reference, description, returnUrl, language);
+        PaymentRequest paymentRequest = new PaymentRequest(amount, reference, description, returnUrl, language, CARD_PAYMENT_LINK);
         PaymentResponse actualPaymentResponse = publicApiRestClient.createPayment(apiToken, paymentRequest);
+        
         assertThat(actualPaymentResponse, hasAllPaymentProperties(paymentResponsePayload));
     }
 
@@ -75,7 +77,7 @@ public class PublicApiRestClientTest {
 
         setupResponseToCreatePaymentRequest(apiToken, expectedPaymentRequestPayload, errorPayload, SC_BAD_REQUEST);
 
-        PaymentRequest paymentRequest = new PaymentRequest(amount, reference, description, returnUrl, language);
+        PaymentRequest paymentRequest = new PaymentRequest(amount, reference, description, returnUrl, language, CARD_PAYMENT_LINK);
 
         try {
             publicApiRestClient.createPayment(apiToken, paymentRequest);
@@ -101,7 +103,7 @@ public class PublicApiRestClientTest {
 
         setupResponseToCreatePaymentRequest(apiToken, expectedPaymentRequestPayload, HttpStatus.SC_UNAUTHORIZED);
 
-        PaymentRequest paymentRequest = new PaymentRequest(amount, reference, description, returnUrl, language);
+        PaymentRequest paymentRequest = new PaymentRequest(amount, reference, description, returnUrl, language, CARD_PAYMENT_LINK);
         try {
             publicApiRestClient.createPayment(apiToken, paymentRequest);
             fail("Expected an PublicApiResponseErrorException to be thrown");

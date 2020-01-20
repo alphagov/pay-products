@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import uk.gov.pay.commons.model.Source;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
@@ -15,18 +16,21 @@ public class PaymentRequest {
     private String description;
     private String returnUrl;
     private SupportedLanguage language;
+    private Internal internal;
 
     public PaymentRequest(
             @JsonProperty("amount") long amount,
             @JsonProperty("reference") String reference,
             @JsonProperty("description") String description,
             @JsonProperty("return_url") String returnUrl,
-            @JsonProperty("language") @JsonSerialize(using = ToStringSerializer.class) SupportedLanguage language) {
+            @JsonProperty("language") @JsonSerialize(using = ToStringSerializer.class) SupportedLanguage language,
+            Source source) {
         this.amount = amount;
         this.reference = reference;
         this.description = description;
         this.returnUrl = returnUrl;
         this.language = language;
+        this.internal = new Internal(source);
     }
 
     public long getAmount() {
@@ -69,6 +73,10 @@ public class PaymentRequest {
         this.language = language;
     }
 
+    public Internal getInternal() {
+        return internal;
+    }
+
     @Override
     public String toString() {
         return "PaymentRequest{" +
@@ -77,6 +85,7 @@ public class PaymentRequest {
                 ", description='" + description + '\'' +
                 ", returnUrl='" + returnUrl + '\'' +
                 ", language='" + language.toString() + '\'' +
+                ", source='" + internal.getSource() + '\'' +
                 '}';
     }
 }

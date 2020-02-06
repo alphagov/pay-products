@@ -1,0 +1,11 @@
+env_vars:
+  DB_HOST:                     '.[][] | select(.name == "products-db") | .credentials.host                         '
+  DB_NAME:                     '.[][] | select(.name == "products-db") | .credentials.name                         '
+  DB_PASSWORD:                 '.[][] | select(.name == "products-db") | .credentials.password                     '
+  DB_USER:                     '.[][] | select(.name == "products-db") | .credentials.username                     '
+  DB_SSL_OPTION:               '.[][] | select(.name == "products-db") | .credentials.ssl_option  // "ssl=true"    '
+  PUBLICAPI_URL:               '.[][] | select(.name == "app-catalog") | .credentials.publicapi_url                '
+  PRODUCTSUI_PAY_URL:          '.[][] | select(.name == "app-catalog") | .credentials.products_ui_pay_url          '
+  PRODUCTSUI_CONFIRMATION_URL: '.[][] | select(.name == "app-catalog") | .credentials.products_ui_confirmation_url '
+  PRODUCTS_FRIENDLY_BASE_URI:  '.[][] | select(.name == "app-catalog") | .credentials.products_ui_redirect_url     '
+  BASE_URL:                    '.[][] | select(.name == "app-catalog") | .credentials.products_url                 '

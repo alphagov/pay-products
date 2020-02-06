@@ -2,6 +2,7 @@
 applications:
   - name: products
     buildpacks:
+      - https://github.com/alphagov/env-map-buildpack.git#v2
       - java_buildpack
     path: target/pay-products-1.0-SNAPSHOT-allinone.jar
     health-check-type: http
@@ -9,7 +10,11 @@ applications:
     health-check-invocation-timeout: 5
     memory: ((memory))
     disk_quota: ((disk_quota))
+    services:
+      - app-catalog
+      - products-db
     env:
+      ENV_MAP_BP_USE_APP_PROFILE_DIR: true
       ADMIN_PORT: '10001'
       DISABLE_INTERNAL_HTTPS: ((disable_internal_https))
       ENVIRONMENT: ((space))
@@ -19,20 +24,7 @@ applications:
       JPA_LOG_LEVEL: 'INFO'
       JPA_SQL_LOG_LEVEL: 'INFO'
 
-      PUBLICAPI_URL: ((publicapi_url))
-
-      BASE_URL: ((products_route))
-      PRODUCTS_FRIENDLY_BASE_URI: ((products_ui_url))/redirect
       PRODUCTS_API_TOKEN: ((products_api_token))
-      PRODUCTSUI_PAY_URL: ((products_ui_url))/pay
-      PRODUCTSUI_CONFIRMATION_URL: ((products_ui_url))/payment-complete
-
-      # Provide via products-db service
-      DB_HOST: postgres-((space)).apps.internal
-      DB_NAME: ((db_name))
-      DB_PASSWORD: ((db_password))
-      DB_USER: ((db_user))
-      DB_SSL_OPTION: ((db_ssl_option))
 
       AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
 
@@ -41,5 +33,17 @@ applications:
 
       RUN_APP: 'true'
       RUN_MIGRATION: ((run_migration))
-    routes:
-      - route: ((products_route))
+
+      # Provided via app-catalog service see env-map.yml
+      PUBLICAPI_URL: ""
+      PRODUCTSUI_PAY_URL: ""
+      PRODUCTSUI_CONFIRMATION_URL: ""
+      BASE_URL: ""
+      PRODUCTS_FRIENDLY_BASE_URI: ""
+
+      # Provide via products-db service see env-map.yml
+      DB_HOST: ""
+      DB_NAME: ""
+      DB_PASSWORD: ""
+      DB_USER: ""
+      DB_SSL_OPTION: ""

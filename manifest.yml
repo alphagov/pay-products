@@ -13,6 +13,7 @@ applications:
     services:
       - app-catalog
       - products-db
+      - products-secret-service
     env:
       ENV_MAP_BP_USE_APP_PROFILE_DIR: true
       ADMIN_PORT: '10001'
@@ -23,16 +24,13 @@ applications:
       JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 11.+ } }'
       JPA_LOG_LEVEL: 'INFO'
       JPA_SQL_LOG_LEVEL: 'INFO'
-
-      PRODUCTS_API_TOKEN: ((products_api_token))
-
       AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
-
-      # Provide via Sentry service
-      SENTRY_DSN: noop://localhost
-
       RUN_APP: 'true'
-      RUN_MIGRATION: ((run_migration))
+      RUN_MIGRATION: 'false'
+
+      # Provided via products-secret-service
+      SENTRY_DSN: ""
+      PRODUCTS_API_TOKEN: ""
 
       # Provided via app-catalog service see env-map.yml
       PUBLICAPI_URL: ""

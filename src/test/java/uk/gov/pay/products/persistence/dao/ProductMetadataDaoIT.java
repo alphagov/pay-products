@@ -1,7 +1,6 @@
 package uk.gov.pay.products.persistence.dao;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
@@ -9,6 +8,9 @@ import uk.gov.pay.products.fixtures.ProductMetadataEntityFixture;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.persistence.entity.ProductMetadataEntity;
 
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
@@ -43,9 +45,15 @@ public class ProductMetadataDaoIT extends DaoTestBase {
         ProductMetadataEntity productMetadataEntityReturned = productMetadataDao.entityManager
                 .get()
                 .find(ProductMetadataEntity.class, id);
-        MatcherAssert.assertThat(productMetadataEntityReturned.getMetadataKey(), is("a key"));
-        MatcherAssert.assertThat(productMetadataEntityReturned.getMetadataValue(), is("a value"));
-        MatcherAssert.assertThat(productMetadataEntityReturned.getId(), is(id));
-        MatcherAssert.assertThat(productMetadataEntityReturned.getProductId().getExternalId(), is(productExternalId));
+        assertThat(productMetadataEntityReturned.getMetadataKey(), is("a key"));
+        assertThat(productMetadataEntityReturned.getMetadataValue(), is("a value"));
+        assertThat(productMetadataEntityReturned.getId(), is(id));
+        assertThat(productMetadataEntityReturned.getProductId().getExternalId(), is(productExternalId));
+    }
+
+    @Test
+    public void productMetadataDaoShouldReturnAList_whenProductIdExists() {
+        List<ProductMetadataEntity> metadataEntityList = productMetadataDao.findByProductsId(productEntity.getId());
+        assertThat(metadataEntityList.size(), is(1));
     }
 }

@@ -1,5 +1,7 @@
 package uk.gov.pay.products.persistence.entity;
 
+import uk.gov.pay.products.model.ProductMetadata;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -56,5 +58,9 @@ public class ProductMetadataEntity extends AbstractEntity {
                 ", metadataKey='" + metadataKey + '\'' +
                 ", metadataValue='" + metadataValue + '\'' +
                 '}';
+    }
+
+    public ProductMetadata toMetadata() {
+        return new ProductMetadata(this.getId(), this.metadataKey, this.metadataValue);
     }
 }

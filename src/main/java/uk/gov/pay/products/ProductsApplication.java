@@ -24,6 +24,7 @@ import uk.gov.pay.products.config.ProductsModule;
 import uk.gov.pay.products.exception.mapper.BadPaymentRequestExceptionMapper;
 import uk.gov.pay.products.exception.mapper.PaymentCreationExceptionMapper;
 import uk.gov.pay.products.exception.mapper.PaymentCreatorNotFoundExceptionMapper;
+import uk.gov.pay.products.exception.mapper.ProductNotFoundExceptionMapper;
 import uk.gov.pay.products.filters.LoggingMDCRequestFilter;
 import uk.gov.pay.products.filters.LoggingMDCResponseFilter;
 import uk.gov.pay.products.healthchecks.DependentResourceWaitCommand;
@@ -109,6 +110,7 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
         jersey.register(PaymentCreationExceptionMapper.class);
         jersey.register(PaymentCreatorNotFoundExceptionMapper.class);
         jersey.register(BadPaymentRequestExceptionMapper.class);
+        jersey.register(ProductNotFoundExceptionMapper.class);
     }
 
     public static void main(final String[] args) throws Exception {

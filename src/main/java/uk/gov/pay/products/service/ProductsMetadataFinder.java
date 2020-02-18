@@ -25,4 +25,12 @@ public class ProductsMetadataFinder {
                 .map(ProductMetadataEntity::toMetadata)
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public List<ProductMetadata> findMetadataByProductExternalId(String productExternalId) {
+        return dao.findByProductsExternalId(productExternalId)
+                .stream()
+                .map(ProductMetadataEntity::toMetadata)
+                .collect(Collectors.toList());
+    }
 }

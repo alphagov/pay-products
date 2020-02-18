@@ -92,18 +92,27 @@ public class DatabaseTestHelper {
                         .list());
     }
 
-    public void truncateAllData() {
-        jdbi.withHandle(handle -> handle.execute("TRUNCATE TABLE products CASCADE"));
-        jdbi.withHandle(handle -> handle.execute("TRUNCATE TABLE payments CASCADE"));
+    public List<Map<String, Object>> findMetadataByProductExternalId(String productExternalId) {
+        return jdbi.withHandle(h ->
+                h.createQuery("SELECT m.* FROM products_metadata m, products p " +
+                        "WHERE m.product_id = p.id AND p.external_id = :productExternalId")
+                .bind("productExternalId", productExternalId)
+                .mapToMap()
+                .list());
     }
 
     public void addMetadata(String productExternalId, String key, String value) {
         jdbi.withHandle(handle -> handle.createUpdate("INSERT INTO products_metadata " +
                 "(product_id, metadata_key, metadata_value) " +
                 "VALUES((SELECT id FROM products p WHERE p.external_id = :productExternalId), :key, :value)")
-                .bind("productExternalId", productExternalId)
-                .bind("key", key)
-                .bind("value", value)
-                .execute());
+                    .bind("productExternalId", productExternalId)
+                    .bind("key", key)
+                    .bind("value", value)
+                    .execute());
+    }
+
+    public void truncateAllData() {
+        jdbi.withHandle(handle -> handle.execute("TRUNCATE TABLE products CASCADE"));
+        jdbi.withHandle(handle -> handle.execute("TRUNCATE TABLE payments CASCADE"));
     }
 }

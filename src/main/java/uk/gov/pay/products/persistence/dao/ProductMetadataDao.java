@@ -23,4 +23,14 @@ public class ProductMetadataDao extends JpaDao<ProductMetadataEntity> {
                 .setParameter("productId", productId)
                 .getResultList();
     }
+
+    public List<ProductMetadataEntity> findByProductsExternalId(String productExternalId) {
+        String query = "SELECT metadata FROM ProductMetadataEntity metadata, ProductEntity product " +
+                "WHERE metadata.productEntity = product AND product.externalId = :productExternalId ";
+
+        return entityManager.get()
+                .createQuery(query, ProductMetadataEntity.class)
+                .setParameter("productExternalId", productExternalId)
+                .getResultList();
+    }
 }

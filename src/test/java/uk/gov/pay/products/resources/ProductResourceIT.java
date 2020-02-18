@@ -6,7 +6,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
+import uk.gov.pay.products.fixtures.ProductMetadataEntityFixture;
 import uk.gov.pay.products.model.Product;
+import uk.gov.pay.products.persistence.entity.ProductMetadataEntity;
 import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
 
@@ -42,6 +44,7 @@ public class ProductResourceIT extends IntegrationTest {
     private static final String REFERENCE_LABEL = "reference_label";
     private static final String REFERENCE_HINT = "reference_hint";
     private static final String LANGUAGE = "language";
+    private static final String METADATA = "metadata";
 
     @Test
     public void shouldSuccess_whenSavingAValidProduct_withMinimumMandatoryFields() throws Exception {
@@ -917,5 +920,42 @@ public class ProductResourceIT extends IntegrationTest {
                 .post("/v1/api/products")
                 .then()
                 .statusCode(400);
+    }
+
+    @Test
+    public void shouldReturnMetadata_whenMetadataExistsForAProduct() {
+        String externalId = randomUuid();
+        int gatewayAccountId = randomInt();
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+
+        databaseHelper.addMetadata(externalId, "key", "value");
+        databaseHelper.addMetadata(externalId, "secondkey", "value2");
+
+        ValidatableResponse response =  givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products/%s", externalId))
+                .then()
+                .statusCode(200);
+
+        Integer intPrice = response.extract().path(PRICE);
+        Long price = Long.valueOf(intPrice);
+        assertThat(price, equalTo(product.getPrice()));
+
+        response
+                .body(NAME, is(product.getName()))
+                .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
+                .body(TYPE, is(product.getType().name()))
+                .body(DESCRIPTION, is(product.getDescription()))
+                .body(RETURN_URL, is(product.getReturnUrl()))
+                .body(METADATA + ".key",is("value"))
+                .body(METADATA + ".secondkey",is("value2"));
     }
 }

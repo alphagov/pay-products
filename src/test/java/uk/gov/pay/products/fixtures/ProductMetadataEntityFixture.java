@@ -17,7 +17,7 @@ public class ProductMetadataEntityFixture {
     public ProductMetadataEntity build() {
         ProductMetadataEntity productMetadataEntity = new ProductMetadataEntity();
         productMetadataEntity.setId(this.id);
-        productMetadataEntity.setProductId(this.productEntity);
+        productMetadataEntity.setProductEntity(this.productEntity);
         productMetadataEntity.setMetadataKey(this.metadataKey);
         productMetadataEntity.setMetadataValue(this.metadataValue);
         return productMetadataEntity;

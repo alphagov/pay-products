@@ -59,8 +59,8 @@ public class ProductCreatorTest {
                 null,
                 null,
                 null,
-                SupportedLanguage.ENGLISH
-        );
+                SupportedLanguage.ENGLISH,
+                null);
 
         Product product = productCreator.doCreate(basicProduct);
         assertThat(product.getName(), is("Test product name"));
@@ -102,8 +102,8 @@ public class ProductCreatorTest {
                 returnUrl,
                 serviceNamePath,
                 productNamePath,
-                SupportedLanguage.ENGLISH
-        );
+                SupportedLanguage.ENGLISH,
+                null);
 
         Product product = productCreator.doCreate(productRequest);
         assertThat(product.getDescription(), is(description));
@@ -140,8 +140,8 @@ public class ProductCreatorTest {
                 true,
                 updatedReferenceLabel,
                 updatedReferenceHint,
-                SupportedLanguage.ENGLISH
-        );
+                SupportedLanguage.ENGLISH,
+                null);
 
         ProductEntity mockedProductEntity = mock(ProductEntity.class);
         when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.of(mockedProductEntity));
@@ -184,8 +184,8 @@ public class ProductCreatorTest {
                 false,
                 null,
                 null,
-                SupportedLanguage.ENGLISH
-        );
+                SupportedLanguage.ENGLISH,
+                null);
 
         ProductEntity mockedProductEntity = mock(ProductEntity.class);
         when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.of(mockedProductEntity));
@@ -225,8 +225,8 @@ public class ProductCreatorTest {
                 null,
                 null,
                 null,
-                SupportedLanguage.ENGLISH
-        );
+                SupportedLanguage.ENGLISH,
+                null);
 
         when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.empty());
 

@@ -3,6 +3,7 @@ package uk.gov.pay.products.persistence.entity;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.model.SupportedLanguageJpaConverter;
 import uk.gov.pay.products.model.Product;
+import uk.gov.pay.products.model.ProductMetadata;
 import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
 
@@ -11,9 +12,12 @@ import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "products")
@@ -71,6 +75,9 @@ public class ProductEntity extends AbstractEntity {
     @Convert(converter = SupportedLanguageJpaConverter.class)
     private SupportedLanguage language;
 
+    @OneToMany(mappedBy = "productEntity", targetEntity = ProductMetadataEntity.class)
+    private List<ProductMetadataEntity> metadataEntityList;
+
     public ProductEntity() {
     }
 
@@ -108,6 +115,10 @@ public class ProductEntity extends AbstractEntity {
 
     public Long getPrice() {
         return price;
+    }
+
+    public List<ProductMetadataEntity> getMetadataEntityList() {
+        return metadataEntityList;
     }
 
     public void setPrice(Long price) {
@@ -182,6 +193,10 @@ public class ProductEntity extends AbstractEntity {
         this.language = language;
     }
 
+    public void setMetadataEntityList(List<ProductMetadataEntity> metadataEntityList) {
+        this.metadataEntityList = metadataEntityList;
+    }
+
     public static ProductEntity from(Product product) {
         ProductEntity productEntity = new ProductEntity();
 
@@ -220,6 +235,10 @@ public class ProductEntity extends AbstractEntity {
                 this.referenceEnabled,
                 this.referenceLabel,
                 this.referenceHint,
-                this.language);
+                this.language, 
+                this.metadataEntityList == null ? null : this.metadataEntityList
+                        .stream()
+                        .map(ProductMetadata::from)
+                        .collect(Collectors.toList()));
     }
 }

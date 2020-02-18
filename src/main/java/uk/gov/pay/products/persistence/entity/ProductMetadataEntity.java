@@ -2,7 +2,6 @@ package uk.gov.pay.products.persistence.entity;
 
 import uk.gov.pay.products.model.ProductMetadata;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -13,9 +12,9 @@ import javax.persistence.Table;
 @Table(name = "products_metadata")
 public class ProductMetadataEntity extends AbstractEntity {
 
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "product_id", updatable = false)
-    private ProductEntity productId;
+    @ManyToOne()
+    @JoinColumn(name = "product_id", referencedColumnName = "id")
+    private ProductEntity productEntity;
 
     @Column(name = "metadata_key")
     private String metadataKey;
@@ -27,8 +26,8 @@ public class ProductMetadataEntity extends AbstractEntity {
         //for jpa
     }
 
-    public ProductEntity getProductId() {
-        return productId;
+    public ProductEntity getProductEntity() {
+        return productEntity;
     }
 
     public String getMetadataKey() {
@@ -39,8 +38,8 @@ public class ProductMetadataEntity extends AbstractEntity {
         return metadataValue;
     }
 
-    public void setProductId(ProductEntity productId) {
-        this.productId = productId;
+    public void setProductEntity(ProductEntity productEntity) {
+        this.productEntity = productEntity;
     }
 
     public void setMetadataKey(String metadataKey) {
@@ -54,7 +53,7 @@ public class ProductMetadataEntity extends AbstractEntity {
     @Override
     public String toString() {
         return "ProductMetadataEntity{" +
-                "productId=" + productId +
+                "productEntity=" + productEntity +
                 ", metadataKey='" + metadataKey + '\'' +
                 ", metadataValue='" + metadataValue + '\'' +
                 '}';

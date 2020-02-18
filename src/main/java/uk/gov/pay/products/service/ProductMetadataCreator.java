@@ -26,7 +26,7 @@ public class ProductMetadataCreator {
         return productDao.findByExternalId(productExternalId)
                 .map(productEntity -> {
                     ProductMetadataEntity metadataEntity = new ProductMetadataEntity();
-                    metadataEntity.setProductId(productEntity);
+                    metadataEntity.setProductEntity(productEntity);
                     metadataEntity.setMetadataKey(metadata.getKey());
                     metadataEntity.setMetadataValue(metadata.getValue());
                     metadataDao.persist(metadataEntity);

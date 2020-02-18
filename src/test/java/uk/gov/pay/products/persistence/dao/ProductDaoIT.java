@@ -3,9 +3,11 @@ package uk.gov.pay.products.persistence.dao;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
+import uk.gov.pay.products.fixtures.ProductMetadataEntityFixture;
 import uk.gov.pay.products.matchers.ProductMatcher;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
+import uk.gov.pay.products.persistence.entity.ProductMetadataEntity;
 import uk.gov.pay.products.util.ProductStatus;
 
 import java.util.List;
@@ -22,10 +24,12 @@ import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 public class ProductDaoIT extends DaoTestBase {
 
     private ProductDao productDao;
+    private ProductMetadataDao productMetadataDao;
 
     @Before
     public void before() {
         productDao = env.getInstance(ProductDao.class);
+        productMetadataDao = env.getInstance(ProductMetadataDao.class);
     }
 
     @Test
@@ -185,5 +189,32 @@ public class ProductDaoIT extends DaoTestBase {
 
         Optional<ProductEntity> productEntity = productDao.findByProductPath(serviceNamePath, anotherProductNamePath);
        assertThat(productEntity.isPresent(), is(false));
+    }
+
+    @Test
+    public void findById_shouldReturnMetadata_whenItExistsForAPaymentLink() {
+        String externalId = randomUuid();
+        Integer gatewayAccountId = randomInt();
+
+        ProductEntity product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .withName("test name")
+                .build();
+
+        databaseHelper.addProduct(product.toProduct());
+        
+        Optional<ProductEntity> productWithId = productDao.findByExternalId(externalId);
+
+        ProductMetadataEntity productMetadataEntity = ProductMetadataEntityFixture.aProductMetadataEntity()
+                .withProductEntity(productWithId.get())
+                .withMetadataValue("value")
+                .withMetadataKey("key")
+                .build();
+
+        productMetadataDao.merge(productMetadataEntity);
+
+        Optional<ProductEntity> newProduct = productDao.findByExternalId(externalId);
+        assertThat(newProduct.get().getMetadataEntityList().size(), is(1));
     }
 }

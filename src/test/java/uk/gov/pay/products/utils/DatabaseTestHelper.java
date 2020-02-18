@@ -3,6 +3,7 @@ package uk.gov.pay.products.utils;
 import org.jdbi.v3.core.Jdbi;
 import uk.gov.pay.products.model.Payment;
 import uk.gov.pay.products.model.Product;
+import uk.gov.pay.products.model.ProductMetadata;
 
 import java.util.List;
 import java.util.Map;
@@ -94,5 +95,15 @@ public class DatabaseTestHelper {
     public void truncateAllData() {
         jdbi.withHandle(handle -> handle.execute("TRUNCATE TABLE products CASCADE"));
         jdbi.withHandle(handle -> handle.execute("TRUNCATE TABLE payments CASCADE"));
+    }
+
+    public void addMetadata(String productExternalId, String key, String value) {
+        jdbi.withHandle(handle -> handle.createUpdate("INSERT INTO products_metadata " +
+                "(product_id, metadata_key, metadata_value) " +
+                "VALUES((SELECT id FROM products p WHERE p.external_id = :productExternalId), :key, :value)")
+                .bind("productExternalId", productExternalId)
+                .bind("key", key)
+                .bind("value", value)
+                .execute());
     }
 }

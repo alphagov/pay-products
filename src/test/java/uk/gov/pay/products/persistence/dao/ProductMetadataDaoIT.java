@@ -48,7 +48,7 @@ public class ProductMetadataDaoIT extends DaoTestBase {
         assertThat(productMetadataEntityReturned.getMetadataKey(), is("a key"));
         assertThat(productMetadataEntityReturned.getMetadataValue(), is("a value"));
         assertThat(productMetadataEntityReturned.getId(), is(id));
-        assertThat(productMetadataEntityReturned.getProductId().getExternalId(), is(productExternalId));
+        assertThat(productMetadataEntityReturned.getProductEntity().getExternalId(), is(productExternalId));
     }
 
     @Test

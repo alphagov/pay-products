@@ -26,6 +26,15 @@ public class ProductDao extends JpaDao<ProductEntity> {
                 .getResultList().stream().findFirst();
     }
 
+    public Optional<ProductEntity> findById(Integer id) {
+        String query = "SELECT product FROM ProductEntity product " +
+                "WHERE product.id = :id";
+        
+        return entityManager.get()
+                .createQuery(query, ProductEntity.class)
+                .setParameter("id", id)
+                .getResultList().stream().findFirst();
+    }
 
     public Optional<ProductEntity> findByGatewayAccountIdAndExternalId(Integer gatewayAccountId, String externalId) {
         String query = "SELECT product FROM ProductEntity product " +

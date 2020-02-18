@@ -2,10 +2,12 @@ package uk.gov.pay.products.fixtures;
 
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
+import uk.gov.pay.products.persistence.entity.ProductMetadataEntity;
 import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
@@ -26,6 +28,7 @@ public class ProductEntityFixture {
     private String referenceLabel;
     private String referenceHint;
     private SupportedLanguage language = SupportedLanguage.ENGLISH;
+    private List<ProductMetadataEntity> productMetadataEntities;
 
     private ProductEntityFixture() { }
 
@@ -47,6 +50,7 @@ public class ProductEntityFixture {
         product.setReferenceLabel(referenceLabel);
         product.setReferenceHint(referenceHint);
         product.setLanguage(language);
+        product.setMetadataEntityList(productMetadataEntities);
 
         return product;
     }
@@ -118,6 +122,11 @@ public class ProductEntityFixture {
     
     public ProductEntityFixture withLanguage(SupportedLanguage language) {
         this.language = language;
+        return this;
+    }
+
+    public ProductEntityFixture withMetadata(List<ProductMetadataEntity> productMetadataEntities) {
+        this.productMetadataEntities = productMetadataEntities;
         return this;
     }
 }

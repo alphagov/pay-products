@@ -13,7 +13,9 @@ import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
@@ -37,6 +39,7 @@ public class Product {
     public static final String FIELD_REFERENCE_LABEL = "reference_label";
     public static final String FIELD_REFERENCE_HINT = "reference_hint";
     public static final String FIELD_LANGUAGE = "language";
+    private static final String FIELD_METADATA = "metadata";
 
     @JsonProperty(FIELD_EXTERNAL_ID)
     private final String externalId;
@@ -70,6 +73,8 @@ public class Product {
     @JsonProperty(FIELD_LANGUAGE)
     @JsonSerialize(using = ToStringSerializer.class)
     private final SupportedLanguage language;
+    @JsonIgnore
+    private List<ProductMetadata> metadata;
 
 
     public Product(String externalId,
@@ -83,10 +88,11 @@ public class Product {
                    String returnUrl,
                    String serviceNamePath,
                    String productNamePath,
-                   SupportedLanguage language) {
+                   SupportedLanguage language, 
+                   List<ProductMetadata> metadata) {
         this(externalId, name, description, payApiToken, price, status, gatewayAccountId, type, returnUrl,
                 serviceNamePath, productNamePath, false, null, null,
-                language);
+                language, metadata);
     }
 
     public Product(
@@ -104,7 +110,8 @@ public class Product {
             Boolean referenceEnabled,
             String referenceLabel,
             String referenceHint,
-            SupportedLanguage language) {
+            SupportedLanguage language, 
+            List<ProductMetadata> metadata) {
         this.externalId = externalId;
         this.name = name;
         this.description = description;
@@ -120,6 +127,7 @@ public class Product {
         this.referenceLabel = referenceLabel;
         this.referenceHint = referenceHint;
         this.language = language;
+        this.metadata = metadata;
     }
 
     public static Product from(JsonNode jsonPayload) {
@@ -136,7 +144,6 @@ public class Product {
         Boolean referenceEnabled = (jsonPayload.get(FIELD_REFERENCE_ENABLED) != null) && jsonPayload.get(FIELD_REFERENCE_ENABLED).asBoolean();
         String referenceLabel = (jsonPayload.get(FIELD_REFERENCE_LABEL) != null) ? jsonPayload.get(FIELD_REFERENCE_LABEL).asText() : null;
         String referenceHint = (jsonPayload.get(FIELD_REFERENCE_HINT) != null) ? jsonPayload.get(FIELD_REFERENCE_HINT).asText() : null;
-        
         SupportedLanguage language = Optional.ofNullable(jsonPayload.get(FIELD_LANGUAGE))
                 .map(JsonNode::asText)
                 .map(SupportedLanguage::fromIso639AlphaTwoCode)
@@ -144,7 +151,7 @@ public class Product {
 
         return new Product(externalId, name, description, payApiToken, price, ProductStatus.ACTIVE, gatewayAccountId,
                 type, returnUrl, serviceNamePath, productNamePath, referenceEnabled, referenceLabel, referenceHint,
-                language);
+                language, null);
     }
 
     public String getName() {
@@ -213,8 +220,22 @@ public class Product {
         return referenceHint;
     }
 
+    public List<ProductMetadata> getMetadata() {
+        return metadata;
+    }
+
     public SupportedLanguage getLanguage() {
         return language;
+    }
+
+    @JsonProperty(FIELD_METADATA)
+    public Map<String, String> getMetadataJson() {
+        Map<String, String> map = new HashMap<>();
+        if (metadata != null) {
+            this.metadata.forEach(productMetadata -> map.put( productMetadata.getKey(), productMetadata.getValue()));
+            return map.size() > 0 ? map : null;
+        }
+        return null;
     }
 
     @Override

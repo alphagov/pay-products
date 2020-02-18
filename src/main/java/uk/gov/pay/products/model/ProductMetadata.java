@@ -41,9 +41,14 @@ public class ProductMetadata {
     }
 
     @JsonValue()
-    public Map<String, String> getKvPair(){
+    public Map<String, String> getKvPair() {
         Map<String, String> map = new HashMap<>();
         map.put(this.key, this.value);
         return map;
+    }
+
+    @Override
+    public String toString() {
+        return "key= " + key + " value= " + value;
     }
 }

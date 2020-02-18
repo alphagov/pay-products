@@ -31,6 +31,7 @@ import uk.gov.pay.products.healthchecks.DependentResourceWaitCommand;
 import uk.gov.pay.products.healthchecks.Ping;
 import uk.gov.pay.products.resources.HealthCheckResource;
 import uk.gov.pay.products.resources.PaymentResource;
+import uk.gov.pay.products.resources.ProductMetadataResource;
 import uk.gov.pay.products.resources.ProductResource;
 
 import java.util.concurrent.TimeUnit;
@@ -84,6 +85,7 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
         environment.jersey().register(injector.getInstance(HealthCheckResource.class));
         environment.jersey().register(injector.getInstance(ProductResource.class));
         environment.jersey().register(injector.getInstance(PaymentResource.class));
+        environment.jersey().register(injector.getInstance(ProductMetadataResource.class));
 
         attachExceptionMappersTo(environment.jersey());
     }

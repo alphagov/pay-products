@@ -1,5 +1,6 @@
 package uk.gov.pay.products.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import uk.gov.pay.products.exception.ProductNotFoundException;
@@ -32,5 +33,12 @@ public class ProductMetadataCreator {
                     metadataDao.persist(metadataEntity);
                     return metadataEntity.toMetadata();
                 }).orElseThrow(() -> new ProductNotFoundException(format("Product with %s id not found", productExternalId), productExternalId));
+    }
+
+    public ProductMetadata createProductMetadata (JsonNode payload, String productExternalId) {
+        String key = payload.fieldNames().next();
+        String value = payload.get(key).asText();
+        ProductMetadata productMetadata = new ProductMetadata(null, key, value);
+        return this.createProductMetadata(productMetadata, productExternalId);
     }
 }

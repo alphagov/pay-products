@@ -48,4 +48,24 @@ public class ProductsMetadataFinderTest {
         assertThat(metadataList.get(1).getKey(), is("key2"));
         assertThat(metadataList.get(1).getValue(), is("value2"));
     }
+
+    @Test
+    public void findByProductsExternalId_shouldReturnAListOfProductMetadata() {
+        ProductMetadataEntity metadataEntity1 = aProductMetadataEntity()
+                .withMetadataKey("key1")
+                .withMetadataValue("value1")
+                .build();
+
+        ProductMetadataEntity metadataEntity2 = aProductMetadataEntity()
+                .withMetadataKey("key2")
+                .withMetadataValue("value2")
+                .build();
+        when(metadataDao.findByProductsExternalId("externalId")).thenReturn(List.of(metadataEntity1, metadataEntity2));
+        List<ProductMetadata> metadataList = finder.findMetadataByProductExternalId("externalId");
+        assertThat(metadataList.size(), is(2));
+        assertThat(metadataList.get(0).getKey(), is("key1"));
+        assertThat(metadataList.get(0).getValue(), is("value1"));
+        assertThat(metadataList.get(1).getKey(), is("key2"));
+        assertThat(metadataList.get(1).getValue(), is("value2"));
+    }
 }

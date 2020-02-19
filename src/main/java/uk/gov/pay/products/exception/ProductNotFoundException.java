@@ -4,8 +4,7 @@ public class ProductNotFoundException extends RuntimeException {
 
     private String productExternalId;
 
-    public ProductNotFoundException(String message, String productExternalId) {
-        super(message);
+    public ProductNotFoundException(String productExternalId) {
         this.productExternalId = productExternalId;
     }
 

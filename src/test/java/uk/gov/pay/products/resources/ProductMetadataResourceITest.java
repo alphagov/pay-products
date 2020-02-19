@@ -67,4 +67,56 @@ public class ProductMetadataResourceITest extends IntegrationTest {
                 .body("errors", hasSize(1))
                 .body("errors[0]", is(format("Key [ %s ] already exists, duplicate keys not allowed", "location")));;
     }
+
+    @Test
+    public void shouldSucceed_whenUpdatingExistingKeyValue() throws Exception {
+        String productExternalId = randomUuid();
+        Product product = aProductEntity()
+                .withExternalId(productExternalId)
+                .withGatewayAccountId(0)
+                .withLanguage(SupportedLanguage.WELSH)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+        databaseHelper.addMetadata(productExternalId, "Location", "Madrid");
+
+        Map<String, String> payload = ImmutableMap.of("location", "London");
+
+        givenSetup()
+                .accept(APPLICATION_JSON)
+                .body(mapper.writeValueAsString(payload))
+                .patch(format("/v1/api/products/%s/metadata", product.getExternalId()))
+                .then()
+                .statusCode(200);
+
+        List<Map<String, Object>> metadata = databaseHelper.findMetadataByProductExternalId(productExternalId);
+
+        assertThat(metadata.get(0), hasEntry("metadata_key", "Location"));
+        assertThat(metadata.get(0), hasEntry("metadata_value", "London"));
+    }
+
+    @Test
+    public void updateNewMetadata_shouldFail_whenKeyNotExists() throws Exception {
+        String productExternalId = randomUuid();
+        Product product = aProductEntity()
+                .withExternalId(productExternalId)
+                .withGatewayAccountId(0)
+                .withLanguage(SupportedLanguage.WELSH)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+        databaseHelper.addMetadata(productExternalId, "Location", "United Kingdom");
+
+        Map<String, String> payload = ImmutableMap.of("Country", "United Kingdom");
+        givenSetup()
+                .accept(APPLICATION_JSON)
+                .body(mapper.writeValueAsString(payload))
+                .patch(format("/v1/api/products/%s/metadata", product.getExternalId()))
+                .then()
+                .statusCode(404)
+                .body("errors", hasSize(1))
+                .body("errors[0]", is(format("Key [ %s ] does not exist", "Country")));;
+    }
 }

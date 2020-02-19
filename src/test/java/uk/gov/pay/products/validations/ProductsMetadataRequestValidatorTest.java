@@ -47,7 +47,7 @@ public class ProductsMetadataRequestValidatorTest {
                 .valueToTree(
                         ImmutableMap.<String, String>builder()
                         .build());
-        Optional<Errors> errors = validator.validateCreateRequest(payload, List.of());
+        Optional<Errors> errors = validator.validateRequest(payload);
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().size(), is(1));
         assertThat(errors.get().getErrors().get(0).contains("Empty payload is not allowed"), is(true));
@@ -61,7 +61,7 @@ public class ProductsMetadataRequestValidatorTest {
                                 .put("key1", "value1")
                                 .put("key2", "value2")
                                 .build());
-        Optional<Errors> errors = validator.validateCreateRequest(payload, List.of());
+        Optional<Errors> errors = validator.validateRequest(payload);
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().size(), is(1));
         assertThat(errors.get().getErrors().get(0).contains("Only one key-value pair is allowed"), is(true));
@@ -89,7 +89,7 @@ public class ProductsMetadataRequestValidatorTest {
                         ImmutableMap.<String, String>builder()
                                 .put("1234567890123456789012345678901", "value")
                                 .build());
-        Optional<Errors> errors = validator.validateCreateRequest(payload, List.of());
+        Optional<Errors> errors = validator.validateRequest(payload);
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().size(), is(1));
         assertThat(errors.get().getErrors().get(0).contains("Maximum key field length is [ 30 ]"), is(true));
@@ -102,9 +102,23 @@ public class ProductsMetadataRequestValidatorTest {
                         ImmutableMap.<String, String>builder()
                                 .put("key", "123456789012345678901234567890123456789012345678901")
                                 .build());
-        Optional<Errors> errors = validator.validateCreateRequest(payload, List.of());
+        Optional<Errors> errors = validator.validateRequest(payload);
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().size(), is(1));
         assertThat(errors.get().getErrors().get(0).contains("Maximum value field length is [ 50 ]"), is(true));
+    }
+
+    @Test
+    public void shouldErrorOnNonExistentKeyField() {
+        List<ProductMetadata> metadataList = List.of(new ProductMetadata(1, "Location", "london"));
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(
+                        ImmutableMap.<String, String>builder()
+                                .put("country", "UK")
+                                .build());
+        Optional<Errors> errors = validator.validateUpdateRequest(payload, metadataList);
+        assertThat(errors.isPresent(), is(true));
+        assertThat(errors.get().getErrors().size(), is(1));
+        assertThat(errors.get().getErrors().get(0).contains("Key [ country ] does not exist"), is(true));
     }
 }

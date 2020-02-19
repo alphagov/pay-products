@@ -9,15 +9,13 @@ import uk.gov.pay.products.persistence.dao.ProductDao;
 import uk.gov.pay.products.persistence.dao.ProductMetadataDao;
 import uk.gov.pay.products.persistence.entity.ProductMetadataEntity;
 
-import static java.lang.String.format;
-
-public class ProductMetadataCreator {
+public class ProductsMetadataCreator {
 
     private ProductDao productDao;
     private ProductMetadataDao metadataDao;
 
     @Inject
-    public ProductMetadataCreator(ProductDao productDao, ProductMetadataDao metadataDao) {
+    public ProductsMetadataCreator(ProductDao productDao, ProductMetadataDao metadataDao) {
         this.productDao = productDao;
         this.metadataDao = metadataDao;
     }
@@ -32,7 +30,7 @@ public class ProductMetadataCreator {
                     metadataEntity.setMetadataValue(metadata.getValue());
                     metadataDao.persist(metadataEntity);
                     return metadataEntity.toMetadata();
-                }).orElseThrow(() -> new ProductNotFoundException(format("Product with %s id not found", productExternalId), productExternalId));
+                }).orElseThrow(() -> new ProductNotFoundException(productExternalId));
     }
 
     public ProductMetadata createProductMetadata (JsonNode payload, String productExternalId) {

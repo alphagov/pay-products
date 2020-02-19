@@ -9,6 +9,8 @@ import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.persistence.entity.ProductMetadataEntity;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -62,5 +64,22 @@ public class ProductMetadataDaoIT extends DaoTestBase {
         List<ProductMetadataEntity> metadataEntityList =
                 productMetadataDao.findByProductsExternalId(productEntity.getExternalId());
         assertThat(metadataEntityList.size(), is(1));
+    }
+
+    @Test
+    public void productMetadataDaoShouldReturnAMetadataEntity() {
+        Optional<ProductMetadataEntity> productMetadata =
+                productMetadataDao.findByProductsExternalIdAndKey(productEntity.getExternalId(), productMetadataEntity.getMetadataKey());
+        assertThat(productMetadata.isPresent(), is(true));
+    }
+
+    @Test
+    public void productMetadataDaoShouldUpdateAMetadataEntity() {
+        productMetadataEntity.setMetadataValue("new value");
+        productMetadataDao.merge(productMetadataEntity);
+        Optional<ProductMetadataEntity> productMetadata =
+                productMetadataDao.findByProductsExternalIdAndKey(productEntity.getExternalId(), productMetadataEntity.getMetadataKey());
+        assertThat(productMetadata.isPresent(), is(true));
+        assertThat(productMetadata.get().getMetadataValue(), is("new value"));
     }
 }

@@ -1,5 +1,8 @@
 package uk.gov.pay.products.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -9,7 +12,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.pay.products.exception.ProductNotFoundException;
 import uk.gov.pay.products.model.ProductMetadata;
 import uk.gov.pay.products.persistence.dao.ProductDao;
 import uk.gov.pay.products.persistence.dao.ProductMetadataDao;
@@ -23,52 +25,51 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
 @RunWith(MockitoJUnitRunner.class)
-public class ProductMetadataCreatorTest {
+public class ProductsMetadataUpdaterTest {
 
     @Mock
     private ProductDao mockProductDao;
     @Mock
     private ProductMetadataDao mockMetadataDao;
     @Captor
-    private ArgumentCaptor<ProductMetadataEntity> persistedMetadataEntity;
+    private ArgumentCaptor<ProductMetadataEntity> updatedMetadataEntity;
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
 
-    private ProductMetadataCreator productMetadataCreator;
+    private ProductsMetadataUpdater productsMetadataUpdater;
     private String productExternalId = "externalId";
     private ProductEntity productEntity;
+    private ProductMetadataEntity metadataEntity;
 
     @Before
     public void setUp() throws Exception {
-        productMetadataCreator = new ProductMetadataCreator(mockProductDao, mockMetadataDao);
+        productsMetadataUpdater = new ProductsMetadataUpdater(mockProductDao, mockMetadataDao);
         productEntity = new ProductEntity();
         productEntity.setExternalId(productExternalId);
+        metadataEntity = new ProductMetadataEntity();
+        metadataEntity.setMetadataKey("key");
+        metadataEntity.setMetadataValue("value");
     }
 
     @Test
     public void shouldSuccess_whenProvidedWithAProductMetadataObject() {
-        ProductMetadata metadata = new ProductMetadata(1, "key", "value");
-        when(mockProductDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
-        ProductMetadata createdProductMetadata = productMetadataCreator.createProductMetadata(metadata, productExternalId);
-        assertThat(createdProductMetadata.getKey(), is("key"));
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(
+                        ImmutableMap.<String, String>builder()
+                                .put("key", "new value")
+                                .build());
 
-        assertThat(createdProductMetadata.getValue(), is("value"));
-        verify(mockMetadataDao).persist(persistedMetadataEntity.capture());
-        ProductMetadataEntity metadataEntity = persistedMetadataEntity.getValue();
+        when(mockProductDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
+        when(mockMetadataDao.findByProductsExternalIdAndKey(productExternalId, "key")).thenReturn(Optional.of(metadataEntity));
+        ProductMetadata updatedMetadata = productsMetadataUpdater.updateMetadata(payload, productExternalId);
+        assertThat(updatedMetadata.getKey(), is("key"));
+
+        assertThat(updatedMetadata.getValue(), is("new value"));
+        verify(mockMetadataDao).merge(updatedMetadataEntity.capture());
+        ProductMetadataEntity metadataEntity = updatedMetadataEntity.getValue();
 
         assertThat(metadataEntity.getMetadataKey(), is("key"));
-        assertThat(metadataEntity.getMetadataValue(), is("value"));
-    }
-
-    @Test
-    public void shouldNotSuccess_whenProductNotFound() {
-        ProductMetadata metadata = new ProductMetadata(1, "key", "value");
-        when(mockProductDao.findByExternalId(productExternalId)).thenReturn(Optional.empty());
-
-        thrown.expect(ProductNotFoundException.class);
-        thrown.expectMessage("Product with " + productExternalId + " id not found");
-        productMetadataCreator.createProductMetadata(metadata, productExternalId);
+        assertThat(metadataEntity.getMetadataValue(), is("new value"));
     }
 }

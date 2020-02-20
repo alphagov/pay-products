@@ -11,6 +11,7 @@ import uk.gov.pay.products.persistence.entity.ProductMetadataEntity;
 import uk.gov.pay.products.util.ProductStatus;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static junit.framework.TestCase.assertFalse;
@@ -208,13 +209,26 @@ public class ProductDaoIT extends DaoTestBase {
 
         ProductMetadataEntity productMetadataEntity = ProductMetadataEntityFixture.aProductMetadataEntity()
                 .withProductEntity(productWithId.get())
-                .withMetadataValue("value")
-                .withMetadataKey("key")
+                .withMetadataValue("value1")
+                .withMetadataKey("key1")
                 .build();
-
         productMetadataDao.merge(productMetadataEntity);
 
+        ProductMetadataEntity productMetadataEntity2 = ProductMetadataEntityFixture.aProductMetadataEntity()
+                .withProductEntity(productWithId.get())
+                .withMetadataValue("value2")
+                .withMetadataKey("key2")
+                .build();
+        productMetadataDao.merge(productMetadataEntity2);
+
         Optional<ProductEntity> newProduct = productDao.findByExternalId(externalId);
-        assertThat(newProduct.get().getMetadataEntityList().size(), is(1));
+        assertThat(newProduct.get().getMetadataEntityList().size(), is(2));
+
+        Map<String, String> productMetadataMap = newProduct.get().toProductMetadataMap();
+        assertThat(productMetadataMap.size(), is(2));
+        assertThat(productMetadataMap.containsKey("key1"), is(true));
+        assertThat(productMetadataMap.containsValue("value1"), is(true));
+        assertThat(productMetadataMap.containsKey("key2"), is(true));
+        assertThat(productMetadataMap.containsValue("value2"), is(true));
     }
 }

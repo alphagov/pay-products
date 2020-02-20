@@ -58,7 +58,8 @@ public class PaymentResourceIT extends IntegrationTest {
                 product.getName(),
                 product.getReturnUrl(),
                 nextUrl,
-                product.getLanguage().toString()));
+                product.getLanguage().toString(),
+                null));
 
         ValidatableResponse response = givenSetup()
                 .accept(APPLICATION_JSON)
@@ -123,7 +124,8 @@ public class PaymentResourceIT extends IntegrationTest {
                 product.getName(),
                 product.getReturnUrl(),
                 nextUrl,
-                product.getLanguage().toString()));
+                product.getLanguage().toString(),
+                null));
 
         Map<String, String> payload = ImmutableMap.of("price", priceOverride.toString(), "reference_number", userDefinedReference);
         ValidatableResponse response = givenSetup()
@@ -190,7 +192,8 @@ public class PaymentResourceIT extends IntegrationTest {
                 productEntity.getName(),
                 productEntity.getReturnUrl(),
                 nextUrl,
-                productEntity.getLanguage().toString()));
+                productEntity.getLanguage().toString(),
+                null));
 
         Map<String, String> payload = ImmutableMap.of("price", priceOverride.toString(), "reference_number", userDefinedReference);
         givenSetup()
@@ -224,7 +227,8 @@ public class PaymentResourceIT extends IntegrationTest {
                 product.getName(),
                 product.getReturnUrl(),
                 nextUrl,
-                product.getLanguage().toString()));
+                product.getLanguage().toString(),
+                null));
 
         Map<String, Long> payload = ImmutableMap.of("price", priceOverride);
         ValidatableResponse response = givenSetup()

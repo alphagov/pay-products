@@ -1,5 +1,6 @@
 package uk.gov.pay.products.client.publicapi;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -8,7 +9,10 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import uk.gov.pay.commons.model.Source;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
+import java.util.Map;
+
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class PaymentRequest {
 
     private long amount;
@@ -17,6 +21,7 @@ public class PaymentRequest {
     private String returnUrl;
     private SupportedLanguage language;
     private Internal internal;
+    private Map<String, String> metadata;
 
     public PaymentRequest(
             @JsonProperty("amount") long amount,
@@ -24,12 +29,14 @@ public class PaymentRequest {
             @JsonProperty("description") String description,
             @JsonProperty("return_url") String returnUrl,
             @JsonProperty("language") @JsonSerialize(using = ToStringSerializer.class) SupportedLanguage language,
+            @JsonProperty("metadata") Map<String, String> metadata,
             Source source) {
         this.amount = amount;
         this.reference = reference;
         this.description = description;
         this.returnUrl = returnUrl;
         this.language = language;
+        this.metadata = metadata;
         this.internal = new Internal(source);
     }
 
@@ -77,6 +84,10 @@ public class PaymentRequest {
         return internal;
     }
 
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
     @Override
     public String toString() {
         return "PaymentRequest{" +
@@ -85,6 +96,7 @@ public class PaymentRequest {
                 ", description='" + description + '\'' +
                 ", returnUrl='" + returnUrl + '\'' +
                 ", language='" + language.toString() + '\'' +
+                ", metadata='" + metadata == null ? "" : metadata.toString() + '\'' +
                 ", source='" + internal.getSource() + '\'' +
                 '}';
     }

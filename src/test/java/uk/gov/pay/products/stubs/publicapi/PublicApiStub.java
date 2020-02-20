@@ -4,6 +4,8 @@ import org.apache.http.HttpStatus;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -21,15 +23,23 @@ public class PublicApiStub {
     private static final String PAYMENTS_PATH = "/v1/payments";
     private static final String PAYMENT_PATH = PAYMENTS_PATH + "/%s";
     
-    public static JsonObject createPaymentRequestPayload(long amount, String reference, String description, String returnUrl, String language) {
-        return Json.createObjectBuilder()
+    public static JsonObject createPaymentRequestPayload(long amount, String reference, String description,
+                                                         String returnUrl, String language,
+                                                         Map<String, String> metadataMap) {
+        JsonObjectBuilder builder = Json.createObjectBuilder()
                 .add("amount", amount)
                 .add("reference", reference)
                 .add("description", description)
                 .add("return_url", returnUrl)
                 .add("language", language)
-                .add("internal", Json.createObjectBuilder().add("source","CARD_PAYMENT_LINK"))
-                .build();
+                .add("internal", Json.createObjectBuilder().add("source","CARD_PAYMENT_LINK"));
+
+        if (metadataMap != null && !metadataMap.isEmpty()) {
+            JsonObjectBuilder mapBuilder = Json.createObjectBuilder();
+            metadataMap.forEach((key, value) -> mapBuilder.add(key, value));
+            builder.add("metadata", mapBuilder.build());
+        }
+        return  builder.build();
     }
 
     public static JsonObject createPaymentResponsePayload(String paymentId,
@@ -38,8 +48,9 @@ public class PublicApiStub {
                                                           String description,
                                                           String returnUrl,
                                                           String nextUrl,
-                                                          String language) {
-        return Json.createObjectBuilder()
+                                                          String language,
+                                                          Map<String, String> metadataMap) {
+        JsonObjectBuilder builder = Json.createObjectBuilder()
                 .add("amount", amount)
                 .add("state",
                         Json.createObjectBuilder()
@@ -107,8 +118,13 @@ public class PublicApiStub {
                                                 .add("href", "https://an.example.link/from/payment/platform")
                                                 .add("method", "GET")))
                 .add("card_brand", "Visa")
-                .add("Do not add this property to PaymentResponse", "To test deserialisation handles new/unknown properties")
-                .build();
+                .add("Do not add this property to PaymentResponse", "To test deserialisation handles new/unknown properties");
+        if (metadataMap != null && !metadataMap.isEmpty()) {
+            JsonObjectBuilder mapBuilder = Json.createObjectBuilder();
+            metadataMap.forEach((key, value) -> mapBuilder.add(key, value));
+            builder.add("metadata", mapBuilder.build());
+        }
+        return  builder.build();
     }
 
     public static JsonObject createErrorPayload() {

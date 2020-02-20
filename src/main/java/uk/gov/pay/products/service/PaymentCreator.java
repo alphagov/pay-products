@@ -119,6 +119,7 @@ public class PaymentCreator {
                     productEntity.getName(),
                     returnUrl,
                     productEntity.getLanguage(),
+                    productEntity.toProductMetadataMap(),
                     CARD_PAYMENT_LINK);
 
             try {

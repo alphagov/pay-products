@@ -13,6 +13,7 @@ import uk.gov.pay.products.stubs.publicapi.PublicApiStub;
 
 import javax.json.JsonObject;
 import javax.ws.rs.client.Client;
+import java.util.Map;
 import java.util.Optional;
 
 import static junit.framework.TestCase.assertTrue;
@@ -48,15 +49,17 @@ public class PublicApiRestClientTest {
         String nextUrl = "http://next.url";
         String apiToken = "api-token";
         SupportedLanguage language = SupportedLanguage.WELSH;
+        Map<String, String> metadata = Map.of("key", "value");
 
         JsonObject expectedPaymentRequestPayload = createPaymentRequestPayload(
-                amount, reference, description, returnUrl, language.toString());
+                amount, reference, description, returnUrl, language.toString(), metadata);
         JsonObject paymentResponsePayload = PublicApiStub.createPaymentResponsePayload(
-                paymentId, amount, reference, description, returnUrl, nextUrl, language.toString());
+                paymentId, amount, reference, description, returnUrl, nextUrl, language.toString(),
+                metadata);
 
         setupResponseToCreatePaymentRequest(apiToken, expectedPaymentRequestPayload, paymentResponsePayload);
 
-        PaymentRequest paymentRequest = new PaymentRequest(amount, reference, description, returnUrl, language, CARD_PAYMENT_LINK);
+        PaymentRequest paymentRequest = new PaymentRequest(amount, reference, description, returnUrl, language, metadata, CARD_PAYMENT_LINK);
         PaymentResponse actualPaymentResponse = publicApiRestClient.createPayment(apiToken, paymentRequest);
         
         assertThat(actualPaymentResponse, hasAllPaymentProperties(paymentResponsePayload));
@@ -72,12 +75,12 @@ public class PublicApiRestClientTest {
         SupportedLanguage language = SupportedLanguage.WELSH;
 
         JsonObject expectedPaymentRequestPayload = createPaymentRequestPayload(
-                amount, reference, description, returnUrl, language.toString());
+                amount, reference, description, returnUrl, language.toString(), null);
         JsonObject errorPayload = PublicApiStub.createErrorPayload();
 
         setupResponseToCreatePaymentRequest(apiToken, expectedPaymentRequestPayload, errorPayload, SC_BAD_REQUEST);
 
-        PaymentRequest paymentRequest = new PaymentRequest(amount, reference, description, returnUrl, language, CARD_PAYMENT_LINK);
+        PaymentRequest paymentRequest = new PaymentRequest(amount, reference, description, returnUrl, language, Map.of(), CARD_PAYMENT_LINK);
 
         try {
             publicApiRestClient.createPayment(apiToken, paymentRequest);
@@ -99,11 +102,11 @@ public class PublicApiRestClientTest {
         SupportedLanguage language = SupportedLanguage.WELSH;
 
         JsonObject expectedPaymentRequestPayload = createPaymentRequestPayload(
-                amount, reference, description, returnUrl, language.toString());
+                amount, reference, description, returnUrl, language.toString(), null);
 
         setupResponseToCreatePaymentRequest(apiToken, expectedPaymentRequestPayload, HttpStatus.SC_UNAUTHORIZED);
 
-        PaymentRequest paymentRequest = new PaymentRequest(amount, reference, description, returnUrl, language, CARD_PAYMENT_LINK);
+        PaymentRequest paymentRequest = new PaymentRequest(amount, reference, description, returnUrl, language, Map.of(), CARD_PAYMENT_LINK);
         try {
             publicApiRestClient.createPayment(apiToken, paymentRequest);
             fail("Expected an PublicApiResponseErrorException to be thrown");
@@ -124,7 +127,7 @@ public class PublicApiRestClientTest {
         SupportedLanguage language = SupportedLanguage.WELSH;
 
         JsonObject paymentResponsePayload = PublicApiStub.createPaymentResponsePayload(
-                paymentId, amount, reference, description, returnUrl, nextUrl, language.toString());
+                paymentId, amount, reference, description, returnUrl, nextUrl, language.toString(), null);
 
         setupResponseToGetPaymentRequest(paymentId, paymentResponsePayload);
 

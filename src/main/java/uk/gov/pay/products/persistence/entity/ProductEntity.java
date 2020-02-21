@@ -17,6 +17,7 @@ import javax.persistence.Table;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Entity
@@ -240,5 +241,11 @@ public class ProductEntity extends AbstractEntity {
                         .stream()
                         .map(ProductMetadata::from)
                         .collect(Collectors.toList()));
+    }
+
+    public Map<String, String> toProductMetadataMap() {
+        return metadataEntityList == null ? Map.of() : metadataEntityList
+                .stream()
+                .collect(Collectors.toMap(metadata -> metadata.getMetadataKey(), metadata -> metadata.getMetadataValue()));
     }
 }

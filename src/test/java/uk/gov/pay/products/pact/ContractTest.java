@@ -74,4 +74,14 @@ public abstract class ContractTest {
                 .build()
                 .toProduct());
     }
+
+    @State("a product with gateway account id 42 and metadata exist")
+    public void aProductsWithMetadataExistForGatewayAccount() {
+        Product productWithMetadata = aProductEntity()
+                .withGatewayAccountId(42)
+                .build()
+                .toProduct();
+        dbHelper.addProduct(productWithMetadata);
+        dbHelper.addMetadata(productWithMetadata.getExternalId(), "key", "value");
+    }
 }

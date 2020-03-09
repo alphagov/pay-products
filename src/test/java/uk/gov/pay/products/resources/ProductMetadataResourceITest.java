@@ -64,6 +64,7 @@ public class ProductMetadataResourceITest extends IntegrationTest {
                 .post(format("/v1/api/products/%s/metadata", product.getExternalId()))
                 .then()
                 .statusCode(400)
+                .body("error_identifier", is("DUPLICATE_METADATA_KEYS"))
                 .body("errors", hasSize(1))
                 .body("errors[0]", is(format("Key [ %s ] already exists, duplicate keys not allowed", "location")));;
     }

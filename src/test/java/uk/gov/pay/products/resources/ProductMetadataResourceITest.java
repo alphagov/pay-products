@@ -64,6 +64,7 @@ public class ProductMetadataResourceITest extends IntegrationTest {
                 .post(format("/v1/api/products/%s/metadata", product.getExternalId()))
                 .then()
                 .statusCode(400)
+                .body("error_identifier", is("DUPLICATE_METADATA_KEYS"))
                 .body("errors", hasSize(1))
                 .body("errors[0]", is(format("Key [ %s ] already exists, duplicate keys not allowed", "location")));;
     }
@@ -118,5 +119,59 @@ public class ProductMetadataResourceITest extends IntegrationTest {
                 .statusCode(404)
                 .body("errors", hasSize(1))
                 .body("errors[0]", is(format("Key [ %s ] does not exist", "Country")));;
+    }
+
+    @Test
+    public void deleteMetadata_succeeds_whenItExists() {
+        String productExternalId = randomUuid();
+        Product product = aProductEntity()
+                .withExternalId(productExternalId)
+                .withGatewayAccountId(0)
+                .withLanguage(SupportedLanguage.WELSH)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+        databaseHelper.addMetadata(productExternalId, "Location", "United Kingdom");
+
+        List<Map<String, Object>> preMetadata = databaseHelper.findMetadataByProductExternalId(productExternalId);
+        assertThat(preMetadata.size(), is(1));
+
+        givenSetup()
+                .accept(APPLICATION_JSON)
+                .delete(format("/v1/api/products/%s/metadata/%s", product.getExternalId(), "Location"))
+                .then()
+                .statusCode(200);
+
+        List<Map<String, Object>> metadata = databaseHelper.findMetadataByProductExternalId(productExternalId);
+        assertThat(metadata.size(), is(0));
+    }
+
+    @Test
+    public void deleteMetadata_fails_whenProductDoesNotExist() {
+        String productExternalId = randomUuid();
+        Product product = aProductEntity()
+                .withExternalId(productExternalId)
+                .withGatewayAccountId(0)
+                .withLanguage(SupportedLanguage.WELSH)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+        databaseHelper.addMetadata(productExternalId, "Location", "United Kingdom");
+
+        List<Map<String, Object>> preMetadata = databaseHelper.findMetadataByProductExternalId(productExternalId);
+        assertThat(preMetadata.size(), is(1));
+
+        givenSetup()
+                .accept(APPLICATION_JSON)
+                .delete(format("/v1/api/products/%s/metadata/%s", product.getExternalId(), "DoesNotExist"))
+                .then()
+                .statusCode(404)
+                .body("errors", hasSize(1))
+                .body("errors[0]", is(format("Metadata for id [ %s ] and key [ %s ] not found", product.getExternalId(), "DoesNotExist")));
+
+        List<Map<String, Object>> metadata = databaseHelper.findMetadataByProductExternalId(productExternalId);
+        assertThat(metadata.size(), is(1));
     }
 }

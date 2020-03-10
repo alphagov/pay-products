@@ -25,7 +25,7 @@ public class ProductsMetadataRequestValidator {
 
     public Optional<Errors> validateCreateRequest(JsonNode payload, List<ProductMetadata> existingMetadataList) {
         if (existingMetadataList.size() >= MAX_NUMBER_OF_METADATA_ALLOWED) {
-            return Optional.of(Errors.from(MAX_NUMBER_OF_METADATA_ALLOWED_ERROR_MSG));
+            return Optional.of(Errors.from(MAX_NUMBER_OF_METADATA_ALLOWED_ERROR_MSG, "MAX_METADATA_LENGTH_EXCEEDED"));
         }
         String key = payload.fieldNames().next();
         if (existingMetadataList
@@ -33,7 +33,8 @@ public class ProductsMetadataRequestValidator {
                 .map(ProductMetadata::getKey)
                 .map(String::toLowerCase)
                 .anyMatch(isEqual(key.toLowerCase()))) {
-            return Optional.of(Errors.from(format(DUPLICATE_KEY_ERROR_MSG, key)));
+            return Optional.of(Errors.from(format(DUPLICATE_KEY_ERROR_MSG, key),
+                    "DUPLICATE_METADATA_KEYS"));
         }
 
         return Optional.empty();
@@ -62,11 +63,11 @@ public class ProductsMetadataRequestValidator {
         String key = payload.fieldNames().next();
 
         if (key.length() > MAX_KEY_FIELD_LENGTH) {
-            return Optional.of(Errors.from(MAX_KEY_FIELD_ERROR_MSG));
+            return Optional.of(Errors.from(MAX_KEY_FIELD_ERROR_MSG, "KEY_LENGTH_OVER_MAX_SIZE"));
         }
 
         if (payload.get(key).asText().length() > MAX_VALUE_FIELD_LENGTH) {
-            return Optional.of(Errors.from(MAX_VALUE_FILED_ERROR_MSG));
+            return Optional.of(Errors.from(MAX_VALUE_FILED_ERROR_MSG, "VALUE_LENGTH_OVER_MAX_SIZE"));
         }
 
         return Optional.empty();

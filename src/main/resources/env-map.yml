@@ -9,5 +9,7 @@ env_vars:
   PRODUCTSUI_CONFIRMATION_URL: '.[][] | select(.name == "app-catalog") | .credentials.products_ui_confirmation_url  '
   PRODUCTS_FRIENDLY_BASE_URI:  '.[][] | select(.name == "app-catalog") | .credentials.products_ui_redirect_url      '
   BASE_URL:                    '.[][] | select(.name == "app-catalog") | .credentials.products_url                  '
+  METRICS_HOST:                '.[][] | select(.name == "app-catalog") | .credentials.carbon_relay_route'
+  METRICS_PORT:                '.[][] | select(.name == "app-catalog") | .credentials.carbon_relay_port'
   SENTRY_DSN:                  '.[][] | select(.name == "products-secret-service") | .credentials.sentry_dsn        '
   PRODUCTS_API_TOKEN:          '.[][] | select(.name == "products-secret-service") | .credentials.products_api_token'

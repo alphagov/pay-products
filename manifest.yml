@@ -38,6 +38,8 @@ applications:
       PRODUCTSUI_CONFIRMATION_URL: ""
       BASE_URL: ""
       PRODUCTS_FRIENDLY_BASE_URI: ""
+      METRICS_HOST: ""
+      METRICS_PORT: ""
 
       # Provide via products-db service see env-map.yml
       DB_HOST: ""

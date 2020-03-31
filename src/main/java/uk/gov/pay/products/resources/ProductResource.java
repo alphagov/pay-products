@@ -6,6 +6,7 @@ import io.dropwizard.jersey.PATCH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.model.Product;
+import uk.gov.pay.products.model.ProductUsageStat;
 import uk.gov.pay.products.service.ProductFactory;
 import uk.gov.pay.products.validations.ProductRequestValidator;
 
@@ -154,5 +155,14 @@ public class ProductResource {
         return productFactory.productFinder().findByProductPath(serviceNamePath, productNamePath)
                 .map(product -> Response.status(OK).entity(product).build())
                 .orElseGet(() -> Response.status(NOT_FOUND).build());
+    }
+
+    @GET
+    @Path("/stats/products")
+    @Produces(APPLICATION_JSON)
+    public Response findProductsAndStats() {
+        logger.info("Listing all live products and usage stats");
+        List<ProductUsageStat> usageStats = productFactory.productFinder().findProductsAndUsage();
+        return Response.status(OK).entity(usageStats).build();
     }
 }

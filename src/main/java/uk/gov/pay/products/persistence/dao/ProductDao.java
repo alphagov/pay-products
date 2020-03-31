@@ -2,6 +2,7 @@ package uk.gov.pay.products.persistence.dao;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import uk.gov.pay.products.model.ProductUsageStat;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductStatus;
 
@@ -70,5 +71,18 @@ public class ProductDao extends JpaDao<ProductEntity> {
                 .setParameter("serviceNamePath", serviceNamePath)
                 .setParameter("productNamePath", productNamePath)
                 .getResultList().stream().findFirst();
+    }
+
+    public List<ProductUsageStat> findProductsAndUsage() {
+        String query = "SELECT new uk.gov.pay.products.model.ProductUsageStat(" +
+                "COUNT(1)," +
+                "MAX(payments.dateCreated)," +
+                "payments.product) " +
+                "FROM PaymentEntity payments " +
+                "GROUP BY payments.product";
+
+        return entityManager.get()
+                .createQuery(query, ProductUsageStat.class)
+                .getResultList();
     }
 }

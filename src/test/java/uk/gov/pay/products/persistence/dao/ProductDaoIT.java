@@ -2,12 +2,16 @@ package uk.gov.pay.products.persistence.dao;
 
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.pay.products.fixtures.PaymentEntityFixture;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.fixtures.ProductMetadataEntityFixture;
 import uk.gov.pay.products.matchers.ProductMatcher;
 import uk.gov.pay.products.model.Product;
+import uk.gov.pay.products.model.ProductUsageStat;
+import uk.gov.pay.products.persistence.entity.PaymentEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.persistence.entity.ProductMetadataEntity;
+import uk.gov.pay.products.util.PaymentStatus;
 import uk.gov.pay.products.util.ProductStatus;
 
 import java.util.List;
@@ -204,7 +208,7 @@ public class ProductDaoIT extends DaoTestBase {
                 .build();
 
         databaseHelper.addProduct(product.toProduct());
-        
+
         Optional<ProductEntity> productWithId = productDao.findByExternalId(externalId);
 
         ProductMetadataEntity productMetadataEntity = ProductMetadataEntityFixture.aProductMetadataEntity()
@@ -230,5 +234,47 @@ public class ProductDaoIT extends DaoTestBase {
         assertThat(productMetadataMap.containsValue("value1"), is(true));
         assertThat(productMetadataMap.containsKey("key2"), is(true));
         assertThat(productMetadataMap.containsValue("value2"), is(true));
+    }
+
+    @Test
+    public void findProductsAndUsage_shouldReturnAProductUsage_whenExists() {
+        ProductDao productDao = env.getInstance(ProductDao.class);
+        ProductEntity productEntity = ProductEntityFixture.aProductEntity()
+                .withExternalId(randomUuid())
+                .build();
+        ProductEntity secondProductEntity = ProductEntityFixture.aProductEntity()
+                .withExternalId(randomUuid())
+                .build();
+
+        productEntity = productDao.merge(productEntity);
+        secondProductEntity = productDao.merge(secondProductEntity);
+
+        PaymentEntity payment = PaymentEntityFixture.aPaymentEntity()
+                .withExternalId(randomUuid())
+                .withStatus(PaymentStatus.CREATED)
+                .withProduct(productEntity)
+                .withReferenceNumber("MH2KJY5KPW")
+                .build();
+        PaymentEntity secondPayment = PaymentEntityFixture.aPaymentEntity()
+                .withExternalId(randomUuid())
+                .withStatus(PaymentStatus.CREATED)
+                .withProduct(productEntity)
+                .withReferenceNumber("MH2KJY5KPW")
+                .build();
+        PaymentEntity thirdPayment = PaymentEntityFixture.aPaymentEntity()
+                .withExternalId(randomUuid())
+                .withStatus(PaymentStatus.CREATED)
+                .withProduct(secondProductEntity)
+                .withReferenceNumber("MH2KJY5KPW")
+                .build();
+
+        databaseHelper.addPayment(payment.toPayment(), 1);
+        databaseHelper.addPayment(secondPayment.toPayment(), 1);
+        databaseHelper.addPayment(thirdPayment.toPayment(), 1);
+
+        List<ProductUsageStat> usageStats = productDao.findProductsAndUsage();
+        assertThat(usageStats.size(), is(2));
+        assertThat(usageStats.get(0).getPaymentCount(), is(2L));
+        assertThat(usageStats.get(1).getPaymentCount(), is(1L));
     }
 }

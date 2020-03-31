@@ -17,19 +17,19 @@ public class ProductUsageStat {
     @JsonProperty
     private final ZonedDateTime lastPaymentDate;
     @JsonProperty
-    private final ProductEntity product;
+    private final Product product;
 
-    public ProductUsageStat(Long paymentCount, ZonedDateTime lastPaymentDate, ProductEntity product) {
+    public ProductUsageStat(Long paymentCount, ZonedDateTime lastPaymentDate, ProductEntity productEntity) {
         this.paymentCount = paymentCount;
         this.lastPaymentDate = lastPaymentDate;
-        this.product = product;
+        this.product = productEntity.toProduct();
     }
 
     public Long getPaymentCount() {
         return paymentCount;
     }
 
-    public ProductEntity getProduct() {
+    public Product getProduct() {
         return product;
     }
 

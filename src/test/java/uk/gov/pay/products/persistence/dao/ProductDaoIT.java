@@ -13,6 +13,7 @@ import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.persistence.entity.ProductMetadataEntity;
 import uk.gov.pay.products.util.PaymentStatus;
 import uk.gov.pay.products.util.ProductStatus;
+import uk.gov.pay.products.util.ProductType;
 
 import java.util.List;
 import java.util.Map;
@@ -237,17 +238,23 @@ public class ProductDaoIT extends DaoTestBase {
     }
 
     @Test
-    public void findProductsAndUsage_shouldReturnAProductUsage_whenExists() {
-        ProductDao productDao = env.getInstance(ProductDao.class);
+    public void findProductsAndUsage_shouldReturnAProductUsage_whenExistsWithTypeAdhoc() {
         ProductEntity productEntity = ProductEntityFixture.aProductEntity()
                 .withExternalId(randomUuid())
+                .withType(ProductType.ADHOC)
                 .build();
         ProductEntity secondProductEntity = ProductEntityFixture.aProductEntity()
                 .withExternalId(randomUuid())
+                .withType(ProductType.ADHOC)
+                .build();
+        ProductEntity ignoredProductEntity = ProductEntityFixture.aProductEntity()
+                .withExternalId(randomUuid())
+                .withType(ProductType.DEMO)
                 .build();
 
         productEntity = productDao.merge(productEntity);
         secondProductEntity = productDao.merge(secondProductEntity);
+        ignoredProductEntity = productDao.merge(ignoredProductEntity);
 
         PaymentEntity payment = PaymentEntityFixture.aPaymentEntity()
                 .withExternalId(randomUuid())
@@ -267,12 +274,21 @@ public class ProductDaoIT extends DaoTestBase {
                 .withProduct(secondProductEntity)
                 .withReferenceNumber("MH2KJY5KPW")
                 .build();
+        PaymentEntity ignoredPayment = PaymentEntityFixture.aPaymentEntity()
+                .withExternalId(randomUuid())
+                .withStatus(PaymentStatus.CREATED)
+                .withProduct(ignoredProductEntity)
+                .withReferenceNumber("MH2KJY5KPW")
+                .build();
 
         databaseHelper.addPayment(payment.toPayment(), 1);
         databaseHelper.addPayment(secondPayment.toPayment(), 1);
         databaseHelper.addPayment(thirdPayment.toPayment(), 1);
+        databaseHelper.addPayment(ignoredPayment.toPayment(), 1);
 
         List<ProductUsageStat> usageStats = productDao.findProductsAndUsage();
+
+        // product with type of demo is ignored resulting in only two products reported on
         assertThat(usageStats.size(), is(2));
         assertThat(usageStats.get(0).getPaymentCount(), is(2L));
         assertThat(usageStats.get(1).getPaymentCount(), is(1L));

@@ -5,6 +5,7 @@ import com.google.inject.Provider;
 import uk.gov.pay.products.model.ProductUsageStat;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductStatus;
+import uk.gov.pay.products.util.ProductType;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -79,10 +80,12 @@ public class ProductDao extends JpaDao<ProductEntity> {
                 "MAX(payments.dateCreated)," +
                 "payments.product) " +
                 "FROM PaymentEntity payments " +
+                "WHERE payments.product.type = :type " +
                 "GROUP BY payments.product";
 
         return entityManager.get()
                 .createQuery(query, ProductUsageStat.class)
+                .setParameter("type", ProductType.ADHOC)
                 .getResultList();
     }
 }

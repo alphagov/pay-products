@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
+import uk.gov.pay.commons.api.json.ApiResponseDateTimeSerializer;
 
 import java.time.ZonedDateTime;
 
@@ -15,9 +17,10 @@ public class ProductUsageStat {
     @JsonProperty
     private final Long paymentCount;
     @JsonProperty
+    @JsonSerialize(using = ApiResponseDateTimeSerializer.class)
     private final ZonedDateTime lastPaymentDate;
     @JsonProperty
-    private final Product product;
+    private Product product;
 
     public ProductUsageStat(Long paymentCount, ZonedDateTime lastPaymentDate, ProductEntity productEntity) {
         this.paymentCount = paymentCount;
@@ -35,6 +38,10 @@ public class ProductUsageStat {
 
     public ZonedDateTime getLastPaymentDate() {
         return lastPaymentDate;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     @Override

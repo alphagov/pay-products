@@ -242,14 +242,17 @@ public class ProductDaoIT extends DaoTestBase {
         ProductEntity productEntity = ProductEntityFixture.aProductEntity()
                 .withExternalId(randomUuid())
                 .withType(ProductType.ADHOC)
+                .withGatewayAccountId(1)
                 .build();
         ProductEntity secondProductEntity = ProductEntityFixture.aProductEntity()
                 .withExternalId(randomUuid())
                 .withType(ProductType.ADHOC)
+                .withGatewayAccountId(2)
                 .build();
         ProductEntity ignoredProductEntity = ProductEntityFixture.aProductEntity()
                 .withExternalId(randomUuid())
                 .withType(ProductType.DEMO)
+                .withGatewayAccountId(1)
                 .build();
 
         productEntity = productDao.merge(productEntity);
@@ -287,10 +290,15 @@ public class ProductDaoIT extends DaoTestBase {
         databaseHelper.addPayment(ignoredPayment.toPayment(), 1);
 
         List<ProductUsageStat> usageStats = productDao.findProductsAndUsage();
+        List<ProductUsageStat> filteredUsageStats = productDao.findProductsAndUsage(2);
 
         // product with type of demo is ignored resulting in only two products reported on
         assertThat(usageStats.size(), is(2));
         assertThat(usageStats.get(0).getPaymentCount(), is(2L));
         assertThat(usageStats.get(1).getPaymentCount(), is(1L));
+
+        assertThat(filteredUsageStats.size(), is(1));
+        assertThat(filteredUsageStats.get(0).getPaymentCount(), is(1L));
+        assertThat(filteredUsageStats.get(0).getProduct().getExternalId(), is(secondProductEntity.getExternalId()));
     }
 }

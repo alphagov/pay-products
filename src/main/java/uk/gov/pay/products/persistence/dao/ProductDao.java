@@ -7,7 +7,9 @@ import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
 
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,17 +77,34 @@ public class ProductDao extends JpaDao<ProductEntity> {
     }
 
     public List<ProductUsageStat> findProductsAndUsage() {
+        return findProductsAndUsageQuery(null);
+    }
+
+    public List<ProductUsageStat> findProductsAndUsage(Integer gatewayAccountId) {
+        return findProductsAndUsageQuery(gatewayAccountId);
+    }
+
+    private List<ProductUsageStat> findProductsAndUsageQuery(Integer gatewayAccountId) {
+        Boolean shouldFilterGatewayAccount = gatewayAccountId != null;
+        String conditionalFilter = shouldFilterGatewayAccount ?
+                "AND payments.product.gatewayAccountId = :gatewayAccountId " :
+                "";
         String query = "SELECT new uk.gov.pay.products.model.ProductUsageStat(" +
                 "COUNT(1)," +
                 "MAX(payments.dateCreated)," +
                 "payments.product) " +
                 "FROM PaymentEntity payments " +
                 "WHERE payments.product.type = :type " +
+                conditionalFilter +
                 "GROUP BY payments.product";
 
-        return entityManager.get()
+        TypedQuery<ProductUsageStat> queryBuilder = entityManager.get()
                 .createQuery(query, ProductUsageStat.class)
-                .setParameter("type", ProductType.ADHOC)
-                .getResultList();
+                .setParameter("type", ProductType.ADHOC);
+
+        if (shouldFilterGatewayAccount) {
+            queryBuilder.setParameter("gatewayAccountId", gatewayAccountId);
+        }
+        return queryBuilder.getResultList();
     }
 }

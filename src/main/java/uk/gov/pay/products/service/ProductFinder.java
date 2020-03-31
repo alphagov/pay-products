@@ -94,7 +94,13 @@ public class ProductFinder {
     }
 
     @Transactional
-    public List<ProductUsageStat> findProductsAndUsage() {
-        return productDao.findProductsAndUsage();
+    public List<ProductUsageStat> findProductsAndUsage(Integer gatewayAccountId) {
+        return productDao.findProductsAndUsage(gatewayAccountId)
+                .stream()
+                .map(productUsageStat -> {
+                    productUsageStat.setProduct(linksDecorator.decorate(productUsageStat.getProduct()));
+                    return productUsageStat;
+                })
+                .collect(Collectors.toList());
     }
 }

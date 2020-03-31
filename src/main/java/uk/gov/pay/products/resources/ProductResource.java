@@ -160,9 +160,9 @@ public class ProductResource {
     @GET
     @Path("/stats/products")
     @Produces(APPLICATION_JSON)
-    public Response findProductsAndStats() {
+    public Response findProductsAndStats(@QueryParam("gatewayAccountId") Integer gatewayAccountId) {
         logger.info("Listing all live products and usage stats");
-        List<ProductUsageStat> usageStats = productFactory.productFinder().findProductsAndUsage();
+        List<ProductUsageStat> usageStats = productFactory.productFinder().findProductsAndUsage(gatewayAccountId);
         return Response.status(OK).entity(usageStats).build();
     }
 }

@@ -7,7 +7,6 @@ import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
 
-import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;
@@ -74,10 +73,6 @@ public class ProductDao extends JpaDao<ProductEntity> {
                 .setParameter("serviceNamePath", serviceNamePath)
                 .setParameter("productNamePath", productNamePath)
                 .getResultList().stream().findFirst();
-    }
-
-    public List<ProductUsageStat> findProductsAndUsage() {
-        return findProductsAndUsageQuery(null);
     }
 
     public List<ProductUsageStat> findProductsAndUsage(Integer gatewayAccountId) {

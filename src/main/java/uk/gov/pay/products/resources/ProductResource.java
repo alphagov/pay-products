@@ -9,6 +9,8 @@ import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.model.ProductUsageStat;
 import uk.gov.pay.products.service.ProductFactory;
 import uk.gov.pay.products.validations.ProductRequestValidator;
+import static uk.gov.pay.logging.LoggingKeys.GATEWAY_ACCOUNT_ID;
+import static net.logstash.logback.argument.StructuredArguments.kv;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
@@ -161,7 +163,10 @@ public class ProductResource {
     @Path("/stats/products")
     @Produces(APPLICATION_JSON)
     public Response findProductsAndStats(@QueryParam("gatewayAccountId") Integer gatewayAccountId) {
-        logger.info("Listing all live products and usage stats");
+        logger.info(
+                format("Listing usage stats on all non-prototype payment links for gateway account [%s=%s]", GATEWAY_ACCOUNT_ID, gatewayAccountId),
+                kv(GATEWAY_ACCOUNT_ID, gatewayAccountId)
+        );
         List<ProductUsageStat> usageStats = productFactory.productFinder().findProductsAndUsage(gatewayAccountId);
         return Response.status(OK).entity(usageStats).build();
     }

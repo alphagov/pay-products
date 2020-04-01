@@ -49,15 +49,16 @@ public class DatabaseTestHelper {
 
     public void addPayment(Payment payment, Integer gatewayAccountId) {
         jdbi.withHandle(handle -> handle.createUpdate("INSERT INTO payments " +
-                "(external_id, govuk_payment_id, next_url, product_id, status, amount, gateway_account_id, reference_number)" +
+                "(external_id, govuk_payment_id, next_url, product_id, status, amount, gateway_account_id, reference_number, date_created)" +
                 "VALUES " +
-                "(:external_id, :govuk_payment_id, :next_url, :product_id, :status, :amount, :gateway_account_id, :reference_number)")
+                "(:external_id, :govuk_payment_id, :next_url, :product_id, :status, :amount, :gateway_account_id, :reference_number, :date_created)")
                 .bind("external_id", payment.getExternalId())
                 .bind("govuk_payment_id", payment.getGovukPaymentId())
                 .bind("next_url", payment.getNextUrl())
                 .bind("product_id", payment.getProductId())
                 .bind("status", payment.getStatus())
                 .bind("amount", payment.getAmount())
+                .bind("date_created", payment.getDateCreated())
                 .bind("gateway_account_id", gatewayAccountId)
                 .bind("reference_number", payment.getReferenceNumber())
                 .execute());

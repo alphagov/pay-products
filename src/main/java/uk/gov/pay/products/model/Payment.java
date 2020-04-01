@@ -113,4 +113,12 @@ public class Payment {
     public String getReferenceNumber() {
         return referenceNumber;
     }
+
+    public ZonedDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(ZonedDateTime dateCreated) {
+        this.dateCreated = dateCreated;
+    }
 }

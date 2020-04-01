@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import uk.gov.pay.products.util.PaymentStatus;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +37,8 @@ public class Payment {
     @JsonProperty(FIELD_GOVUK_STATUS)
     private String govUkStatus;
     private final String referenceNumber;
+    @JsonIgnore
+    private ZonedDateTime dateCreated;
 
     private PaymentStatus status;
 
@@ -109,5 +112,13 @@ public class Payment {
 
     public String getReferenceNumber() {
         return referenceNumber;
+    }
+
+    public ZonedDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(ZonedDateTime dateCreated) {
+        this.dateCreated = dateCreated;
     }
 }

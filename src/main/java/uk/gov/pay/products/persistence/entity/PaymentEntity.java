@@ -105,7 +105,7 @@ public class PaymentEntity extends AbstractEntity {
     public void setStatus(PaymentStatus status) { this.status = status; }
 
     public Payment toPayment() {
-        return new Payment(
+        Payment payment = new Payment(
                 this.getExternalId(),
                 this.getGovukPaymentId(),
                 this.getNextUrl(),
@@ -115,6 +115,8 @@ public class PaymentEntity extends AbstractEntity {
                 this.product != null ? this.product.getId() : null,
                 this.getReferenceNumber()
         );
+        payment.setDateCreated(this.dateCreated);
+        return payment;
     }
 
     @Override

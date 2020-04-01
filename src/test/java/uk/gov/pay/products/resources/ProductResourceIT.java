@@ -4,10 +4,13 @@ import com.google.common.collect.ImmutableMap;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Assert;
 import org.junit.Test;
+import uk.gov.pay.commons.model.ApiResponseDateTimeFormatter;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.fixtures.ProductMetadataEntityFixture;
 import uk.gov.pay.products.model.Product;
+import uk.gov.pay.products.persistence.entity.PaymentEntity;
+import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.persistence.entity.ProductMetadataEntity;
 import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
@@ -25,6 +28,7 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
+import static uk.gov.pay.products.fixtures.PaymentEntityFixture.aPaymentEntity;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
@@ -957,5 +961,78 @@ public class ProductResourceIT extends IntegrationTest {
                 .body(RETURN_URL, is(product.getReturnUrl()))
                 .body(METADATA + ".key",is("value"))
                 .body(METADATA + ".secondkey",is("value2"));
+    }
+
+    @Test
+    public void shouldReturnUsageStats_whenProductAndPaymensExist() {
+        String nextUrl = "www.gov.uk/pay";
+
+        String productExternalId = randomUuid();
+        String productExternalId2 = randomUuid();
+        String paymentExternalId1 = randomUuid();
+        String paymentExternalId2 = randomUuid();
+
+        ProductEntity productEntity = ProductEntityFixture.aProductEntity()
+                .withGatewayAccountId(1)
+                .withExternalId(productExternalId)
+                .withType(ProductType.ADHOC)
+                .build();
+        ProductEntity productEntity2 = ProductEntityFixture.aProductEntity()
+                .withGatewayAccountId(2)
+                .withExternalId(productExternalId2)
+                .withType(ProductType.ADHOC)
+                .build();
+
+        Product product = productEntity.toProduct();
+        Product product2 = productEntity2.toProduct();
+
+        databaseHelper.addProduct(product);
+        databaseHelper.addProduct(product2);
+
+        productEntity.setId(databaseHelper.findProductId(productExternalId));
+        productEntity2.setId(databaseHelper.findProductId(productExternalId2));
+
+        PaymentEntity payment1 = aPaymentEntity()
+                .withExternalId(paymentExternalId1)
+                .withProduct(productEntity)
+                .withNextUrl(nextUrl)
+                .withReferenceNumber(paymentExternalId1.substring(0, 9))
+                .build();
+
+        databaseHelper.addPayment(payment1.toPayment(), 1);
+
+        PaymentEntity payment2 = aPaymentEntity()
+                .withExternalId(paymentExternalId2)
+                .withProduct(productEntity2)
+                .withNextUrl(nextUrl)
+                .withReferenceNumber(paymentExternalId2.substring(0, 9))
+                .build();
+
+        databaseHelper.addPayment(payment2.toPayment(), 2);
+
+        ValidatableResponse response =  givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/stats/products"))
+                .then()
+                .statusCode(200);
+
+        response
+                .body("size", is(2))
+                .body("[0].payment_count", is(1))
+                .body("[0].product.external_id", is(product.getExternalId()))
+                .body("[1].payment_count", is(1))
+                .body("[1].product.external_id", is(product2.getExternalId()));
+
+        ValidatableResponse filteredResponse =  givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .queryParam("gatewayAccountId", 1)
+                .get(format("/v1/api/stats/products"))
+                .then()
+                .statusCode(200);
+        filteredResponse
+                .body("size", is(1))
+                .body("[0].product.external_id", is(product.getExternalId()));
     }
 }

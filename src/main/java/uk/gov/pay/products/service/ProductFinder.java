@@ -3,6 +3,7 @@ package uk.gov.pay.products.service;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import uk.gov.pay.products.model.Product;
+import uk.gov.pay.products.model.ProductUsageStat;
 import uk.gov.pay.products.persistence.dao.ProductDao;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductStatus;
@@ -90,5 +91,16 @@ public class ProductFinder {
     public Optional<Product> findByProductPath(String serviceNamePath, String productNamePath) {
         return productDao.findByProductPath(serviceNamePath, productNamePath)
                 .map(productEntity -> linksDecorator.decorate(productEntity.toProduct()));
+    }
+
+    @Transactional
+    public List<ProductUsageStat> findProductsAndUsage(Integer gatewayAccountId) {
+        return productDao.findProductsAndUsage(gatewayAccountId)
+                .stream()
+                .map(productUsageStat -> {
+                    productUsageStat.setProduct(linksDecorator.decorate(productUsageStat.getProduct()));
+                    return productUsageStat;
+                })
+                .collect(Collectors.toList());
     }
 }

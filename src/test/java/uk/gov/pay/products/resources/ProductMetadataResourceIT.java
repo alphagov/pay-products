@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static uk.gov.pay.products.fixtures.ProductEntityFixture.aProductEntity;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
-public class ProductMetadataResourceITest extends IntegrationTest {
+public class ProductMetadataResourceIT extends IntegrationTest {
 
     @Test
     public void addNewMetadataShouldSucceed() throws Exception {

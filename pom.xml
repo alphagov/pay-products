@@ -20,7 +20,7 @@
         <hamcrest.version>2.2</hamcrest.version>
         <mainClass>uk.gov.pay.products.ProductsApplication</mainClass>
         <powermock.version>2.0.7</powermock.version>
-        <wiremock.version>2.27.0</wiremock.version>
+        <wiremock.version>2.27.1</wiremock.version>
         <jackson.version>2.11.1</jackson.version>
         <pay-java-commons.version>1.0.20200702150539</pay-java-commons.version>
         <surefire.version>3.0.0-M5</surefire.version>

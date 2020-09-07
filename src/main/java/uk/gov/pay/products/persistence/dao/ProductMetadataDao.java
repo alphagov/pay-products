@@ -17,7 +17,7 @@ public class ProductMetadataDao extends JpaDao<ProductMetadataEntity> {
 
     public List<ProductMetadataEntity> findByProductsId(Integer productId) {
         String query = "SELECT metadata FROM ProductMetadataEntity metadata " +
-                "WHERE metadata.id = :productId";
+                "WHERE metadata.productEntity.id = :productId";
 
         return entityManager.get()
                 .createQuery(query, ProductMetadataEntity.class)

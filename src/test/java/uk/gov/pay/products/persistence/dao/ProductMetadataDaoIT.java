@@ -2,6 +2,7 @@ package uk.gov.pay.products.persistence.dao;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.fixtures.ProductMetadataEntityFixture;
@@ -43,6 +44,17 @@ public class ProductMetadataDaoIT extends DaoTestBase {
     }
 
     @Test
+    public void productMetadataDaoShouldReturnAList_whenProductIdExists() {
+        var id = productDao.findById(productEntity.getId());
+        id.map(ProductEntity::getMetadataEntityList).ifPresent(System.out::println);
+        productMetadataDao.persist(productMetadataEntity);
+        List<ProductMetadataEntity> metadataEntityList = productMetadataDao.findByProductsId(productEntity.getId());
+        System.out.println("VALUE OF LIST**********");
+        System.out.println(metadataEntityList);
+        assertThat(metadataEntityList.size(), is(1));
+    }
+
+    @Test
     public void productMetadataDaoShouldReturnEntity_whenIdExists() {
         ProductMetadataEntity productMetadataEntityReturned = productMetadataDao.entityManager
                 .get()
@@ -51,12 +63,6 @@ public class ProductMetadataDaoIT extends DaoTestBase {
         assertThat(productMetadataEntityReturned.getMetadataValue(), is("a value"));
         assertThat(productMetadataEntityReturned.getId(), is(id));
         assertThat(productMetadataEntityReturned.getProductEntity().getExternalId(), is(productExternalId));
-    }
-
-    @Test
-    public void productMetadataDaoShouldReturnAList_whenProductIdExists() {
-        List<ProductMetadataEntity> metadataEntityList = productMetadataDao.findByProductsId(productEntity.getId());
-        assertThat(metadataEntityList.size(), is(1));
     }
 
     @Test

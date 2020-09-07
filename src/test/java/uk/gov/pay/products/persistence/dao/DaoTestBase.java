@@ -57,7 +57,6 @@ public class DaoTestBase {
         } catch (Exception e) {
             logger.error("Error reverting migrations", e);
         }
-        env.stop();
     }
 
 }

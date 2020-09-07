@@ -30,6 +30,7 @@ public class DaoTestBase {
 
     @BeforeClass
     public static void setup() throws Exception {
+        System.out.println("DaoTestBase setup");
         final Properties properties = new Properties();
         properties.put("javax.persistence.jdbc.driver", postgres.getDriverClass());
         properties.put("javax.persistence.jdbc.url", postgres.getConnectionUrl());
@@ -42,6 +43,7 @@ public class DaoTestBase {
         databaseHelper = new DatabaseTestHelper(Jdbi.create(postgres.getConnectionUrl(), postgres.getUsername(), postgres.getPassword()));
 
         try (Connection connection = DriverManager.getConnection(postgres.getConnectionUrl(), postgres.getUsername(), postgres.getPassword())) {
+            System.out.println("DaoTestBase setup new Migrator");
             Liquibase migrator = new Liquibase("migrations.xml", new ClassLoaderResourceAccessor(), new JdbcConnection(connection));
             migrator.update("");
         }
@@ -51,12 +53,15 @@ public class DaoTestBase {
 
     @AfterClass
     public static void tearDown() {
+        System.out.println("DaoTestBase tearDown");
         try (Connection connection = DriverManager.getConnection(postgres.getConnectionUrl(), postgres.getUsername(), postgres.getPassword())) {
+            System.out.println("DaoTestBase tearDown new Migrator");
             Liquibase migrator = new Liquibase("migrations.xml", new ClassLoaderResourceAccessor(), new JdbcConnection(connection));
             migrator.dropAll();
         } catch (Exception e) {
             logger.error("Error reverting migrations", e);
         }
+        System.out.println("DaoTestBase env.stop()");
         env.stop();
     }
 

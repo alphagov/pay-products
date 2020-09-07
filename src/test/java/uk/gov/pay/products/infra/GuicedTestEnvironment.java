@@ -21,11 +21,13 @@ public class GuicedTestEnvironment {
     }
 
     public GuicedTestEnvironment start() {
+        System.out.println("Guice start");
         injector.getInstance(PersistService.class).start();
         return this;
     }
 
     public GuicedTestEnvironment stop() {
+        System.out.println("Guice stop");
         injector.getInstance(PersistService.class).stop();
         return this;
     }
@@ -38,6 +40,7 @@ public class GuicedTestEnvironment {
 
         @Override
         protected void configure() {
+            System.out.println("Guice configure");
             bind(ProductDao.class).in(Singleton.class);
         }
     }

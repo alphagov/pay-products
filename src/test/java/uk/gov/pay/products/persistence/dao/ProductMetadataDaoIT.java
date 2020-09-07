@@ -9,7 +9,6 @@ import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.persistence.entity.ProductMetadataEntity;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,6 +26,7 @@ public class ProductMetadataDaoIT extends DaoTestBase {
 
     @Before
     public void before() {
+        System.out.println("ProductMetadataDaoIT before");
         productDao = env.getInstance(ProductDao.class);
         productMetadataDao = env.getInstance(ProductMetadataDao.class);
         productEntity = ProductEntityFixture.aProductEntity()
@@ -44,6 +44,7 @@ public class ProductMetadataDaoIT extends DaoTestBase {
 
     @Test
     public void productMetadataDaoShouldReturnEntity_whenIdExists() {
+        System.out.println("productMetadataDaoShouldReturnEntity_whenIdExists find ProductMetadataEntity by ID");
         ProductMetadataEntity productMetadataEntityReturned = productMetadataDao.entityManager
                 .get()
                 .find(ProductMetadataEntity.class, id);
@@ -55,12 +56,14 @@ public class ProductMetadataDaoIT extends DaoTestBase {
 
     @Test
     public void productMetadataDaoShouldReturnAList_whenProductIdExists() {
+        System.out.println("productMetadataDaoShouldReturnAList_whenProductIdExists find ProductMetadataEntity by ProductsID");
         List<ProductMetadataEntity> metadataEntityList = productMetadataDao.findByProductsId(productEntity.getId());
         assertThat(metadataEntityList.size(), is(1));
     }
 
     @Test
     public void productMetadataDaoShouldReturnAList_whenProductExternalIdExists() {
+        System.out.println("productMetadataDaoShouldReturnAList_whenProductExternalIdExists find ProductMetadataEntity by ProductsID");
         List<ProductMetadataEntity> metadataEntityList =
                 productMetadataDao.findByProductsExternalId(productEntity.getExternalId());
         assertThat(metadataEntityList.size(), is(1));
@@ -68,6 +71,7 @@ public class ProductMetadataDaoIT extends DaoTestBase {
 
     @Test
     public void productMetadataDaoShouldReturnAMetadataEntity() {
+        System.out.println("productMetadataDaoShouldReturnAMetadataEntity find ProductMetadataEntity by Products External ID and Key");
         Optional<ProductMetadataEntity> productMetadata =
                 productMetadataDao.findByProductsExternalIdAndKey(productEntity.getExternalId(), productMetadataEntity.getMetadataKey());
         assertThat(productMetadata.isPresent(), is(true));
@@ -77,6 +81,7 @@ public class ProductMetadataDaoIT extends DaoTestBase {
     public void productMetadataDaoShouldUpdateAMetadataEntity() {
         productMetadataEntity.setMetadataValue("new value");
         productMetadataDao.merge(productMetadataEntity);
+        System.out.println("productMetadataDaoShouldUpdateAMetadataEntity find ProductMetadataEntity by Products External ID and Key");
         Optional<ProductMetadataEntity> productMetadata =
                 productMetadataDao.findByProductsExternalIdAndKey(productEntity.getExternalId(), productMetadataEntity.getMetadataKey());
         assertThat(productMetadata.isPresent(), is(true));

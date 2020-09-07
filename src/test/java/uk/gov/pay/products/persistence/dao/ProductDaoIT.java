@@ -36,6 +36,7 @@ public class ProductDaoIT extends DaoTestBase {
 
     @Before
     public void before() {
+        System.out.println("ProductDaoIT before");
         productDao = env.getInstance(ProductDao.class);
         productMetadataDao = env.getInstance(ProductMetadataDao.class);
     }
@@ -51,8 +52,10 @@ public class ProductDaoIT extends DaoTestBase {
                 .build()
                 .toProduct();
 
+        System.out.println("findByExternalId_shouldReturnAProduct_whenExists add product via DB Helper");
         databaseHelper.addProduct(product);
 
+        System.out.println("findByExternalId_shouldReturnAProduct_whenExists find productEntity by ExternalID");
         Optional<ProductEntity> productEntity = productDao.findByExternalId(externalId);
         assertTrue(productEntity.isPresent());
         assertThat(productEntity.get().toProduct(), ProductMatcher.isSame(product));
@@ -70,8 +73,10 @@ public class ProductDaoIT extends DaoTestBase {
                 .build()
                 .toProduct();
 
+        System.out.println("findByExternalId_shouldNotReturnAProduct_whenDoesNotExist add product via DB Helper");
         databaseHelper.addProduct(product);
 
+        System.out.println("findByExternalId_shouldNotReturnAProduct_whenDoesNotExist find productEntity by ExternalID");
         Optional<ProductEntity> productEntity = productDao.findByExternalId(anotherExternalId);
         assertFalse(productEntity.isPresent());
     }
@@ -87,8 +92,10 @@ public class ProductDaoIT extends DaoTestBase {
                 .build()
                 .toProduct();
 
+        System.out.println("findByGatewayAccountIdAndExternalId_shouldReturnAProduct_whenExists add product via DB Helper");
         databaseHelper.addProduct(product);
 
+        System.out.println("findByGatewayAccountIdAndExternalId_shouldReturnAProduct_whenExists find ProductEntity via GWA ID and External ID");
         Optional<ProductEntity> productEntity = productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId);
         assertTrue(productEntity.isPresent());
         assertThat(productEntity.get().toProduct(), ProductMatcher.isSame(product));
@@ -106,8 +113,10 @@ public class ProductDaoIT extends DaoTestBase {
                 .build()
                 .toProduct();
 
+        System.out.println("findByGatewayAccountIdAndExternalId_shouldNotReturnAProduct_whenDoesNotExist add product via DB Helper");
         databaseHelper.addProduct(product);
 
+        System.out.println("findByGatewayAccountIdAndExternalId_shouldNotReturnAProduct_whenDoesNotExist find ProductEntity via GWA ID and External ID");
         Optional<ProductEntity> productEntity = productDao.findByGatewayAccountIdAndExternalId(anotherGatewayAccountId, externalId);
         assertFalse(productEntity.isPresent());
 
@@ -124,6 +133,7 @@ public class ProductDaoIT extends DaoTestBase {
                 .build()
                 .toProduct();
 
+        System.out.println("findByGatewayAccountId_shouldReturnActiveProductsForTheGivenAccount add product via DB Helper");
         databaseHelper.addProduct(activeProduct);
 
         Product inactiveProduct = ProductEntityFixture.aProductEntity()
@@ -132,8 +142,10 @@ public class ProductDaoIT extends DaoTestBase {
                 .build()
                 .toProduct();
 
+        System.out.println("findByGatewayAccountId_shouldReturnActiveProductsForTheGivenAccount add product via DB Helper");
         databaseHelper.addProduct(inactiveProduct);
 
+        System.out.println("findByGatewayAccountId_shouldReturnActiveProductsForTheGivenAccount find product via GWA ID");
         List<ProductEntity> products = productDao.findByGatewayAccountId(gatewayAccountId);
         assertThat(products.size(), is(1));
         assertThat(products.get(0).toProduct(), ProductMatcher.isSame(activeProduct));
@@ -150,8 +162,10 @@ public class ProductDaoIT extends DaoTestBase {
                 .withName("test name")
                 .build();
 
+        System.out.println("persist_shouldSucceed_whenTheProductIsValid persist product");
         productDao.persist(product);
 
+        System.out.println("persist_shouldSucceed_whenTheProductIsValid find product by ExternalID");
         Optional<ProductEntity> newProduct = productDao.findByExternalId(externalId);
         assertTrue(newProduct.isPresent());
         assertThat(newProduct.get().toProduct(), ProductMatcher.isSame(product.toProduct()));
@@ -171,8 +185,10 @@ public class ProductDaoIT extends DaoTestBase {
                 .build()
                 .toProduct();
 
+        System.out.println("findByProductPath_shouldReturnAProduct_whenExists add product via DB Helper");
         databaseHelper.addProduct(product);
 
+        System.out.println("findByProductPath_shouldReturnAProduct_whenExists find product by ProductPath");
         Optional<ProductEntity> productEntity = productDao.findByProductPath(serviceNamePath, productNamePath);
         assertTrue(productEntity.isPresent());
         assertThat(productEntity.get().toProduct(), ProductMatcher.isSame(product));
@@ -193,8 +209,10 @@ public class ProductDaoIT extends DaoTestBase {
                 .build()
                 .toProduct();
 
+        System.out.println("findByProductPath_shouldNotReturnAProduct_whenDoesNotExists add product via DB Helper");
         databaseHelper.addProduct(product);
 
+        System.out.println("findByProductPath_shouldNotReturnAProduct_whenDoesNotExists find product by ProductPath");
         Optional<ProductEntity> productEntity = productDao.findByProductPath(serviceNamePath, anotherProductNamePath);
        assertThat(productEntity.isPresent(), is(false));
     }
@@ -210,8 +228,10 @@ public class ProductDaoIT extends DaoTestBase {
                 .withName("test name")
                 .build();
 
+        System.out.println("findById_shouldReturnMetadata_whenItExistsForAPaymentLink add product via DB Helper");
         databaseHelper.addProduct(product.toProduct());
 
+        System.out.println("findById_shouldReturnMetadata_whenItExistsForAPaymentLink find product by externalID");
         Optional<ProductEntity> productWithId = productDao.findByExternalId(externalId);
 
         ProductMetadataEntity productMetadataEntity = ProductMetadataEntityFixture.aProductMetadataEntity()
@@ -219,6 +239,7 @@ public class ProductDaoIT extends DaoTestBase {
                 .withMetadataValue("value1")
                 .withMetadataKey("key1")
                 .build();
+        System.out.println("findById_shouldReturnMetadata_whenItExistsForAPaymentLink merge product");
         productMetadataDao.merge(productMetadataEntity);
 
         ProductMetadataEntity productMetadataEntity2 = ProductMetadataEntityFixture.aProductMetadataEntity()
@@ -226,8 +247,10 @@ public class ProductDaoIT extends DaoTestBase {
                 .withMetadataValue("value2")
                 .withMetadataKey("key2")
                 .build();
+        System.out.println("findById_shouldReturnMetadata_whenItExistsForAPaymentLink merge product");
         productMetadataDao.merge(productMetadataEntity2);
 
+        System.out.println("findById_shouldReturnMetadata_whenItExistsForAPaymentLink find product by externalID");
         Optional<ProductEntity> newProduct = productDao.findByExternalId(externalId);
         assertThat(newProduct.get().getMetadataEntityList().size(), is(2));
 
@@ -258,8 +281,11 @@ public class ProductDaoIT extends DaoTestBase {
                 .withGatewayAccountId(1)
                 .build();
 
+        System.out.println("findProductsAndUsage_shouldReturnAProductUsage_whenExistsWithTypeAdhoc merge product");
         productEntity = productDao.merge(productEntity);
+        System.out.println("findProductsAndUsage_shouldReturnAProductUsage_whenExistsWithTypeAdhoc merge product");
         secondProductEntity = productDao.merge(secondProductEntity);
+        System.out.println("findProductsAndUsage_shouldReturnAProductUsage_whenExistsWithTypeAdhoc merge product");
         ignoredProductEntity = productDao.merge(ignoredProductEntity);
 
         PaymentEntity payment = PaymentEntityFixture.aPaymentEntity()
@@ -289,11 +315,16 @@ public class ProductDaoIT extends DaoTestBase {
                 .withReferenceNumber("MH2KJY5KPW")
                 .build();
 
+        System.out.println("findProductsAndUsage_shouldReturnAProductUsage_whenExistsWithTypeAdhoc add payment via dbhelper");
         databaseHelper.addPayment(payment.toPayment(), 1);
+        System.out.println("findProductsAndUsage_shouldReturnAProductUsage_whenExistsWithTypeAdhoc add payment via dbhelper");
         databaseHelper.addPayment(secondPayment.toPayment(), 1);
+        System.out.println("findProductsAndUsage_shouldReturnAProductUsage_whenExistsWithTypeAdhoc add payment via dbhelper");
         databaseHelper.addPayment(thirdPayment.toPayment(), 1);
+        System.out.println("findProductsAndUsage_shouldReturnAProductUsage_whenExistsWithTypeAdhoc add payment via dbhelper");
         databaseHelper.addPayment(ignoredPayment.toPayment(), 1);
 
+        System.out.println("findProductsAndUsage_shouldReturnAProductUsage_whenExistsWithTypeAdhoc find Products and Usage");
         List<ProductUsageStat> usageStats = productDao.findProductsAndUsage(null);
         List<ProductUsageStat> filteredUsageStats = productDao.findProductsAndUsage(2);
 

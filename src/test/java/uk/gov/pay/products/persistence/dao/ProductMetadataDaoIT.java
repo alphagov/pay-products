@@ -54,12 +54,6 @@ public class ProductMetadataDaoIT extends DaoTestBase {
     }
 
     @Test
-    public void productMetadataDaoShouldReturnAList_whenProductIdExists() {
-        List<ProductMetadataEntity> metadataEntityList = productMetadataDao.findByProductsId(productEntity.getId());
-        assertThat(metadataEntityList.size(), is(1));
-    }
-
-    @Test
     public void productMetadataDaoShouldReturnAList_whenProductExternalIdExists() {
         List<ProductMetadataEntity> metadataEntityList =
                 productMetadataDao.findByProductsExternalId(productEntity.getExternalId());

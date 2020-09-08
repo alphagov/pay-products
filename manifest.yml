@@ -30,6 +30,11 @@ applications:
       # Provided via products-secret-service
       SENTRY_DSN: ""
       PRODUCTS_API_TOKEN: ""
+      DB_HOST: ""
+      DB_NAME: ""
+      DB_PASSWORD: ""
+      DB_USER: ""
+      DB_SSL_OPTION: ""
 
       # Provided via app-catalog service see env-map.yml
       PUBLICAPI_URL: ""
@@ -39,10 +44,3 @@ applications:
       PRODUCTS_FRIENDLY_BASE_URI: ""
       METRICS_HOST: ""
       METRICS_PORT: ""
-
-      # Provide via products-db service see env-map.yml
-      DB_HOST: ""
-      DB_NAME: ""
-      DB_PASSWORD: ""
-      DB_USER: ""
-      DB_SSL_OPTION: ""

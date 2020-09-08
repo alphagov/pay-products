@@ -19,14 +19,6 @@ public class ProductsMetadataFinder {
     }
 
     @Transactional
-    public List<ProductMetadata> findMetadataByProductId(Integer productId) {
-        return dao.findByProductsId(productId)
-                .stream()
-                .map(ProductMetadataEntity::toMetadata)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional
     public List<ProductMetadata> findMetadataByProductExternalId(String productExternalId) {
         return dao.findByProductsExternalId(productExternalId)
                 .stream()

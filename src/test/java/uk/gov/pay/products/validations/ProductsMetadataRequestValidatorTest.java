@@ -32,6 +32,15 @@ public class ProductsMetadataRequestValidatorTest {
     }
 
     @Test
+    public void shouldAllowValidPayload() {
+        String maxLengthKey = IntStream.rangeClosed(1, ExternalMetadata.MAX_KEY_LENGTH).mapToObj(i -> "k").collect(joining());
+        String maxLengthValue = IntStream.rangeClosed(1, ExternalMetadata.MAX_VALUE_LENGTH).mapToObj(i -> "v").collect(joining());
+        JsonNode payload = new ObjectMapper().valueToTree(Map.of(maxLengthKey, maxLengthValue));
+        Optional<Errors> errors = validator.validateRequest(payload);
+        assertThat(errors.isPresent(), is(false));
+    }
+
+    @Test
     public void shouldErrorWhenExistingMetadataListSizeIsAlreadyAtMaxNumberOfKeyValuePairs() {
         List<ProductMetadata> metadataListWithMaxNumberOfKeyValuePairs = IntStream.rangeClosed(1, ExternalMetadata.MAX_KEY_VALUE_PAIRS)
                 .mapToObj(i -> new ProductMetadata(1, "key " + i, "value " + i))

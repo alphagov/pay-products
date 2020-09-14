@@ -62,7 +62,7 @@ public class ProductsMetadataRequestValidator {
 
         String key = payload.fieldNames().next();
 
-        if (key.length() > ExternalMetadata.MAX_KEY_VALUE_PAIRS) {
+        if (key.length() > ExternalMetadata.MAX_KEY_LENGTH) {
             return Optional.of(Errors.from(MAX_KEY_FIELD_ERROR_MSG, "KEY_LENGTH_OVER_MAX_SIZE"));
         }
 

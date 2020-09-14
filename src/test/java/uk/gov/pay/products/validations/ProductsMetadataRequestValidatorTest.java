@@ -2,20 +2,27 @@ package uk.gov.pay.products.validations;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.pay.commons.model.charge.ExternalMetadata;
 import uk.gov.pay.products.model.ProductMetadata;
 import uk.gov.pay.products.util.Errors;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 public class ProductsMetadataRequestValidatorTest {
+
+    private static final  String TOO_LONG_KEY = IntStream.rangeClosed(1, ExternalMetadata.MAX_KEY_LENGTH + 1).mapToObj(i -> "k").collect(joining());
+    private static final String TOO_LONG_VALUE = IntStream.rangeClosed(1, ExternalMetadata.MAX_VALUE_LENGTH + 1).mapToObj(i -> "v").collect(joining());
 
     private ProductsMetadataRequestValidator validator;
 
@@ -25,28 +32,21 @@ public class ProductsMetadataRequestValidatorTest {
     }
 
     @Test
-    public void shouldErrorWhenExistingMetadataListSizeIs10() {
-        List<ProductMetadata> metadataList = new ArrayList<>();
-        for (int x = 0; x < 10; x++) {
-            metadataList.add(new ProductMetadata(1, "" + x, "" + x));
-        }
-        JsonNode payload = new ObjectMapper()
-                .valueToTree(
-                        ImmutableMap.<String, String>builder()
-                                .put("key", "value")
-                                .build());
-        Optional<Errors> errors = validator.validateCreateRequest(payload, metadataList);
+    public void shouldErrorWhenExistingMetadataListSizeIsAlreadyAtMaxNumberOfKeyValuePairs() {
+        List<ProductMetadata> metadataListWithMaxNumberOfKeyValuePairs = IntStream.rangeClosed(1, ExternalMetadata.MAX_KEY_VALUE_PAIRS)
+                .mapToObj(i -> new ProductMetadata(1, "key " + i, "value " + i))
+                .collect(toUnmodifiableList());
+        JsonNode payload = new ObjectMapper().valueToTree(Map.of("key", "value"));
+        Optional<Errors> errors = validator.validateCreateRequest(payload, metadataListWithMaxNumberOfKeyValuePairs);
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().size(), is(1));
-        assertThat(errors.get().getErrors().get(0).contains("Maximum number of allowed metadata [ 10 ] exceeded"), is(true));
+        assertThat(errors.get().getErrors().get(0).contains("Maximum number of allowed metadata [ " + ExternalMetadata.MAX_KEY_VALUE_PAIRS + " ] exceeded"),
+                is(true));
     }
 
     @Test
     public void shouldErrorOnEmptyPayload() {
-        JsonNode payload = new ObjectMapper()
-                .valueToTree(
-                        ImmutableMap.<String, String>builder()
-                        .build());
+        JsonNode payload = new ObjectMapper().valueToTree(Collections.emptyMap());
         Optional<Errors> errors = validator.validateRequest(payload);
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().size(), is(1));
@@ -55,12 +55,7 @@ public class ProductsMetadataRequestValidatorTest {
 
     @Test
     public void shouldErrorOnMoreThanOneKeyValuePairs() {
-        JsonNode payload = new ObjectMapper()
-                .valueToTree(
-                        ImmutableMap.<String, String>builder()
-                                .put("key1", "value1")
-                                .put("key2", "value2")
-                                .build());
+        JsonNode payload = new ObjectMapper().valueToTree(Map.of("key1", "value1", "key2", "value2"));
         Optional<Errors> errors = validator.validateRequest(payload);
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().size(), is(1));
@@ -71,11 +66,7 @@ public class ProductsMetadataRequestValidatorTest {
     public void shouldErrorOnDuplicateKey() {
         List<ProductMetadata> metadataList = List.of(new ProductMetadata(1, "Location", "london"),
                 new ProductMetadata(1, "city", "London"));
-        JsonNode payload = new ObjectMapper()
-                .valueToTree(
-                        ImmutableMap.<String, String>builder()
-                                .put("location", "UK")
-                                .build());
+        JsonNode payload = new ObjectMapper().valueToTree(Map.of("location", "UK"));
         Optional<Errors> errors = validator.validateCreateRequest(payload, metadataList);
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().size(), is(1));
@@ -84,41 +75,30 @@ public class ProductsMetadataRequestValidatorTest {
 
     @Test
     public void shouldErrorOnTooLongKeyField() {
-        JsonNode payload = new ObjectMapper()
-                .valueToTree(
-                        ImmutableMap.<String, String>builder()
-                                .put("1234567890123456789012345678901", "value")
-                                .build());
+        JsonNode payload = new ObjectMapper().valueToTree(Map.of(TOO_LONG_KEY, "value"));
         Optional<Errors> errors = validator.validateRequest(payload);
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().size(), is(1));
-        assertThat(errors.get().getErrors().get(0).contains("Maximum key field length is [ 30 ]"), is(true));
+        assertThat(errors.get().getErrors().get(0).contains("Maximum key field length is [ " + ExternalMetadata.MAX_KEY_LENGTH + " ]"), is(true));
     }
 
     @Test
     public void shouldErrorOnTooLongValueField() {
-        JsonNode payload = new ObjectMapper()
-                .valueToTree(
-                        ImmutableMap.<String, String>builder()
-                                .put("key", "123456789012345678901234567890123456789012345678901")
-                                .build());
+        JsonNode payload = new ObjectMapper().valueToTree(Map.of("key", TOO_LONG_VALUE));
         Optional<Errors> errors = validator.validateRequest(payload);
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().size(), is(1));
-        assertThat(errors.get().getErrors().get(0).contains("Maximum value field length is [ 50 ]"), is(true));
+        assertThat(errors.get().getErrors().get(0).contains("Maximum value field length is [ " + ExternalMetadata.MAX_VALUE_LENGTH + " ]"), is(true));
     }
 
     @Test
     public void shouldErrorOnNonExistentKeyField() {
         List<ProductMetadata> metadataList = List.of(new ProductMetadata(1, "Location", "london"));
-        JsonNode payload = new ObjectMapper()
-                .valueToTree(
-                        ImmutableMap.<String, String>builder()
-                                .put("country", "UK")
-                                .build());
+        JsonNode payload = new ObjectMapper().valueToTree(Map.of("country", "UK"));
         Optional<Errors> errors = validator.validateUpdateRequest(payload, metadataList);
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().size(), is(1));
         assertThat(errors.get().getErrors().get(0).contains("Key [ country ] does not exist"), is(true));
     }
+
 }

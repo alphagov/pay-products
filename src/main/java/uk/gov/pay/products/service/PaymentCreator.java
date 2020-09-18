@@ -25,8 +25,10 @@ import uk.gov.pay.products.util.PaymentStatus;
 import javax.inject.Inject;
 
 import static java.lang.String.format;
+import static net.logstash.logback.argument.StructuredArguments.kv;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;
+import static uk.gov.pay.logging.LoggingKeys.PAYMENT_EXTERNAL_ID;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUserFriendlyReference;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
@@ -129,7 +131,12 @@ public class PaymentCreator {
                 paymentEntity.setNextUrl(getNextUrl(paymentResponse));
                 paymentEntity.setStatus(PaymentStatus.SUBMITTED);
                 paymentEntity.setAmount(paymentResponse.getAmount());
-                logger.info("Payment creation for product external id {} successful {}", paymentEntity.getProductEntity().getExternalId(), paymentEntity);
+                logger.info(
+                        "Payment creation for product external id {} successful",
+                        paymentEntity.getProductEntity().getExternalId(),
+                        kv(PAYMENT_EXTERNAL_ID, paymentEntity.getGovukPaymentId()),
+                        kv("product_external_id", paymentEntity.getProductEntity().getExternalId())
+                );
             } catch (PublicApiResponseErrorException e) {
                 logger.error("Payment creation for product external id {} failed {}", paymentEntity.getProductEntity().getExternalId(), e);
                 paymentEntity.setStatus(PaymentStatus.ERROR);

@@ -20,6 +20,9 @@ import java.util.List;
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.*;
+import static uk.gov.pay.products.model.Product.FIELD_GATEWAY_ACCOUNT_ID;
+import static uk.gov.pay.products.model.Product.FIELD_TYPE;
+import static uk.gov.pay.products.model.Product.FIELD_NAME;
 
 @Path("/v1/api")
 public class ProductResource {
@@ -39,7 +42,12 @@ public class ProductResource {
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     public Response createProduct(JsonNode payload) {
-        logger.info("Create Service POST request - [ {} ]", payload);
+        logger.info(
+                "Create Service POST request",
+                kv(GATEWAY_ACCOUNT_ID, payload.get(FIELD_GATEWAY_ACCOUNT_ID)),
+                kv(FIELD_TYPE, payload.get(FIELD_TYPE)),
+                kv(FIELD_NAME, payload.get(FIELD_NAME))
+        );
         return requestValidator.validateCreateRequest(payload)
                 .map(errors -> Response.status(Status.BAD_REQUEST).entity(errors).build())
                 .orElseGet(() -> {

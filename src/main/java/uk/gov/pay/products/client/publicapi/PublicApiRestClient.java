@@ -15,6 +15,8 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static net.logstash.logback.argument.StructuredArguments.kv;
+import static uk.gov.pay.logging.LoggingKeys.PAYMENT_EXTERNAL_ID;
 
 public class PublicApiRestClient {
     private static final Logger logger = LoggerFactory.getLogger(PublicApiRestClient.class);
@@ -42,7 +44,10 @@ public class PublicApiRestClient {
 
         if (response.getStatus() == HttpStatus.CREATED_201) {
             PaymentResponse paymentResponse = response.readEntity(PaymentResponse.class);
-            logger.info("Public API client returned payment created - [ {} ]", paymentResponse);
+            logger.info(
+                    "Public API client returned payment created",
+                    kv(PAYMENT_EXTERNAL_ID, paymentResponse.getPaymentId())
+            );
             return paymentResponse;
         }
 
@@ -52,7 +57,9 @@ public class PublicApiRestClient {
     }
 
     public Optional<PaymentResponse> getPayment(String apiToken, String paymentId) {
-        logger.info("Public API client requested finding payment - [ {} ]", paymentId);
+        logger.info("Public API client requested finding payment",
+                kv(PAYMENT_EXTERNAL_ID, paymentId)
+        );
 
         Response response = client
                 .target(buildAbsoluteUrl(format(PAYMENT_PATH, paymentId)))
@@ -62,7 +69,10 @@ public class PublicApiRestClient {
 
         if (response.getStatus() == HttpStatus.OK_200) {
             PaymentResponse paymentResponse = response.readEntity(PaymentResponse.class);
-            logger.info("Public API client returned payment found - [ {} ]", paymentResponse);
+            logger.info(
+                    "Public API client returned payment found",
+                    kv(PAYMENT_EXTERNAL_ID, paymentResponse.getPaymentId())
+            );
             return Optional.of(paymentResponse);
         }
 

@@ -127,7 +127,12 @@ public class ProductResource {
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     public Response updateProduct(@PathParam("gatewayAccountId") Integer gatewayAccountId, @PathParam("productExternalId") String productExternalId, JsonNode payload) {
-        logger.info("Updating a product - [ {} ]", payload);
+        logger.info(
+                "Updating a product with externalId - [ {} ]",
+                productExternalId,
+                kv("product_external_id", productExternalId)
+        );
+
         return requestValidator.validateUpdateRequest(payload)
                 .map(errors -> Response.status(Status.BAD_REQUEST).entity(errors).build())
                 .orElseGet(() ->

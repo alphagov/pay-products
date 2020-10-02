@@ -22,7 +22,7 @@
         <powermock.version>2.0.7</powermock.version>
         <wiremock.version>2.27.2</wiremock.version>
         <jackson.version>2.11.2</jackson.version>
-        <pay-java-commons.version>1.0.20200930144312</pay-java-commons.version>
+        <pay-java-commons.version>1.0.20201001124822</pay-java-commons.version>
         <surefire.version>3.0.0-M5</surefire.version>
     </properties>
 

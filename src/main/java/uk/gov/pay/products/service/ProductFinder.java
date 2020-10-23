@@ -46,6 +46,17 @@ public class ProductFinder {
     }
 
     @Transactional
+    public Optional<Product> updatePayApiTokenByExternalId(String externalId, String payApiToken) {
+        return productDao.findByExternalId(externalId)
+                .map(productEntity -> {
+                    productEntity.setPayApiToken(payApiToken);
+                    productDao.merge(productEntity);
+                    return Optional.of(productEntity.toProduct());
+                })
+                .orElseGet(Optional::empty);
+    }
+
+    @Transactional
     public Boolean deleteByExternalId(String externalId) {
         return productDao.findByExternalId(externalId)
                 .map(productEntity -> {

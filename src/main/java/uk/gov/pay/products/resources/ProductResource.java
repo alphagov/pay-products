@@ -5,17 +5,26 @@ import com.google.inject.Inject;
 import io.dropwizard.jersey.PATCH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.products.client.publicauth.TokenResponse;
+import uk.gov.pay.products.config.ProductsConfiguration;
+import uk.gov.pay.products.model.CreateTokenRequest;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.model.ProductUsageStat;
 import uk.gov.pay.products.service.ProductFactory;
 import uk.gov.pay.products.validations.ProductRequestValidator;
+
+import static uk.gov.pay.commons.model.TokenPaymentType.CARD;
 import static uk.gov.pay.logging.LoggingKeys.GATEWAY_ACCOUNT_ID;
 import static net.logstash.logback.argument.StructuredArguments.kv;
 
 import javax.ws.rs.*;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -23,18 +32,26 @@ import static javax.ws.rs.core.Response.Status.*;
 import static uk.gov.pay.products.model.Product.FIELD_GATEWAY_ACCOUNT_ID;
 import static uk.gov.pay.products.model.Product.FIELD_TYPE;
 import static uk.gov.pay.products.model.Product.FIELD_NAME;
+import static uk.gov.pay.products.model.TokenSource.PRODUCTS;
 
 @Path("/v1/api")
 public class ProductResource {
     private static final Logger logger = LoggerFactory.getLogger(ProductResource.class);
+    public static final String TOKEN_FIELD = "token";
 
     private final ProductRequestValidator requestValidator;
     private final ProductFactory productFactory;
+    private final Client client;
+    private final String publicAuthUrl;
+    private final String emailAddress;
 
     @Inject
-    public ProductResource(ProductRequestValidator requestValidator, ProductFactory productFactory) {
+    public ProductResource(ProductRequestValidator requestValidator, ProductFactory productFactory, Client client, ProductsConfiguration configuration) {
         this.requestValidator = requestValidator;
         this.productFactory = productFactory;
+        this.client = client;
+        this.publicAuthUrl = configuration.getPublicAuthUrl();
+        this.emailAddress = configuration.getEmailAddress();
     }
 
     @POST
@@ -86,6 +103,38 @@ public class ProductResource {
                         Response.status(OK).entity(product).build())
                 .orElseGet(() ->
                         Response.status(NOT_FOUND).build());
+    }
+
+    @POST
+    @Path("/products/{productExternalId}/regenerate-api-key")
+    @Produces(APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
+    public Response regenerateProductApiKey(@PathParam("productExternalId") String productExternalId) {
+        return productFactory.productFinder().findByExternalId(productExternalId).map((product) -> {
+            CreateTokenRequest createTokenRequest = new CreateTokenRequest(
+                    String.valueOf(product.getGatewayAccountId()),
+                    getDescription(product),
+                    emailAddress,
+                    CARD,
+                    PRODUCTS);
+
+            Response response = client.target(publicAuthUrl)
+                    .request()
+                    .post(Entity.entity(createTokenRequest, MediaType.APPLICATION_JSON));
+
+            TokenResponse tokenResponse = response.readEntity(TokenResponse.class);
+            String token;
+            if (tokenResponse != null && tokenResponse.getToken() != null && !tokenResponse.getToken().isEmpty()) {
+                token = tokenResponse.getToken();
+            } else {
+                return Response.serverError().build();
+            }
+
+            return productFactory.productFinder().updatePayApiTokenByExternalId(productExternalId, token).map((modifiedProduct) ->  {
+                logger.info(String.format("Regenerated API key for product %s of type %s", productExternalId, modifiedProduct.getType()));
+                return Response.ok().build();
+            }).orElseGet(() -> Response.serverError().build());
+        }).orElseGet(() -> Response.status(NOT_FOUND).build());
     }
 
     @Deprecated
@@ -182,5 +231,18 @@ public class ProductResource {
         );
         List<ProductUsageStat> usageStats = productFactory.productFinder().findProductsAndUsage(gatewayAccountId);
         return Response.status(OK).entity(usageStats).build();
+    }
+
+    private String getDescription(Product product) {
+        switch (product.getType()) {
+            case ADHOC:
+                return String.format("Token for \"%s\" payment link", product.getName());
+            case PROTOTYPE:
+                return String.format("Token for Prototype: %s", product.getName());
+            case DEMO:
+                return "Token for Demo Payment";
+            default:
+                return null;
+        }
     }
 }

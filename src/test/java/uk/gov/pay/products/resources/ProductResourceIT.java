@@ -4,22 +4,29 @@ import com.google.common.collect.ImmutableMap;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Assert;
 import org.junit.Test;
-import uk.gov.pay.commons.model.ApiResponseDateTimeFormatter;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
-import uk.gov.pay.products.fixtures.ProductMetadataEntityFixture;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.entity.PaymentEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
-import uk.gov.pay.products.persistence.entity.ProductMetadataEntity;
 import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
 
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonValue;
 import javax.ws.rs.HttpMethod;
+import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.matching;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static java.lang.String.format;
+import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -28,7 +35,9 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
+import static uk.gov.pay.commons.model.TokenPaymentType.CARD;
 import static uk.gov.pay.products.fixtures.PaymentEntityFixture.aPaymentEntity;
+import static uk.gov.pay.products.model.TokenSource.PRODUCTS;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
@@ -49,6 +58,7 @@ public class ProductResourceIT extends IntegrationTest {
     private static final String REFERENCE_HINT = "reference_hint";
     private static final String LANGUAGE = "language";
     private static final String METADATA = "metadata";
+    private static final String PAY_EMAIL_ADDRESS = "pay-products@gov.uk";
 
     @Test
     public void shouldSuccess_whenSavingAValidProduct_withMinimumMandatoryFields() throws Exception {
@@ -1034,5 +1044,372 @@ public class ProductResourceIT extends IntegrationTest {
         filteredResponse
                 .body("size", is(1))
                 .body("[0].product.external_id", is(product.getExternalId()));
+    }
+
+    @Test
+    public void shouldReturn200_whenApiKeyForAPaymentLinkIsUpdated() {
+        publicAuthRule.resetAll();
+        String externalId = randomUuid();
+        int gatewayAccountId = randomInt();
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .withType(ProductType.ADHOC)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+
+        JsonObject expectedTokenRequest = Json.createObjectBuilder()
+                .add("description", format("Token for \"%s\" payment link", product.getName()))
+                .add("accountId", product.getGatewayAccountId().toString())
+                .add("createdBy", PAY_EMAIL_ADDRESS)
+                .add("tokenPaymentType", CARD.toString())
+                .add("tokenSource", PRODUCTS.toString())
+                .build();
+
+        JsonObject newPayApiToken = Json.createObjectBuilder()
+                .add("token", "New Pay API token")
+                .build();
+
+        setUpPublicAuthStubForGeneratingApiKey(expectedTokenRequest, newPayApiToken);
+
+        ValidatableResponse response = givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products/%s", externalId))
+                .then()
+                .statusCode(200);
+
+        String payApiToken = response.extract().path(PAY_API_TOKEN);
+        assertThat(payApiToken, is("default api key"));
+
+        givenSetup()
+          .when()
+          .accept(APPLICATION_JSON)
+          .post(format("/v1/api/products/%s/regenerate-api-key", externalId))
+          .then()
+          .statusCode(200);
+
+        response = givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products/%s", externalId))
+                .then()
+                .statusCode(200);
+
+        payApiToken = response.extract().path(PAY_API_TOKEN);
+        assertThat(payApiToken, is("New Pay API token"));
+    }
+
+    @Test
+    public void shouldReturn200_whenApiKeyForAPrototypeLinkIsUpdated() {
+        publicAuthRule.resetAll();
+        String externalId = randomUuid();
+        int gatewayAccountId = randomInt();
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .withType(ProductType.PROTOTYPE)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+
+        JsonObject expectedTokenRequest = Json.createObjectBuilder()
+                .add("description", format("Token for Prototype: %s", product.getName()))
+                .add("accountId", product.getGatewayAccountId().toString())
+                .add("createdBy", PAY_EMAIL_ADDRESS)
+                .add("tokenPaymentType", CARD.toString())
+                .add("tokenSource", PRODUCTS.toString())
+                .build();
+
+        JsonObject newPayApiToken = Json.createObjectBuilder()
+                .add("token", "New Pay API token")
+                .build();
+
+        setUpPublicAuthStubForGeneratingApiKey(expectedTokenRequest, newPayApiToken);
+
+        ValidatableResponse response = givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products/%s", externalId))
+                .then()
+                .statusCode(200);
+
+        String payApiToken = response.extract().path(PAY_API_TOKEN);
+        assertThat(payApiToken, is("default api key"));
+
+        givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .post(format("/v1/api/products/%s/regenerate-api-key", externalId))
+                .then()
+                .statusCode(200);
+
+        response = givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products/%s", externalId))
+                .then()
+                .statusCode(200);
+
+        payApiToken = response.extract().path(PAY_API_TOKEN);
+        assertThat(payApiToken, is("New Pay API token"));
+    }
+
+    @Test
+    public void shouldReturn200_whenApiKeyForADemoPaymentIsUpdated() {
+        publicAuthRule.resetAll();
+        String externalId = randomUuid();
+        int gatewayAccountId = randomInt();
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .withType(ProductType.DEMO)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+
+        JsonObject expectedTokenRequest = Json.createObjectBuilder()
+                .add("description", "Token for Demo Payment")
+                .add("accountId", product.getGatewayAccountId().toString())
+                .add("createdBy", PAY_EMAIL_ADDRESS)
+                .add("tokenPaymentType", CARD.toString())
+                .add("tokenSource", PRODUCTS.toString())
+                .build();
+
+        JsonObject newPayApiToken = Json.createObjectBuilder()
+                .add("token", "New Pay API token")
+                .build();
+
+        setUpPublicAuthStubForGeneratingApiKey(expectedTokenRequest, newPayApiToken);
+
+        ValidatableResponse response = givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products/%s", externalId))
+                .then()
+                .statusCode(200);
+
+        String payApiToken = response.extract().path(PAY_API_TOKEN);
+        assertThat(payApiToken, is("default api key"));
+
+        givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .post(format("/v1/api/products/%s/regenerate-api-key", externalId))
+                .then()
+                .statusCode(200);
+
+        response = givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products/%s", externalId))
+                .then()
+                .statusCode(200);
+
+        payApiToken = response.extract().path(PAY_API_TOKEN);
+        assertThat(payApiToken, is("New Pay API token"));
+    }
+
+    @Test
+    public void shouldReturn500_whenApiKeyFailsToBeGeneratedBeforeUpdatingApiKeyForAPaymentLink() {
+        publicAuthRule.resetAll();
+        String externalId = randomUuid();
+        int gatewayAccountId = randomInt();
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .withType(ProductType.ADHOC)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+
+        JsonObject expectedTokenRequest = Json.createObjectBuilder()
+                .add("description", format("Token for \"%s\" payment link", product.getName()))
+                .add("accountId", product.getGatewayAccountId().toString())
+                .add("createdBy", PAY_EMAIL_ADDRESS)
+                .add("tokenPaymentType", CARD.toString())
+                .add("tokenSource", PRODUCTS.toString())
+                .build();
+
+        setUpPublicAuthStubForFailingToGenerateApiKey(expectedTokenRequest);
+
+        ValidatableResponse response = givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products/%s", externalId))
+                .then()
+                .statusCode(200);
+
+        String payApiToken = response.extract().path(PAY_API_TOKEN);
+        assertThat(payApiToken, is("default api key"));
+
+        givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .post(format("/v1/api/products/%s/regenerate-api-key", externalId))
+                .then()
+                .statusCode(500);
+
+        response = givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products/%s", externalId))
+                .then()
+                .statusCode(200);
+
+        payApiToken = response.extract().path(PAY_API_TOKEN);
+        assertThat(payApiToken, is("default api key"));
+    }
+
+    @Test
+    public void shouldReturn500_whenAnApiKeyIsEmptyBeforeUpdatingApiKeyForAPaymentLink() {
+        publicAuthRule.resetAll();
+        String externalId = randomUuid();
+        int gatewayAccountId = randomInt();
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .withType(ProductType.ADHOC)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+
+        JsonObject expectedTokenRequest = Json.createObjectBuilder()
+                .add("description", format("Token for \"%s\" payment link", product.getName()))
+                .add("accountId", product.getGatewayAccountId().toString())
+                .add("createdBy", PAY_EMAIL_ADDRESS)
+                .add("tokenPaymentType", CARD.toString())
+                .add("tokenSource", PRODUCTS.toString())
+                .build();
+
+        JsonObject newPayApiToken = Json.createObjectBuilder()
+                .add("token", "")
+                .build();
+
+        setUpPublicAuthStubForGeneratingApiKey(expectedTokenRequest, newPayApiToken);
+
+        ValidatableResponse response = givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products/%s", externalId))
+                .then()
+                .statusCode(200);
+
+        String payApiToken = response.extract().path(PAY_API_TOKEN);
+        assertThat(payApiToken, is("default api key"));
+
+        givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .post(format("/v1/api/products/%s/regenerate-api-key", externalId))
+                .then()
+                .statusCode(500);
+
+        response = givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products/%s", externalId))
+                .then()
+                .statusCode(200);
+
+        payApiToken = response.extract().path(PAY_API_TOKEN);
+        assertThat(payApiToken, is("default api key"));
+    }
+
+    @Test
+    public void shouldReturn500_whenApiKeyIsNullBeforeUpdatingApiKeyForAPaymentLink() {
+        publicAuthRule.resetAll();
+        String externalId = randomUuid();
+        int gatewayAccountId = randomInt();
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .withType(ProductType.ADHOC)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+
+        JsonObject expectedTokenRequest = Json.createObjectBuilder()
+                .add("description", format("Token for \"%s\" payment link", product.getName()))
+                .add("accountId", product.getGatewayAccountId().toString())
+                .add("createdBy", PAY_EMAIL_ADDRESS)
+                .add("tokenPaymentType", CARD.toString())
+                .add("tokenSource", PRODUCTS.toString())
+                .build();
+
+        JsonObject newPayApiToken = Json.createObjectBuilder()
+                .add("token", JsonValue.NULL)
+                .build();
+
+        setUpPublicAuthStubForGeneratingApiKey(expectedTokenRequest, newPayApiToken);
+
+        ValidatableResponse response = givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products/%s", externalId))
+                .then()
+                .statusCode(200);
+
+        String payApiToken = response.extract().path(PAY_API_TOKEN);
+        assertThat(payApiToken, is("default api key"));
+
+        givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .post(format("/v1/api/products/%s/regenerate-api-key", externalId))
+                .then()
+                .statusCode(500);
+
+        response = givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/products/%s", externalId))
+                .then()
+                .statusCode(200);
+
+        payApiToken = response.extract().path(PAY_API_TOKEN);
+        assertThat(payApiToken, is("default api key"));
+    }
+
+    @Test
+    public void shouldReturn404_whenProductDoesNotExistBeforeUpdatingApiKeyForAPaymentLink() {
+        String externalId = randomUuid();
+
+        givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .post(format("/v1/api/products/%s/regenerate-api-key", externalId))
+                .then()
+                .statusCode(404);
+    }
+
+    private void setUpPublicAuthStubForGeneratingApiKey(JsonObject expectedTokenRequest, JsonObject newPayApiToken) {
+        publicAuthRule.stubFor(post(urlEqualTo("/generate-token"))
+                .withHeader(CONTENT_TYPE, matching(APPLICATION_JSON))
+                .withRequestBody(equalToJson(expectedTokenRequest.toString(), true, true))
+                .willReturn(aResponse().withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withStatus(Response.Status.OK.getStatusCode())
+                        .withBody(newPayApiToken.toString())));
+    }
+
+    private void setUpPublicAuthStubForFailingToGenerateApiKey(JsonObject expectedTokenRequest) {
+        publicAuthRule.stubFor(post(urlEqualTo("/generate-token"))
+                .withHeader(CONTENT_TYPE, matching(APPLICATION_JSON))
+                .withRequestBody(equalToJson(expectedTokenRequest.toString(), true, true))
+                .willReturn(aResponse().withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())));
     }
 }

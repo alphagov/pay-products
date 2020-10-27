@@ -16,14 +16,19 @@ import static io.restassured.http.ContentType.JSON;
 public class IntegrationTest {
 
     public final static int PUBLIC_API_PORT = PortFactory.findFreePort();
+    public final static int PUBLIC_AUTH_PORT = PortFactory.findFreePort();
     
     @ClassRule
     public static final WireMockRule publicApiRule = new WireMockRule(PUBLIC_API_PORT);
 
     @ClassRule
+    public static final WireMockRule publicAuthRule = new WireMockRule(PUBLIC_AUTH_PORT);
+
+    @ClassRule
     public static final DropwizardAppWithPostgresRule app =
             new DropwizardAppWithPostgresRule("config/test-it-config.yaml",
-                    config("publicApiUrl", "http://localhost:" + PUBLIC_API_PORT));
+                    config("publicApiUrl", "http://localhost:" + PUBLIC_API_PORT),
+                    config("publicAuthUrl", "http://localhost:" + PUBLIC_AUTH_PORT + "/generate-token"));
 
     protected static DatabaseTestHelper databaseHelper;
     protected static ObjectMapper mapper;

@@ -23,10 +23,16 @@ public class ProductsConfiguration extends Configuration {
     private JPAConfiguration jpaConfiguration;
 
     @NotNull
+    private String emailAddress;
+
+    @NotNull
     private String baseUrl;
 
     @NotNull
     private String publicApiUrl;
+
+    @NotNull
+    private String publicAuthUrl;
 
     @NotNull
     private String productsUiPayUrl;
@@ -67,12 +73,20 @@ public class ProductsConfiguration extends Configuration {
         return jpaConfiguration;
     }
 
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
     public String getBaseUrl() {
         return baseUrl;
     }
 
     public String getPublicApiUrl() {
         return publicApiUrl;
+    }
+
+    public String getPublicAuthUrl() {
+        return publicAuthUrl;
     }
 
     public String getProductsUiPayUrl() {

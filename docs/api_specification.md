@@ -340,6 +340,21 @@ Content-Type: application/json
 #### Response field description 
 same as above(docs/api_specification.md#post-v1apiproducts)
 
+## POST /v1/api/products/{productExternalId}/regenerate-api-key
+
+This endpoint regenerates a new API key and replaces an old API key with the new key for a product with the specified external product id.
+
+Regenerates a new API key and replaces the old API key with the new key if the product exists.
+
+```
+POST /v1/api/products/uier837y735n837475y3847534/regenerate-api-key
+```
+
+### Response example
+
+```
+200 OK
+```
 
 ## PATCH /v1/api/products/{productExternalId}/disable
 

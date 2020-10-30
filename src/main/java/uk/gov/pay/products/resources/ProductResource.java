@@ -7,22 +7,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.model.ProductUsageStat;
+import uk.gov.pay.products.service.ProductApiTokenManager;
 import uk.gov.pay.products.service.ProductFactory;
 import uk.gov.pay.products.validations.ProductRequestValidator;
-import static uk.gov.pay.logging.LoggingKeys.GATEWAY_ACCOUNT_ID;
-import static net.logstash.logback.argument.StructuredArguments.kv;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.*;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
+import static javax.ws.rs.core.Response.Status.OK;
+import static net.logstash.logback.argument.StructuredArguments.kv;
+import static uk.gov.pay.logging.LoggingKeys.GATEWAY_ACCOUNT_ID;
 import static uk.gov.pay.products.model.Product.FIELD_GATEWAY_ACCOUNT_ID;
-import static uk.gov.pay.products.model.Product.FIELD_TYPE;
 import static uk.gov.pay.products.model.Product.FIELD_NAME;
+import static uk.gov.pay.products.model.Product.FIELD_TYPE;
 
 @Path("/v1/api")
 public class ProductResource {
@@ -30,11 +40,15 @@ public class ProductResource {
 
     private final ProductRequestValidator requestValidator;
     private final ProductFactory productFactory;
+    private final ProductApiTokenManager productApiTokenManager;
 
     @Inject
-    public ProductResource(ProductRequestValidator requestValidator, ProductFactory productFactory) {
+    public ProductResource(ProductRequestValidator requestValidator,
+                           ProductFactory productFactory,
+                           ProductApiTokenManager productApiTokenManager) {
         this.requestValidator = requestValidator;
         this.productFactory = productFactory;
+        this.productApiTokenManager = productApiTokenManager;
     }
 
     @POST
@@ -182,5 +196,16 @@ public class ProductResource {
         );
         List<ProductUsageStat> usageStats = productFactory.productFinder().findProductsAndUsage(gatewayAccountId);
         return Response.status(OK).entity(usageStats).build();
+    }
+
+    @POST
+    @Path("/products/{productExternalId}/regenerate-api-token")
+    @Produces(APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
+    public Response regenerateProductApiToken(@PathParam("productExternalId") String productExternalId) {
+        return productFactory.productFinder().findByExternalId(productExternalId).map((product) -> {
+            productApiTokenManager.replaceApiTokenForAProduct(product, productApiTokenManager.getNewApiTokenFromPublicAuth(product));
+            return Response.ok().build();
+        }).orElseGet(() -> Response.status(NOT_FOUND).build());
     }
 }

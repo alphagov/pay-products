@@ -570,3 +570,19 @@ Content-Type: application/json
 | `amount`                 | X              | amount of the payment in pence. |
 | `_links.self`            | X              | self GET link to the payment |
 | `_links.next`            | X              | next GET link |
+
+## POST /v1/api/products/{productExternalId}/regenerate-api-token
+
+This endpoint will get a new API token from Public Auth application and replaces an old API token with the new token for a product with the specified external product id.
+
+Gets a new API token from Public Auth application and replaces the old API token with the new token if the product exists.
+
+```
+POST /v1/api/products/uier837y735n837475y3847534/regenerate-api-token
+```
+
+### Response example
+
+```
+200 OK
+```

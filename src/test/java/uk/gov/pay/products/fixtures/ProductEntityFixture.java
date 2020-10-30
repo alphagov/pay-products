@@ -15,6 +15,7 @@ public class ProductEntityFixture {
 
     private String description = "default description";
     private String name = "default name";
+    private String apiToken = "default api token";
     private Long price = 100L;
     private String returnUrl = "https://return.url";
     private ProductStatus status = ProductStatus.ACTIVE;
@@ -34,7 +35,7 @@ public class ProductEntityFixture {
 
     public ProductEntity build() {
         ProductEntity product = new ProductEntity();
-        product.setPayApiToken("default api key");
+        product.setPayApiToken(apiToken);
         product.setDateCreated(dateCreated);
         product.setDescription(description);
         product.setName(name);
@@ -66,6 +67,11 @@ public class ProductEntityFixture {
 
     public ProductEntityFixture withDescription(String description) {
         this.description = description;
+        return this;
+    }
+
+    public ProductEntityFixture withApiToken(String apiToken) {
+        this.apiToken = apiToken;
         return this;
     }
 

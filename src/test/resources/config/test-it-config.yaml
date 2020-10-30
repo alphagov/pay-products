@@ -64,8 +64,11 @@ jpa:
 jerseyClientConfiguration:
   disabledSecureConnection: "false"
 
+emailAddressForReplacingApiTokens: pay-products@gov.uk
+
 baseUrl: https://products.url
 publicApiUrl: https://publicapi.url
+publicAuthUrl: https://publicauth.url
 productsUiPayUrl: https://products-ui.url/pay
 productsUiConfirmUrl: https://products.url/confirm
 friendlyBaseUri: https://products-ui.url/products

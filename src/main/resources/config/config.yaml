@@ -74,8 +74,11 @@ jpa:
 jerseyClientConfiguration:
   disabledSecureConnection: "false"
 
+emailAddressForReplacingApiTokens: ${EMAIL_ADDRESS_FOR_REPLACING_API_TOKENS}
+
 baseUrl: ${BASE_URL}
 publicApiUrl: ${PUBLICAPI_URL}
+publicAuthUrl: ${PUBLICAUTH_URL}
 productsUiPayUrl: ${PRODUCTSUI_PAY_URL}
 productsUiConfirmUrl: ${PRODUCTSUI_CONFIRMATION_URL}
 friendlyBaseUri: ${PRODUCTS_FRIENDLY_BASE_URI}

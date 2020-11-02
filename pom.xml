@@ -18,7 +18,9 @@
         <eclipselink.version>2.7.7</eclipselink.version>
         <guice.version>4.2.3</guice.version>
         <hamcrest.version>2.2</hamcrest.version>
+        <junit5.version>5.7.0</junit5.version>
         <mainClass>uk.gov.pay.products.ProductsApplication</mainClass>
+        <mockito.version>3.5.15</mockito.version>
         <powermock.version>2.0.7</powermock.version>
         <wiremock.version>2.27.2</wiremock.version>
         <jackson.version>2.11.2</jackson.version>
@@ -204,7 +206,31 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>3.5.15</version>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit5.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit5.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junit5.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

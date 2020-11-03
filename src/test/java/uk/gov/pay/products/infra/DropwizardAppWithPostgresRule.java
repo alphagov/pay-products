@@ -86,6 +86,10 @@ public class DropwizardAppWithPostgresRule implements TestRule {
         return app.getLocalPort();
     }
 
+    public ProductsConfiguration getConfiguration() {
+        return app.getConfiguration();
+    }
+
     public DatabaseTestHelper getDatabaseTestHelper() {
         return databaseTestHelper;
     }

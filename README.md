@@ -27,6 +27,8 @@ These products are integrated with GOV.UK Pay so that a user can make payments u
 | `PRODUCTSUI_PAY_URL`          | The URL of the `pay` endpoint in the [products-ui](https://github.com/alphagov/pay-products-ui) microservice. |
 | `PRODUCTS_FRIENDLY_BASE_URI`  | The URL of the products endpoint in the [products-ui](https://github.com/alphagov/pay-products-ui) microservice. |
 | `PUBLICAPI_URL`               | The URL to the [publicapi](https://github.com/alphagov/pay-publicapi) microservice |
+| `PUBLICAUTH_URL`              | The URL to the [publicauth](https://github.com/alphagov/pay-publicauth) microservice |
+| `EMAIL_ADDRESS_FOR_REPLACING_API_TOKENS` | The email address used in a request to Public Auth application for generating an API token. |
 | `RUN_APP`                     | Set to `true` to run the application. Defaults to `true`. |
 | `RUN_MIGRATION`               | Set to `true` to run a database migration. Defaults to `false`. |
 | `SECURE_RETURN_URLS`          | Set to `false` to allow non-HTTPS URLs for the `return_url` field of a product. Defaults to `true`. |
@@ -52,4 +54,5 @@ The JSON naming convention follows Hypertext Application Language (HAL).
 |[```/v1/api/payments```](docs/api_specification.md#post-v1apipayments)        | POST    | Creates a new payment                        |
 |[```/v1/api/payments/{paymentId}```](docs/api_specification.md#get-v1apipaymentspaymentid) |  GET  |     Gets an existing payment    |
 |[```/v1/api/products/{productId}/payments```](docs/api_specification.md#get-v1apiproductsproductidpayments) | GET | Gets a list of payments that belong to a specific product specified by productId |
-|[```/v1/api/gateway-account/{gatewayAccountId}```](docs/api_specification.md#get-v1apigatewayaccountgatewayaccountid) | PATCH | Updates a specific field of a given gateway-account of products specified by gatewayAccountId |  
+|[```/v1/api/gateway-account/{gatewayAccountId}```](docs/api_specification.md#get-v1apigatewayaccountgatewayaccountid) | PATCH | Updates a specific field of a given gateway-account of products specified by gatewayAccountId |
+|[```/v1/api/products/{productId}/regenerate-api-token```](docs/api_specification.md#post-v1apiproductsproductexternalidregenerate\-api\-token)        | POST    |  Gets a new API token from Public Auth application and replaces an old API token with the new token for the specified `productId`.|

@@ -22,7 +22,9 @@ import uk.gov.pay.products.config.PersistenceServiceInitialiser;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.config.ProductsModule;
 import uk.gov.pay.products.exception.mapper.BadPaymentRequestExceptionMapper;
+import uk.gov.pay.products.exception.mapper.FailToReplaceApiTokenExceptionMapper;
 import uk.gov.pay.products.exception.mapper.MetadataNotFoundExceptionMapper;
+import uk.gov.pay.products.exception.mapper.FailToGetNewApiTokenExceptionMapper;
 import uk.gov.pay.products.exception.mapper.PaymentCreationExceptionMapper;
 import uk.gov.pay.products.exception.mapper.PaymentCreatorNotFoundExceptionMapper;
 import uk.gov.pay.products.exception.mapper.ProductNotFoundExceptionMapper;
@@ -113,6 +115,8 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
         jersey.register(PaymentCreationExceptionMapper.class);
         jersey.register(PaymentCreatorNotFoundExceptionMapper.class);
         jersey.register(BadPaymentRequestExceptionMapper.class);
+        jersey.register(FailToReplaceApiTokenExceptionMapper.class);
+        jersey.register(FailToGetNewApiTokenExceptionMapper.class);
         jersey.register(ProductNotFoundExceptionMapper.class);
         jersey.register(MetadataNotFoundExceptionMapper.class);
     }

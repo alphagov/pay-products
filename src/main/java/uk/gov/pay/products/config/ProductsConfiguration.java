@@ -29,6 +29,9 @@ public class ProductsConfiguration extends Configuration {
     private String publicApiUrl;
 
     @NotNull
+    private String publicAuthUrl;
+
+    @NotNull
     private String productsUiPayUrl;
 
     @NotNull
@@ -39,6 +42,9 @@ public class ProductsConfiguration extends Configuration {
 
     @NotNull
     private boolean returnUrlMustBeSecure = true;
+
+    @NotNull
+    private String emailAddressForReplacingApiTokens;
 
     public String getVcapServices() {
         return System.getenv("VCAP_SERVICES");
@@ -75,6 +81,10 @@ public class ProductsConfiguration extends Configuration {
         return publicApiUrl;
     }
 
+    public String getPublicAuthUrl() {
+        return publicAuthUrl;
+    }
+
     public String getProductsUiPayUrl() {
         return productsUiPayUrl;
     }
@@ -90,5 +100,9 @@ public class ProductsConfiguration extends Configuration {
 
     public boolean getReturnUrlMustBeSecure() {
         return returnUrlMustBeSecure;
+    }
+
+    public String getEmailAddressForReplacingApiTokens() {
+        return emailAddressForReplacingApiTokens;
     }
 }

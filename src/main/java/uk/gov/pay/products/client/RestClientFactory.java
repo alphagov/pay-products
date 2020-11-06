@@ -16,6 +16,8 @@ public class RestClientFactory {
 
     public static Client buildClient(RestClientConfiguration clientConfig) {
         ClientBuilder clientBuilder = ClientBuilder.newBuilder();
+        clientBuilder.connectTimeout(clientConfig.getConnectTimeout().getQuantity(), clientConfig.getConnectTimeout().getUnit());
+        clientBuilder.readTimeout(clientConfig.getReadTimeout().getQuantity(), clientConfig.getReadTimeout().getUnit());
 
         if (!clientConfig.isDisabledSecureConnection()) {
             try {

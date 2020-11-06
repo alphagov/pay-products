@@ -1,6 +1,7 @@
 package uk.gov.pay.products.client.publicapi;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import io.dropwizard.util.Duration;
 import org.apache.http.HttpStatus;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -19,10 +20,11 @@ import java.util.Optional;
 import static junit.framework.TestCase.assertTrue;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;
 import static uk.gov.pay.products.matchers.PaymentResponseMatcher.hasAllPaymentProperties;
 import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.createPaymentRequestPayload;
@@ -30,14 +32,23 @@ import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.setupResponseToC
 import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.setupResponseToGetPaymentRequest;
 
 public class PublicApiRestClientTest {
-
     private final static int PUBLIC_API_PORT = PortFactory.findFreePort();
+    private static final Duration FIFTY_SECONDS = Duration.seconds(50);
     
     @ClassRule
     public static final WireMockRule PUBLIC_API_RULE = new WireMockRule(PUBLIC_API_PORT);
 
-    private static Client client = RestClientFactory.buildClient(mock(RestClientConfiguration.class));
-    private static PublicApiRestClient publicApiRestClient = new PublicApiRestClient(client, "http://localhost:" + PUBLIC_API_PORT);
+    private static RestClientConfiguration restClientConfiguration;
+    private static Client client;
+    private static PublicApiRestClient publicApiRestClient;
+
+    static {
+        restClientConfiguration = mock(RestClientConfiguration.class);
+        when(restClientConfiguration.getConnectTimeout()).thenReturn(FIFTY_SECONDS);
+        when(restClientConfiguration.getReadTimeout()).thenReturn(FIFTY_SECONDS);
+        client =  RestClientFactory.buildClient(restClientConfiguration);
+        publicApiRestClient = new PublicApiRestClient(client, "http://localhost:" + PUBLIC_API_PORT);
+    }
 
     @Test
     public void createPayment_shouldCreateANewPayment() {

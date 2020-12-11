@@ -33,7 +33,7 @@ public class ProductRequestValidatorTest {
     private static final String FIELD_REFERENCE_HINT = "reference_hint";
     private static final String FIELD_LANGUAGE = "language";
 
-    private static final ProductRequestValidator productRequestValidator = new ProductRequestValidator(new RequestValidations(), new ProductsConfiguration());
+    private static final ProductRequestValidator productRequestValidator = new ProductRequestValidator(new RequestValidations(), new ProductsConfiguration(), new ProductsMetadataRequestValidator());
 
     @Test
     public void shouldPass_whenAllFieldsPresent() {

@@ -27,11 +27,14 @@ import static uk.gov.pay.products.util.ProductType.ADHOC;
 public class ProductRequestValidator {
     private final RequestValidations requestValidations;
     private final boolean returnUrlMustBeSecure;
+    private final ProductsMetadataRequestValidator metadataRequestValidator;
 
     @Inject
-    public ProductRequestValidator(RequestValidations requestValidations, ProductsConfiguration configuration) {
+    public ProductRequestValidator(RequestValidations requestValidations, ProductsConfiguration configuration,
+                                   ProductsMetadataRequestValidator metadataRequestValidator) {
         this.requestValidations = requestValidations;
         this.returnUrlMustBeSecure = configuration.getReturnUrlMustBeSecure();
+        this.metadataRequestValidator = metadataRequestValidator;
     }
 
     public Optional<Errors> validateCreateRequest(JsonNode payload) {
@@ -73,6 +76,10 @@ public class ProductRequestValidator {
             if (errors.isEmpty()) {
                 errors = requestValidations.checkIsValidEnumValue(payload, EnumSet.allOf(SupportedLanguage.class), FIELD_LANGUAGE);
             }
+        }
+
+        if (errors.isEmpty()) {
+            return metadataRequestValidator.validateCreateProductRequest(payload);
         }
         
         return errors.map(Errors::from);

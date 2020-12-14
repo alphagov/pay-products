@@ -14,6 +14,7 @@ import uk.gov.pay.products.util.ProductType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -148,10 +149,11 @@ public class Product {
                 .map(JsonNode::asText)
                 .map(SupportedLanguage::fromIso639AlphaTwoCode)
                 .orElse(SupportedLanguage.ENGLISH);
+        List<ProductMetadata> metadataList = extractMetadata(jsonPayload);
 
         return new Product(externalId, name, description, payApiToken, price, ProductStatus.ACTIVE, gatewayAccountId,
                 type, returnUrl, serviceNamePath, productNamePath, referenceEnabled, referenceLabel, referenceHint,
-                language, null);
+                language, metadataList);
     }
 
     public String getName() {
@@ -236,6 +238,20 @@ public class Product {
             return map.size() > 0 ? map : null;
         }
         return null;
+    }
+
+    private static List<ProductMetadata> extractMetadata(JsonNode payload) {
+        List<ProductMetadata> metadataList = new ArrayList<>();
+        JsonNode metadata = payload.get(FIELD_METADATA);
+        if (metadata != null && !metadata.isEmpty()) {
+            Iterator fieldNames = metadata.fieldNames();
+            while (fieldNames.hasNext()) {
+                String key  = fieldNames.next().toString();
+                String value = metadata.get(key).textValue();
+                metadataList.add(new ProductMetadata(null, key, value));
+            }
+        }
+        return metadataList.isEmpty() ? null : metadataList;
     }
 
     @Override

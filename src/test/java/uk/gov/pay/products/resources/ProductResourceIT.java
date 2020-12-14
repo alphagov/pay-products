@@ -29,9 +29,11 @@ import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static uk.gov.pay.commons.model.TokenPaymentType.CARD;
@@ -1124,6 +1126,48 @@ public class ProductResourceIT extends IntegrationTest {
                 .post(format("/v1/api/products/%s/regenerate-api-token", randomUuid()))
                 .then()
                 .statusCode(404);
+    }
+
+    @Test
+    public void shouldSuccess_whenSavingAValidProduct_withMetadataFields() throws Exception {
+
+        String payApiToken = randomUuid();
+        String name = "Flashy new GOV Service with metadata";
+        Long price = 1050L;
+        Integer gatewayAccountId = randomInt();
+        String serviceNamePath = randomAlphanumeric(40);
+        String productNamePath = randomAlphanumeric(65);
+        String type = ProductType.ADHOC.name();
+
+        ImmutableMap<Object, Object> payload = ImmutableMap.builder()
+                .put(GATEWAY_ACCOUNT_ID, gatewayAccountId)
+                .put(PAY_API_TOKEN, payApiToken)
+                .put(NAME, name)
+                .put(PRICE, price)
+                .put(TYPE, type)
+                .put(SERVICE_NAME_PATH, serviceNamePath)
+                .put(PRODUCT_NAME_PATH, productNamePath)
+                .put(METADATA, Map.of("key1", "value1", "key2", "value2"))
+                .put(RETURN_URL, "https://return.url")
+                .build();
+
+        ValidatableResponse response = givenSetup()
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .body(mapper.writeValueAsString(payload))
+                .post("/v1/api/products")
+                .then()
+                .statusCode(201);
+
+        String externalId = response.extract().path(EXTERNAL_ID);
+
+        List<Map<String, Object>> metadata = databaseHelper.findMetadataByProductExternalId(externalId);
+
+        assertThat(metadata.size(), is(2));
+        assertThat(metadata.get(0), hasEntry("metadata_key", "key1"));
+        assertThat(metadata.get(0), hasEntry("metadata_value", "value1"));
+        assertThat(metadata.get(1), hasEntry("metadata_key", "key2"));
+        assertThat(metadata.get(1), hasEntry("metadata_value", "value2"));
     }
 
     private void setUpPublicAuthStubForGeneratingApiToken(Product product, String newApiToken) {

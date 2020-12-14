@@ -7,6 +7,7 @@ import uk.gov.pay.products.model.ProductMetadata;
 import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -76,7 +77,7 @@ public class ProductEntity extends AbstractEntity {
     @Convert(converter = SupportedLanguageJpaConverter.class)
     private SupportedLanguage language;
 
-    @OneToMany(mappedBy = "productEntity", targetEntity = ProductMetadataEntity.class)
+    @OneToMany(mappedBy = "productEntity", targetEntity = ProductMetadataEntity.class, cascade = CascadeType.ALL)
     private List<ProductMetadataEntity> metadataEntityList;
 
     public ProductEntity() {
@@ -216,6 +217,10 @@ public class ProductEntity extends AbstractEntity {
         productEntity.setReferenceLabel(product.getReferenceLabel());
         productEntity.setReferenceHint(product.getReferenceHint());
         productEntity.setLanguage(product.getLanguage());
+        productEntity.setMetadataEntityList(product.getMetadata() == null ? null :
+                product.getMetadata().stream().map(productMetadata ->
+                        ProductMetadataEntity.from(productEntity, productMetadata))
+                        .collect(Collectors.toList()));
 
         return productEntity;
     }

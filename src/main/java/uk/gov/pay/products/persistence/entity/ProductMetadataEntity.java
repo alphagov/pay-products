@@ -62,4 +62,13 @@ public class ProductMetadataEntity extends AbstractEntity {
     public ProductMetadata toMetadata() {
         return new ProductMetadata(this.getId(), this.metadataKey, this.metadataValue);
     }
+
+    public static ProductMetadataEntity from(ProductEntity productEntity, ProductMetadata metadata) {
+        ProductMetadataEntity pmde = new ProductMetadataEntity();
+        pmde.setProductEntity(productEntity);
+        pmde.setMetadataKey(metadata.getKey());
+        pmde.setMetadataValue(metadata.getValue());
+        return pmde;
+
+    }
 }

@@ -39,7 +39,7 @@ public class Product {
     public static final String FIELD_REFERENCE_LABEL = "reference_label";
     public static final String FIELD_REFERENCE_HINT = "reference_hint";
     public static final String FIELD_LANGUAGE = "language";
-    private static final String FIELD_METADATA = "metadata";
+    public static final String FIELD_METADATA = "metadata";
 
     @JsonProperty(FIELD_EXTERNAL_ID)
     private final String externalId;

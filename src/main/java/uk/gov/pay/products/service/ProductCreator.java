@@ -4,20 +4,26 @@ import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.dao.ProductDao;
+import uk.gov.pay.products.persistence.dao.ProductMetadataDao;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
+import uk.gov.pay.products.persistence.entity.ProductMetadataEntity;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 public class ProductCreator {
 
     private final ProductDao productDao;
+    private final ProductMetadataDao productMetadataDao;
     private final LinksDecorator linksDecorator;
 
     @Inject
-    public ProductCreator(ProductDao productDao, LinksDecorator linksDecorator) {
+    public ProductCreator(ProductDao productDao, ProductMetadataDao productMetadataDao, LinksDecorator linksDecorator) {
         this.productDao = productDao;
+        this.productMetadataDao = productMetadataDao;
         this.linksDecorator = linksDecorator;
     }
 
@@ -34,7 +40,7 @@ public class ProductCreator {
     @Transactional
     public Optional<Product> doUpdateByGatewayAccountId(Integer gatewayAccountId, String productExternalId, Product product) {
 
-        return productDao
+        Optional<ProductEntity> productEntityUpdated = productDao
                 .findByGatewayAccountIdAndExternalId(gatewayAccountId, productExternalId)
                 .map(productEntity -> {
                     productEntity.setName(product.getName());
@@ -44,7 +50,21 @@ public class ProductCreator {
                     productEntity.setReferenceLabel(product.getReferenceLabel());
                     productEntity.setReferenceHint(product.getReferenceHint());
 
-                    return linksDecorator.decorate(productEntity.toProduct());
+                    return productEntity;
                 });
+
+        productMetadataDao.deleteForProductExternalId(productExternalId);
+
+        productEntityUpdated.ifPresent(productEntity -> {
+            if (product.getMetadata() != null && !product.getMetadata().isEmpty()) {
+                List<ProductMetadataEntity> productMetadataEntities = product.getMetadata()
+                        .stream()
+                        .map(productMetadata -> ProductMetadataEntity.from(productEntity, productMetadata))
+                        .collect(Collectors.toList());
+                productEntity.setMetadataEntityList(productMetadataEntities);
+            }
+        });
+
+        return productEntityUpdated.map(productEntity -> linksDecorator.decorate(productEntity.toProduct()));
     }
 }

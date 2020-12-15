@@ -9,7 +9,6 @@ import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.persistence.entity.ProductMetadataEntity;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -17,7 +16,7 @@ import static org.hamcrest.Matchers.is;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 public class ProductMetadataDaoIT extends DaoTestBase {
-    private ProductMetadataDao productMetadataDao;  
+    private ProductMetadataDao productMetadataDao;
     private ProductMetadataEntity productMetadataEntity;
     private ProductDao productDao;
     private ProductEntity productEntity;
@@ -75,5 +74,31 @@ public class ProductMetadataDaoIT extends DaoTestBase {
                 productMetadataDao.findByProductsExternalIdAndKey(productEntity.getExternalId(), productMetadataEntity.getMetadataKey());
         assertThat(productMetadata.isPresent(), is(true));
         assertThat(productMetadata.get().getMetadataValue(), is("new value"));
+    }
+
+    @Test
+    public void productMetadataDaoShouldDeleteMetadataForProductExternalId() {
+        String externalId = randomUuid();
+        ProductEntity entity = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .build();
+        productDao.persist(entity);
+        ProductMetadataEntity metadataEntity = ProductMetadataEntityFixture.aProductMetadataEntity()
+                .withProductEntity(entity)
+                .withMetadataKey("a key")
+                .withMetadataValue("a value")
+                .build();
+        productMetadataDao.persist(metadataEntity);
+
+        List<ProductMetadataEntity> productMetadataList = productMetadataDao.findByProductsExternalId(externalId);
+        assertThat(productMetadataList.size(), is(1));
+
+        productMetadataDao.deleteForProductExternalId(externalId);
+
+        productMetadataList = productMetadataDao.findByProductsExternalId(externalId);
+        assertThat(productMetadataList.size(), is(0));
+
+        List<ProductMetadataEntity> productMetadata = productMetadataDao.findByProductsExternalId(productExternalId);
+        assertThat(productMetadata.size(), is(1));
     }
 }

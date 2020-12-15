@@ -82,7 +82,7 @@ public class ProductsMetadataRequestValidator {
         return Optional.empty();
     }
 
-    public Optional<Errors> validateCreateProductRequest(JsonNode payload) {
+    public Optional<Errors> validateMetadata(JsonNode payload) {
         JsonNode metadataLoad = payload.get(METADATA_FIELD_NAME);
         if (metadataLoad == null) {
             return Optional.empty();
@@ -103,11 +103,11 @@ public class ProductsMetadataRequestValidator {
                 return Optional.of(Errors.from(METADATA_KEY_LENGTH_ERROR_MESSAGE, "EMPTY_METADATA_KEY"));
             }
             if (fieldName.length() > ExternalMetadata.MAX_KEY_LENGTH) {
-                return Optional.of(Errors.from(format(MAX_KEY_FIELD_ERROR_MSG_WITH_KEY, fieldName, ExternalMetadata.MAX_KEY_LENGTH), "KEY_LENGTH_OVER_MAX_SIZE"));
+                return Optional.of(Errors.from(format(MAX_KEY_FIELD_ERROR_MSG_WITH_KEY, fieldName, ExternalMetadata.MAX_KEY_LENGTH), "METADATA_KEY_LENGTH_OVER_MAX_SIZE"));
             }
             String value = metadataLoad.get(fieldName).asText();
             if (value.length() > ExternalMetadata.MAX_VALUE_LENGTH) {
-                return Optional.of(Errors.from(format(MAX_VALUE_FIELD_ERROR_MSG_WITH_VALUE, value, ExternalMetadata.MAX_VALUE_LENGTH), "VALUE_LENGTH_MAX_SIZE"));
+                return Optional.of(Errors.from(format(MAX_VALUE_FIELD_ERROR_MSG_WITH_VALUE, value, ExternalMetadata.MAX_VALUE_LENGTH), "METADATA_VALUE_LENGTH_MAX_SIZE"));
             }
             if (!duplicateFieldNames.add(fieldName.toLowerCase())) {
                 return Optional.of(Errors.from(format(DUPLICATE_KEY_ERROR_MSG_CREATE_PRODUCT, fieldName), "DUPLICATE_METADATA_KEYS"));

@@ -244,9 +244,9 @@ public class Product {
         List<ProductMetadata> metadataList = new ArrayList<>();
         JsonNode metadata = payload.get(FIELD_METADATA);
         if (metadata != null && !metadata.isEmpty()) {
-            Iterator fieldNames = metadata.fieldNames();
+            Iterator<String> fieldNames = metadata.fieldNames();
             while (fieldNames.hasNext()) {
-                String key  = fieldNames.next().toString();
+                String key  = fieldNames.next();
                 String value = metadata.get(key).textValue();
                 metadataList.add(new ProductMetadata(null, key, value));
             }

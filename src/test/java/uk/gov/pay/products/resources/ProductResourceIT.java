@@ -29,11 +29,9 @@ import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static uk.gov.pay.commons.model.TokenPaymentType.CARD;
@@ -122,7 +120,7 @@ public class ProductResourceIT extends IntegrationTest {
         String productNamePath = randomAlphanumeric(65);
         String returnUrl = "https://some.valid.url";
         String language = "cy";
-        
+
         ImmutableMap<String, String> payload = ImmutableMap.<String, String>builder()
                 .put(GATEWAY_ACCOUNT_ID, gatewayAccountId.toString())
                 .put(PAY_API_TOKEN, payApiToken)
@@ -189,7 +187,7 @@ public class ProductResourceIT extends IntegrationTest {
         String referenceHint = randomAlphanumeric(85);
         String returnUrl = "https://some.valid.url";
         String language = "en";
-        
+
         ImmutableMap<String, String> payload = ImmutableMap.<String, String>builder()
                 .put(GATEWAY_ACCOUNT_ID, gatewayAccountId.toString())
                 .put(PAY_API_TOKEN, payApiToken)
@@ -457,7 +455,7 @@ public class ProductResourceIT extends IntegrationTest {
                 .withDescription("description")
                 .withPrice(500)
                 .withGatewayAccountId(gatewayAccountId)
-                .withProductPath("service-name-path" + externalId, "product-name-path"+ externalId)
+                .withProductPath("service-name-path" + externalId, "product-name-path" + externalId)
                 .build()
                 .toProduct();
 
@@ -534,7 +532,7 @@ public class ProductResourceIT extends IntegrationTest {
                 .withDescription("description")
                 .withPrice(500)
                 .withGatewayAccountId(gatewayAccountId)
-                .withProductPath("service-name-path" + externalId, "product-name-path"+ externalId)
+                .withProductPath("service-name-path" + externalId, "product-name-path" + externalId)
                 .build()
                 .toProduct();
 
@@ -592,7 +590,7 @@ public class ProductResourceIT extends IntegrationTest {
                 .withDescription("description")
                 .withPrice(500)
                 .withGatewayAccountId(gatewayAccountId)
-                .withProductPath("service-name-path" + externalId, "product-name-path"+ externalId)
+                .withProductPath("service-name-path" + externalId, "product-name-path" + externalId)
                 .build()
                 .toProduct();
 
@@ -634,6 +632,109 @@ public class ProductResourceIT extends IntegrationTest {
     }
 
     @Test
+    public void updateProduct_shouldAddMetadataCorrectly() throws Exception {
+        String externalId = randomUuid();
+        int gatewayAccountId = randomInt();
+
+        String updatedName = "updated-name";
+        String updatedDescription = "updated-description";
+        String updatedPrice = "1000";
+
+        Product existingProduct = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withName("name")
+                .withDescription("description")
+                .withPrice(500)
+                .withGatewayAccountId(gatewayAccountId)
+                .withProductPath("service-name-path" + externalId, "product-name-path" + externalId)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(existingProduct);
+
+        ImmutableMap<String, Object> payload = ImmutableMap.<String, Object>builder()
+                .put(NAME, updatedName)
+                .put(PRICE, updatedPrice)
+                .put(DESCRIPTION, updatedDescription)
+                .put(REFERENCE_ENABLED_FIELD, false)
+                .put(METADATA, Map.of("key1", "value1", "key3", "value3"))
+                .build();
+
+        ValidatableResponse response = givenSetup()
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .body(mapper.writeValueAsString(payload))
+                .patch(format("/v1/api/gateway-account/%s/products/%s", gatewayAccountId, externalId))
+                .then()
+                .statusCode(200);
+
+        response
+                .body(METADATA + ".key1", is("value1"))
+                .body(METADATA + ".key3", is("value3"));
+
+        List<Map<String, Object>> metadataByProductExternalId = databaseHelper.findMetadataByProductExternalId(externalId);
+        assertThat(metadataByProductExternalId.size(), is(2));
+        assertThat(metadataByProductExternalId.get(0), hasEntry("metadata_key", "key1"));
+        assertThat(metadataByProductExternalId.get(0), hasEntry("metadata_value", "value1"));
+        assertThat(metadataByProductExternalId.get(1), hasEntry("metadata_key", "key3"));
+        assertThat(metadataByProductExternalId.get(1), hasEntry("metadata_value", "value3"));
+    }
+
+    @Test
+    public void updateProduct_shouldReplaceExistingMetadataCorrectly() throws Exception {
+        String externalId = randomUuid();
+        int gatewayAccountId = randomInt();
+
+        String updatedName = "updated-name";
+        String updatedDescription = "updated-description";
+        String updatedPrice = "1000";
+
+        Product existingProduct = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withName("name")
+                .withDescription("description")
+                .withPrice(500)
+                .withGatewayAccountId(gatewayAccountId)
+                .withProductPath("service-name-path" + externalId, "product-name-path" + externalId)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(existingProduct);
+        databaseHelper.addMetadata(externalId, "key1", "value1");
+        databaseHelper.addMetadata(externalId, "key2", "value2");
+
+        List<Map<String, Object>> metadataByProductExternalId = databaseHelper.findMetadataByProductExternalId(externalId);
+        assertThat(metadataByProductExternalId.size(), is(2));
+
+        ImmutableMap<String, Object> payload = ImmutableMap.<String, Object>builder()
+                .put(NAME, updatedName)
+                .put(PRICE, updatedPrice)
+                .put(DESCRIPTION, updatedDescription)
+                .put(REFERENCE_ENABLED_FIELD, false)
+                .put(METADATA, Map.of("key1", "new_value1", "key3", "value3"))
+                .build();
+
+        ValidatableResponse response = givenSetup()
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .body(mapper.writeValueAsString(payload))
+                .patch(format("/v1/api/gateway-account/%s/products/%s", gatewayAccountId, externalId))
+                .then()
+                .statusCode(200);
+
+        response
+                .body(METADATA + ".key1", is("new_value1"))
+                .body(METADATA + ".key3", is("value3"));
+
+        metadataByProductExternalId = databaseHelper.findMetadataByProductExternalId(externalId);
+        assertThat(metadataByProductExternalId.size(), is(2));
+        assertThat(metadataByProductExternalId.get(0), hasEntry("metadata_key", "key1"));
+        assertThat(metadataByProductExternalId.get(0), hasEntry("metadata_value", "new_value1"));
+        assertThat(metadataByProductExternalId.get(1), hasEntry("metadata_key", "key3"));
+        assertThat(metadataByProductExternalId.get(1), hasEntry("metadata_value", "value3"));
+    }
+
+    @Test
     public void updateProduct_shouldReturn404_whenNotFound() throws Exception {
         String externalId = randomUuid();
         int gatewayAccountId = randomInt();
@@ -660,6 +761,7 @@ public class ProductResourceIT extends IntegrationTest {
                 .put(PRICE, updatedPrice)
                 .put(DESCRIPTION, updatedDescription)
                 .put(REFERENCE_ENABLED_FIELD, false)
+                .put(METADATA, Map.of("key1", "new_value1", "key3", "value3"))
                 .build();
 
         givenSetup()
@@ -953,7 +1055,7 @@ public class ProductResourceIT extends IntegrationTest {
         databaseHelper.addMetadata(externalId, "key", "value");
         databaseHelper.addMetadata(externalId, "secondkey", "value2");
 
-        ValidatableResponse response =  givenSetup()
+        ValidatableResponse response = givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
                 .get(format("/v1/api/products/%s", externalId))
@@ -970,8 +1072,8 @@ public class ProductResourceIT extends IntegrationTest {
                 .body(TYPE, is(product.getType().name()))
                 .body(DESCRIPTION, is(product.getDescription()))
                 .body(RETURN_URL, is(product.getReturnUrl()))
-                .body(METADATA + ".key",is("value"))
-                .body(METADATA + ".secondkey",is("value2"));
+                .body(METADATA + ".key", is("value"))
+                .body(METADATA + ".secondkey", is("value2"));
     }
 
     @Test
@@ -1021,7 +1123,7 @@ public class ProductResourceIT extends IntegrationTest {
 
         databaseHelper.addPayment(payment2.toPayment(), 2);
 
-        ValidatableResponse response =  givenSetup()
+        ValidatableResponse response = givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
                 .get(format("/v1/api/stats/products"))
@@ -1035,7 +1137,7 @@ public class ProductResourceIT extends IntegrationTest {
                 .body("[1].payment_count", is(1))
                 .body("[1].product.external_id", is(product2.getExternalId()));
 
-        ValidatableResponse filteredResponse =  givenSetup()
+        ValidatableResponse filteredResponse = givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
                 .queryParam("gatewayAccountId", 1)

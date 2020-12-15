@@ -35,4 +35,14 @@ public class ProductMetadataDao extends JpaDao<ProductMetadataEntity> {
                 .setParameter("key", key.toLowerCase())
                 .getResultList().stream().findFirst();
     }
+
+    public void deleteForProductExternalId(String productExternalId) {
+        String query = "delete FROM ProductMetadataEntity metadata " +
+                "WHERE metadata.productEntity.externalId = :productExternalId ";
+
+        entityManager.get()
+                .createQuery(query, ProductMetadataEntity.class)
+                .setParameter("productExternalId", productExternalId)
+                .executeUpdate();
+    }
 }

@@ -79,7 +79,7 @@ public class ProductRequestValidator {
         }
 
         if (errors.isEmpty()) {
-            return metadataRequestValidator.validateCreateProductRequest(payload);
+            return metadataRequestValidator.validateMetadata(payload);
         }
         
         return errors.map(Errors::from);
@@ -92,6 +92,10 @@ public class ProductRequestValidator {
 
         if (errors.isEmpty() && payload.get(FIELD_PRICE) != null) {
             errors = requestValidations.checkIsBelowMaxAmount(payload, FIELD_PRICE);
+        }
+
+        if (errors.isEmpty()) {
+            return metadataRequestValidator.validateMetadata(payload);
         }
 
         return errors.map(Errors::from);

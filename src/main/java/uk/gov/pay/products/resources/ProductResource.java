@@ -73,7 +73,6 @@ public class ProductResource {
                         return Response.status(Status.CONFLICT).build();
                     }
                 });
-
     }
 
     @GET

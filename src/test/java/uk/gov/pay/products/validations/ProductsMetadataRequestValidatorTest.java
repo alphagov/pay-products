@@ -114,7 +114,7 @@ public class ProductsMetadataRequestValidatorTest {
     @Test
     public void shouldNotErrorOnMissingMetadataObjectForProductCreate() {
         JsonNode payload = new ObjectMapper().valueToTree(Map.of());
-        Optional<Errors> errors = validator.validateCreateProductRequest(payload);
+        Optional<Errors> errors = validator.validateMetadata(payload);
         assertThat(errors.isPresent(), is(false));
     }
 
@@ -125,7 +125,7 @@ public class ProductsMetadataRequestValidatorTest {
             mapToJson.put("key" + count, "value" + count);
         }
         JsonNode payload = new ObjectMapper().valueToTree(Map.of("metadata", mapToJson));
-        Optional<Errors> errors = validator.validateCreateProductRequest(payload);
+        Optional<Errors> errors = validator.validateMetadata(payload);
         assertThat(errors.isPresent(), is(true));
         List<String> errorList = errors.get().getErrors();
         assertThat(errorList.size(), is(1));
@@ -137,18 +137,18 @@ public class ProductsMetadataRequestValidatorTest {
     @Test
     public void shouldErrorOnTooLongKeyFieldForProductCreate() {
         JsonNode payload = new ObjectMapper().valueToTree(Map.of("metadata", Map.of(TOO_LONG_KEY, "value")));
-        Optional<Errors> errors = validator.validateCreateProductRequest(payload);
+        Optional<Errors> errors = validator.validateMetadata(payload);
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().size(), is(1));
         assertThat(errors.get().getErrors().get(0), is("Field [ metadata ] key [ " + TOO_LONG_KEY + " ] exceeds allowed length of [ 30 ] characters"));
         JsonNode errorNode = new ObjectMapper().valueToTree(errors.get());
-        assertThat(errorNode.get("error_identifier").asText(), is("KEY_LENGTH_OVER_MAX_SIZE"));
+        assertThat(errorNode.get("error_identifier").asText(), is("METADATA_KEY_LENGTH_OVER_MAX_SIZE"));
     }
 
     @Test
     public void shouldErrorOnDuplicateKeysForProductCreate() {
         JsonNode payload = new ObjectMapper().valueToTree(Map.of("metadata", Map.of("key", "value", "Key", "anotherValue")));
-        Optional<Errors> errors = validator.validateCreateProductRequest(payload);
+        Optional<Errors> errors = validator.validateMetadata(payload);
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().size(), is(1));
         assertThat(errors.get().getErrors().get(0).contains("Field [ metadata ] with duplicate key"), is(true));
@@ -159,18 +159,18 @@ public class ProductsMetadataRequestValidatorTest {
     @Test
     public void shouldErrorOnTooLongValueFieldForProductCreate() {
         JsonNode payload = new ObjectMapper().valueToTree(Map.of("metadata", Map.of("key", TOO_LONG_VALUE)));
-        Optional<Errors> errors = validator.validateCreateProductRequest(payload);
+        Optional<Errors> errors = validator.validateMetadata(payload);
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().size(), is(1));
         assertThat(errors.get().getErrors().get(0), is("Field [ metadata ] value [ " + TOO_LONG_VALUE + " ] is over maximum field length allowed [ " + ExternalMetadata.MAX_VALUE_LENGTH + " ]"));
         JsonNode errorNode = new ObjectMapper().valueToTree(errors.get());
-        assertThat(errorNode.get("error_identifier").asText(), is("VALUE_LENGTH_MAX_SIZE"));
+        assertThat(errorNode.get("error_identifier").asText(), is("METADATA_VALUE_LENGTH_MAX_SIZE"));
     }
 
     @Test
     public void shouldErrorOnEmptyKeyForProductCreate() {
         JsonNode payload = new ObjectMapper().valueToTree(Map.of("metadata", Map.of("", TOO_LONG_VALUE)));
-        Optional<Errors> errors = validator.validateCreateProductRequest(payload);
+        Optional<Errors> errors = validator.validateMetadata(payload);
         assertThat(errors.isPresent(), is(true));
         assertThat(errors.get().getErrors().size(), is(1));
         assertThat(errors.get().getErrors().get(0), is("Field [ metadata ] key length must be between 1 and 30 characters"));

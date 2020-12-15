@@ -10,17 +10,27 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.products.matchers.ProductMatcher;
 import uk.gov.pay.products.model.Product;
+import uk.gov.pay.products.model.ProductMetadata;
 import uk.gov.pay.products.persistence.dao.ProductDao;
+import uk.gov.pay.products.persistence.dao.ProductMetadataDao;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductType;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.emptyOrNullString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
@@ -29,6 +39,8 @@ public class ProductCreatorTest {
 
     @Mock
     private ProductDao productDao;
+    @Mock
+    private ProductMetadataDao productMetadataDao;
     private ProductCreator productCreator;
     @Captor
     private ArgumentCaptor<ProductEntity> persistedProductEntity;
@@ -40,7 +52,7 @@ public class ProductCreatorTest {
     @Before
     public void setup() {
         LinksDecorator linksDecorator = new LinksDecorator("http://localhost", "http://localhost/pay", "http://localhost/payments");
-        productCreator = new ProductCreator(productDao, linksDecorator);
+        productCreator = new ProductCreator(productDao, productMetadataDao, linksDecorator);
         gatewayAccountId = randomInt();
         payApiToken = randomUuid();
     }
@@ -125,6 +137,7 @@ public class ProductCreatorTest {
         String updatedReferenceLabel = "updated-reference-label";
         String updatedReferenceHint = "updated-reference-hint";
 
+        ProductMetadata metadata = new ProductMetadata(1, "key-1", "value-1");
         Product productToUpdate = new Product(
                 "auto-generated-id",
                 updatedName,
@@ -141,7 +154,7 @@ public class ProductCreatorTest {
                 updatedReferenceLabel,
                 updatedReferenceHint,
                 SupportedLanguage.ENGLISH,
-                null);
+                List.of(metadata));
 
         ProductEntity mockedProductEntity = mock(ProductEntity.class);
         when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.of(mockedProductEntity));
@@ -155,11 +168,14 @@ public class ProductCreatorTest {
         verify(mockedProductEntity).setReferenceEnabled(true);
         verify(mockedProductEntity).setReferenceLabel(updatedReferenceLabel);
         verify(mockedProductEntity).setReferenceHint(updatedReferenceHint);
+        verify(mockedProductEntity).setMetadataEntityList(any());
         verify(mockedProductEntity).toProduct();
         verifyNoMoreInteractions(mockedProductEntity);
 
         assertTrue(updatedProduct.isPresent());
         assertThat(productToUpdate, ProductMatcher.isSame(updatedProduct.get()));
+
+        verify(productMetadataDao).deleteForProductExternalId("external-id");
     }
 
     @Test
@@ -205,7 +221,7 @@ public class ProductCreatorTest {
         assertTrue(updatedProduct.isPresent());
         assertThat(productToUpdate, ProductMatcher.isSame(updatedProduct.get()));
     }
-    
+
     @Test
     public void doUpdateByGatewayAccountId_shouldNotUpdateProduct_whenNotFound() {
         String externalId = "external-id";

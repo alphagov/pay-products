@@ -6,5 +6,6 @@ package uk.gov.pay.products.util;
 public enum ProductType {
     DEMO,
     PROTOTYPE,
-    ADHOC
+    ADHOC,
+    AGENT_INITIATED_MOTO
 }

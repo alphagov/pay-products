@@ -23,6 +23,7 @@ import static uk.gov.pay.products.model.Product.FIELD_RETURN_URL;
 import static uk.gov.pay.products.model.Product.FIELD_SERVICE_NAME_PATH;
 import static uk.gov.pay.products.model.Product.FIELD_TYPE;
 import static uk.gov.pay.products.util.ProductType.ADHOC;
+import static uk.gov.pay.products.util.ProductType.AGENT_INITIATED_MOTO;
 
 public class ProductRequestValidator {
     private final RequestValidations requestValidations;
@@ -59,7 +60,8 @@ public class ProductRequestValidator {
             errors = requestValidations.checkIsValidEnumValue(payload, EnumSet.allOf(ProductType.class), FIELD_TYPE);
         }
 
-        if (errors.isEmpty() && !ADHOC.name().equals(payload.get(FIELD_TYPE).asText())) {
+        if (errors.isEmpty() && !ADHOC.name().equals(payload.get(FIELD_TYPE).asText())
+                && !AGENT_INITIATED_MOTO.name().equals(payload.get(FIELD_TYPE).asText())) {
             errors = requestValidations.checkIfExistsOrEmpty(payload, FIELD_PRICE);
         }
 

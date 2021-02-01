@@ -31,6 +31,7 @@ import uk.gov.pay.products.persistence.entity.PaymentEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.service.transaction.TransactionFlow;
 import uk.gov.pay.products.util.PaymentStatus;
+import uk.gov.pay.products.util.ProductType;
 import uk.gov.pay.products.util.RandomIdGenerator;
 
 import java.util.Map;
@@ -38,14 +39,15 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static java.lang.String.format;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
+import static uk.gov.pay.commons.model.Source.CARD_AGENT_INITIATED_MOTO;
 import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;
 import static uk.gov.pay.products.util.PaymentStatus.ERROR;
 import static uk.gov.pay.products.util.PaymentStatus.SUBMITTED;
@@ -116,6 +118,7 @@ public class PaymentCreatorTest {
                 productName,
                 paymentReturnUrl,
                 language,
+                false,
                 Map.of(),
                 CARD_PAYMENT_LINK);
         PaymentResponse paymentResponse = createPaymentResponse(
@@ -191,6 +194,7 @@ public class PaymentCreatorTest {
                 productName,
                 productReturnUrl + "/" + paymentExternalId,
                 language,
+                false,
                 Map.of(),
                 CARD_PAYMENT_LINK);
         PaymentResponse paymentResponse = createPaymentResponse(
@@ -267,6 +271,7 @@ public class PaymentCreatorTest {
                 productName,
                 productReturnUrl + "/" + paymentExternalId,
                 language,
+                false,
                 Map.of(),
                 CARD_PAYMENT_LINK);
         PaymentResponse paymentResponse = createPaymentResponse(
@@ -333,6 +338,7 @@ public class PaymentCreatorTest {
                 productName,
                 productReturnUrl + "/" + paymentExternalId,
                 language,
+                false,
                 Map.of(),
                 CARD_PAYMENT_LINK);
         PaymentResponse paymentResponse = createPaymentResponse(
@@ -357,6 +363,75 @@ public class PaymentCreatorTest {
 
         PaymentEntity expectedPaymentEntity = createPaymentEntity(
                 paymentId,
+                paymentNextUrl,
+                productEntity,
+                SUBMITTED,
+                priceOverride);
+        verify(paymentDao).merge(argThat(PaymentEntityMatcher.isSame(expectedPaymentEntity)));
+    }
+
+    @Test
+    public void shouldCreateAMotoPaymentWithCardAgentInitiatedMotoSource_whenProductIsAgentInitiatedMoto() {
+        PowerMockito.mockStatic(RandomIdGenerator.class);
+
+        int productId = 1;
+        String productExternalId = "product-external-id";
+        long productPrice = 100L;
+        String productName = "name";
+        String productReturnUrl = "https://return.url";
+        String productApiToken = "api-token";
+        String userDefinedReference = "user-defined-reference";
+        Integer gatewayAccountId = 1;
+        String paymentId = "payment-id";
+        String paymentExternalId = "random-external-id";
+        String paymentNextUrl = "http://next.url";
+        SupportedLanguage language = SupportedLanguage.ENGLISH;
+
+        Long priceOverride = 500L;
+
+        ProductEntity productEntity = createProductEntity(
+                productId,
+                ProductType.AGENT_INITIATED_MOTO,
+                productPrice,
+                productExternalId,
+                productName,
+                "",
+                productApiToken,
+                gatewayAccountId,
+                true,
+                language);
+        PaymentRequest expectedPaymentRequest = createPaymentRequest(
+                priceOverride,
+                userDefinedReference,
+                productName,
+                productReturnUrl + "/" + paymentExternalId,
+                language,
+                true,
+                Map.of(),
+                CARD_AGENT_INITIATED_MOTO);
+        PaymentResponse paymentResponse = createPaymentResponse(
+                paymentId,
+                priceOverride,
+                paymentNextUrl,
+                productReturnUrl);
+
+
+        when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
+        when(randomUuid()).thenReturn(paymentExternalId);
+        when(productsConfiguration.getProductsUiConfirmUrl()).thenReturn(productReturnUrl);
+        when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest)))).thenReturn(paymentResponse);
+
+        Payment payment = paymentCreator.doCreate(productExternalId, priceOverride, userDefinedReference);
+
+        assertNotNull(payment);
+        assertNotNull(payment.getExternalId());
+        assertThat(payment.getGovukPaymentId(), is(paymentResponse.getPaymentId()));
+        assertThat(payment.getAmount(), is(500L));
+        assertThat(payment.getReferenceNumber(), is(userDefinedReference));
+
+        PaymentEntity expectedPaymentEntity = createPaymentEntity(
+                paymentId,
+                userDefinedReference,
                 paymentNextUrl,
                 productEntity,
                 SUBMITTED,
@@ -397,6 +472,7 @@ public class PaymentCreatorTest {
                 productName,
                 paymentReturnUrl,
                 language,
+                false,
                 Map.of(),
                 CARD_PAYMENT_LINK);
 
@@ -511,6 +587,31 @@ public class PaymentCreatorTest {
     }
 
     private ProductEntity createProductEntity(int id,
+                                              ProductType type,
+                                              long price,
+                                              String externalId,
+                                              String name,
+                                              String returnUrl,
+                                              String apiToken,
+                                              Integer gatewayAccountId,
+                                              Boolean referenceEnabled,
+                                              SupportedLanguage language) {
+        ProductEntity productEntity = createProductEntity(id,
+                price,
+                externalId,
+                name,
+                returnUrl,
+                apiToken,
+                gatewayAccountId,
+                referenceEnabled,
+                language);
+
+        productEntity.setType(type);
+
+        return productEntity;
+    }
+
+    private ProductEntity createProductEntity(int id,
                                               long price,
                                               String externalId,
                                               String name,
@@ -550,9 +651,10 @@ public class PaymentCreatorTest {
                                                 String description,
                                                 String returnUrl,
                                                 SupportedLanguage language,
+                                                boolean moto,
                                                 Map<String, String> metadata,
                                                 Source source) {
-        return new PaymentRequest(price, externalId, description, returnUrl, language, metadata, source);
+        return new PaymentRequest(price, externalId, description, returnUrl, language, moto, metadata, source);
     }
 
     private PaymentEntity createPaymentEntity(String paymentId, String nextUrl, ProductEntity productEntity, PaymentStatus status, Long amount) {

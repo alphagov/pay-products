@@ -99,7 +99,7 @@ public class ProductRequestValidatorTest {
     }
 
     @Test
-    public void shouldError_whenPriceFieldIsMissing_forNonAdhocProduct() {
+    public void shouldError_whenPriceFieldIsMissing_forNonAdhocAndNonAgentIntiatedMotoProduct() {
         JsonNode payload = new ObjectMapper()
                 .valueToTree(ImmutableMap.<String, String>builder()
                         .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
@@ -130,6 +130,26 @@ public class ProductRequestValidatorTest {
                         .put(FIELD_SERVICE_NAME_PATH, "service-name-path")
                         .put(FIELD_PRODUCT_NAME_PATH, "product-name-path")
                         .put(FIELD_REFERENCE_ENABLED, Boolean.FALSE.toString())
+                        .build());
+
+        Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
+
+        assertThat(errors.isPresent(), is(false));
+    }
+
+    @Test
+    public void shouldNotError_whenPriceFieldServiceNamePathAndProductNamePathAreMissing_forAgentInitiatedMotoProduct() {
+        JsonNode payload = new ObjectMapper()
+                .valueToTree(ImmutableMap.<String, String>builder()
+                        .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
+                        .put(FIELD_PAY_API_TOKEN, "api_token")
+                        .put(FIELD_NAME, "name")
+                        .put(FIELD_SERVICE_NAME, "Example service")
+                        .put(FIELD_RETURN_URL, VALID_RETURN_URL)
+                        .put(FIELD_TYPE, ProductType.AGENT_INITIATED_MOTO.toString())
+                        .put(FIELD_REFERENCE_ENABLED, Boolean.TRUE.toString())
+                        .put(FIELD_REFERENCE_LABEL, "A reference label")
+                        .put(FIELD_REFERENCE_HINT, "A hint")
                         .build());
 
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
@@ -252,7 +272,7 @@ public class ProductRequestValidatorTest {
         Optional<Errors> errors = productRequestValidator.validateCreateRequest(payload);
 
         assertThat(errors.isPresent(), is(true));
-        assertThat(errors.get().getErrors().toString(), is("[Field [type] must be one of [DEMO, PROTOTYPE, ADHOC]]"));
+        assertThat(errors.get().getErrors().toString(), is("[Field [type] must be one of [DEMO, PROTOTYPE, ADHOC, AGENT_INITIATED_MOTO]]"));
     }
 
     @Test

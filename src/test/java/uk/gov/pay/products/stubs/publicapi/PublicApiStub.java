@@ -24,7 +24,7 @@ public class PublicApiStub {
     private static final String PAYMENT_PATH = PAYMENTS_PATH + "/%s";
     
     public static JsonObject createPaymentRequestPayload(long amount, String reference, String description,
-                                                         String returnUrl, String language,
+                                                         String returnUrl, String language, boolean moto,
                                                          Map<String, String> metadataMap) {
         JsonObjectBuilder builder = Json.createObjectBuilder()
                 .add("amount", amount)
@@ -32,11 +32,12 @@ public class PublicApiStub {
                 .add("description", description)
                 .add("return_url", returnUrl)
                 .add("language", language)
+                .add("moto", moto)
                 .add("internal", Json.createObjectBuilder().add("source","CARD_PAYMENT_LINK"));
 
         if (metadataMap != null && !metadataMap.isEmpty()) {
             JsonObjectBuilder mapBuilder = Json.createObjectBuilder();
-            metadataMap.forEach((key, value) -> mapBuilder.add(key, value));
+            metadataMap.forEach(mapBuilder::add);
             builder.add("metadata", mapBuilder.build());
         }
         return  builder.build();
@@ -121,7 +122,7 @@ public class PublicApiStub {
                 .add("Do not add this property to PaymentResponse", "To test deserialisation handles new/unknown properties");
         if (metadataMap != null && !metadataMap.isEmpty()) {
             JsonObjectBuilder mapBuilder = Json.createObjectBuilder();
-            metadataMap.forEach((key, value) -> mapBuilder.add(key, value));
+            metadataMap.forEach(mapBuilder::add);
             builder.add("metadata", mapBuilder.build());
         }
         return  builder.build();

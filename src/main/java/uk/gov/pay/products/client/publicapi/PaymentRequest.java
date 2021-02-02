@@ -2,7 +2,7 @@ package uk.gov.pay.products.client.publicapi;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -11,7 +11,7 @@ import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.util.Map;
 
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class PaymentRequest {
 
@@ -20,6 +20,7 @@ public class PaymentRequest {
     private String description;
     private String returnUrl;
     private SupportedLanguage language;
+    private boolean moto;
     private Internal internal;
     private Map<String, String> metadata;
 
@@ -29,6 +30,7 @@ public class PaymentRequest {
             @JsonProperty("description") String description,
             @JsonProperty("return_url") String returnUrl,
             @JsonProperty("language") @JsonSerialize(using = ToStringSerializer.class) SupportedLanguage language,
+            @JsonProperty("moto") boolean moto,
             @JsonProperty("metadata") Map<String, String> metadata,
             Source source) {
         this.amount = amount;
@@ -36,6 +38,7 @@ public class PaymentRequest {
         this.description = description;
         this.returnUrl = returnUrl;
         this.language = language;
+        this.moto = moto;
         this.metadata = metadata;
         this.internal = new Internal(source);
     }
@@ -80,6 +83,14 @@ public class PaymentRequest {
         this.language = language;
     }
 
+    public boolean isMoto() {
+        return moto;
+    }
+
+    public void setMoto(boolean moto) {
+        this.moto = moto;
+    }
+
     public Internal getInternal() {
         return internal;
     }
@@ -96,6 +107,7 @@ public class PaymentRequest {
                 ", description='" + description + '\'' +
                 ", returnUrl='" + returnUrl + '\'' +
                 ", language='" + language.toString() + '\'' +
+                ", moto=" + moto +
                 ", metadata='" + metadata == null ? "" : metadata.toString() + '\'' +
                 ", source='" + internal.getSource() + '\'' +
                 '}';

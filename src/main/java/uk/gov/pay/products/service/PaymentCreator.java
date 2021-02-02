@@ -3,6 +3,7 @@ package uk.gov.pay.products.service;
 import com.google.inject.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.commons.model.Source;
 import uk.gov.pay.products.client.publicapi.PaymentRequest;
 import uk.gov.pay.products.client.publicapi.PaymentResponse;
 import uk.gov.pay.products.client.publicapi.PublicApiRestClient;
@@ -21,13 +22,13 @@ import uk.gov.pay.products.service.transaction.TransactionContext;
 import uk.gov.pay.products.service.transaction.TransactionFlow;
 import uk.gov.pay.products.service.transaction.TransactionalOperation;
 import uk.gov.pay.products.util.PaymentStatus;
+import uk.gov.pay.products.util.ProductType;
 
 import javax.inject.Inject;
 
 import static java.lang.String.format;
 import static net.logstash.logback.argument.StructuredArguments.kv;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;
 import static uk.gov.pay.logging.LoggingKeys.PAYMENT_EXTERNAL_ID;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUserFriendlyReference;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
@@ -114,6 +115,8 @@ public class PaymentCreator {
             ProductEntity productEntity = paymentEntity.getProductEntity();
             String returnUrl = format("%s/%s", productsConfiguration.getProductsUiConfirmUrl(), paymentEntity.getExternalId());
             Long paymentPrice = priceOverride != null ? priceOverride : productEntity.getPrice();
+            boolean isMoto = productEntity.getType() == ProductType.AGENT_INITIATED_MOTO;
+            Source source = productEntity.getType() == ProductType.AGENT_INITIATED_MOTO ? Source.CARD_AGENT_INITIATED_MOTO : Source.CARD_PAYMENT_LINK;
 
             PaymentRequest paymentRequest = new PaymentRequest(
                     paymentPrice,
@@ -121,8 +124,9 @@ public class PaymentCreator {
                     productEntity.getName(),
                     returnUrl,
                     productEntity.getLanguage(),
+                    isMoto,
                     productEntity.toProductMetadataMap(),
-                    CARD_PAYMENT_LINK);
+                    source);
 
             try {
                 PaymentResponse paymentResponse = publicApiRestClient.createPayment(productEntity.getPayApiToken(), paymentRequest);

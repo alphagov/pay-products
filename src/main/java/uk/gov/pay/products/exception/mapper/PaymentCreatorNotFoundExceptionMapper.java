@@ -16,7 +16,7 @@ public class PaymentCreatorNotFoundExceptionMapper implements ExceptionMapper<Pa
 
     @Override
     public Response toResponse(PaymentCreatorNotFoundException exception) {
-        logger.error("PaymentCreatorNotFoundException thrown.", exception);
+        logger.info("PaymentCreatorNotFoundException thrown.", exception);
         return Response
                 .status(Response.Status.NOT_FOUND)
                 .entity(Errors.from(format("Product with product id %s not found.", exception.getProductExternalId())))

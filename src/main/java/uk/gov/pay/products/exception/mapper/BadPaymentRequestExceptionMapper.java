@@ -14,7 +14,7 @@ public class BadPaymentRequestExceptionMapper implements ExceptionMapper<BadPaym
 
     @Override
     public Response toResponse(BadPaymentRequestException exception) {
-        logger.error("BadPaymentRequestException thrown.", exception);
+        logger.info("BadPaymentRequestException thrown.", exception);
         return Response
                 .status(Response.Status.BAD_REQUEST)
                 .entity(Errors.from(exception.getMessage()))

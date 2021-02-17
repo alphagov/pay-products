@@ -14,7 +14,7 @@ public class ProductNotFoundExceptionMapper implements ExceptionMapper<ProductNo
     private final Logger logger = LoggerFactory.getLogger(getClass());
     @Override
     public Response toResponse(ProductNotFoundException exception) {
-        logger.error("PaymentCreatorNotFoundException thrown", exception);
+        logger.info("PaymentCreatorNotFoundException thrown", exception);
         return Response
                 .status(Response.Status.NOT_FOUND)
                 .entity(Errors.from(format("Product with product id %s not found.", exception.getProductExternalId())))

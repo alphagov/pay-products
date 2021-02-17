@@ -17,7 +17,7 @@ public class MetadataNotFoundExceptionMapper implements ExceptionMapper<Metadata
 
     @Override
     public Response toResponse(MetadataNotFoundException exception) {
-        logger.error("PaymentCreationException thrown.", exception);
+        logger.info("PaymentCreationException thrown.", exception);
 
         return Response
                 .status(Response.Status.NOT_FOUND)

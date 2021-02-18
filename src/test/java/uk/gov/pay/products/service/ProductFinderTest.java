@@ -9,10 +9,13 @@ import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.dao.ProductDao;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductStatus;
+import uk.gov.pay.products.util.ProductType;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -54,6 +57,41 @@ public class ProductFinderTest {
         Optional<Product> productOptional = productFinder.findByExternalId(externalId);
 
         assertFalse(productOptional.isPresent());
+    }
+
+    @Test
+    public void findByGatewayAccountId_shouldReturnDecoratedProduct_whenFound() {
+        Integer gatewayAccountId = 1;
+        String externalId = "1";
+        ProductEntity productEntity = new ProductEntity();
+        productEntity.setExternalId(externalId);
+        productEntity.setGatewayAccountId(gatewayAccountId);
+        productEntity.setReferenceEnabled(false);
+        when(productDao.findByGatewayAccountId(gatewayAccountId)).thenReturn(List.of(productEntity));
+
+        List<Product> productsList = productFinder.findByGatewayAccountId(gatewayAccountId);
+
+        assertThat(productsList.size(), is(1));
+        assertThat(productsList.get(0).getExternalId(), is(externalId));
+        assertThat(productsList.get(0).getLinks().size(), is(2));
+    }
+
+    @Test
+    public void findByGatewayAccountIdAndType_shouldReturnDecoratedProduct_whenFound() {
+        Integer gatewayAccountId = 1;
+        String externalId = "1";
+        ProductEntity productEntity = new ProductEntity();
+        productEntity.setExternalId(externalId);
+        productEntity.setGatewayAccountId(gatewayAccountId);
+        productEntity.setType(ProductType.ADHOC);
+        productEntity.setReferenceEnabled(false);
+        when(productDao.findByGatewayAccountIdAndType(gatewayAccountId, ProductType.ADHOC)).thenReturn(List.of(productEntity));
+
+        List<Product> productsList = productFinder.findByGatewayAccountIdAndType(gatewayAccountId, ProductType.ADHOC);
+
+        assertThat(productsList.size(), is(1));
+        assertThat(productsList.get(0).getExternalId(), is(externalId));
+        assertThat(productsList.get(0).getLinks().size(), is(greaterThan(0)));
     }
 
     @Test

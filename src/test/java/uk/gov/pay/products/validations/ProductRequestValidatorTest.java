@@ -472,4 +472,13 @@ public class ProductRequestValidatorTest {
 
         assertThat(errors.isPresent(), is(false));
     }
+
+    @Test
+    public void shouldError_whenTypeIsInvalid() {
+        Optional<Errors> errors = productRequestValidator.validateProductType("THIS_IS_NOT_A_PRODUCT_TYPE");
+
+        assertThat(errors.isPresent(), is(true));
+        assertThat(errors.get().getErrors().toString(), is("[Field [type] must be one of [DEMO, PROTOTYPE, ADHOC, AGENT_INITIATED_MOTO]]"));
+    }
+
 }

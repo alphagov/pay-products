@@ -910,12 +910,59 @@ public class ProductResourceIT extends IntegrationTest {
     }
 
     @Test
+    public void findProductsByGatewayAccountIdWithType_shouldReturnOnlyProductsWithMatchingType_whenFound() {
+        int gatewayAccountId = randomInt();
+
+        Product productWithCorrectType = ProductEntityFixture.aProductEntity()
+                .withGatewayAccountId(gatewayAccountId)
+                .withType(ProductType.AGENT_INITIATED_MOTO)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(productWithCorrectType);
+
+        Product productWithIncorrectType = ProductEntityFixture.aProductEntity()
+                .withGatewayAccountId(gatewayAccountId)
+                .withType(ProductType.ADHOC)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(productWithIncorrectType);
+
+        ValidatableResponse response = givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/gateway-account/%s/products?type=%s", gatewayAccountId, ProductType.AGENT_INITIATED_MOTO))
+                .then()
+                .statusCode(200);
+
+        response.body("", hasSize(1))
+                .body("[0].gateway_account_id", is(gatewayAccountId))
+                .body("[0]._links", hasSize(2))
+                .body("[0].description", matchesPattern(productWithCorrectType.getDescription()))
+                .body("[0].price", is(productWithCorrectType.getPrice().intValue()))
+                .body("[0].name", matchesPattern(productWithCorrectType.getName()));
+    }
+
+    @Test
     public void findProductsByGatewayAccountId_shouldReturnNoProduct_whenNoneFound() {
         int unknownGatewayAccountId = randomInt();
         givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
                 .get(format("/v1/api/gateway-account/%s/products", unknownGatewayAccountId))
+                .then()
+                .statusCode(200)
+                .body("", hasSize(0));
+    }
+
+    @Test
+    public void findProductsByGatewayAccountIdWithType_shouldReturnNoProduct_whenNoneFound() {
+        int unknownGatewayAccountId = randomInt();
+        givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/gateway-account/%s/products?type=%s", unknownGatewayAccountId, ProductType.DEMO))
                 .then()
                 .statusCode(200)
                 .body("", hasSize(0));
@@ -937,6 +984,28 @@ public class ProductResourceIT extends IntegrationTest {
                 .when()
                 .accept(APPLICATION_JSON)
                 .get(format("/v1/api/gateway-account/%s/products", gatewayAccountId))
+                .then()
+                .statusCode(200)
+                .body("", hasSize(0));
+    }
+
+    @Test
+    public void findProductsByGatewayAccountIdWithType_shouldNotReturnInactiveProducts() {
+        int gatewayAccountId = randomInt();
+
+        Product product = ProductEntityFixture.aProductEntity()
+                .withGatewayAccountId(gatewayAccountId)
+                .withStatus(ProductStatus.INACTIVE)
+                .withType(ProductType.PROTOTYPE)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+
+        givenSetup()
+                .when()
+                .accept(APPLICATION_JSON)
+                .get(format("/v1/api/gateway-account/%s/products?type=%s", gatewayAccountId, ProductType.PROTOTYPE))
                 .then()
                 .statusCode(200)
                 .body("", hasSize(0));

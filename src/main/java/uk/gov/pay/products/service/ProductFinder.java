@@ -7,6 +7,7 @@ import uk.gov.pay.products.model.ProductUsageStat;
 import uk.gov.pay.products.persistence.dao.ProductDao;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductStatus;
+import uk.gov.pay.products.util.ProductType;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,13 +26,15 @@ public class ProductFinder {
     @Transactional
     public Optional<Product> findByExternalId(String externalId) {
         return productDao.findByExternalId(externalId)
-                .map(productEntity -> linksDecorator.decorate(productEntity.toProduct()));
+                .map(ProductEntity::toProduct)
+                .map(linksDecorator::decorate);
     }
 
     @Transactional
     public Optional<Product> findByGatewayAccountIdAndExternalId(Integer gatewayAccountId, String externalId) {
         return productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)
-                .map(productEntity -> linksDecorator.decorate(productEntity.toProduct()));
+                .map(ProductEntity::toProduct)
+                .map(linksDecorator::decorate);
     }
 
     @Deprecated
@@ -92,26 +95,31 @@ public class ProductFinder {
         return productDao.findByGatewayAccountId(gatewayAccountId)
                 .stream()
                 .map(ProductEntity::toProduct)
-                .collect(Collectors.toList())
-                .stream()
                 .map(linksDecorator::decorate)
-                .collect(Collectors.toList());
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    @Transactional
+    public List<Product> findByGatewayAccountIdAndType(Integer gatewayAccountId, ProductType type) {
+        return productDao.findByGatewayAccountIdAndType(gatewayAccountId, type)
+                .stream()
+                .map(ProductEntity::toProduct)
+                .map(linksDecorator::decorate)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     @Transactional
     public Optional<Product> findByProductPath(String serviceNamePath, String productNamePath) {
         return productDao.findByProductPath(serviceNamePath, productNamePath)
-                .map(productEntity -> linksDecorator.decorate(productEntity.toProduct()));
+                .map(ProductEntity::toProduct)
+                .map(linksDecorator::decorate);
     }
 
     @Transactional
     public List<ProductUsageStat> findProductsAndUsage(Integer gatewayAccountId) {
         return productDao.findProductsAndUsage(gatewayAccountId)
                 .stream()
-                .map(productUsageStat -> {
-                    productUsageStat.setProduct(linksDecorator.decorate(productUsageStat.getProduct()));
-                    return productUsageStat;
-                })
-                .collect(Collectors.toList());
+                .peek(productUsageStat -> productUsageStat.setProduct(linksDecorator.decorate(productUsageStat.getProduct())))
+                .collect(Collectors.toUnmodifiableList());
     }
 }

@@ -9,6 +9,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import uk.gov.pay.products.infra.DropwizardAppWithPostgresRule;
 import uk.gov.pay.products.model.Product;
+import uk.gov.pay.products.util.ProductType;
 import uk.gov.pay.products.utils.DatabaseTestHelper;
 
 import static uk.gov.pay.products.fixtures.ProductEntityFixture.aProductEntity;
@@ -75,10 +76,40 @@ public abstract class ContractTest {
                 .toProduct());
     }
 
+    @State("three products with gateway account id 42 and type ADHOC exist")
+    public void threeProductsExistForGatewayAccountAndTypeAdhoc() {
+        dbHelper.addProduct(aProductEntity()
+                .withGatewayAccountId(42)
+                .withType(ProductType.ADHOC)
+                .build()
+                .toProduct());
+        dbHelper.addProduct(aProductEntity()
+                .withGatewayAccountId(42)
+                .withType(ProductType.ADHOC)
+                .build()
+                .toProduct());
+        dbHelper.addProduct(aProductEntity()
+                .withGatewayAccountId(42)
+                .withType(ProductType.ADHOC)
+                .build()
+                .toProduct());
+    }
+
     @State("a product with gateway account id 42 and metadata exist")
     public void aProductsWithMetadataExistForGatewayAccount() {
         Product productWithMetadata = aProductEntity()
                 .withGatewayAccountId(42)
+                .build()
+                .toProduct();
+        dbHelper.addProduct(productWithMetadata);
+        dbHelper.addMetadata(productWithMetadata.getExternalId(), "key", "value");
+    }
+
+    @State("a product with gateway account id 42 and type ADHOC and metadata exist")
+    public void aProductsWithMetadataExistForGatewayAccountAndType() {
+        Product productWithMetadata = aProductEntity()
+                .withGatewayAccountId(42)
+                .withType(ProductType.ADHOC)
                 .build()
                 .toProduct();
         dbHelper.addProduct(productWithMetadata);

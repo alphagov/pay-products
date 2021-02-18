@@ -9,6 +9,7 @@ import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.model.ProductUsageStat;
 import uk.gov.pay.products.service.ProductApiTokenManager;
 import uk.gov.pay.products.service.ProductFactory;
+import uk.gov.pay.products.util.ProductType;
 import uk.gov.pay.products.validations.ProductRequestValidator;
 
 import javax.ws.rs.Consumes;
@@ -167,7 +168,17 @@ public class ProductResource {
     @GET
     @Path("/gateway-account/{gatewayAccountId}/products")
     @Produces(APPLICATION_JSON)
-    public Response findProductsByGatewayAccountId(@PathParam("gatewayAccountId") Integer gatewayAccountId) {
+    public Response findProductsByGatewayAccountId(@PathParam("gatewayAccountId") Integer gatewayAccountId, @QueryParam("type") String type) {
+        if (type != null) {
+            return requestValidator.validateProductType(type)
+                    .map(errors -> Response.status(Response.Status.BAD_REQUEST).entity(errors).build())
+                    .orElseGet(() -> {
+                        logger.info("Searching for products with gatewayAccountId and type - [ {}, {} ]", gatewayAccountId, type);
+                        List<Product> products = productFactory.productFinder().findByGatewayAccountIdAndType(gatewayAccountId, ProductType.valueOf(type));
+                        return Response.status(OK).entity(products).build();
+                    });
+        }
+
         logger.info("Searching for products with gatewayAccountId - [ {} ]", gatewayAccountId);
         List<Product> products = productFactory.productFinder().findByGatewayAccountId(gatewayAccountId);
         return Response.status(OK).entity(products).build();

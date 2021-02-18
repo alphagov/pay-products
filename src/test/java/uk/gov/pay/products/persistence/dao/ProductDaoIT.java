@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static junit.framework.TestCase.assertFalse;
 import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
@@ -137,6 +137,42 @@ public class ProductDaoIT extends DaoTestBase {
         List<ProductEntity> products = productDao.findByGatewayAccountId(gatewayAccountId);
         assertThat(products.size(), is(1));
         assertThat(products.get(0).toProduct(), ProductMatcher.isSame(activeProduct));
+    }
+
+    @Test
+    public void findByGatewayAccountIdAndType_shouldReturnActiveProductsOfTheGivenTypeForTheGivenAccount() {
+        String externalId = randomUuid();
+        Integer gatewayAccountId = randomInt();
+
+        Product activeProductWithCorrectType = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .withType(ProductType.ADHOC)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(activeProductWithCorrectType);
+
+        Product activeProductWithIncorrectType = ProductEntityFixture.aProductEntity()
+                .withGatewayAccountId(gatewayAccountId)
+                .withType(ProductType.DEMO)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(activeProductWithIncorrectType);
+
+        Product inactiveProductWithCorrectType = ProductEntityFixture.aProductEntity()
+                .withGatewayAccountId(gatewayAccountId)
+                .withStatus(ProductStatus.INACTIVE)
+                .withType(ProductType.ADHOC)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(inactiveProductWithCorrectType);
+
+        List<ProductEntity> products = productDao.findByGatewayAccountIdAndType(gatewayAccountId, ProductType.ADHOC);
+        assertThat(products.size(), is(1));
+        assertThat(products.get(0).toProduct(), ProductMatcher.isSame(activeProductWithCorrectType));
     }
 
     @Test

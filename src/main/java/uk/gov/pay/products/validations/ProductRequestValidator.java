@@ -26,6 +26,7 @@ import static uk.gov.pay.products.util.ProductType.ADHOC;
 import static uk.gov.pay.products.util.ProductType.AGENT_INITIATED_MOTO;
 
 public class ProductRequestValidator {
+
     private final RequestValidations requestValidations;
     private final boolean returnUrlMustBeSecure;
     private final ProductsMetadataRequestValidator metadataRequestValidator;
@@ -99,6 +100,15 @@ public class ProductRequestValidator {
         if (errors.isEmpty()) {
             return metadataRequestValidator.validateMetadata(payload);
         }
+
+        return errors.map(Errors::from);
+    }
+
+    public Optional<Errors> validateProductType(String type) {
+        Optional<List<String>> errors = requestValidations.checkIsValidEnumValue (
+                type,
+                EnumSet.allOf(ProductType.class),
+                FIELD_TYPE);
 
         return errors.map(Errors::from);
     }

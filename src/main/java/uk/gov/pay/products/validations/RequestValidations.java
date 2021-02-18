@@ -45,8 +45,11 @@ public class RequestValidations {
     }
 
     Optional<List<String>> checkIsValidEnumValue(JsonNode payload, EnumSet<?> enumSet, String field) {
-        String value = payload.get(field).asText();
-        if (enumSet.stream().noneMatch(constant -> constant.toString().equals(value))) {
+        return checkIsValidEnumValue(payload.get(field).asText(), enumSet, field);
+    }
+
+    Optional<List<String>> checkIsValidEnumValue(String value, EnumSet<?> enumSet, String field) {
+        if (enumSet.stream().map(Enum::toString).noneMatch(constant -> constant.equals(value))) {
             return Optional.of(singletonList(format("Field [%s] must be one of %s", field, enumSet)));
         }
         return Optional.empty();

@@ -63,6 +63,20 @@ public class ProductDao extends JpaDao<ProductEntity> {
                 .getResultList();
     }
 
+    public List<ProductEntity> findByGatewayAccountIdAndType(Integer gatewayAccountId, ProductType type) {
+        String query = "SELECT product FROM ProductEntity product " +
+                "WHERE product.gatewayAccountId = :gatewayAccountId " +
+                "AND product.type = :type " +
+                "AND product.status = :status";
+
+        return entityManager.get()
+                .createQuery(query, ProductEntity.class)
+                .setParameter("gatewayAccountId", gatewayAccountId)
+                .setParameter("type", type)
+                .setParameter("status", ProductStatus.ACTIVE)
+                .getResultList();
+    }
+
     public Optional<ProductEntity> findByProductPath(String serviceNamePath, String productNamePath) {
         String query = "SELECT product FROM ProductEntity product " +
                 "WHERE product.serviceNamePath = :serviceNamePath " +

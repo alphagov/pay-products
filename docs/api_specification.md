@@ -34,7 +34,7 @@ Content-Type: application/json
 | `gateway_account_id`     |    X     | gateway account id of the Gateway Account as identified by adminusers.  |   |
 | `pay_api_token`          |    X     | valid api token for the gateway account of above service which this product takes payments for |  |
 | `name`                   |    X     | Name of the product. This will be passed as the `name` when creating the charge | |
-| `price`                  |          | Price for the product in pence. This will be passed as the  `amount` when creating charge. Mandatory for Non-ADHOC products    | |
+| `price`                  |          | Price for the product in pence. This will be passed as the  `amount` when creating charge. Mandatory for Non-ADHOC and Non-AGENT_INITIATED_MOTO products    | |
 | `description`            |          | Description of the product. This will be passed as the `description` when creating the charge | |
 | `return_url`             |          | (https only) where to redirect to upon completion of a payment. If not provided, `pay-products` will generate a default url to itself when creating a charge | |
 | `service_name_path`      |          | Service Name Path part of Product Path. Required for Adhoc type only.  |   |
@@ -122,7 +122,7 @@ Content-Type: application/json
 | Field                    | required | Description                                                      | Supported Values     |
 | ------------------------ |:--------:| ---------------------------------------------------------------- |----------------------|
 | `name`                   |    X     | Name of the product. This will be passed as the `name` when creating the charge | |
-| `price`                  |    X     | Price for the product in pence. This will be passed as the  `amount` when creating charge. Mandatory for Non-ADHOC products    | |
+| `price`                  |    X     | Price for the product in pence. This will be passed as the  `amount` when creating charge. Mandatory for Non-ADHOC and Non-AGENT_INITIATED_MOTO products    | |
 | `description`            |          | Description of the product. This will be passed as the `description` when creating the charge | |
 
 ### Response example
@@ -291,10 +291,14 @@ same as above(docs/api_specification.md#post-v1apiproducts) except that `_links.
 
 ## GET /v1/api/gateway-account/{gatewayAccountId}/products
 
-This endpoint retrieves list of products that belongs to the specified gatewayAccountId.
+This endpoint retrieves list of products that belongs to the specified gatewayAccountId, optionally filtering by type (ADHOC, PROTOTYPE etc.).
 
 ```
 GET /v1/api/gateway-account/1234/products
+```  
+
+```
+GET /v1/api/gateway-account/1234/products?type=ADHOC
 ```  
 
 ### Response example

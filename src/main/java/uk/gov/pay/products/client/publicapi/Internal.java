@@ -1,7 +1,7 @@
 package uk.gov.pay.products.client.publicapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.pay.commons.model.Source;
+import uk.gov.service.payments.commons.model.Source;
 
 public class Internal {
 

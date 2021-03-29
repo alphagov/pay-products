@@ -3,7 +3,6 @@ package uk.gov.pay.products.service;
 import com.google.inject.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.pay.commons.model.Source;
 import uk.gov.pay.products.client.publicapi.PaymentRequest;
 import uk.gov.pay.products.client.publicapi.PaymentResponse;
 import uk.gov.pay.products.client.publicapi.PublicApiRestClient;
@@ -23,15 +22,16 @@ import uk.gov.pay.products.service.transaction.TransactionFlow;
 import uk.gov.pay.products.service.transaction.TransactionalOperation;
 import uk.gov.pay.products.util.PaymentStatus;
 import uk.gov.pay.products.util.ProductType;
+import uk.gov.service.payments.commons.model.Source;
 
 import javax.inject.Inject;
 
 import static java.lang.String.format;
 import static net.logstash.logback.argument.StructuredArguments.kv;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static uk.gov.pay.logging.LoggingKeys.PAYMENT_EXTERNAL_ID;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUserFriendlyReference;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
+import static uk.gov.service.payments.logging.LoggingKeys.PAYMENT_EXTERNAL_ID;
 
 public class PaymentCreator {
 

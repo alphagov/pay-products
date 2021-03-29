@@ -5,9 +5,7 @@ import junit.framework.JUnit4TestAdapter;
 import junit.framework.TestSuite;
 import org.junit.runner.RunWith;
 import org.junit.runners.AllTests;
-import uk.gov.pay.commons.testing.pact.provider.CreateTestSuite;
-
-import java.util.Map;
+import uk.gov.service.payments.commons.testing.pact.provider.CreateTestSuite;
 
 @RunWith(AllTests.class)
 public class ContractTestSuite {

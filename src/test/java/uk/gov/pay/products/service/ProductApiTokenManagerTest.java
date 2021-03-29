@@ -13,7 +13,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
-import uk.gov.pay.commons.model.TokenPaymentType;
 import uk.gov.pay.products.client.publicauth.model.CreateApiTokenRequest;
 import uk.gov.pay.products.client.publicauth.model.NewApiTokenFromPublicAuthResponse;
 import uk.gov.pay.products.client.publicauth.model.TokenSource;
@@ -23,6 +22,7 @@ import uk.gov.pay.products.exception.FailToReplaceApiTokenException;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.util.ProductType;
+import uk.gov.service.payments.commons.model.TokenPaymentType;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;

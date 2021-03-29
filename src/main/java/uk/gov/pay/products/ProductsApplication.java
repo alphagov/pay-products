@@ -13,11 +13,6 @@ import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import uk.gov.pay.commons.utils.healthchecks.DatabaseHealthCheck;
-import uk.gov.pay.commons.utils.metrics.DatabaseMetricsService;
-import uk.gov.pay.logging.GovUkPayDropwizardRequestJsonLogLayoutFactory;
-import uk.gov.pay.logging.LoggingFilter;
-import uk.gov.pay.logging.LogstashConsoleAppenderFactory;
 import uk.gov.pay.products.config.PersistenceServiceInitialiser;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.config.ProductsModule;
@@ -35,6 +30,11 @@ import uk.gov.pay.products.healthchecks.Ping;
 import uk.gov.pay.products.resources.HealthCheckResource;
 import uk.gov.pay.products.resources.PaymentResource;
 import uk.gov.pay.products.resources.ProductResource;
+import uk.gov.service.payments.commons.utils.healthchecks.DatabaseHealthCheck;
+import uk.gov.service.payments.commons.utils.metrics.DatabaseMetricsService;
+import uk.gov.service.payments.logging.GovUkPayDropwizardRequestJsonLogLayoutFactory;
+import uk.gov.service.payments.logging.LoggingFilter;
+import uk.gov.service.payments.logging.LogstashConsoleAppenderFactory;
 
 import java.util.concurrent.TimeUnit;
 

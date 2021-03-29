@@ -1,8 +1,8 @@
 package uk.gov.pay.products.validations;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import uk.gov.pay.commons.model.charge.ExternalMetadata;
 import uk.gov.pay.products.util.Errors;
+import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 
 import java.util.HashSet;
 import java.util.Iterator;

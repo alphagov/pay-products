@@ -2,10 +2,10 @@ package uk.gov.pay.products.validations;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
-import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.util.Errors;
 import uk.gov.pay.products.util.ProductType;
+import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import java.util.EnumSet;
 import java.util.List;

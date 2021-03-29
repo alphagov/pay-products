@@ -13,10 +13,10 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.pay.commons.testing.db.PostgresDockerRule;
 import uk.gov.pay.products.ProductsApplication;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.utils.DatabaseTestHelper;
+import uk.gov.service.payments.commons.testing.db.PostgresDockerRule;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

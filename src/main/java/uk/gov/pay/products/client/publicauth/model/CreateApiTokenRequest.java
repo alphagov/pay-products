@@ -2,7 +2,7 @@ package uk.gov.pay.products.client.publicauth.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.pay.commons.model.TokenPaymentType;
+import uk.gov.service.payments.commons.model.TokenPaymentType;
 
 import java.util.Objects;
 

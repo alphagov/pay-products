@@ -30,10 +30,10 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.OK;
 import static net.logstash.logback.argument.StructuredArguments.kv;
-import static uk.gov.pay.logging.LoggingKeys.GATEWAY_ACCOUNT_ID;
 import static uk.gov.pay.products.model.Product.FIELD_GATEWAY_ACCOUNT_ID;
 import static uk.gov.pay.products.model.Product.FIELD_NAME;
 import static uk.gov.pay.products.model.Product.FIELD_TYPE;
+import static uk.gov.service.payments.logging.LoggingKeys.GATEWAY_ACCOUNT_ID;
 
 @Path("/v1/api")
 public class ProductResource {

@@ -4,13 +4,13 @@ import com.google.common.collect.ImmutableMap;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Assert;
 import org.junit.Test;
-import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.entity.PaymentEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
+import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -34,12 +34,12 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
-import static uk.gov.pay.commons.model.TokenPaymentType.CARD;
 import static uk.gov.pay.products.client.publicauth.model.TokenSource.PRODUCTS;
 import static uk.gov.pay.products.fixtures.PaymentEntityFixture.aPaymentEntity;
 import static uk.gov.pay.products.service.ProductApiTokenManager.NEW_API_TOKEN_PATH;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
+import static uk.gov.service.payments.commons.model.TokenPaymentType.CARD;
 
 public class ProductResourceIT extends IntegrationTest {
 

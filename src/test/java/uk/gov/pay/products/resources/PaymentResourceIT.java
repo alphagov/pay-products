@@ -4,11 +4,11 @@ import com.google.common.collect.ImmutableMap;
 import io.restassured.response.ValidatableResponse;
 import org.apache.http.HttpStatus;
 import org.junit.Test;
-import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.entity.PaymentEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
+import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import javax.ws.rs.HttpMethod;
 import java.util.List;

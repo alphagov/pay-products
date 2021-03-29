@@ -10,8 +10,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import uk.gov.pay.commons.model.Source;
-import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.products.client.publicapi.PaymentRequest;
 import uk.gov.pay.products.client.publicapi.PaymentResponse;
 import uk.gov.pay.products.client.publicapi.PublicApiRestClient;
@@ -33,6 +31,8 @@ import uk.gov.pay.products.service.transaction.TransactionFlow;
 import uk.gov.pay.products.util.PaymentStatus;
 import uk.gov.pay.products.util.ProductType;
 import uk.gov.pay.products.util.RandomIdGenerator;
+import uk.gov.service.payments.commons.model.Source;
+import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import java.util.Map;
 import java.util.Optional;
@@ -47,12 +47,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
-import static uk.gov.pay.commons.model.Source.CARD_AGENT_INITIATED_MOTO;
-import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;
 import static uk.gov.pay.products.util.PaymentStatus.ERROR;
 import static uk.gov.pay.products.util.PaymentStatus.SUBMITTED;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUserFriendlyReference;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
+import static uk.gov.service.payments.commons.model.Source.CARD_AGENT_INITIATED_MOTO;
+import static uk.gov.service.payments.commons.model.Source.CARD_PAYMENT_LINK;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*"})

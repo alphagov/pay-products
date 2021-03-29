@@ -1,10 +1,10 @@
 package uk.gov.pay.products.fixtures;
 
-import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.persistence.entity.ProductMetadataEntity;
 import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
+import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import java.time.ZonedDateTime;
 import java.util.List;

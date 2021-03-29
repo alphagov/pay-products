@@ -5,12 +5,12 @@ import io.dropwizard.util.Duration;
 import org.apache.http.HttpStatus;
 import org.junit.ClassRule;
 import org.junit.Test;
-import uk.gov.pay.commons.model.SupportedLanguage;
-import uk.gov.pay.commons.testing.port.PortFactory;
 import uk.gov.pay.products.client.RestClientFactory;
 import uk.gov.pay.products.config.RestClientConfiguration;
 import uk.gov.pay.products.exception.PublicApiResponseErrorException;
 import uk.gov.pay.products.stubs.publicapi.PublicApiStub;
+import uk.gov.service.payments.commons.model.SupportedLanguage;
+import uk.gov.service.payments.commons.testing.port.PortFactory;
 
 import javax.json.JsonObject;
 import javax.ws.rs.client.Client;
@@ -25,11 +25,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;
 import static uk.gov.pay.products.matchers.PaymentResponseMatcher.hasAllPaymentProperties;
 import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.createPaymentRequestPayload;
 import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.setupResponseToCreatePaymentRequest;
 import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.setupResponseToGetPaymentRequest;
+import static uk.gov.service.payments.commons.model.Source.CARD_PAYMENT_LINK;
 
 public class PublicApiRestClientTest {
     private final static int PUBLIC_API_PORT = PortFactory.findFreePort();

@@ -5,9 +5,9 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.restassured.specification.RequestSpecification;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import uk.gov.pay.commons.testing.port.PortFactory;
 import uk.gov.pay.products.infra.DropwizardAppWithPostgresRule;
 import uk.gov.pay.products.utils.DatabaseTestHelper;
+import uk.gov.service.payments.commons.testing.port.PortFactory;
 
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.restassured.RestAssured.given;

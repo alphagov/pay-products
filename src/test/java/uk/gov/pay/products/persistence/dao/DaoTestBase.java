@@ -10,9 +10,9 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.pay.commons.testing.db.PostgresDockerRule;
 import uk.gov.pay.products.infra.GuicedTestEnvironment;
 import uk.gov.pay.products.utils.DatabaseTestHelper;
+import uk.gov.service.payments.commons.testing.db.PostgresDockerRule;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

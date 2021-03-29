@@ -7,7 +7,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.products.matchers.ProductMatcher;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.model.ProductMetadata;
@@ -15,6 +14,7 @@ import uk.gov.pay.products.persistence.dao.ProductDao;
 import uk.gov.pay.products.persistence.dao.ProductMetadataDao;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductType;
+import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import java.util.List;
 import java.util.Optional;

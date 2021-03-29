@@ -16,7 +16,7 @@ import java.util.Optional;
 import static java.lang.String.format;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static net.logstash.logback.argument.StructuredArguments.kv;
-import static uk.gov.pay.logging.LoggingKeys.PAYMENT_EXTERNAL_ID;
+import static uk.gov.service.payments.logging.LoggingKeys.PAYMENT_EXTERNAL_ID;
 
 public class PublicApiRestClient {
     private static final Logger logger = LoggerFactory.getLogger(PublicApiRestClient.class);

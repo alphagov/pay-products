@@ -8,10 +8,10 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import java.io.IOException;
 import java.util.List;
 
-import static uk.gov.pay.logging.LoggingKeys.GATEWAY_ACCOUNT_ID;
-import static uk.gov.pay.logging.LoggingKeys.PAYMENT_EXTERNAL_ID;
-import static uk.gov.pay.logging.LoggingKeys.SERVICE_PAYMENT_REFERENCE;
 import static uk.gov.pay.products.filters.LoggingMDCRequestFilter.PRODUCT_EXTERNAL_ID;
+import static uk.gov.service.payments.logging.LoggingKeys.GATEWAY_ACCOUNT_ID;
+import static uk.gov.service.payments.logging.LoggingKeys.PAYMENT_EXTERNAL_ID;
+import static uk.gov.service.payments.logging.LoggingKeys.SERVICE_PAYMENT_REFERENCE;
 
 public class LoggingMDCResponseFilter implements ContainerResponseFilter {
     

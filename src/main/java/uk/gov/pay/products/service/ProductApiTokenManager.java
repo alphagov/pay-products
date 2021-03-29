@@ -16,8 +16,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Optional;
 
-import static uk.gov.pay.commons.model.TokenPaymentType.CARD;
 import static uk.gov.pay.products.client.publicauth.model.TokenSource.PRODUCTS;
+import static uk.gov.service.payments.commons.model.TokenPaymentType.CARD;
 
 public class ProductApiTokenManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductApiTokenManager.class);

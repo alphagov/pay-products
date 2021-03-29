@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import uk.gov.pay.commons.model.Source;
-import uk.gov.pay.commons.model.SupportedLanguage;
+import uk.gov.service.payments.commons.model.Source;
+import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import java.util.Map;
 

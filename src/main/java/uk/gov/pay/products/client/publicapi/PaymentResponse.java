@@ -5,14 +5,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import uk.gov.pay.commons.model.SupportedLanguage;
-import uk.gov.pay.commons.model.SupportedLanguageJsonDeserializer;
 import uk.gov.pay.products.client.publicapi.model.CardBrand;
 import uk.gov.pay.products.client.publicapi.model.CardDetails;
 import uk.gov.pay.products.client.publicapi.model.Links;
 import uk.gov.pay.products.client.publicapi.model.PaymentState;
 import uk.gov.pay.products.client.publicapi.model.RefundSummary;
 import uk.gov.pay.products.client.publicapi.model.SettlementSummary;
+import uk.gov.service.payments.commons.model.SupportedLanguage;
+import uk.gov.service.payments.commons.model.SupportedLanguageJsonDeserializer;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)

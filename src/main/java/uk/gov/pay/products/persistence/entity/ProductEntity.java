@@ -1,11 +1,11 @@
 package uk.gov.pay.products.persistence.entity;
 
-import uk.gov.pay.commons.model.SupportedLanguage;
-import uk.gov.pay.commons.model.SupportedLanguageJpaConverter;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.model.ProductMetadata;
 import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
+import uk.gov.service.payments.commons.model.SupportedLanguage;
+import uk.gov.service.payments.commons.model.SupportedLanguageJpaConverter;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;

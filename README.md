@@ -20,8 +20,6 @@ These products are integrated with GOV.UK Pay so that a user can make payments u
 | `JAVA_OPTS`                   | Commandline arguments to pass to the java runtime. Optional. |
 | `JPA_LOG_LEVEL`               | The logging level to set for JPA. Defaults to `WARNING`. |
 | `JPA_SQL_LOG_LEVEL`           | The logging level to set for JPA SQL logging. Defaults to `WARNING`. |
-| `METRICS_HOST`                | The hostname to send graphite metrics to. Defaults to `localhost`. |
-| `METRICS_PORT`                | The port number to send graphite metrics to. Defaults to `8092`. |
 | `PORT`                        | The port number to listen for requests on. Defaults to `8080`. |
 | `PRODUCTSUI_CONFIRMATION_URL` | The URL of the confirmation page endpoint in the [products-ui](https://github.com/alphagov/pay-products-ui) microservice. |
 | `PRODUCTSUI_PAY_URL`          | The URL of the `pay` endpoint in the [products-ui](https://github.com/alphagov/pay-products-ui) microservice. |

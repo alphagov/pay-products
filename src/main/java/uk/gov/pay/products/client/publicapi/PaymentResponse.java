@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import uk.gov.pay.products.client.publicapi.model.CardBrand;
-import uk.gov.pay.products.client.publicapi.model.CardDetails;
 import uk.gov.pay.products.client.publicapi.model.Links;
 import uk.gov.pay.products.client.publicapi.model.PaymentState;
 import uk.gov.pay.products.client.publicapi.model.RefundSummary;
@@ -28,9 +26,7 @@ public class PaymentResponse {
     private String createdDate;
     private RefundSummary refundSummary;
     private SettlementSummary settlementSummary;
-    private CardDetails cardDetails;
     private Links links;
-    private CardBrand cardBrand;
     private SupportedLanguage language;
 
     public PaymentResponse() {
@@ -48,9 +44,7 @@ public class PaymentResponse {
             @JsonProperty("created_date") String createdDate,
             @JsonProperty("refund_summary") RefundSummary refundSummary,
             @JsonProperty("settlement_summary") SettlementSummary settlementSummary,
-            @JsonProperty("card_details") CardDetails cardDetails,
             @JsonProperty("_links") Links links,
-            @JsonProperty("card_brand") CardBrand cardBrand,
             @JsonProperty("language") @JsonDeserialize(using = SupportedLanguageJsonDeserializer.class) SupportedLanguage language) {
         this.paymentId = paymentId;
         this.amount = amount;
@@ -63,9 +57,7 @@ public class PaymentResponse {
         this.createdDate = createdDate;
         this.refundSummary = refundSummary;
         this.settlementSummary = settlementSummary;
-        this.cardDetails = cardDetails;
         this.links = links;
-        this.cardBrand = cardBrand;
         this.language = language;
     }
 
@@ -157,28 +149,12 @@ public class PaymentResponse {
         this.settlementSummary = settlementSummary;
     }
 
-    public CardDetails getCardDetails() {
-        return cardDetails;
-    }
-
-    public void setCardDetails(CardDetails cardDetails) {
-        this.cardDetails = cardDetails;
-    }
-
     public Links getLinks() {
         return links;
     }
 
     public void setLinks(Links links) {
         this.links = links;
-    }
-
-    public CardBrand getCardBrand() {
-        return cardBrand;
-    }
-
-    public void setCardBrand(CardBrand cardBrand) {
-        this.cardBrand = cardBrand;
     }
 
     public SupportedLanguage getLanguage() {
@@ -203,7 +179,6 @@ public class PaymentResponse {
                 ", refundSummary=" + refundSummary +
                 ", settlementSummary=" + settlementSummary +
                 ", links=" + links +
-                ", cardBrand='" + cardBrand + '\'' +
                 ", language='" + language.toString() + '\'' +
                 '}';
     }

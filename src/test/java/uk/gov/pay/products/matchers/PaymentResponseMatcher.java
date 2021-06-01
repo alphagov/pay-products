@@ -5,8 +5,6 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import uk.gov.pay.products.client.publicapi.PaymentResponse;
-import uk.gov.pay.products.client.publicapi.model.Address;
-import uk.gov.pay.products.client.publicapi.model.CardDetails;
 import uk.gov.pay.products.client.publicapi.model.Link;
 import uk.gov.pay.products.client.publicapi.model.Links;
 import uk.gov.pay.products.client.publicapi.model.PaymentState;
@@ -57,25 +55,6 @@ public class PaymentResponseMatcher {
 
                 matched = matched && StringUtils.equals(actualSettlementSummary.getCaptureSubmitTime(), expectedSettlementSummary.getString("capture_submit_time"));
                 matched = matched && StringUtils.equals(actualSettlementSummary.getCapturedDate(), expectedSettlementSummary.getString("captured_date"));
-
-                JsonObject expectedCardDetails = expectedPaymentResponse.getJsonObject("card_details");
-                CardDetails actualCardDetails = actualPaymentResponse.getCardDetails();
-                if (actualCardDetails == null) return false;
-
-                matched = matched && StringUtils.equals(actualCardDetails.getLastDigitsCardNumber(), expectedCardDetails.getString("last_digits_card_number"));
-                matched = matched && StringUtils.equals(actualCardDetails.getFirstDigitsCardNumber(), expectedCardDetails.getString("first_digits_card_number"));
-                matched = matched && StringUtils.equals(actualCardDetails.getCardHolderName(), expectedCardDetails.getString("cardholder_name"));
-                matched = matched && StringUtils.equals(actualCardDetails.getExpiryDate(), expectedCardDetails.getString("expiry_date"));
-
-                JsonObject expectedBillingAddress = expectedPaymentResponse.getJsonObject("card_details").getJsonObject("billing_address");
-                Address actualBillingAddress = actualPaymentResponse.getCardDetails().getBillingAddress();
-                if (actualBillingAddress == null) return false;
-
-                matched = matched && StringUtils.equals(actualBillingAddress.getLine1(), expectedBillingAddress.getString("line1"));
-                matched = matched && StringUtils.equals(actualBillingAddress.getLine2(), expectedBillingAddress.getString("line2"));
-                matched = matched && StringUtils.equals(actualBillingAddress.getPostcode(), expectedBillingAddress.getString("postcode"));
-                matched = matched && StringUtils.equals(actualBillingAddress.getCity(), expectedBillingAddress.getString("city"));
-                matched = matched && StringUtils.equals(actualBillingAddress.getCountry(), expectedBillingAddress.getString("country"));
 
                 JsonObject expectedLinks = expectedPaymentResponse.getJsonObject("_links");
                 Links actualLinks = actualPaymentResponse.getLinks();

@@ -87,9 +87,8 @@ public class PublicApiRestClientTest {
         SupportedLanguage language = SupportedLanguage.WELSH;
         boolean moto = false;
 
-        JsonObject expectedPaymentRequestPayload = createPaymentRequestPayload(
-                amount, reference, description, returnUrl, language.toString(), false,null);
-        JsonObject errorPayload = PublicApiStub.createErrorPayload();
+        JsonObject expectedPaymentRequestPayload = createPaymentRequestPayload(amount, reference, description, returnUrl, language.toString(), false,null);
+        JsonObject errorPayload = PublicApiStub.createErrorPayload("a-field", "a-code", "A description");
 
         setupResponseToCreatePaymentRequest(apiToken, expectedPaymentRequestPayload, errorPayload, SC_BAD_REQUEST);
 
@@ -166,7 +165,7 @@ public class PublicApiRestClientTest {
         String paymentId = "hu20sqlact5260q2nanm0q8u93";
         String apiToken = "api-token";
 
-        JsonObject errorPayload = PublicApiStub.createErrorPayload();
+        JsonObject errorPayload = PublicApiStub.createErrorPayload("a-field", "a-code", "A description");
 
         setupResponseToGetPaymentRequest(paymentId, errorPayload, SC_BAD_REQUEST);
 

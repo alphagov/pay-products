@@ -128,11 +128,15 @@ public class PublicApiStub {
         return  builder.build();
     }
 
-    public static JsonObject createErrorPayload() {
-        return Json.createObjectBuilder()
-                .add("field", "a-field")
-                .add("code", "a-code")
-                .add("description", "A description")
+    public static JsonObject createErrorPayload(String field, String code, String description) {
+        JsonObjectBuilder jsonObjectBuilder = Json.createObjectBuilder();
+        if (field != null) {
+            jsonObjectBuilder.add("field", field);
+        }
+
+        return jsonObjectBuilder
+                .add("code", code)
+                .add("description", description)
                 .build();
     }
 

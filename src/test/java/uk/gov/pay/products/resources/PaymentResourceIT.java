@@ -265,6 +265,40 @@ public class PaymentResourceIT extends IntegrationTest {
     }
 
     @Test
+    public void createAPayment_shouldReturn404_whenPublicApiReturnsAccountNotLinked() {
+        Product product = aProductEntity()
+                .withExternalId(randomUuid())
+                .withGatewayAccountId(0)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(product);
+
+        setupResponseToCreatePaymentRequest(product.getPayApiToken(), createErrorPayload(null, "P0940", "Account is not fully configured. Please refer to documentation to setup your account or contact support."), HttpStatus.SC_FORBIDDEN);
+
+        givenSetup()
+                .accept(APPLICATION_JSON)
+                .post(format("/v1/api/products/%s/payments", product.getExternalId()))
+                .then()
+                .statusCode(500)
+                .body("errors", hasSize(1))
+                .body("errors[0]", is("Downstream system error."));
+
+        List<Map<String, Object>> paymentRecords = databaseHelper.getPaymentsByProductExternalId(product.getExternalId());
+
+        assertThat(paymentRecords.size(), is(1));
+
+        assertThat(paymentRecords.get(0), hasKey("id"));
+        assertThat(paymentRecords.get(0), hasKey("external_id"));
+        assertThat(paymentRecords.get(0), hasEntry("govuk_payment_id", null));
+        assertThat(paymentRecords.get(0), hasKey("product_id"));
+        assertThat(paymentRecords.get(0), hasEntry("next_url", null));
+        assertThat(paymentRecords.get(0), hasEntry("status", "ERROR"));
+        assertThat(paymentRecords.get(0), hasEntry("amount", null));
+        assertThat(paymentRecords.get(0), hasKey("date_created"));
+    }
+
+    @Test
     public void createAPayment_shouldFail_whenDownstreamError() {
         Product product = aProductEntity()
                 .withExternalId(randomUuid())
@@ -274,7 +308,7 @@ public class PaymentResourceIT extends IntegrationTest {
 
         databaseHelper.addProduct(product);
 
-        setupResponseToCreatePaymentRequest(product.getPayApiToken(), createErrorPayload(), HttpStatus.SC_BAD_REQUEST);
+        setupResponseToCreatePaymentRequest(product.getPayApiToken(), createErrorPayload("a-field", "a-code", "A description"), HttpStatus.SC_BAD_REQUEST);
 
         givenSetup()
                 .accept(APPLICATION_JSON)

@@ -265,7 +265,7 @@ public class PaymentResourceIT extends IntegrationTest {
     }
 
     @Test
-    public void createAPayment_shouldReturn404_whenPublicApiReturnsAccountNotLinked() {
+    public void createAPayment_shouldReturn500_whenPublicApiReturnsAccountNotLinked() {
         Product product = aProductEntity()
                 .withExternalId(randomUuid())
                 .withGatewayAccountId(0)

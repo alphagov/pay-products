@@ -22,6 +22,7 @@ import uk.gov.pay.products.service.transaction.TransactionFlow;
 import uk.gov.pay.products.service.transaction.TransactionalOperation;
 import uk.gov.pay.products.util.PaymentStatus;
 import uk.gov.pay.products.util.ProductType;
+import uk.gov.pay.products.validations.PanDetector;
 import uk.gov.service.payments.commons.model.Source;
 
 import javax.inject.Inject;
@@ -70,16 +71,16 @@ public class PaymentCreator {
         return linksDecorator.decorate(paymentEntity.toPayment());
     }
 
-    private TransactionalOperation<TransactionContext, PaymentEntity> beforePaymentCreation(String productExternalId, String reference) {
+    private TransactionalOperation<TransactionContext, PaymentEntity> beforePaymentCreation(String productExternalId, String userDefinedReference) {
         return context -> {
             logger.info("Creating a new payment for product external id {}", productExternalId);
             ProductEntity productEntity = productDao.findByExternalId(productExternalId)
                     .orElseThrow(() -> new PaymentCreatorNotFoundException(productExternalId));
             if (productEntity.getReferenceEnabled()) {
-                if (isEmpty(reference)) {
+                if (isEmpty(userDefinedReference)) {
                     throw new BadPaymentRequestException("User defined reference is enabled but missing");
                 }
-                return mergePaymentEntityWithoutReferenceCheck(setupPaymentEntity(productEntity, reference));
+                return mergePaymentEntityWithoutReferenceCheck(setupPaymentEntity(productEntity, userDefinedReference));
             }
             
             PaymentEntity paymentEntity = setupPaymentEntity(productEntity, randomUserFriendlyReference());
@@ -141,6 +142,11 @@ public class PaymentCreator {
                         kv(PAYMENT_EXTERNAL_ID, paymentEntity.getGovukPaymentId()),
                         kv("product_external_id", paymentEntity.getProductEntity().getExternalId())
                 );
+                
+                if (PanDetector.isSuspectedPan(paymentEntity.getReferenceNumber())) {
+                    logger.warn("Suspected PAN entered by user in reference field",
+                            kv(PAYMENT_EXTERNAL_ID, paymentEntity.getGovukPaymentId()));
+                }
             } catch (PublicApiResponseErrorException e) {
                 logger.error("Payment creation for product external id {} failed {}", paymentEntity.getProductEntity().getExternalId(), e);
                 paymentEntity.setStatus(PaymentStatus.ERROR);

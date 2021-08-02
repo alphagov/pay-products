@@ -23,7 +23,7 @@
         <mockito.version>3.11.2</mockito.version>
         <powermock.version>2.0.9</powermock.version>
         <wiremock.version>2.29.1</wiremock.version>
-        <pay-java-commons.version>1.0.20210721142941</pay-java-commons.version>
+        <pay-java-commons.version>1.0.20210802125439</pay-java-commons.version>
         <jackson.version>2.12.4</jackson.version>
         <surefire.version>3.0.0-M5</surefire.version>
     </properties>

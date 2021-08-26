@@ -58,6 +58,7 @@ public class ProductResourceIT extends IntegrationTest {
     private static final String REFERENCE_HINT = "reference_hint";
     private static final String LANGUAGE = "language";
     private static final String METADATA = "metadata";
+    private static final String REQUIRE_CAPTCHA = "require_captcha";
 
     @Test
     public void shouldSuccess_whenSavingAValidProduct_withMinimumMandatoryFields() throws Exception {
@@ -222,7 +223,8 @@ public class ProductResourceIT extends IntegrationTest {
                 .body(REFERENCE_ENABLED_FIELD, is(true))
                 .body(REFERENCE_LABEL, is(referenceLabel))
                 .body(REFERENCE_HINT, is(referenceHint))
-                .body(LANGUAGE, is(language));
+                .body(LANGUAGE, is(language))
+                .body(REQUIRE_CAPTCHA, is(false));
 
         String externalId = response.extract().path(EXTERNAL_ID);
 
@@ -309,6 +311,7 @@ public class ProductResourceIT extends IntegrationTest {
         Product product = ProductEntityFixture.aProductEntity()
                 .withExternalId(externalId)
                 .withGatewayAccountId(gatewayAccountId)
+                .withRequireCaptcha(true)
                 .build()
                 .toProduct();
 
@@ -330,7 +333,8 @@ public class ProductResourceIT extends IntegrationTest {
                 .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
                 .body(TYPE, is(product.getType().name()))
                 .body(DESCRIPTION, is(product.getDescription()))
-                .body(RETURN_URL, is(product.getReturnUrl()));
+                .body(RETURN_URL, is(product.getReturnUrl()))
+                .body(REQUIRE_CAPTCHA, is(true));
 
         String productsUrl = "https://products.url/v1/api/products/";
         String productsUIPayUrl = "https://products-ui.url/pay/";

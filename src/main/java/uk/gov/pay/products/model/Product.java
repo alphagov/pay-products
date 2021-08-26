@@ -41,6 +41,7 @@ public class Product {
     public static final String FIELD_REFERENCE_HINT = "reference_hint";
     public static final String FIELD_LANGUAGE = "language";
     public static final String FIELD_METADATA = "metadata";
+    public static final String FIELD_REQUIRE_CAPTCHA = "require_captcha";
 
     @JsonProperty(FIELD_EXTERNAL_ID)
     private final String externalId;
@@ -74,6 +75,8 @@ public class Product {
     @JsonProperty(FIELD_LANGUAGE)
     @JsonSerialize(using = ToStringSerializer.class)
     private final SupportedLanguage language;
+    @JsonProperty(FIELD_REQUIRE_CAPTCHA)
+    private final Boolean requireCaptcha;
     @JsonIgnore
     private List<ProductMetadata> metadata;
 
@@ -89,11 +92,11 @@ public class Product {
                    String returnUrl,
                    String serviceNamePath,
                    String productNamePath,
-                   SupportedLanguage language, 
+                   SupportedLanguage language,
                    List<ProductMetadata> metadata) {
         this(externalId, name, description, payApiToken, price, status, gatewayAccountId, type, returnUrl,
                 serviceNamePath, productNamePath, false, null, null,
-                language, metadata);
+                language, false, metadata);
     }
 
     public Product(
@@ -112,6 +115,7 @@ public class Product {
             String referenceLabel,
             String referenceHint,
             SupportedLanguage language, 
+            Boolean requireCaptcha,
             List<ProductMetadata> metadata) {
         this.externalId = externalId;
         this.name = name;
@@ -128,6 +132,7 @@ public class Product {
         this.referenceLabel = referenceLabel;
         this.referenceHint = referenceHint;
         this.language = language;
+        this.requireCaptcha = requireCaptcha;
         this.metadata = metadata;
     }
 
@@ -153,7 +158,7 @@ public class Product {
 
         return new Product(externalId, name, description, payApiToken, price, ProductStatus.ACTIVE, gatewayAccountId,
                 type, returnUrl, serviceNamePath, productNamePath, referenceEnabled, referenceLabel, referenceHint,
-                language, metadataList);
+                language, false, metadataList);
     }
 
     public String getName() {
@@ -230,6 +235,10 @@ public class Product {
         return language;
     }
 
+    public Boolean isRequireCaptcha() {
+        return requireCaptcha;
+    }
+
     @JsonProperty(FIELD_METADATA)
     public Map<String, String> getMetadataJson() {
         Map<String, String> map = new HashMap<>();
@@ -268,10 +277,11 @@ public class Product {
                 ", returnUrl='" + returnUrl + '\'' +
                 ", serviceNamePath='" + serviceNamePath + '\'' +
                 ", productNamePath='" + productNamePath + '\'' +
-                ", referenceEnabled='" + referenceEnabled +
+                ", referenceEnabled=" + referenceEnabled +
                 (referenceEnabled ? '\'' + ", referenceLabel='" + referenceLabel : "") +
                 (referenceEnabled ? '\'' + ", referenceHint='" + referenceHint : "") +
                 ", language='" + language.toString() + '\'' +
+                ", requireCaptcha=" + requireCaptcha +
                 '}';
     }
 }

@@ -25,11 +25,12 @@ public class ProductEntityFixture {
     private int gatewayAccountId;
     private String serviceNamePath;
     private String productNamePath;
-    private Boolean referenceEnabled = false;
+    private boolean referenceEnabled;
     private String referenceLabel;
     private String referenceHint;
     private SupportedLanguage language = SupportedLanguage.ENGLISH;
     private List<ProductMetadataEntity> productMetadataEntities;
+    private boolean requireCaptcha;
 
     private ProductEntityFixture() { }
 
@@ -52,6 +53,7 @@ public class ProductEntityFixture {
         product.setReferenceHint(referenceHint);
         product.setLanguage(language);
         product.setMetadataEntityList(productMetadataEntities);
+        product.setRequireCaptcha(requireCaptcha);
 
         return product;
     }
@@ -100,7 +102,7 @@ public class ProductEntityFixture {
         return this;
     }
     
-    public ProductEntityFixture withReferenceEnabled(Boolean referenceEnabled) {
+    public ProductEntityFixture withReferenceEnabled(boolean referenceEnabled) {
         this.referenceEnabled = referenceEnabled;
         return this;
     }
@@ -133,6 +135,11 @@ public class ProductEntityFixture {
 
     public ProductEntityFixture withMetadata(List<ProductMetadataEntity> productMetadataEntities) {
         this.productMetadataEntities = productMetadataEntities;
+        return this;
+    }
+    
+    public ProductEntityFixture withRequireCaptcha(boolean requireCaptcha) {
+        this.requireCaptcha = requireCaptcha;
         return this;
     }
 }

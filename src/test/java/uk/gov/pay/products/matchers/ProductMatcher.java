@@ -27,7 +27,8 @@ public class ProductMatcher {
                         StringUtils.equals(actualProduct.getReturnUrl(), expectedProduct.getReturnUrl()) &&
                         actualProduct.getReferenceEnabled() == expectedProduct.getReferenceEnabled() &&
                         StringUtils.equals(actualProduct.getReferenceLabel(), expectedProduct.getReferenceLabel()) &&
-                        StringUtils.equals(actualProduct.getReferenceHint(), expectedProduct.getReferenceHint())
+                        StringUtils.equals(actualProduct.getReferenceHint(), expectedProduct.getReferenceHint()) &&
+                        actualProduct.isRequireCaptcha() == expectedProduct.isRequireCaptcha()
                 );
             }
 

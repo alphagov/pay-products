@@ -1,5 +1,6 @@
 package uk.gov.pay.products.persistence.dao;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.products.fixtures.PaymentEntityFixture;
@@ -38,6 +39,11 @@ public class ProductDaoIT extends DaoTestBase {
     public void before() {
         productDao = env.getInstance(ProductDao.class);
         productMetadataDao = env.getInstance(ProductMetadataDao.class);
+    }
+
+    @After
+    public void after() {
+        databaseHelper.truncateAllData();
     }
 
     @Test

@@ -20,7 +20,7 @@ Content-Type: application/json
     "return_url" :              "https://some.valid.url/",
     "service_name_path" :       "some-awesome-government-service",
     "product_name_path" :       "name-for-product",
-    "reference_enabled":        "true",
+    "reference_enabled":        true,
     "reference_label":          "Reference label",
     "reference_hint":           "Hint for the above reference"
     "language":                 "The language pages for the product will be in"
@@ -56,10 +56,11 @@ Content-Type: application/json
     "price":               1050,
     "type":                "DEMO",
     "return_url" :         "https://some.valid.url/",
-    "reference_enabled":   "true",
+    "reference_enabled":   true,
     "reference_label":     "Amount for your licence",
     "reference_hint":      "This can be found on your letter",
-    "language":            "en"
+    "language":            "en",
+    "require_captcha":     false
     "_links": [
     {
         "href": "https://govukpay-products.cloudapps.digital/v1/api/products/874h5c87834659q345698495",
@@ -95,6 +96,7 @@ Content-Type: application/json
 | `reference_label`        |                | Present when `reference_enabled` is true. Label text for the reference entry box. |
 | `reference_hint`         |                | Hint for the `reference_enabled` text box. Optional field when reference enabled. |
 | `language`               | X              | The language to display pages for the product in |
+| `require_captcha`        | X              | A boolean indicating whether a CAPTCHA should be shown before the payment is created |
 
 ## PATCH /v1/api/gateway-account/{gatewayAccountId}/products/{productId}
 

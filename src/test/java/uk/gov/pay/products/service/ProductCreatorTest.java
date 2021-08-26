@@ -154,6 +154,7 @@ public class ProductCreatorTest {
                 updatedReferenceLabel,
                 updatedReferenceHint,
                 SupportedLanguage.ENGLISH,
+                false,
                 List.of(metadata));
 
         ProductEntity mockedProductEntity = mock(ProductEntity.class);
@@ -201,6 +202,7 @@ public class ProductCreatorTest {
                 null,
                 null,
                 SupportedLanguage.ENGLISH,
+                false,
                 null);
 
         ProductEntity mockedProductEntity = mock(ProductEntity.class);

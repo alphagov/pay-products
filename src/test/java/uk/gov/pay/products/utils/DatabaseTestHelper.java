@@ -21,12 +21,12 @@ public class DatabaseTestHelper {
                 "(external_id, name, description, pay_api_token, price, " +
                 "status, return_url, type, gateway_account_id, " +
                 "service_name_path, product_name_path, reference_enabled, " +
-                "reference_label, reference_hint, language) " +
+                "reference_label, reference_hint, language, require_captcha) " +
                 "VALUES " +
                 "(:external_id, :name, :description, :pay_api_token, :price, " +
                 ":status, :return_url, :type, :gateway_account_id, " +
                 ":service_name_path, :product_name_path, :reference_enabled, " +
-                ":reference_label, :reference_hint, :language" +
+                ":reference_label, :reference_hint, :language, :require_captcha" +
                 ")")
                 .bind("external_id", product.getExternalId())
                 .bind("name", product.getName())
@@ -43,6 +43,7 @@ public class DatabaseTestHelper {
                 .bind("reference_label", product.getReferenceLabel())
                 .bind("reference_hint", product.getReferenceHint())
                 .bind("language", product.getLanguage().toString())
+                .bind("require_captcha", product.isRequireCaptcha())
                 .execute());
 
     }

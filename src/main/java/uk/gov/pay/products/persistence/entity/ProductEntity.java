@@ -76,6 +76,9 @@ public class ProductEntity extends AbstractEntity {
     @Column(name = "language", nullable = false)
     @Convert(converter = SupportedLanguageJpaConverter.class)
     private SupportedLanguage language;
+    
+    @Column(name = "require_captcha")
+    private boolean requireCaptcha;
 
     @OneToMany(mappedBy = "productEntity", targetEntity = ProductMetadataEntity.class, cascade = CascadeType.ALL)
     private List<ProductMetadataEntity> metadataEntityList;
@@ -195,6 +198,14 @@ public class ProductEntity extends AbstractEntity {
         this.language = language;
     }
 
+    public boolean isRequireCaptcha() {
+        return requireCaptcha;
+    }
+
+    public void setRequireCaptcha(boolean requireCaptcha) {
+        this.requireCaptcha = requireCaptcha;
+    }
+
     public void setMetadataEntityList(List<ProductMetadataEntity> metadataEntityList) {
         this.metadataEntityList = metadataEntityList;
     }
@@ -242,6 +253,7 @@ public class ProductEntity extends AbstractEntity {
                 this.referenceLabel,
                 this.referenceHint,
                 this.language, 
+                this.requireCaptcha,
                 this.metadataEntityList == null ? null : this.metadataEntityList
                         .stream()
                         .map(ProductMetadata::from)

@@ -460,6 +460,7 @@ public class ProductResourceIT extends IntegrationTest {
                 .withPrice(500)
                 .withGatewayAccountId(gatewayAccountId)
                 .withProductPath("service-name-path" + externalId, "product-name-path" + externalId)
+                .withRequireCaptcha(false)
                 .build()
                 .toProduct();
 
@@ -492,7 +493,8 @@ public class ProductResourceIT extends IntegrationTest {
                 .body(TYPE, is(existingProduct.getType().name()))
                 .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
                 .body(RETURN_URL, is(existingProduct.getReturnUrl()))
-                .body(LANGUAGE, is("en"));
+                .body(LANGUAGE, is("en"))
+                .body(REQUIRE_CAPTCHA, is(false));
 
         String productsUrl = "https://products.url/v1/api/products/";
         String productsUIPayUrl = "https://products-ui.url/pay/";

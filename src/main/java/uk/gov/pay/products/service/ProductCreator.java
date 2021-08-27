@@ -3,6 +3,7 @@ package uk.gov.pay.products.service;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import uk.gov.pay.products.model.Product;
+import uk.gov.pay.products.model.ProductUpdateRequest;
 import uk.gov.pay.products.persistence.dao.ProductDao;
 import uk.gov.pay.products.persistence.dao.ProductMetadataDao;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
@@ -38,17 +39,17 @@ public class ProductCreator {
     }
 
     @Transactional
-    public Optional<Product> doUpdateByGatewayAccountId(Integer gatewayAccountId, String productExternalId, Product product) {
+    public Optional<Product> doUpdateByGatewayAccountId(Integer gatewayAccountId, String productExternalId, ProductUpdateRequest productUpdateRequest) {
 
         Optional<ProductEntity> productEntityUpdated = productDao
                 .findByGatewayAccountIdAndExternalId(gatewayAccountId, productExternalId)
                 .map(productEntity -> {
-                    productEntity.setName(product.getName());
-                    productEntity.setDescription(product.getDescription());
-                    productEntity.setPrice(product.getPrice());
-                    productEntity.setReferenceEnabled(product.getReferenceEnabled());
-                    productEntity.setReferenceLabel(product.getReferenceLabel());
-                    productEntity.setReferenceHint(product.getReferenceHint());
+                    productEntity.setName(productUpdateRequest.getName());
+                    productEntity.setDescription(productUpdateRequest.getDescription());
+                    productEntity.setPrice(productUpdateRequest.getPrice());
+                    productEntity.setReferenceEnabled(productUpdateRequest.getReferenceEnabled());
+                    productEntity.setReferenceLabel(productUpdateRequest.getReferenceLabel());
+                    productEntity.setReferenceHint(productUpdateRequest.getReferenceHint());
 
                     return productEntity;
                 });
@@ -56,8 +57,8 @@ public class ProductCreator {
         productMetadataDao.deleteForProductExternalId(productExternalId);
 
         productEntityUpdated.ifPresent(productEntity -> {
-            if (product.getMetadata() != null && !product.getMetadata().isEmpty()) {
-                List<ProductMetadataEntity> productMetadataEntities = product.getMetadata()
+            if (productUpdateRequest.getMetadata() != null && !productUpdateRequest.getMetadata().isEmpty()) {
+                List<ProductMetadataEntity> productMetadataEntities = productUpdateRequest.getMetadata()
                         .stream()
                         .map(productMetadata -> ProductMetadataEntity.from(productEntity, productMetadata))
                         .collect(Collectors.toList());

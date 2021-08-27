@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -14,15 +14,15 @@ import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static uk.gov.pay.products.util.MetadataDeserializer.extractMetadata;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Product {
 
     public static final String FIELD_PAY_API_TOKEN = "pay_api_token";
@@ -114,7 +114,7 @@ public class Product {
             Boolean referenceEnabled,
             String referenceLabel,
             String referenceHint,
-            SupportedLanguage language, 
+            SupportedLanguage language,
             Boolean requireCaptcha,
             List<ProductMetadata> metadata) {
         this.externalId = externalId;
@@ -154,7 +154,7 @@ public class Product {
                 .map(JsonNode::asText)
                 .map(SupportedLanguage::fromIso639AlphaTwoCode)
                 .orElse(SupportedLanguage.ENGLISH);
-        List<ProductMetadata> metadataList = extractMetadata(jsonPayload);
+        List<ProductMetadata> metadataList = extractMetadata(jsonPayload, FIELD_METADATA);
 
         return new Product(externalId, name, description, payApiToken, price, ProductStatus.ACTIVE, gatewayAccountId,
                 type, returnUrl, serviceNamePath, productNamePath, referenceEnabled, referenceLabel, referenceHint,
@@ -243,24 +243,10 @@ public class Product {
     public Map<String, String> getMetadataJson() {
         Map<String, String> map = new HashMap<>();
         if (metadata != null) {
-            this.metadata.forEach(productMetadata -> map.put( productMetadata.getKey(), productMetadata.getValue()));
+            this.metadata.forEach(productMetadata -> map.put(productMetadata.getKey(), productMetadata.getValue()));
             return map.size() > 0 ? map : null;
         }
         return null;
-    }
-
-    private static List<ProductMetadata> extractMetadata(JsonNode payload) {
-        List<ProductMetadata> metadataList = new ArrayList<>();
-        JsonNode metadata = payload.get(FIELD_METADATA);
-        if (metadata != null && !metadata.isEmpty()) {
-            Iterator<String> fieldNames = metadata.fieldNames();
-            while (fieldNames.hasNext()) {
-                String key  = fieldNames.next();
-                String value = metadata.get(key).textValue();
-                metadataList.add(new ProductMetadata(null, key, value));
-            }
-        }
-        return metadataList.isEmpty() ? null : metadataList;
     }
 
     @Override

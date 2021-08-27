@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.model.ProductUsageStat;
+import uk.gov.pay.products.model.ProductUpdateRequest;
 import uk.gov.pay.products.service.ProductApiTokenManager;
 import uk.gov.pay.products.service.ProductFactory;
 import uk.gov.pay.products.util.ProductType;
@@ -150,7 +151,7 @@ public class ProductResource {
         return requestValidator.validateUpdateRequest(payload)
                 .map(errors -> Response.status(Status.BAD_REQUEST).entity(errors).build())
                 .orElseGet(() ->
-                    productFactory.productCreator().doUpdateByGatewayAccountId(gatewayAccountId, productExternalId, Product.from(payload))
+                    productFactory.productCreator().doUpdateByGatewayAccountId(gatewayAccountId, productExternalId, ProductUpdateRequest.from(payload))
                             .map(product -> Response.status(OK).entity(product).build())
                             .orElseGet(() -> Response.status(NOT_FOUND).build()));
     }

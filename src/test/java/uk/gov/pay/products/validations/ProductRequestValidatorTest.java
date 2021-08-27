@@ -8,12 +8,17 @@ import org.junit.Test;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.util.Errors;
 import uk.gov.pay.products.util.ProductType;
+import uk.gov.service.payments.commons.api.exception.ValidationException;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.pay.products.validations.RequestValidations.MAX_PRICE;
 
 public class ProductRequestValidatorTest {
@@ -35,9 +40,11 @@ public class ProductRequestValidatorTest {
 
     private static final ProductRequestValidator productRequestValidator = new ProductRequestValidator(new RequestValidations(), new ProductsConfiguration(), new ProductsMetadataRequestValidator());
 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+    
     @Test
     public void shouldPass_whenAllFieldsPresent() {
-        JsonNode payload = new ObjectMapper()
+        JsonNode payload = objectMapper
                 .valueToTree(
                         ImmutableMap.<String, String>builder()
                                 .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
@@ -61,7 +68,7 @@ public class ProductRequestValidatorTest {
 
     @Test
     public void shouldPass_whenReturnUrlFieldIsMissing() {
-        JsonNode payload = new ObjectMapper()
+        JsonNode payload = objectMapper
                 .valueToTree(
                         ImmutableMap.<String, String>builder()
                                 .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
@@ -80,7 +87,7 @@ public class ProductRequestValidatorTest {
 
     @Test
     public void shouldPass_whenPriceIsBelowMaxPrice() {
-        JsonNode payload = new ObjectMapper()
+        JsonNode payload = objectMapper
                 .valueToTree(
                         ImmutableMap.<String, String>builder()
                                 .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
@@ -100,7 +107,7 @@ public class ProductRequestValidatorTest {
 
     @Test
     public void shouldError_whenPriceFieldIsMissing_forNonAdhocAndNonAgentIntiatedMotoProduct() {
-        JsonNode payload = new ObjectMapper()
+        JsonNode payload = objectMapper
                 .valueToTree(ImmutableMap.<String, String>builder()
                         .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
                         .put(FIELD_PAY_API_TOKEN, "api_token")
@@ -119,7 +126,7 @@ public class ProductRequestValidatorTest {
 
     @Test
     public void shouldNotError_whenPriceFieldIsMissing_forAdhocProduct() {
-        JsonNode payload = new ObjectMapper()
+        JsonNode payload = objectMapper
                 .valueToTree(ImmutableMap.<String, String>builder()
                         .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
                         .put(FIELD_PAY_API_TOKEN, "api_token")
@@ -139,7 +146,7 @@ public class ProductRequestValidatorTest {
 
     @Test
     public void shouldNotError_whenPriceFieldServiceNamePathAndProductNamePathAreMissing_forAgentInitiatedMotoProduct() {
-        JsonNode payload = new ObjectMapper()
+        JsonNode payload = objectMapper
                 .valueToTree(ImmutableMap.<String, String>builder()
                         .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
                         .put(FIELD_PAY_API_TOKEN, "api_token")
@@ -159,7 +166,7 @@ public class ProductRequestValidatorTest {
     
     @Test
     public void shouldError_whenPriceFieldExceedsMaxPrice() {
-        JsonNode payload = new ObjectMapper()
+        JsonNode payload = objectMapper
                 .valueToTree(
                         ImmutableMap.<String, String>builder()
                                 .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
@@ -180,7 +187,7 @@ public class ProductRequestValidatorTest {
 
     @Test
     public void shouldError_whenNameFieldIsMissing() {
-        JsonNode payload = new ObjectMapper()
+        JsonNode payload = objectMapper
                 .valueToTree(ImmutableMap.<String, String>builder()
                         .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
                         .put(FIELD_PAY_API_TOKEN, "api_token")
@@ -199,7 +206,7 @@ public class ProductRequestValidatorTest {
 
     @Test
     public void shouldError_whenApiTokenFieldIsMissing() {
-        JsonNode payload = new ObjectMapper()
+        JsonNode payload = objectMapper
                 .valueToTree(ImmutableMap.<String, String>builder()
                         .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
                         .put(FIELD_NAME, "name")
@@ -218,7 +225,7 @@ public class ProductRequestValidatorTest {
 
     @Test
     public void shouldError_whenGatewayAccountIdFieldIsMissing() {
-        JsonNode payload = new ObjectMapper()
+        JsonNode payload = objectMapper
                 .valueToTree(ImmutableMap.<String, String>builder()
                         .put(FIELD_PAY_API_TOKEN, "api_token")
                         .put(FIELD_NAME, "name")
@@ -237,7 +244,7 @@ public class ProductRequestValidatorTest {
 
     @Test
     public void shouldError_whenTypeIsMissing() {
-        JsonNode payload = new ObjectMapper()
+        JsonNode payload = objectMapper
                 .valueToTree(ImmutableMap.<String, String>builder()
                         .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
                         .put(FIELD_PAY_API_TOKEN, "api_token")
@@ -256,7 +263,7 @@ public class ProductRequestValidatorTest {
 
     @Test
     public void shouldError_whenTypeIsUnknown() {
-        JsonNode payload = new ObjectMapper()
+        JsonNode payload = objectMapper
                 .valueToTree(
                         ImmutableMap.<String, String>builder()
                                 .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
@@ -277,7 +284,7 @@ public class ProductRequestValidatorTest {
 
     @Test
     public void shouldError_whenReturnUrlIsInvalid() {
-        JsonNode payload = new ObjectMapper()
+        JsonNode payload = objectMapper
                 .valueToTree(
                         ImmutableMap.<String, String>builder()
                                 .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
@@ -299,7 +306,7 @@ public class ProductRequestValidatorTest {
 
     @Test
     public void shouldError_whenReturnUrlIsNotHttps() {
-        JsonNode payload = new ObjectMapper()
+        JsonNode payload = objectMapper
                 .valueToTree(
 
                         ImmutableMap.<String, String>builder()
@@ -322,7 +329,7 @@ public class ProductRequestValidatorTest {
 
     @Test
     public void shouldError_whenTypeIsAdhocAndNoProductPathIsPresent() {
-        JsonNode payload = new ObjectMapper()
+        JsonNode payload = objectMapper
                 .valueToTree(ImmutableMap.<String, String>builder()
                         .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
                         .put(FIELD_PAY_API_TOKEN, "api_token")
@@ -342,7 +349,7 @@ public class ProductRequestValidatorTest {
 
     @Test
     public void shouldError_whenTypeIsAdhocAndProductNamePathIsEmpty() {
-        JsonNode payload = new ObjectMapper()
+        JsonNode payload = objectMapper
                 .valueToTree(ImmutableMap.<String, String>builder()
                         .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
                         .put(FIELD_PAY_API_TOKEN, "api_token")
@@ -364,7 +371,7 @@ public class ProductRequestValidatorTest {
 
     @Test
     public void shouldError_whenReferenceEnabledIsTrueAndReferenceLabelIsEmpty() {
-        JsonNode payload = new ObjectMapper()
+        JsonNode payload = objectMapper
                 .valueToTree(ImmutableMap.<String, String>builder()
                         .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
                         .put(FIELD_PAY_API_TOKEN, "api_token")
@@ -386,7 +393,7 @@ public class ProductRequestValidatorTest {
 
     @Test
     public void shouldError_whenLanguageIsPresentAndEmpty() {
-        JsonNode payload = new ObjectMapper()
+        JsonNode payload = objectMapper
                 .valueToTree(ImmutableMap.<String, String>builder()
                         .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
                         .put(FIELD_PAY_API_TOKEN, "api_token")
@@ -409,7 +416,7 @@ public class ProductRequestValidatorTest {
 
     @Test
     public void shouldError_whenLanguageIsPresentAndNotSupportedLanguage() {
-        JsonNode payload = new ObjectMapper()
+        JsonNode payload = objectMapper
                 .valueToTree(ImmutableMap.<String, String>builder()
                         .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
                         .put(FIELD_PAY_API_TOKEN, "api_token")
@@ -432,7 +439,7 @@ public class ProductRequestValidatorTest {
 
     @Test
     public void shouldNotError_whenLanguageIsNotPresent() {
-        JsonNode payload = new ObjectMapper()
+        JsonNode payload = objectMapper
                 .valueToTree(ImmutableMap.<String, String>builder()
                         .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
                         .put(FIELD_PAY_API_TOKEN, "api_token")
@@ -453,7 +460,7 @@ public class ProductRequestValidatorTest {
 
     @Test
     public void shouldNotError_whenLanguageIsSupportedLanguage() {
-        JsonNode payload = new ObjectMapper()
+        JsonNode payload = objectMapper
                 .valueToTree(ImmutableMap.<String, String>builder()
                         .put(FIELD_GATEWAY_ACCOUNT_ID, "1")
                         .put(FIELD_PAY_API_TOKEN, "api_token")
@@ -481,4 +488,32 @@ public class ProductRequestValidatorTest {
         assertThat(errors.get().getErrors().toString(), is("[Field [type] must be one of [DEMO, PROTOTYPE, ADHOC, AGENT_INITIATED_MOTO]]"));
     }
 
+    @Test
+    public void shouldThrowWhenPatchRequestInvalid() {
+        JsonNode request = objectMapper.valueToTree(
+                Collections.singletonList(Map.of("path", "require_captcha",
+                        "op", "add",
+                        "value", true)));
+        var thrown = assertThrows(ValidationException.class, () -> productRequestValidator.validateJsonPatch(request));
+        assertThat(thrown.getErrors().get(0), is("Operation [add] not supported for path [require_captcha]"));
+    }
+
+    @Test
+    public void shouldThrowWhenRequireCaptchaNotBoolean() {
+        JsonNode request = objectMapper.valueToTree(
+                Collections.singletonList(Map.of("path", "require_captcha",
+                        "op", "replace",
+                        "value", "not-boolean")));
+        var thrown = assertThrows(ValidationException.class, () -> productRequestValidator.validateJsonPatch(request));
+        assertThat(thrown.getErrors().get(0), is("Value for path [require_captcha] must be a boolean"));
+    }
+
+    @Test
+    public void shouldNotThrowWhenPatchRequestValid() {
+        JsonNode request = objectMapper.valueToTree(
+                Collections.singletonList(Map.of("path", "require_captcha",
+                        "op", "replace",
+                        "value", true)));
+        assertDoesNotThrow(() -> productRequestValidator.validateJsonPatch(request));
+    }
 }

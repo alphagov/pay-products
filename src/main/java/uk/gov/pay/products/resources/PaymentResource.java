@@ -23,7 +23,7 @@ import static javax.ws.rs.core.Response.Status.CREATED;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
 
-@Path("/v1/api")
+@Path("/")
 public class PaymentResource {
 
     private static final Logger logger = LoggerFactory.getLogger(PaymentResource.class);
@@ -37,7 +37,7 @@ public class PaymentResource {
         this.requestValidator = requestValidator;
     }
 
-    @Path("/payments/{paymentExternalId}")
+    @Path("/v1/api/payments/{paymentExternalId}")
     @GET
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
@@ -50,7 +50,7 @@ public class PaymentResource {
                         Response.status(NOT_FOUND).build());
     }
 
-    @Path("/products/{productExternalId}/payments")
+    @Path("/v1/api/products/{productExternalId}/payments")
     @POST
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
@@ -80,7 +80,7 @@ public class PaymentResource {
         return payload.get("reference_number").asText();
     }
 
-    @Path("/products/{productExternalId}/payments")
+    @Path("/v1/api/products/{productExternalId}/payments")
     @GET
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
@@ -90,7 +90,7 @@ public class PaymentResource {
         return payments.size() > 0 ? Response.status(OK).entity(payments).build() : Response.status(NOT_FOUND).build();
     }
 
-    @Path("/payments/{gatewayAccountId}/{referenceNumber}")
+    @Path("/v1/api/payments/{gatewayAccountId}/{referenceNumber}")
     @GET
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)

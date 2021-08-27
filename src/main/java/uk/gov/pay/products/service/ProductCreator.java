@@ -2,17 +2,22 @@ package uk.gov.pay.products.service;
 
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import uk.gov.pay.products.exception.ProductNotFoundException;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.model.ProductUpdateRequest;
 import uk.gov.pay.products.persistence.dao.ProductDao;
 import uk.gov.pay.products.persistence.dao.ProductMetadataDao;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.persistence.entity.ProductMetadataEntity;
+import uk.gov.service.payments.commons.model.jsonpatch.JsonPatchOp;
+import uk.gov.service.payments.commons.model.jsonpatch.JsonPatchRequest;
 
+import javax.ws.rs.BadRequestException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static uk.gov.pay.products.model.Product.FIELD_REQUIRE_CAPTCHA;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 public class ProductCreator {
@@ -67,5 +72,23 @@ public class ProductCreator {
         });
 
         return productEntityUpdated.map(productEntity -> linksDecorator.decorate(productEntity.toProduct()));
+    }
+
+    @Transactional
+    public Product update(Integer gatewayAccountId, String productExternalId, List<JsonPatchRequest> patchRequests) {
+        return productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, productExternalId).map(productEntity -> {
+            patchRequests.forEach(patchRequest -> {
+                if (JsonPatchOp.REPLACE == patchRequest.getOp()) {
+                    switch (patchRequest.getPath()) {
+                        case FIELD_REQUIRE_CAPTCHA:
+                            productEntity.setRequireCaptcha(patchRequest.valueAsBoolean());
+                            break;
+                        default:
+                            throw new BadRequestException("Unexpected path for patch operation: " + patchRequest.getPath());
+                    }
+                }
+            });
+            return productEntity.toProduct();
+        }).orElseThrow(() -> new ProductNotFoundException(productExternalId));
     }
 }

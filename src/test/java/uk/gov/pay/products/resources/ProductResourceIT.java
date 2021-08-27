@@ -18,6 +18,7 @@ import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -25,6 +26,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.matching;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static java.lang.String.format;
+import static java.util.Collections.singletonList;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
@@ -1345,6 +1347,83 @@ public class ProductResourceIT extends IntegrationTest {
         assertThat(metadata.get(0), hasEntry("metadata_value", "value1"));
         assertThat(metadata.get(1), hasEntry("metadata_key", "key2"));
         assertThat(metadata.get(1), hasEntry("metadata_value", "value2"));
+    }
+
+    @Test
+    public void shouldSucceed_updateProductUsingJsonPatch() throws Exception {
+        String externalId = randomUuid();
+        Integer gatewayAccountId = randomInt();
+
+        Product existingProduct = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .withRequireCaptcha(false)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(existingProduct);
+        
+        var payload = singletonList(Map.of("path", "require_captcha",
+                        "op", "replace",
+                        "value", true));
+
+        givenSetup()
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .body(mapper.writeValueAsString(payload))
+                .patch(format("/v2/api/gateway-account/%s/products/%s", gatewayAccountId, externalId))
+                .then()
+                .statusCode(200)
+                .body("require_captcha", is(true));
+
+        Optional<Map<String, Object>> updatedProduct = databaseHelper.findProductEntityByExternalId(externalId);
+        assertThat(updatedProduct.isPresent(), is(true));
+        assertThat(updatedProduct.get(), hasEntry("require_captcha", true));
+    }
+
+    @Test
+    public void shouldReturn400_updateProductUsingJsonPatch_invalidRequest() throws Exception {
+        String externalId = randomUuid();
+        Integer gatewayAccountId = randomInt();
+
+        Product existingProduct = ProductEntityFixture.aProductEntity()
+                .withExternalId(externalId)
+                .withGatewayAccountId(gatewayAccountId)
+                .withRequireCaptcha(false)
+                .build()
+                .toProduct();
+
+        databaseHelper.addProduct(existingProduct);
+
+        var payload = singletonList(Map.of("path", "require_captcha",
+                "op", "replace"));
+
+        givenSetup()
+                .contentType(APPLICATION_JSON)
+                 .accept(APPLICATION_JSON)
+                .body(mapper.writeValueAsString(payload))
+                .patch(format("/v2/api/gateway-account/%s/products/%s", gatewayAccountId, externalId))
+                .then()
+                .statusCode(400)
+                .body("errors[0]", is("Field [value] is required"));
+    }
+
+    @Test
+    public void shouldReturn404_updateProductUsingJsonPatch_productNotFound() throws Exception {
+        String externalId = randomUuid();
+        Integer gatewayAccountId = randomInt();
+
+        var payload = singletonList(Map.of("path", "require_captcha",
+                "op", "replace",
+                "value", true));
+
+        givenSetup()
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .body(mapper.writeValueAsString(payload))
+                .patch(format("/v2/api/gateway-account/%s/products/%s", gatewayAccountId, externalId))
+                .then()
+                .statusCode(404);
     }
 
     private void setUpPublicAuthStubForGeneratingApiToken(Product product, String newApiToken) {

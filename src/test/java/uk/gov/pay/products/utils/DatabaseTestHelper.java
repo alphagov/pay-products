@@ -7,6 +7,7 @@ import uk.gov.pay.products.model.ProductMetadata;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class DatabaseTestHelper {
 
@@ -92,6 +93,15 @@ public class DatabaseTestHelper {
                         .bind("gateway_account_id", gatewayAccountId)
                         .mapToMap()
                         .list());
+    }
+
+    public Optional<Map<String, Object>> findProductEntityByExternalId(String productExternalId) {
+        return jdbi.withHandle(h ->
+                h.createQuery("SELECT * FROM products " +
+                                "WHERE external_id = :external_id")
+                        .bind("external_id", productExternalId)
+                        .mapToMap()
+                        .findFirst());
     }
 
     public List<Map<String, Object>> findMetadataByProductExternalId(String productExternalId) {

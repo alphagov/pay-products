@@ -5,11 +5,17 @@ import com.google.inject.Inject;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.util.Errors;
 import uk.gov.pay.products.util.ProductType;
+import uk.gov.service.payments.commons.api.validation.JsonPatchRequestValidator;
+import uk.gov.service.payments.commons.api.validation.PatchPathOperation;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
+import uk.gov.service.payments.commons.model.jsonpatch.JsonPatchOp;
+import uk.gov.service.payments.commons.model.jsonpatch.JsonPatchRequest;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import static uk.gov.pay.products.model.Product.FIELD_GATEWAY_ACCOUNT_ID;
 import static uk.gov.pay.products.model.Product.FIELD_LANGUAGE;
@@ -19,6 +25,7 @@ import static uk.gov.pay.products.model.Product.FIELD_PRICE;
 import static uk.gov.pay.products.model.Product.FIELD_PRODUCT_NAME_PATH;
 import static uk.gov.pay.products.model.Product.FIELD_REFERENCE_ENABLED;
 import static uk.gov.pay.products.model.Product.FIELD_REFERENCE_LABEL;
+import static uk.gov.pay.products.model.Product.FIELD_REQUIRE_CAPTCHA;
 import static uk.gov.pay.products.model.Product.FIELD_RETURN_URL;
 import static uk.gov.pay.products.model.Product.FIELD_SERVICE_NAME_PATH;
 import static uk.gov.pay.products.model.Product.FIELD_TYPE;
@@ -30,6 +37,11 @@ public class ProductRequestValidator {
     private final RequestValidations requestValidations;
     private final boolean returnUrlMustBeSecure;
     private final ProductsMetadataRequestValidator metadataRequestValidator;
+    
+    private static final Map<PatchPathOperation, Consumer<JsonPatchRequest>> patchOperationValidators = Map.of(
+            new PatchPathOperation(FIELD_REQUIRE_CAPTCHA, JsonPatchOp.REPLACE), JsonPatchRequestValidator::throwIfValueNotBoolean
+    );
+    private final JsonPatchRequestValidator patchRequestValidator = new JsonPatchRequestValidator(patchOperationValidators);
 
     @Inject
     public ProductRequestValidator(RequestValidations requestValidations, ProductsConfiguration configuration,
@@ -102,6 +114,10 @@ public class ProductRequestValidator {
         }
 
         return errors.map(Errors::from);
+    }
+    
+    public void validateJsonPatch(JsonNode payload) {
+        patchRequestValidator.validate(payload);
     }
 
     public Optional<Errors> validateProductType(String type) {

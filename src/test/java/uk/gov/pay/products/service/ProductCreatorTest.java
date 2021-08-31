@@ -1,5 +1,6 @@
 package uk.gov.pay.products.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,6 +8,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.pay.products.exception.ProductNotFoundException;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.model.ProductMetadata;
 import uk.gov.pay.products.model.ProductUpdateRequest;
@@ -15,8 +17,11 @@ import uk.gov.pay.products.persistence.dao.ProductMetadataDao;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.ProductType;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
+import uk.gov.service.payments.commons.model.jsonpatch.JsonPatchRequest;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,6 +32,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,18 +42,22 @@ import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProductCreatorTest {
-
+    
     @Mock
     private ProductDao productDao;
     @Mock
     private ProductMetadataDao productMetadataDao;
-    private ProductCreator productCreator;
     @Captor
     private ArgumentCaptor<ProductEntity> persistedProductEntity;
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    private ProductCreator productCreator;
     private String payApiToken;
     private Integer gatewayAccountId = randomInt();
     private static final String PRODUCT_NAME = "Test product name";
     private static final Long PRICE = 1050L;
+    public static final String externalId = "external-id";
 
     @Before
     public void setup() {
@@ -130,7 +140,6 @@ public class ProductCreatorTest {
 
     @Test
     public void doUpdateByGatewayAccountId_referenceEnabled_shouldUpdateProduct() {
-        String externalId = "external-id";
         String updatedName = "updated-name";
         String updatedDescription = "updated-description";
         Long updatedPrice = 500L;
@@ -167,7 +176,6 @@ public class ProductCreatorTest {
 
     @Test
     public void doUpdateByGatewayAccountId_referenceDisabled_shouldUpdateProduct() {
-        String externalId = "external-id";
         String updatedName = "updated-name";
         String updatedDescription = "updated-description";
         Long updatedPrice = 500L;
@@ -199,7 +207,6 @@ public class ProductCreatorTest {
 
     @Test
     public void doUpdateByGatewayAccountId_shouldNotUpdateProduct_whenNotFound() {
-        String externalId = "external-id";
         String updatedName = "updated-name";
         String updatedDescription = "updated-description";
         Long updatedPrice = 500L;
@@ -218,5 +225,34 @@ public class ProductCreatorTest {
         Optional<Product> updatedProduct = productCreator.doUpdateByGatewayAccountId(gatewayAccountId, externalId, productUpdateRequest);
 
         assertFalse(updatedProduct.isPresent());
+    }
+
+    @Test
+    public void update_shouldUpdateProduct() {
+        ProductEntity productEntity = aProductEntity()
+                .withRequireCaptcha(false)
+                .build();
+        when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.of(productEntity));
+
+        JsonPatchRequest patchRequest = JsonPatchRequest.from(objectMapper.valueToTree(
+                Map.of("path", "require_captcha",
+                        "op", "replace",
+                        "value", true)
+        ));
+
+        Product updatedProduct = productCreator.update(gatewayAccountId, externalId, Collections.singletonList(patchRequest));
+        assertThat(updatedProduct.isRequireCaptcha(), is(true));
+    }
+
+    @Test
+    public void update_shouldThrowExceptionWhenProductNotFound() {
+        JsonPatchRequest patchRequest = JsonPatchRequest.from(objectMapper.valueToTree(
+                Map.of("path", "require_captcha",
+                        "op", "replace",
+                        "value", true)
+        ));
+        
+        when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.empty());
+        assertThrows(ProductNotFoundException.class, () -> productCreator.update(gatewayAccountId, externalId, Collections.singletonList(patchRequest)));
     }
 }

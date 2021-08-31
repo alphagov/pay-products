@@ -12,6 +12,7 @@ import uk.gov.pay.products.service.ProductApiTokenManager;
 import uk.gov.pay.products.service.ProductFactory;
 import uk.gov.pay.products.util.ProductType;
 import uk.gov.pay.products.validations.ProductRequestValidator;
+import uk.gov.service.payments.commons.model.jsonpatch.JsonPatchRequest;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -24,6 +25,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -36,7 +39,7 @@ import static uk.gov.pay.products.model.Product.FIELD_NAME;
 import static uk.gov.pay.products.model.Product.FIELD_TYPE;
 import static uk.gov.service.payments.logging.LoggingKeys.GATEWAY_ACCOUNT_ID;
 
-@Path("/v1/api")
+@Path("/")
 public class ProductResource {
     private static final Logger logger = LoggerFactory.getLogger(ProductResource.class);
 
@@ -54,7 +57,7 @@ public class ProductResource {
     }
 
     @POST
-    @Path("/products")
+    @Path("/v1/api/products")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     public Response createProduct(JsonNode payload) {
@@ -78,7 +81,7 @@ public class ProductResource {
     }
 
     @GET
-    @Path("/products/{productExternalId}")
+    @Path("/v1/api/products/{productExternalId}")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     public Response findProductByExternalId(@PathParam("productExternalId") String productExternalId) {
@@ -91,7 +94,7 @@ public class ProductResource {
     }
 
     @GET
-    @Path("/gateway-account/{gatewayAccountId}/products/{productExternalId}")
+    @Path("/v1/api/gateway-account/{gatewayAccountId}/products/{productExternalId}")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     public Response findProductByGatewayAccountIdAndExternalId(@PathParam("gatewayAccountId") Integer gatewayAccountId, @PathParam("productExternalId") String productExternalId) {
@@ -105,7 +108,7 @@ public class ProductResource {
 
     @Deprecated
     @PATCH
-    @Path("/products/{productExternalId}/disable")
+    @Path("/v1/api/products/{productExternalId}/disable")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     public Response disableProductByExternalId(@PathParam("productExternalId") String productExternalId) {
@@ -116,7 +119,7 @@ public class ProductResource {
     }
 
     @DELETE
-    @Path("/products/{productExternalId}")
+    @Path("/v1/api/products/{productExternalId}")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     public Response deleteProductByExternalId(@PathParam("productExternalId") String productExternalId) {
@@ -127,7 +130,7 @@ public class ProductResource {
 
     @Deprecated
     @PATCH
-    @Path("/gateway-account/{gatewayAccountId}/products/{productExternalId}/disable")
+    @Path("/v1/api/gateway-account/{gatewayAccountId}/products/{productExternalId}/disable")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     public Response disableProductByGatewayAccountIdAndExternalId(@PathParam("gatewayAccountId") Integer gatewayAccountId, @PathParam("productExternalId") String productExternalId) {
@@ -138,7 +141,7 @@ public class ProductResource {
     }
 
     @PATCH
-    @Path("/gateway-account/{gatewayAccountId}/products/{productExternalId}")
+    @Path("/v1/api/gateway-account/{gatewayAccountId}/products/{productExternalId}")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     public Response updateProduct(@PathParam("gatewayAccountId") Integer gatewayAccountId, @PathParam("productExternalId") String productExternalId, JsonNode payload) {
@@ -156,8 +159,26 @@ public class ProductResource {
                             .orElseGet(() -> Response.status(NOT_FOUND).build()));
     }
 
+    /**
+     * Update product using JSON patch. 
+     * 
+     * TODO: Updates from /v1/api/gateway-account/{gatewayAccountId}/products/{productExternalId}
+     * should be moved over to this endpoint and that API deprecated. This was not done at the time due to time constraints.
+     */
+    @PATCH
+    @Path("/v2/api/gateway-account/{gatewayAccountId}/products/{productExternalId}")
+    @Produces(APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
+    public Product updateProductJsonPatch(@PathParam("gatewayAccountId") Integer gatewayAccountId, @PathParam("productExternalId") String productExternalId, JsonNode payload) {
+        requestValidator.validateJsonPatch(payload);
+        List<JsonPatchRequest> patchRequests = StreamSupport.stream(payload.spliterator(), false)
+                .map(JsonPatchRequest::from)
+                .collect(Collectors.toList());
+        return productFactory.productCreator().update(gatewayAccountId, productExternalId, patchRequests);
+    }
+
     @DELETE
-    @Path("/gateway-account/{gatewayAccountId}/products/{productExternalId}")
+    @Path("/v1/api/gateway-account/{gatewayAccountId}/products/{productExternalId}")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     public Response deleteProductByGatewayAccountIdAndExternalId(@PathParam("gatewayAccountId") Integer gatewayAccountId, @PathParam("productExternalId") String productExternalId) {
@@ -167,7 +188,7 @@ public class ProductResource {
     }
 
     @GET
-    @Path("/gateway-account/{gatewayAccountId}/products")
+    @Path("/v1/api/gateway-account/{gatewayAccountId}/products")
     @Produces(APPLICATION_JSON)
     public Response findProductsByGatewayAccountId(@PathParam("gatewayAccountId") Integer gatewayAccountId, @QueryParam("type") String type) {
         if (type != null) {
@@ -186,7 +207,7 @@ public class ProductResource {
     }
 
     @GET
-    @Path("/products")
+    @Path("/v1/api/products")
     @Produces(APPLICATION_JSON)
     public Response findProductByProductPath(
             @QueryParam("serviceNamePath") String serviceNamePath,
@@ -198,7 +219,7 @@ public class ProductResource {
     }
 
     @GET
-    @Path("/stats/products")
+    @Path("/v1/api/stats/products")
     @Produces(APPLICATION_JSON)
     public Response findProductsAndStats(@QueryParam("gatewayAccountId") Integer gatewayAccountId) {
         logger.info(
@@ -210,7 +231,7 @@ public class ProductResource {
     }
 
     @POST
-    @Path("/products/{productExternalId}/regenerate-api-token")
+    @Path("/v1/api/products/{productExternalId}/regenerate-api-token")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     public Response regenerateProductApiToken(@PathParam("productExternalId") String productExternalId) {

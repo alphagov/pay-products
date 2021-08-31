@@ -23,6 +23,7 @@ import uk.gov.pay.products.exception.mapper.FailToGetNewApiTokenExceptionMapper;
 import uk.gov.pay.products.exception.mapper.PaymentCreationExceptionMapper;
 import uk.gov.pay.products.exception.mapper.PaymentCreatorNotFoundExceptionMapper;
 import uk.gov.pay.products.exception.mapper.ProductNotFoundExceptionMapper;
+import uk.gov.pay.products.exception.mapper.ValidationExceptionMapper;
 import uk.gov.pay.products.filters.LoggingMDCRequestFilter;
 import uk.gov.pay.products.filters.LoggingMDCResponseFilter;
 import uk.gov.pay.products.healthchecks.DependentResourceWaitCommand;
@@ -45,7 +46,6 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
     private static final boolean NON_STRICT_VARIABLE_SUBSTITUTOR = false;
     private static final String SERVICE_METRICS_NODE = "pay-products";
     private static final int GRAPHITE_SENDING_PERIOD_SECONDS = 10;
-    private static final String API_VERSION_PATH = "/v1";
 
     @Override
     public String getName() {
@@ -79,7 +79,7 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
 
         initialiseMetrics(configuration, environment);
         environment.servlets().addFilter("LoggingFilter", new LoggingFilter())
-                .addMappingForUrlPatterns(of(REQUEST), true, API_VERSION_PATH + "/*");
+                .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*", "/v2/*");
         environment.jersey().register(injector.getInstance(LoggingMDCRequestFilter.class));
         environment.jersey().register(injector.getInstance(LoggingMDCResponseFilter.class));
         environment.healthChecks().register("ping", new Ping());
@@ -117,6 +117,7 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
         jersey.register(FailToGetNewApiTokenExceptionMapper.class);
         jersey.register(ProductNotFoundExceptionMapper.class);
         jersey.register(MetadataNotFoundExceptionMapper.class);
+        jersey.register(ValidationExceptionMapper.class);
     }
 
     public static void main(final String[] args) throws Exception {

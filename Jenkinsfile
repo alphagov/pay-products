@@ -78,13 +78,12 @@ pipeline {
         }
       }
     }
-    stage('Deploy') {
+    stage('Check pact compatability') {
       when {
         branch 'master'
       }
       steps {
         checkPactCompatibility("products", gitCommit(), "test")
-        deployEcs("products")
       }
     }
     stage('Pact Tag') {

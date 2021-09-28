@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import uk.gov.pay.products.persistence.entity.PaymentEntity;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 

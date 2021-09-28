@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence version="2.1" xmlns="http://java.sun.com/xml/ns/persistence">
+<persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence">
     <persistence-unit name="ProductsUnit" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <class>uk.gov.service.payments.commons.model.SupportedLanguageJpaConverter</class>
+        <class>uk.gov.pay.products.config.SupportedLanguageJpaConverter</class>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>

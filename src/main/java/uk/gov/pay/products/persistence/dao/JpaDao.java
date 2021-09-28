@@ -3,7 +3,7 @@ package uk.gov.pay.products.persistence.dao;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 @Transactional
 public abstract class JpaDao<T> {

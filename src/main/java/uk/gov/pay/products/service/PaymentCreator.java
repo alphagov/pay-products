@@ -32,6 +32,7 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUserFriendlyReference;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
+import static uk.gov.service.payments.logging.LoggingKeys.GATEWAY_ACCOUNT_ID;
 import static uk.gov.service.payments.logging.LoggingKeys.PAYMENT_EXTERNAL_ID;
 
 public class PaymentCreator {
@@ -145,7 +146,9 @@ public class PaymentCreator {
                 
                 if (PanDetector.isSuspectedPan(paymentEntity.getReferenceNumber())) {
                     logger.warn("Suspected PAN entered by user in reference field",
-                            kv(PAYMENT_EXTERNAL_ID, paymentEntity.getGovukPaymentId()));
+                            kv(PAYMENT_EXTERNAL_ID, paymentEntity.getGovukPaymentId()),
+                            kv(GATEWAY_ACCOUNT_ID, paymentEntity.getGatewayAccountId())
+                    );
                 }
             } catch (PublicApiResponseErrorException e) {
                 logger.error("Payment creation for product external id {} failed {}", paymentEntity.getProductEntity().getExternalId(), e);

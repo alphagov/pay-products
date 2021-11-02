@@ -10,10 +10,12 @@ public class PanDetector {
         if (reference.length() < MIN_PAN_LENGTH || reference.length() > MAX_PAN_LENGTH) {
             return false;
         }
-        var cleaned = reference
-                .replace("-", "")
-                .replace(" ", "");
+        String cleaned = cleanedReference(reference);
 
-        return (new LuhnCheckDigit()).isValid(cleaned);
+        return new LuhnCheckDigit().isValid(cleaned);
+    }
+
+    public static String cleanedReference(String reference) {
+        return reference.replace("-", "").replace(" ", "");
     }
 }

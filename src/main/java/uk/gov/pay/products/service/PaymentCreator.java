@@ -147,7 +147,8 @@ public class PaymentCreator {
                 if (PanDetector.isSuspectedPan(paymentEntity.getReferenceNumber())) {
                     logger.warn("Suspected PAN entered by user in reference field",
                             kv(PAYMENT_EXTERNAL_ID, paymentEntity.getGovukPaymentId()),
-                            kv(GATEWAY_ACCOUNT_ID, paymentEntity.getGatewayAccountId())
+                            kv(GATEWAY_ACCOUNT_ID, paymentEntity.getGatewayAccountId()),
+                            kv("number_of_digits", PanDetector.cleanedReference(paymentEntity.getReferenceNumber()).length())
                     );
                 }
             } catch (PublicApiResponseErrorException e) {

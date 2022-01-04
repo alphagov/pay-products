@@ -78,31 +78,6 @@ pipeline {
         }
       }
     }
-    stage('Check pact compatability') {
-      when {
-        branch 'master'
-      }
-      steps {
-        checkPactCompatibility("products", gitCommit(), "test")
-      }
-    }
-    stage('Pact Tag') {
-      when {
-        branch 'master'
-      }
-      steps {
-        echo 'Tagging provider pact with "test"'
-        tagPact("products", gitCommit(), "test")
-      }
-    }
-    stage('Smoke Tests') {
-      when {
-        branch 'master'
-      }
-      steps {
-        runProductsSmokeTest()
-      }
-    }
     stage('Complete') {
       failFast true
       parallel {
@@ -112,14 +87,6 @@ pipeline {
           }
           steps {
             tagDeployment("products")
-          }
-        }
-        stage('Trigger Deploy Notification') {
-          when {
-            branch 'master'
-          }
-          steps {
-            triggerGraphiteDeployEvent("products")
           }
         }
       }

@@ -20,8 +20,7 @@
         <hamcrest.version>2.2</hamcrest.version>
         <junit5.version>5.8.2</junit5.version>
         <mainClass>uk.gov.pay.products.ProductsApplication</mainClass>
-        <mockito.version>3.12.4</mockito.version>
-        <powermock.version>2.0.9</powermock.version>
+        <mockito.version>4.4.0</mockito.version>
         <wiremock.version>2.32.0</wiremock.version>
         <pay-java-commons.version>1.0.20220307095231</pay-java-commons.version>
         <jackson.version>2.13.2</jackson.version>
@@ -210,6 +209,12 @@
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>${mockito.version}</version>
             <scope>test</scope>
@@ -264,18 +269,6 @@
             <groupId>org.unitils</groupId>
             <artifactId>unitils-core</artifactId>
             <version>3.4.6</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito2</artifactId>
-            <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -1,15 +1,16 @@
 package uk.gov.pay.products.service;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.products.client.publicapi.PaymentRequest;
 import uk.gov.pay.products.client.publicapi.PaymentResponse;
 import uk.gov.pay.products.client.publicapi.PublicApiRestClient;
@@ -49,14 +50,11 @@ import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import static uk.gov.pay.products.util.PaymentStatus.ERROR;
 import static uk.gov.pay.products.util.PaymentStatus.SUBMITTED;
-import static uk.gov.pay.products.util.RandomIdGenerator.randomUserFriendlyReference;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 import static uk.gov.service.payments.commons.model.Source.CARD_AGENT_INITIATED_MOTO;
 import static uk.gov.service.payments.commons.model.Source.CARD_PAYMENT_LINK;
 
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*"})
-@PrepareForTest(RandomIdGenerator.class)
+@RunWith(MockitoJUnitRunner.class)
 public class PaymentCreatorTest {
     static private final String PRODUCT_URL = "https://products.url";
 
@@ -77,15 +75,21 @@ public class PaymentCreatorTest {
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
 
+    private MockedStatic<RandomIdGenerator> mockedRandomIdGenerator = Mockito.mockStatic(RandomIdGenerator.class);
+
     @Before
     public void setup() {
         LinksDecorator linksDecorator = new LinksDecorator(PRODUCT_URL, "https://products-ui.url", "https://products-ui.url/payments");
         paymentCreator = new PaymentCreator(TransactionFlow::new, productDao, paymentDao, publicApiRestClient, linksDecorator, productsConfiguration);
     }
 
+    @After
+    public void close() {
+        mockedRandomIdGenerator.close();
+    }
+
     @Test
     public void shouldCreateASuccessfulPayment_whenReturnUrlIsPresent() {
-        PowerMockito.mockStatic(RandomIdGenerator.class);
         int productId = 1;
         String productExternalId = "product-external-id";
         String paymentExernalId = "payment-external-id";
@@ -129,7 +133,7 @@ public class PaymentCreatorTest {
 
 
         when(randomUuid()).thenReturn(paymentExernalId);
-        when(randomUserFriendlyReference()).thenReturn(referenceNumber);
+        mockedRandomIdGenerator.when(RandomIdGenerator::randomUserFriendlyReference).thenReturn(referenceNumber);
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
         when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest)))).thenReturn(paymentResponse);
         when(productsConfiguration.getProductsUiConfirmUrl()).thenReturn(productsUIConfirmUri);
@@ -162,8 +166,6 @@ public class PaymentCreatorTest {
 
     @Test
     public void shouldCreateASuccessfulPayment_whenReturnUrlIsNotPresent() {
-        PowerMockito.mockStatic(RandomIdGenerator.class);
-
         int productId = 1;
         String productExternalId = "product-external-id";
         long productPrice = 100L;
@@ -206,7 +208,7 @@ public class PaymentCreatorTest {
 
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
         when(randomUuid()).thenReturn(paymentExternalId);
-        when(randomUserFriendlyReference()).thenReturn(referenceNumber);
+        mockedRandomIdGenerator.when(RandomIdGenerator::randomUserFriendlyReference).thenReturn(referenceNumber);
         when(productsConfiguration.getProductsUiConfirmUrl()).thenReturn(productReturnUrl);
         when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest)))).thenReturn(paymentResponse);
 
@@ -238,8 +240,6 @@ public class PaymentCreatorTest {
 
     @Test
     public void shouldCreateASuccessfulPayment_withUserDefinedReference_whenReferencePresent() {
-        PowerMockito.mockStatic(RandomIdGenerator.class);
-        
         int productId = 1;
         String productExternalId = "product-external-id";
         long productPrice = 100L;
@@ -306,7 +306,6 @@ public class PaymentCreatorTest {
 
     @Test
     public void shouldCreateASuccessfulPayment_withOverridePrice_whenPriceOverridePresent() {
-        PowerMockito.mockStatic(RandomIdGenerator.class);
         int productId = 1;
         String productExternalId = "product-external-id";
         long productPrice = 100L;
@@ -350,7 +349,7 @@ public class PaymentCreatorTest {
 
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
         when(randomUuid()).thenReturn(paymentExternalId);
-        when(randomUserFriendlyReference()).thenReturn(referenceNumber);
+        mockedRandomIdGenerator.when(RandomIdGenerator::randomUserFriendlyReference).thenReturn(referenceNumber);
         when(productsConfiguration.getProductsUiConfirmUrl()).thenReturn(productReturnUrl);
         when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest)))).thenReturn(paymentResponse);
 
@@ -372,8 +371,6 @@ public class PaymentCreatorTest {
 
     @Test
     public void shouldCreateAMotoPaymentWithCardAgentInitiatedMotoSource_whenProductIsAgentInitiatedMoto() {
-        PowerMockito.mockStatic(RandomIdGenerator.class);
-
         int productId = 1;
         String productExternalId = "product-external-id";
         long productPrice = 100L;
@@ -441,8 +438,6 @@ public class PaymentCreatorTest {
 
     @Test
     public void shouldCreateAnErrorPayment_whenPublicApiCallFails() {
-        PowerMockito.mockStatic(RandomIdGenerator.class);
-
         int productId = 1;
         String productExternalId = "product-external-id";
         long productPrice = 100L;
@@ -478,7 +473,7 @@ public class PaymentCreatorTest {
 
         when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
         when(randomUuid()).thenReturn(paymentExternalId);
-        when(randomUserFriendlyReference()).thenReturn(referenceNumber);
+        mockedRandomIdGenerator.when(RandomIdGenerator::randomUserFriendlyReference).thenReturn(referenceNumber);
         when(productsConfiguration.getProductsUiConfirmUrl()).thenReturn(productsUIConfirmUri);
         when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest))))
                 .thenThrow(PublicApiResponseErrorException.class);
@@ -545,7 +540,6 @@ public class PaymentCreatorTest {
 
     @Test
     public void shouldThrowRuntimeException_whenUniqueReferenceExists_andTried3Times() {
-        PowerMockito.mockStatic(RandomIdGenerator.class);
         int productId = 1;
         String randomUserFriendlyReference = "MBK-1WER-3RT";
         String productExternalId = "product-external-id";

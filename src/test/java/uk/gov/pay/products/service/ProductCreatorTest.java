@@ -234,13 +234,19 @@ public class ProductCreatorTest {
                 .build();
         when(productDao.findByGatewayAccountIdAndExternalId(gatewayAccountId, externalId)).thenReturn(Optional.of(productEntity));
 
-        JsonPatchRequest patchRequest = JsonPatchRequest.from(objectMapper.valueToTree(
+        JsonPatchRequest replaceRequireCaptcha = JsonPatchRequest.from(objectMapper.valueToTree(
                 Map.of("path", "require_captcha",
                         "op", "replace",
                         "value", true)
         ));
-
-        Product updatedProduct = productCreator.update(gatewayAccountId, externalId, Collections.singletonList(patchRequest));
+        JsonPatchRequest replaceNewPaymentLinkJourneyEnabled = JsonPatchRequest.from(objectMapper.valueToTree(
+                Map.of("path", "new_payment_link_journey_enabled",
+                        "op", "replace",
+                        "value", true)
+        ));
+        
+        Product updatedProduct = productCreator.update(gatewayAccountId, externalId, 
+                List.of(replaceRequireCaptcha, replaceNewPaymentLinkJourneyEnabled));
         assertThat(updatedProduct.isRequireCaptcha(), is(true));
     }
 

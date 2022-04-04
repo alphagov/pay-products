@@ -2,7 +2,6 @@ package uk.gov.pay.products.resources;
 
 import com.google.common.collect.ImmutableMap;
 import io.restassured.response.ValidatableResponse;
-import org.junit.Assert;
 import org.junit.Test;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.model.Product;
@@ -58,6 +57,7 @@ public class ProductResourceIT extends IntegrationTest {
     private static final String REFERENCE_ENABLED_FIELD = "reference_enabled";
     private static final String REFERENCE_LABEL = "reference_label";
     private static final String REFERENCE_HINT = "reference_hint";
+    private static final String AMOUNT_HINT = "amount_hint";
     private static final String LANGUAGE = "language";
     private static final String METADATA = "metadata";
     private static final String REQUIRE_CAPTCHA = "require_captcha";
@@ -189,6 +189,7 @@ public class ProductResourceIT extends IntegrationTest {
         String productNamePath = randomAlphanumeric(65);
         String referenceLabel = randomAlphanumeric(25);
         String referenceHint = randomAlphanumeric(85);
+        String amountHint = "An amount hint";
         String returnUrl = "https://some.valid.url";
         String language = "en";
 
@@ -205,6 +206,7 @@ public class ProductResourceIT extends IntegrationTest {
                 .put(REFERENCE_ENABLED_FIELD, Boolean.TRUE.toString())
                 .put(REFERENCE_LABEL, referenceLabel)
                 .put(REFERENCE_HINT, referenceHint)
+                .put(AMOUNT_HINT, amountHint)
                 .put(LANGUAGE, language)
                 .build();
 
@@ -226,6 +228,7 @@ public class ProductResourceIT extends IntegrationTest {
                 .body(REFERENCE_ENABLED_FIELD, is(true))
                 .body(REFERENCE_LABEL, is(referenceLabel))
                 .body(REFERENCE_HINT, is(referenceHint))
+                .body(AMOUNT_HINT, is(amountHint))
                 .body(LANGUAGE, is(language))
                 .body(REQUIRE_CAPTCHA, is(false))
                 .body(NEW_PAYMENT_LINK_JOURNEY_ENABLED, is(false));
@@ -456,6 +459,7 @@ public class ProductResourceIT extends IntegrationTest {
         String updatedPrice = "1000";
         String updatedReferenceLabel = "updated-reference-label";
         String updatedReferenceHint = "updated-reference-hint";
+        String updatedAmountHint = "updated-amount-hint";
 
         Product existingProduct = ProductEntityFixture.aProductEntity()
                 .withExternalId(externalId)
@@ -477,6 +481,7 @@ public class ProductResourceIT extends IntegrationTest {
                 .put(REFERENCE_ENABLED_FIELD, true)
                 .put(REFERENCE_LABEL, updatedReferenceLabel)
                 .put(REFERENCE_HINT, updatedReferenceHint)
+                .put(AMOUNT_HINT, updatedAmountHint)
                 .build();
 
         ValidatableResponse response = givenSetup()
@@ -494,6 +499,7 @@ public class ProductResourceIT extends IntegrationTest {
                 .body(REFERENCE_ENABLED_FIELD, is(true))
                 .body(REFERENCE_LABEL, is(updatedReferenceLabel))
                 .body(REFERENCE_HINT, is(updatedReferenceHint))
+                .body(AMOUNT_HINT, is(updatedAmountHint))
                 .body(TYPE, is(existingProduct.getType().name()))
                 .body(GATEWAY_ACCOUNT_ID, is(gatewayAccountId))
                 .body(RETURN_URL, is(existingProduct.getReturnUrl()))
@@ -517,13 +523,15 @@ public class ProductResourceIT extends IntegrationTest {
                 .body("_links[2].rel", is("friendly"));
 
         List<Map<String, Object>> productsRecords = databaseHelper.findProductEntityByGatewayAccountId(gatewayAccountId);
-        Assert.assertThat(productsRecords.size(), is(1));
-        Assert.assertThat(productsRecords.get(0), hasEntry("name", updatedName));
-        Assert.assertThat(productsRecords.get(0), hasEntry("description", updatedDescription));
-        Assert.assertThat(productsRecords.get(0), hasEntry("price", Long.valueOf(updatedPrice)));
-        Assert.assertThat(productsRecords.get(0), hasEntry("reference_enabled", true));
-        Assert.assertThat(productsRecords.get(0), hasEntry("reference_label", updatedReferenceLabel));
-        Assert.assertThat(productsRecords.get(0), hasEntry("reference_hint", updatedReferenceHint));
+        assertThat(productsRecords.size(), is(1));
+        Map<String, Object> productRecord = productsRecords.get(0);
+        assertThat(productRecord, hasEntry("name", updatedName));
+        assertThat(productRecord, hasEntry("description", updatedDescription));
+        assertThat(productRecord, hasEntry("price", Long.valueOf(updatedPrice)));
+        assertThat(productRecord, hasEntry("reference_enabled", true));
+        assertThat(productRecord, hasEntry("reference_label", updatedReferenceLabel));
+        assertThat(productRecord, hasEntry("reference_hint", updatedReferenceHint));
+        assertThat(productRecord, hasEntry("amount_hint", updatedAmountHint));
     }
 
     @Test
@@ -576,13 +584,13 @@ public class ProductResourceIT extends IntegrationTest {
                 .body(LANGUAGE, is("en"));
 
         List<Map<String, Object>> productsRecords = databaseHelper.findProductEntityByGatewayAccountId(gatewayAccountId);
-        Assert.assertThat(productsRecords.size(), is(1));
-        Assert.assertThat(productsRecords.get(0), hasEntry("name", updatedName));
-        Assert.assertThat(productsRecords.get(0), hasEntry("description", updatedDescription));
-        Assert.assertThat(productsRecords.get(0), hasEntry("price", Long.valueOf(updatedPrice)));
-        Assert.assertThat(productsRecords.get(0), hasEntry("reference_enabled", true));
-        Assert.assertThat(productsRecords.get(0), hasEntry("reference_label", updatedReferenceLabel));
-        Assert.assertThat(productsRecords.get(0), hasEntry("reference_hint", null));
+        assertThat(productsRecords.size(), is(1));
+        assertThat(productsRecords.get(0), hasEntry("name", updatedName));
+        assertThat(productsRecords.get(0), hasEntry("description", updatedDescription));
+        assertThat(productsRecords.get(0), hasEntry("price", Long.valueOf(updatedPrice)));
+        assertThat(productsRecords.get(0), hasEntry("reference_enabled", true));
+        assertThat(productsRecords.get(0), hasEntry("reference_label", updatedReferenceLabel));
+        assertThat(productsRecords.get(0), hasEntry("reference_hint", null));
     }
 
     @Test
@@ -632,13 +640,13 @@ public class ProductResourceIT extends IntegrationTest {
                 .body(LANGUAGE, is("en"));
 
         List<Map<String, Object>> productsRecords = databaseHelper.findProductEntityByGatewayAccountId(gatewayAccountId);
-        Assert.assertThat(productsRecords.size(), is(1));
-        Assert.assertThat(productsRecords.get(0), hasEntry("name", updatedName));
-        Assert.assertThat(productsRecords.get(0), hasEntry("description", updatedDescription));
-        Assert.assertThat(productsRecords.get(0), hasEntry("price", Long.valueOf(updatedPrice)));
-        Assert.assertThat(productsRecords.get(0), hasEntry("reference_enabled", false));
-        Assert.assertThat(productsRecords.get(0), hasEntry("reference_label", null));
-        Assert.assertThat(productsRecords.get(0), hasEntry("reference_hint", null));
+        assertThat(productsRecords.size(), is(1));
+        assertThat(productsRecords.get(0), hasEntry("name", updatedName));
+        assertThat(productsRecords.get(0), hasEntry("description", updatedDescription));
+        assertThat(productsRecords.get(0), hasEntry("price", Long.valueOf(updatedPrice)));
+        assertThat(productsRecords.get(0), hasEntry("reference_enabled", false));
+        assertThat(productsRecords.get(0), hasEntry("reference_label", null));
+        assertThat(productsRecords.get(0), hasEntry("reference_hint", null));
     }
 
     @Test

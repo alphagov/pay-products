@@ -145,6 +145,7 @@ public class ProductCreatorTest {
         Long updatedPrice = 500L;
         String updatedReferenceLabel = "updated-reference-label";
         String updatedReferenceHint = "updated-reference-hint";
+        String updatedAmountHint = "updated-amount-hint";
 
         ProductMetadata metadata = new ProductMetadata("key-1", "value-1");
         ProductUpdateRequest productUpdateRequest = new ProductUpdateRequest(
@@ -154,6 +155,7 @@ public class ProductCreatorTest {
                 true,
                 updatedReferenceLabel,
                 updatedReferenceHint,
+                updatedAmountHint,
                 List.of(metadata));
         
         ProductEntity productEntity = aProductEntity().build();
@@ -169,6 +171,7 @@ public class ProductCreatorTest {
         assertThat(updatedProduct.getReferenceEnabled(), is(productUpdateRequest.getReferenceEnabled()));
         assertThat(updatedProduct.getReferenceLabel(), is(updatedReferenceLabel));
         assertThat(updatedProduct.getReferenceHint(), is(updatedReferenceHint));
+        assertThat(updatedProduct.getAmountHint(), is(updatedAmountHint));
         assertThat(updatedProduct.getMetadata(), contains(metadata));
 
         verify(productMetadataDao).deleteForProductExternalId("external-id");
@@ -185,6 +188,7 @@ public class ProductCreatorTest {
                 updatedDescription,
                 updatedPrice,
                 true,
+                null,
                 null,
                 null,
                 null);
@@ -216,6 +220,7 @@ public class ProductCreatorTest {
                 updatedDescription,
                 updatedPrice,
                 true,
+                null,
                 null,
                 null,
                 null);

@@ -20,6 +20,7 @@ public class ProductUpdateRequest {
     public static final String FIELD_REFERENCE_ENABLED = "reference_enabled";
     public static final String FIELD_REFERENCE_LABEL = "reference_label";
     public static final String FIELD_REFERENCE_HINT = "reference_hint";
+    public static final String FIELD_AMOUNT_HINT = "amount_hint";
     public static final String FIELD_METADATA = "metadata";
 
     @Schema(example = "name-for-product")
@@ -34,6 +35,8 @@ public class ProductUpdateRequest {
     private String referenceLabel;
     @Schema(example = "This can be found on your letter")
     private String referenceHint;
+    @Schema(example = "Enter an amount in multiples of £2 for the number of permits required")
+    private String amountHint;
     @Schema(example = "")
     private List<ProductMetadata> metadata;
 
@@ -44,6 +47,7 @@ public class ProductUpdateRequest {
             Boolean referenceEnabled,
             String referenceLabel,
             String referenceHint,
+            String amountHint,
             List<ProductMetadata> metadata) {
         this.name = name;
         this.description = description;
@@ -51,6 +55,7 @@ public class ProductUpdateRequest {
         this.referenceEnabled = referenceEnabled;
         this.referenceLabel = referenceLabel;
         this.referenceHint = referenceHint;
+        this.amountHint = amountHint;
         this.metadata = metadata;
     }
 
@@ -61,9 +66,10 @@ public class ProductUpdateRequest {
         Boolean referenceEnabled = (jsonPayload.get(FIELD_REFERENCE_ENABLED) != null) && jsonPayload.get(FIELD_REFERENCE_ENABLED).asBoolean();
         String referenceLabel = (jsonPayload.get(FIELD_REFERENCE_LABEL) != null) ? jsonPayload.get(FIELD_REFERENCE_LABEL).asText() : null;
         String referenceHint = (jsonPayload.get(FIELD_REFERENCE_HINT) != null) ? jsonPayload.get(FIELD_REFERENCE_HINT).asText() : null;
+        String amountHint = (jsonPayload.get(FIELD_AMOUNT_HINT) != null) ? jsonPayload.get(FIELD_AMOUNT_HINT).asText() : null;
         List<ProductMetadata> metadataList = extractMetadata(jsonPayload, FIELD_METADATA);
 
-        return new ProductUpdateRequest(name, description, price, referenceEnabled, referenceLabel, referenceHint, metadataList);
+        return new ProductUpdateRequest(name, description, price, referenceEnabled, referenceLabel, referenceHint, amountHint, metadataList);
     }
 
     public String getName() {
@@ -88,6 +94,10 @@ public class ProductUpdateRequest {
 
     public String getReferenceHint() {
         return referenceHint;
+    }
+
+    public String getAmountHint() {
+        return amountHint;
     }
 
     public List<ProductMetadata> getMetadata() {

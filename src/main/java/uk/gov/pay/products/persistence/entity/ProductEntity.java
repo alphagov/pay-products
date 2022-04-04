@@ -73,6 +73,9 @@ public class ProductEntity extends AbstractEntity {
     @Column(name = "reference_hint")
     private String referenceHint;
     
+    @Column(name = "amount_hint")
+    private String amountHint;
+    
     @Column(name = "language", nullable = false)
     @Convert(converter = SupportedLanguageJpaConverter.class)
     private SupportedLanguage language;
@@ -177,6 +180,14 @@ public class ProductEntity extends AbstractEntity {
 
     public void setReferenceHint(String referenceHint) { this.referenceHint = referenceHint; }
 
+    public String getAmountHint() {
+        return amountHint;
+    }
+
+    public void setAmountHint(String amountHint) {
+        this.amountHint = amountHint;
+    }
+
     public String getReturnUrl() {
         return returnUrl;
     }
@@ -238,6 +249,7 @@ public class ProductEntity extends AbstractEntity {
         productEntity.setReferenceEnabled(product.getReferenceEnabled());
         productEntity.setReferenceLabel(product.getReferenceLabel());
         productEntity.setReferenceHint(product.getReferenceHint());
+        productEntity.setAmountHint(product.getAmountHint());
         productEntity.setLanguage(product.getLanguage());
         productEntity.setMetadataEntityList(product.getMetadata() == null ? null :
                 product.getMetadata().stream().map(productMetadata ->
@@ -263,6 +275,7 @@ public class ProductEntity extends AbstractEntity {
                 this.referenceEnabled,
                 this.referenceLabel,
                 this.referenceHint,
+                this.amountHint,
                 this.language, 
                 this.requireCaptcha,
                 this.newPaymentLinkJourneyEnabled,

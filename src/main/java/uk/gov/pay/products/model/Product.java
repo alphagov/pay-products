@@ -44,6 +44,7 @@ public class Product {
     public static final String FIELD_METADATA = "metadata";
     public static final String FIELD_REQUIRE_CAPTCHA = "require_captcha";
     public static final String FIELD_NEW_PAYMENT_LINK_JOURNEY_ENABLED = "new_payment_link_journey_enabled";
+    public static final String FIELD_AMOUNT_HINT = "amount_hint";
 
     @JsonProperty(FIELD_EXTERNAL_ID)
     @Schema(example = "874h5c87834659q345698495")
@@ -88,6 +89,9 @@ public class Product {
     @Schema(example = "This can be found on your letter")
     @JsonProperty(FIELD_REFERENCE_HINT)
     private final String referenceHint;
+    @Schema(example = "Enter an amount in multiples of £2 for the number of permits required")
+    @JsonProperty(FIELD_AMOUNT_HINT)
+    private final String amountHint;
     @Schema(example = "en")
     @JsonProperty(FIELD_LANGUAGE)
     @JsonSerialize(using = ToStringSerializer.class)
@@ -116,7 +120,7 @@ public class Product {
                    List<ProductMetadata> metadata) {
         this(externalId, name, description, payApiToken, price, status, gatewayAccountId, type, returnUrl,
                 serviceNamePath, productNamePath, false, null, null,
-                language, false, false, metadata);
+                null, language, false, false, metadata);
     }
 
     public Product(
@@ -134,6 +138,7 @@ public class Product {
             Boolean referenceEnabled,
             String referenceLabel,
             String referenceHint,
+            String amountHint,
             SupportedLanguage language,
             Boolean requireCaptcha,
             Boolean newPaymentLinkJourneyEnabled,
@@ -152,6 +157,7 @@ public class Product {
         this.referenceEnabled = referenceEnabled;
         this.referenceLabel = referenceLabel;
         this.referenceHint = referenceHint;
+        this.amountHint = amountHint;
         this.language = language;
         this.requireCaptcha = requireCaptcha;
         this.newPaymentLinkJourneyEnabled = newPaymentLinkJourneyEnabled;
@@ -172,6 +178,7 @@ public class Product {
         Boolean referenceEnabled = (jsonPayload.get(FIELD_REFERENCE_ENABLED) != null) && jsonPayload.get(FIELD_REFERENCE_ENABLED).asBoolean();
         String referenceLabel = (jsonPayload.get(FIELD_REFERENCE_LABEL) != null) ? jsonPayload.get(FIELD_REFERENCE_LABEL).asText() : null;
         String referenceHint = (jsonPayload.get(FIELD_REFERENCE_HINT) != null) ? jsonPayload.get(FIELD_REFERENCE_HINT).asText() : null;
+        String amountHint = (jsonPayload.get(FIELD_AMOUNT_HINT) != null) ? jsonPayload.get(FIELD_AMOUNT_HINT).asText() : null;
         SupportedLanguage language = Optional.ofNullable(jsonPayload.get(FIELD_LANGUAGE))
                 .map(JsonNode::asText)
                 .map(SupportedLanguage::fromIso639AlphaTwoCode)
@@ -180,7 +187,7 @@ public class Product {
 
         return new Product(externalId, name, description, payApiToken, price, ProductStatus.ACTIVE, gatewayAccountId,
                 type, returnUrl, serviceNamePath, productNamePath, referenceEnabled, referenceLabel, referenceHint,
-                language, false, false, metadataList);
+                amountHint, language, false, false, metadataList);
     }
 
     public String getName() {
@@ -250,6 +257,10 @@ public class Product {
         return referenceHint;
     }
 
+    public String getAmountHint() {
+        return amountHint;
+    }
+
     public List<ProductMetadata> getMetadata() {
         return metadata;
     }
@@ -293,6 +304,7 @@ public class Product {
                 ", referenceEnabled=" + referenceEnabled +
                 (referenceEnabled ? '\'' + ", referenceLabel='" + referenceLabel : "") +
                 (referenceEnabled ? '\'' + ", referenceHint='" + referenceHint : "") +
+                (price == null ? "" : '\'' + ", amountHint='" + amountHint) +
                 ", language='" + language.toString() + '\'' +
                 ", requireCaptcha=" + requireCaptcha +
                 ", newPaymentLinkJourneyEnabled=" + newPaymentLinkJourneyEnabled +

@@ -24,7 +24,7 @@
         <wiremock.version>2.32.0</wiremock.version>
         <pay-java-commons.version>1.0.20220331101349</pay-java-commons.version>
         <jackson.version>2.13.2</jackson.version>
-        <surefire.version>3.0.0-M5</surefire.version>
+        <surefire.version>3.0.0-M6</surefire.version>
     </properties>
 
     <parent>

@@ -1,11 +1,11 @@
 package uk.gov.pay.products.model;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.products.util.PaymentStatus;
 
 import java.time.ZonedDateTime;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Payment {
 
     private static final String FIELD_EXTERNAL_ID = "external_id";
@@ -25,21 +25,27 @@ public class Payment {
     private static final String FIELD_GOVUK_STATUS = "govuk_status";
     private static final String FIELD_REFERENCE_NUMBER = "reference_number";
 
+    @Schema(example = "h6347634cwb67wii7b6ciueroytw", required = true)
     private final String externalId;
+    @Schema(example = "7cs487heites2nne5k17j5j9as")
     private final String govukPaymentId;
     @JsonIgnore
     private final String nextUrl;
+    @Schema(example = "uier837y735n837475y3847534", required = true)
     private final String productExternalId;
     private List<Link> links = new ArrayList<>();
     @JsonIgnore
     private final Integer productId;
+    @Schema(example = "1050", required = true)
     private Long amount;
     @JsonProperty(FIELD_GOVUK_STATUS)
+    @Schema(hidden = true)
     private String govUkStatus;
+    @Schema(example = "RE4R2A6VAP")
     private final String referenceNumber;
     @JsonIgnore
     private ZonedDateTime dateCreated;
-
+    @Schema(example = "SUBMITTED", required = true)
     private PaymentStatus status;
 
     public Payment(
@@ -77,7 +83,7 @@ public class Payment {
         return productExternalId;
     }
 
-    public Integer getProductId(){
+    public Integer getProductId() {
         return this.productId;
     }
 
@@ -86,6 +92,18 @@ public class Payment {
     }
 
     @JsonProperty(FIELD_LINKS)
+    @Schema(example = "[" +
+            "            {" +
+            "                \"rel\": \"self\"," +
+            "                \"method\": \"GET\"," +
+            "                \"href\": \"https://govukpay-products.cloudapps.digital/v1/api/payments/h6347634cwb67wii7b6ciueroytw\"" +
+            "            }," +
+            "            {" +
+            "                \"rel\": \"next\"," +
+            "                \"method\": \"GET\"," +
+            "                \"href\": \"https://some.valid.url/paid\"" +
+            "            } " +
+            "        ]", required = true)
     public List<Link> getLinks() {
         return links;
     }
@@ -106,7 +124,8 @@ public class Payment {
         return govUkStatus;
     }
 
-    public void setGovukStatus(String status){
+    @Schema(example = "success", name = "govuk_status")
+    public void setGovukStatus(String status) {
         this.govUkStatus = status;
     }
 

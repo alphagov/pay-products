@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
@@ -45,44 +46,60 @@ public class Product {
     public static final String FIELD_NEW_PAYMENT_LINK_JOURNEY_ENABLED = "new_payment_link_journey_enabled";
 
     @JsonProperty(FIELD_EXTERNAL_ID)
+    @Schema(example = "874h5c87834659q345698495")
     private final String externalId;
+    @Schema(example = "A name for the product")
     @JsonProperty(FIELD_NAME)
     private final String name;
+    @Schema(example = "Description of the product")
     @JsonProperty(FIELD_DESCRIPTION)
     private final String description;
     @JsonProperty(FIELD_PAY_API_TOKEN)
+    @Schema(hidden = true)
     private final String payApiToken;
+    @Schema(example = "1050")
     @JsonProperty(FIELD_PRICE)
     private final Long price;
+    @Schema(example = "ACTIVE")
     @JsonProperty(FIELD_STATUS)
     private final ProductStatus status;
+    @Schema(example = "DEMO")
     @JsonProperty(FIELD_TYPE)
     private final ProductType type;
+    @Schema(example = "1")
     @JsonProperty(FIELD_GATEWAY_ACCOUNT_ID)
     private final Integer gatewayAccountId;
     private List<Link> links = new ArrayList<>();
+    @Schema(example = "https://some.valid.url/")
     @JsonProperty(FIELD_RETURN_URL)
     private final String returnUrl;
+    @Schema(example = "some-awesome-government-service")
     @JsonProperty(FIELD_SERVICE_NAME_PATH)
     private final String serviceNamePath;
+    @Schema(example = "name-for-product")
     @JsonProperty(FIELD_PRODUCT_NAME_PATH)
     private final String productNamePath;
+    @Schema(example = "true")
     @JsonProperty(FIELD_REFERENCE_ENABLED)
     private final Boolean referenceEnabled;
+    @Schema(example = "Amount for your licence")
     @JsonProperty(FIELD_REFERENCE_LABEL)
     private final String referenceLabel;
+    @Schema(example = "This can be found on your letter")
     @JsonProperty(FIELD_REFERENCE_HINT)
     private final String referenceHint;
+    @Schema(example = "en")
     @JsonProperty(FIELD_LANGUAGE)
     @JsonSerialize(using = ToStringSerializer.class)
     private final SupportedLanguage language;
+    @Schema(example = "false")
     @JsonProperty(FIELD_REQUIRE_CAPTCHA)
     private final Boolean requireCaptcha;
+    @Schema(example = "false")
     @JsonProperty(FIELD_NEW_PAYMENT_LINK_JOURNEY_ENABLED)
     private final Boolean newPaymentLinkJourneyEnabled;
     @JsonIgnore
     private List<ProductMetadata> metadata;
-
 
     public Product(String externalId,
                    String name,
@@ -200,6 +217,7 @@ public class Product {
     }
 
     @JsonProperty("_links")
+    @Schema(name = "_links")
     public List<Link> getLinks() {
         return links;
     }

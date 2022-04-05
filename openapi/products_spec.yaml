@@ -1,0 +1,558 @@
+openapi: 3.0.1
+info:
+  description: Products API
+  title: Products API
+  version: v1.0.0
+servers:
+- url: http://products_url
+paths:
+  /v1/api/gateway-account/{gatewayAccountId}/products:
+    get:
+      operationId: findProductsByGatewayAccountId
+      parameters:
+      - example: 1
+        in: path
+        name: gatewayAccountId
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - example: DEMO
+        in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - DEMO
+          - PROTOTYPE
+          - ADHOC
+          - AGENT_INITIATED_MOTO
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+          description: OK
+        "400":
+          description: Invalid request params
+      summary: Find products by gateway account ID and type
+      tags:
+      - Products
+  /v1/api/gateway-account/{gatewayAccountId}/products/{productExternalId}:
+    delete:
+      operationId: deleteProductByGatewayAccountIdAndExternalId
+      parameters:
+      - example: 1
+        in: path
+        name: gatewayAccountId
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - example: 874h5c87834659q345698495
+        in: path
+        name: productExternalId
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No content
+        "404":
+          description: Not found
+      summary: Deletes product with a specified gateway account ID and product external
+        ID
+      tags:
+      - Products
+    get:
+      operationId: getProductByGatewayAccountIdAndExternalId
+      parameters:
+      - example: 1
+        in: path
+        name: gatewayAccountId
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - example: 874h5c87834659q345698495
+        in: path
+        name: productExternalId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+          description: OK
+        "404":
+          description: Not found
+      summary: Find product by gateway account ID and product external ID
+      tags:
+      - Products
+    patch:
+      operationId: updateProduct
+      parameters:
+      - example: 1
+        in: path
+        name: gatewayAccountId
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - example: 874h5c87834659q345698495
+        in: path
+        name: productExternalId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductUpdateRequest'
+      responses:
+        "200":
+          description: No content
+        "400":
+          description: For invalid payload
+        "404":
+          description: Not found
+      summary: Patch product by gateway account ID and product external ID
+      tags:
+      - Products
+  /v1/api/gateway-account/{gatewayAccountId}/products/{productExternalId}/disable:
+    patch:
+      deprecated: true
+      operationId: disableProductByGatewayAccountIdAndExternalId
+      parameters:
+      - in: path
+        name: gatewayAccountId
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - in: path
+        name: productExternalId
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            application/json: {}
+          description: default response
+      tags:
+      - Deprecated
+  /v1/api/products:
+    get:
+      operationId: findProductByProductPath
+      parameters:
+      - example: some-awesome-government-service
+        in: query
+        name: serviceNamePath
+        schema:
+          type: string
+      - example: name-for-product
+        in: query
+        name: productNamePath
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+          description: OK
+        "404":
+          description: Not found
+      summary: Find product by service name path and product name path
+      tags:
+      - Products
+    post:
+      operationId: search transactions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequest'
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+          description: OK
+        "400":
+          description: Invalid payload
+        "409":
+          content:
+            application/json: {}
+          description: A product with product_name_path already exists
+      summary: creates a new product
+      tags:
+      - Products
+  /v1/api/products/{productExternalId}:
+    delete:
+      operationId: deleteProductByExternalId
+      parameters:
+      - example: 874h5c87834659q345698495
+        in: path
+        name: productExternalId
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No content
+        "404":
+          description: Not found
+      summary: Delete product with the specified external product id
+      tags:
+      - Products
+    get:
+      operationId: getProductByExternalId
+      parameters:
+      - example: 874h5c87834659q345698495
+        in: path
+        name: productExternalId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+          description: OK
+        "404":
+          description: Not found
+      summary: Get product by product external ID
+      tags:
+      - Products
+  /v1/api/products/{productExternalId}/disable:
+    patch:
+      deprecated: true
+      operationId: disableProductByExternalId
+      parameters:
+      - in: path
+        name: productExternalId
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            application/json: {}
+          description: default response
+      tags:
+      - Deprecated
+  /v1/api/products/{productExternalId}/regenerate-api-token:
+    post:
+      description: Gets a new API token from Public Auth application and replaces
+        the old API token with the new token if the product exists
+      operationId: regenerateProductApiToken
+      parameters:
+      - example: 874h5c87834659q345698495
+        in: path
+        name: productExternalId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not found
+      summary: Regenerate API token
+      tags:
+      - Products
+  /v1/api/stats/products:
+    get:
+      operationId: findProductsAndStats
+      parameters:
+      - example: 1
+        in: query
+        name: gatewayAccountId
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductUsageStat'
+          description: OK
+      summary: Get usage stats of non-prototype payment links for a gateway account
+      tags:
+      - Products
+  /v2/api/gateway-account/{gatewayAccountId}/products/{productExternalId}:
+    patch:
+      description: Only supports patching `require_captcha` & `new_payment_link_journey_enabled`
+        fields. Use /v1/ to patch other fields
+      operationId: updateProductV2
+      parameters:
+      - example: 1
+        in: path
+        name: gatewayAccountId
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - example: 874h5c87834659q345698495
+        in: path
+        name: productExternalId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              example:
+              - op: replace
+                path: new_payment_link_journey_enabled
+                value: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+          description: OK
+        "400":
+          description: For invalid payload
+        "404":
+          description: Not found
+      summary: Patch product by gateway account ID and product external ID
+      tags:
+      - Products
+components:
+  schemas:
+    CreateProductRequest:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description of the product. This will be passed as the description
+            when creating the charge
+          example: Description of the product
+        gateway_account_id:
+          type: string
+          description: gateway account id of the Gateway Account as identified by
+            adminusers.
+          example: "1"
+        language:
+          type: string
+          description: "The language pages for the product will be in. If not provided,\
+            \ defaults to 'en'. Allowed values 'en', 'cy'"
+          example: en
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+        name:
+          type: string
+          description: Name of the product. This will be passed as the name when creating
+            the charge
+          example: A name for the product
+        pay_api_token:
+          type: string
+          description: valid api token for the gateway account of above service which
+            this product takes payments for
+          example: api_test_5meusgv5ufclsbvde78mdf35bfdhnhm1307euq94kcf0lcqcqrovbjovib
+        price:
+          type: integer
+          format: int64
+          description: Price for the product in pence. This will be passed as the
+            amount when creating charge. Mandatory for Non-ADHOC and Non-AGENT_INITIATED_MOTO
+            products
+          example: 1050
+        product_name_path:
+          type: string
+          description: Product Name Path part of Product Path. Required for Adhoc
+            type only.
+          example: name-for-product
+        reference_enabled:
+          type: boolean
+          description: Flag to set whether payment reference is auto generated or
+            entered by user. True means that user enters reference at the beginning
+            of a user journey.
+          example: true
+        reference_hint:
+          type: string
+          description: Hint text for reference entry text box. Optional field when
+            reference enabled. Ignored if reference_enabled is set to false.
+          example: This can be found on your letter
+        reference_label:
+          type: string
+          description: Only required if reference_enabled is true. Label for the reference
+            entry text box.
+          example: Amount for your licence
+        return_url:
+          type: string
+          description: "(https only) where to redirect to upon completion of a payment.\
+            \ If not provided, pay-products will generate a default url to itself\
+            \ when creating a charge"
+          example: https://some.valid.url/
+        service_name_path:
+          type: string
+          description: Service Name Path part of Product Path. Required for Adhoc
+            type only.
+          example: some-awesome-government-service
+        type:
+          type: string
+          description: Type of the product
+          enum:
+          - DEMO
+          - PROTOTYPE
+          - ADHOC
+          - AGENT_INITIATED_MOTO
+          example: DEMO
+      required:
+      - gateway_account_id
+      - name
+      - pay_api_token
+      - type
+    JsonNode:
+      type: object
+    Link:
+      type: object
+      properties:
+        href:
+          type: string
+          example: http://products-url/v1/api/products/874h5c87834659q345698495
+        method:
+          type: string
+          example: GET
+        rel:
+          type: string
+          enum:
+          - self
+          - pay
+          - next
+          - friendly
+          example: self
+    Product:
+      type: object
+      properties:
+        _links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+        description:
+          type: string
+          example: Description of the product
+        external_id:
+          type: string
+          example: 874h5c87834659q345698495
+        gateway_account_id:
+          type: integer
+          format: int32
+          example: 1
+        language:
+          type: string
+          enum:
+          - en
+          - cy
+          example: en
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+        name:
+          type: string
+          example: A name for the product
+        new_payment_link_journey_enabled:
+          type: boolean
+          example: false
+        price:
+          type: integer
+          format: int64
+          example: 1050
+        product_name_path:
+          type: string
+          example: name-for-product
+        reference_enabled:
+          type: boolean
+          example: true
+        reference_hint:
+          type: string
+          example: This can be found on your letter
+        reference_label:
+          type: string
+          example: Amount for your licence
+        require_captcha:
+          type: boolean
+          example: false
+        return_url:
+          type: string
+          example: https://some.valid.url/
+        service_name_path:
+          type: string
+          example: some-awesome-government-service
+        status:
+          type: string
+          enum:
+          - ACTIVE
+          - INACTIVE
+          example: ACTIVE
+        type:
+          type: string
+          enum:
+          - DEMO
+          - PROTOTYPE
+          - ADHOC
+          - AGENT_INITIATED_MOTO
+          example: DEMO
+    ProductUpdateRequest:
+      type: object
+      properties:
+        description:
+          type: string
+          example: New description of the product
+        metadata:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: string
+        name:
+          type: string
+          example: name-for-product
+        price:
+          type: integer
+          format: int64
+          example: 1240
+        reference_enabled:
+          type: boolean
+          example: true
+        reference_hint:
+          type: string
+          example: This can be found on your letter
+        reference_label:
+          type: string
+          example: Amount for your licence 2
+    ProductUsageStat:
+      type: object
+      properties:
+        last_payment_date:
+          type: string
+          format: date-time
+        payment_count:
+          type: integer
+          format: int64
+          example: 120
+        product:
+          $ref: '#/components/schemas/Product'

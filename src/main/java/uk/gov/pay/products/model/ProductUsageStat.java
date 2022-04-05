@@ -2,22 +2,25 @@ package uk.gov.pay.products.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.service.payments.commons.api.json.ApiResponseDateTimeSerializer;
 
 import java.time.ZonedDateTime;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ProductUsageStat {
     
     @JsonProperty
+    @Schema(example = "120")
     private final Long paymentCount;
     @JsonProperty
     @JsonSerialize(using = ApiResponseDateTimeSerializer.class)
+    @Schema(example = "\"2022-04-04T19:17:39.790Z\"")
     private final ZonedDateTime lastPaymentDate;
     @JsonProperty
     private Product product;

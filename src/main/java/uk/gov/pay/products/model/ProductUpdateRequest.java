@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 
@@ -21,12 +22,19 @@ public class ProductUpdateRequest {
     public static final String FIELD_REFERENCE_HINT = "reference_hint";
     public static final String FIELD_METADATA = "metadata";
 
+    @Schema(example = "name-for-product")
     private String name;
+    @Schema(example = "New description of the product")
     private String description;
+    @Schema(example = "1240")
     private Long price;
+    @Schema(example = "true")
     private Boolean referenceEnabled;
+    @Schema(example = "Amount for your licence 2")
     private String referenceLabel;
+    @Schema(example = "This can be found on your letter")
     private String referenceHint;
+    @Schema(example = "")
     private List<ProductMetadata> metadata;
 
     public ProductUpdateRequest(

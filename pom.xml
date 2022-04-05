@@ -25,6 +25,7 @@
         <pay-java-commons.version>1.0.20220331101349</pay-java-commons.version>
         <jackson.version>2.13.2</jackson.version>
         <surefire.version>3.0.0-M6</surefire.version>
+        <swaggger-version>2.2.0</swaggger-version>
     </properties>
 
     <parent>
@@ -300,6 +301,11 @@
             <artifactId>jaxb-api</artifactId>
             <version>2.3.1</version>
         </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>${swaggger-version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -420,6 +426,25 @@
                         <goals>
                             <goal>integration-test</goal>
                             <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <version>${swaggger-version}</version>
+                <configuration>
+                    <outputPath>openapi</outputPath>
+                    <outputFileName>products_spec</outputFileName>
+                    <outputFormat>YAML</outputFormat>
+                    <configurationFilePath>${basedir}/src/main/resources/openapi-config.yaml</configurationFilePath>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>resolve</goal>
                         </goals>
                     </execution>
                 </executions>

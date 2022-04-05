@@ -56,6 +56,7 @@ public class ProductCreator {
                     productEntity.setReferenceEnabled(productUpdateRequest.getReferenceEnabled());
                     productEntity.setReferenceLabel(productUpdateRequest.getReferenceLabel());
                     productEntity.setReferenceHint(productUpdateRequest.getReferenceHint());
+                    productEntity.setAmountHint(productUpdateRequest.getAmountHint());
 
                     return productEntity;
                 });

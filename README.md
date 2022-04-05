@@ -33,28 +33,10 @@ These products are integrated with GOV.UK Pay so that a user can make payments u
 
 ## API Specification
 
-The [API Specification](docs/api_specification.md) provides more detail on the paths and operations including examples.
+The [API Specification](openapi/products_spec.yaml) provides more detail on the paths and operations including examples.
 
 The JSON naming convention follows Hypertext Application Language (HAL).
  
-### API NAMESPACE
-
-| Path                          | Supported Methods | Description                        |
-| ----------------------------- | ----------------- | ---------------------------------- |
-|[```/v1/api/products```](docs/api_specification.md#post-v1apiproducts)        | POST    |  Creates a new product definition            |
-|[```/v1/api/gateway-account/{gatewayAccountId}/products/{productId}```](docs/api_specification.md#put-v1apigateway\-accountgatewayaccountidproductsproductid)        | PATCH    |  Updates an existing product matching the specified `productId` and belonging to the gateway account specified by `gatewayAccountId`. Returns the product only if if the update is successful.|
-|[```/v1/api/products/{productId}```](docs/api_specification.md#get-v1apiproductsproductid)        | GET    |  Gets an existing product with the specified productId   |
-|[```/v1/api/gateway-account/{gatewayAccountId}/products/{productId}```](docs/api_specification.md#get-v1apigateway\-accountgatewayaccountidproductsproductid)        | GET    |  Gets an existing product with the specified productId that belong to the gateway account specified by gatewayAccountId. Returns the product only if it exists in the given gateway account. Useful to avoid insecure direct object reference. |
-|[```/v1/api/gateway-account/{gatewayAccountId}/products```](docs/api_specification.md#get-v1apigateway\-accountgatewayaccountidproducts)        | GET    |  Gets lists of products that belongs to a gateway account specified by gatewayAccountId  |
-|[```/v1/api/products/{productId}```](docs/api_specification.md#delete-v1apiproductsproductid)        | DELETE    |  Deletes the product with the specified productId   |
-|[```/v1/api/gateway-account/{gatewayAccountId}/products/{productId}```](docs/api_specification.md#delete-v1apigateway\-accountgatewayaccountidproductsproductexternaliddisable)        | DELETE    |  Deletes the product with the specified productId that belong to the gateway account specified by gatewayAccountId. Deletes the product only if it exists in the given gateway account. Useful to avoid insecure direct object reference. |
-|[```/v1/api/products?serviceNamePath={serviceNamePath}&productNamePath={productNamePath}```](docs/api_specification.md#get-v1apiproducts?productsPath)        | GET    |  Get an existing Adhoc product. |
-|[```/v1/api/payments```](docs/api_specification.md#post-v1apipayments)        | POST    | Creates a new payment                        |
-|[```/v1/api/payments/{paymentId}```](docs/api_specification.md#get-v1apipaymentspaymentid) |  GET  |     Gets an existing payment    |
-|[```/v1/api/products/{productId}/payments```](docs/api_specification.md#get-v1apiproductsproductidpayments) | GET | Gets a list of payments that belong to a specific product specified by productId |
-|[```/v1/api/gateway-account/{gatewayAccountId}```](docs/api_specification.md#get-v1apigatewayaccountgatewayaccountid) | PATCH | Updates a specific field of a given gateway-account of products specified by gatewayAccountId |
-|[```/v1/api/products/{productId}/regenerate-api-token```](docs/api_specification.md#post-v1apiproductsproductexternalidregenerate\-api\-token)        | POST    |  Gets a new API token from Public Auth application and replaces an old API token with the new token for the specified `productId`.|
-
 ## Vulnerability Disclosure
 
 GOV.UK Pay aims to stay secure for everyone. If you are a security researcher and have discovered a security vulnerability in this code, we appreciate your help in disclosing it to us in a responsible manner. Please refer to our [vulnerability disclosure policy](https://www.gov.uk/help/report-vulnerability) and our [security.txt](https://vdp.cabinetoffice.gov.uk/.well-known/security.txt) file for details.

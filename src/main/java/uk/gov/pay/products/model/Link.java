@@ -2,15 +2,16 @@ package uk.gov.pay.products.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Map;
 import java.util.Objects;
 
 import static java.lang.String.format;
 
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Link {
 
@@ -21,11 +22,17 @@ public class Link {
         friendly
     }
 
+    @Schema(example = "self")
     private final Rel rel;
+    @Schema(example = "GET")
     private final String method;
+    @Schema(example = "http://products-url/v1/api/products/874h5c87834659q345698495")
     private final String href;
+    @Schema(hidden = true)
     private String title;
+    @Schema(hidden = true)
     private String type;
+    @Schema(hidden = true)
     private Map<String, Object> params;
 
     public static Link from(Rel rel, String method, String href) {

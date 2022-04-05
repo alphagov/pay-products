@@ -3,11 +3,19 @@ package uk.gov.pay.products.resources;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import io.dropwizard.jersey.PATCH;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.model.Product;
-import uk.gov.pay.products.model.ProductUsageStat;
 import uk.gov.pay.products.model.ProductUpdateRequest;
+import uk.gov.pay.products.model.ProductUsageStat;
+import uk.gov.pay.products.model.product.CreateProductRequest;
 import uk.gov.pay.products.service.ProductApiTokenManager;
 import uk.gov.pay.products.service.ProductFactory;
 import uk.gov.pay.products.util.ProductType;
@@ -60,7 +68,19 @@ public class ProductResource {
     @Path("/v1/api/products")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
-    public Response createProduct(JsonNode payload) {
+    @Operation(
+            tags = {"Products"},
+            summary = "creates a new product",
+            operationId = "search transactions",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "OK",
+                            content = @Content(schema = @Schema(implementation = Product.class))),
+                    @ApiResponse(responseCode = "409", description = "A product with product_name_path already exists", content = @Content(schema = @Schema())),
+                    @ApiResponse(responseCode = "400", description = "Invalid payload")
+            }
+    )
+    public Response createProduct(@RequestBody(content = @Content(schema = @Schema(implementation = CreateProductRequest.class)))
+                                          JsonNode payload) {
         logger.info(
                 "Create Service POST request",
                 kv(GATEWAY_ACCOUNT_ID, payload.get(FIELD_GATEWAY_ACCOUNT_ID)),
@@ -84,7 +104,17 @@ public class ProductResource {
     @Path("/v1/api/products/{productExternalId}")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
-    public Response findProductByExternalId(@PathParam("productExternalId") String productExternalId) {
+    @Operation(
+            tags = {"Products"},
+            summary = "Get product by product external ID",
+            operationId = "getProductByExternalId",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK",
+                            content = @Content(schema = @Schema(implementation = Product.class))),
+                    @ApiResponse(responseCode = "404", description = "Not found")
+            }
+    )
+    public Response findProductByExternalId(@PathParam("productExternalId") @Parameter(example = "874h5c87834659q345698495") String productExternalId) {
         logger.info("Find a product with externalId - [ {} ]", productExternalId);
         return productFactory.productFinder().findByExternalId(productExternalId)
                 .map(product ->
@@ -97,7 +127,18 @@ public class ProductResource {
     @Path("/v1/api/gateway-account/{gatewayAccountId}/products/{productExternalId}")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
-    public Response findProductByGatewayAccountIdAndExternalId(@PathParam("gatewayAccountId") Integer gatewayAccountId, @PathParam("productExternalId") String productExternalId) {
+    @Operation(
+            tags = {"Products"},
+            summary = "Find product by gateway account ID and product external ID",
+            operationId = "getProductByGatewayAccountIdAndExternalId",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK",
+                            content = @Content(schema = @Schema(implementation = Product.class))),
+                    @ApiResponse(responseCode = "404", description = "Not found")
+            }
+    )
+    public Response findProductByGatewayAccountIdAndExternalId(@Parameter(example = "1") @PathParam("gatewayAccountId") Integer gatewayAccountId,
+                                                               @Parameter(example = "874h5c87834659q345698495") @PathParam("productExternalId") String productExternalId) {
         logger.info("Find a product with externalId - [ {} ]", productExternalId);
         return productFactory.productFinder().findByGatewayAccountIdAndExternalId(gatewayAccountId, productExternalId)
                 .map(product ->
@@ -111,6 +152,7 @@ public class ProductResource {
     @Path("/v1/api/products/{productExternalId}/disable")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
+    @Operation(tags = {"Deprecated"})
     public Response disableProductByExternalId(@PathParam("productExternalId") String productExternalId) {
         logger.info("Disabling a product with externalId - [ {} ]", productExternalId);
         return productFactory.productFinder().disableByExternalId(productExternalId)
@@ -122,7 +164,17 @@ public class ProductResource {
     @Path("/v1/api/products/{productExternalId}")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
-    public Response deleteProductByExternalId(@PathParam("productExternalId") String productExternalId) {
+    @Operation(
+            tags = {"Products"},
+            summary = "Delete product with the specified external product id",
+            operationId = "deleteProductByExternalId",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "No content"),
+                    @ApiResponse(responseCode = "404", description = "Not found")
+            }
+    )
+    public Response deleteProductByExternalId(@Parameter(example = "874h5c87834659q345698495")
+                                              @PathParam("productExternalId") String productExternalId) {
         logger.info("Deleting a product with externalId - [ {} ]", productExternalId);
         Boolean success = productFactory.productFinder().deleteByExternalId(productExternalId);
         return success ? Response.status(NO_CONTENT).build() : Response.status(NOT_FOUND).build();
@@ -133,6 +185,9 @@ public class ProductResource {
     @Path("/v1/api/gateway-account/{gatewayAccountId}/products/{productExternalId}/disable")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
+    @Operation(
+            tags = {"Deprecated"}
+    )
     public Response disableProductByGatewayAccountIdAndExternalId(@PathParam("gatewayAccountId") Integer gatewayAccountId, @PathParam("productExternalId") String productExternalId) {
         logger.info("Disabling a product with externalId - [ {} ]", productExternalId);
         return productFactory.productFinder().disableByGatewayAccountIdAndExternalId(gatewayAccountId, productExternalId)
@@ -144,7 +199,20 @@ public class ProductResource {
     @Path("/v1/api/gateway-account/{gatewayAccountId}/products/{productExternalId}")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
-    public Response updateProduct(@PathParam("gatewayAccountId") Integer gatewayAccountId, @PathParam("productExternalId") String productExternalId, JsonNode payload) {
+    @Operation(
+            tags = {"Products"},
+            summary = "Patch product by gateway account ID and product external ID",
+            operationId = "updateProduct",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "No content"),
+                    @ApiResponse(responseCode = "400", description = "For invalid payload"),
+                    @ApiResponse(responseCode = "404", description = "Not found")
+            }
+    )
+    public Response updateProduct(@Parameter(example = "1") @PathParam("gatewayAccountId") Integer gatewayAccountId,
+                                  @Parameter(example = "874h5c87834659q345698495") @PathParam("productExternalId") String productExternalId,
+                                  @RequestBody(content = @Content(schema = @Schema(implementation = ProductUpdateRequest.class)))
+                                          JsonNode payload) {
         logger.info(
                 "Updating a product with externalId - [ {} ]",
                 productExternalId,
@@ -154,14 +222,14 @@ public class ProductResource {
         return requestValidator.validateUpdateRequest(payload)
                 .map(errors -> Response.status(Status.BAD_REQUEST).entity(errors).build())
                 .orElseGet(() ->
-                    productFactory.productCreator().doUpdateByGatewayAccountId(gatewayAccountId, productExternalId, ProductUpdateRequest.from(payload))
-                            .map(product -> Response.status(OK).entity(product).build())
-                            .orElseGet(() -> Response.status(NOT_FOUND).build()));
+                        productFactory.productCreator().doUpdateByGatewayAccountId(gatewayAccountId, productExternalId, ProductUpdateRequest.from(payload))
+                                .map(product -> Response.status(OK).entity(product).build())
+                                .orElseGet(() -> Response.status(NOT_FOUND).build()));
     }
 
     /**
-     * Update product using JSON patch. 
-     * 
+     * Update product using JSON patch.
+     * <p>
      * TODO: Updates from /v1/api/gateway-account/{gatewayAccountId}/products/{productExternalId}
      * should be moved over to this endpoint and that API deprecated. This was not done at the time due to time constraints.
      */
@@ -169,7 +237,29 @@ public class ProductResource {
     @Path("/v2/api/gateway-account/{gatewayAccountId}/products/{productExternalId}")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
-    public Product updateProductJsonPatch(@PathParam("gatewayAccountId") Integer gatewayAccountId, @PathParam("productExternalId") String productExternalId, JsonNode payload) {
+    @Operation(
+            tags = {"Products"},
+            summary = "Patch product by gateway account ID and product external ID",
+            description = "Only supports patching `require_captcha` & `new_payment_link_journey_enabled` fields. Use /v1/ to patch other fields",
+            operationId = "updateProductV2",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Product.class))),
+                    @ApiResponse(responseCode = "400", description = "For invalid payload"),
+                    @ApiResponse(responseCode = "404", description = "Not found")
+            }
+    )
+    public Product updateProductJsonPatch(@Parameter(example = "1") @PathParam("gatewayAccountId") Integer gatewayAccountId,
+                                          @Parameter(example = "874h5c87834659q345698495")
+                                          @PathParam("productExternalId") String productExternalId,
+                                          @RequestBody(content = @Content(schema = @Schema(
+                                                  example = "[" +
+                                                          "  {" +
+                                                          "    \"op\": \"replace\"," +
+                                                          "    \"path\": \"new_payment_link_journey_enabled\"," +
+                                                          "    \"value\":true" +
+                                                          "  }" +
+                                                          "]")))
+                                                  JsonNode payload) {
         requestValidator.validateJsonPatch(payload);
         List<JsonPatchRequest> patchRequests = StreamSupport.stream(payload.spliterator(), false)
                 .map(JsonPatchRequest::from)
@@ -181,7 +271,16 @@ public class ProductResource {
     @Path("/v1/api/gateway-account/{gatewayAccountId}/products/{productExternalId}")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
-    public Response deleteProductByGatewayAccountIdAndExternalId(@PathParam("gatewayAccountId") Integer gatewayAccountId, @PathParam("productExternalId") String productExternalId) {
+    @Operation(
+            tags = {"Products"},
+            summary = "Deletes product with a specified gateway account ID and product external ID",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "No content"),
+                    @ApiResponse(responseCode = "404", description = "Not found")
+            }
+    )
+    public Response deleteProductByGatewayAccountIdAndExternalId(@Parameter(example = "1") @PathParam("gatewayAccountId") Integer gatewayAccountId,
+                                                                 @Parameter(example = "874h5c87834659q345698495") @PathParam("productExternalId") String productExternalId) {
         logger.info("Deleting a product with externalId - [ {} ]", productExternalId);
         Boolean success = productFactory.productFinder().deleteByGatewayAccountIdAndExternalId(gatewayAccountId, productExternalId);
         return success ? Response.status(NO_CONTENT).build() : Response.status(NOT_FOUND).build();
@@ -190,7 +289,16 @@ public class ProductResource {
     @GET
     @Path("/v1/api/gateway-account/{gatewayAccountId}/products")
     @Produces(APPLICATION_JSON)
-    public Response findProductsByGatewayAccountId(@PathParam("gatewayAccountId") Integer gatewayAccountId, @QueryParam("type") String type) {
+    @Operation(
+            tags = {"Products"},
+            summary = "Find products by gateway account ID and type",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)))),
+                    @ApiResponse(responseCode = "400", description = "Invalid request params")
+            }
+    )
+    public Response findProductsByGatewayAccountId(@Parameter(example = "1") @PathParam("gatewayAccountId") Integer gatewayAccountId,
+                                                   @Parameter(example = "DEMO", schema = @Schema(implementation = ProductType.class)) @QueryParam("type") String type) {
         if (type != null) {
             return requestValidator.validateProductType(type)
                     .map(errors -> Response.status(Response.Status.BAD_REQUEST).entity(errors).build())
@@ -209,9 +317,17 @@ public class ProductResource {
     @GET
     @Path("/v1/api/products")
     @Produces(APPLICATION_JSON)
+    @Operation(
+            tags = {"Products"},
+            summary = "Find product by service name path and product name path",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Product.class))),
+                    @ApiResponse(responseCode = "404", description = "Not found")
+            }
+    )
     public Response findProductByProductPath(
-            @QueryParam("serviceNamePath") String serviceNamePath,
-            @QueryParam("productNamePath") String productNamePath) {
+            @Parameter(example = "some-awesome-government-service") @QueryParam("serviceNamePath") String serviceNamePath,
+            @Parameter(example = "name-for-product") @QueryParam("productNamePath") String productNamePath) {
         logger.info(format("Searching for product with product path - [ serviceNamePath=%s productNamePath=%s ]", serviceNamePath, productNamePath));
         return productFactory.productFinder().findByProductPath(serviceNamePath, productNamePath)
                 .map(product -> Response.status(OK).entity(product).build())
@@ -221,7 +337,15 @@ public class ProductResource {
     @GET
     @Path("/v1/api/stats/products")
     @Produces(APPLICATION_JSON)
-    public Response findProductsAndStats(@QueryParam("gatewayAccountId") Integer gatewayAccountId) {
+    @Operation(
+            tags = {"Products"},
+            summary = "Get usage stats of non-prototype payment links for a gateway account",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ProductUsageStat.class))))
+            }
+    )
+    public Response findProductsAndStats(@Parameter(example = "1") @QueryParam("gatewayAccountId") Integer gatewayAccountId) {
         logger.info(
                 format("Listing usage stats on all non-prototype payment links for gateway account [%s=%s]", GATEWAY_ACCOUNT_ID, gatewayAccountId),
                 kv(GATEWAY_ACCOUNT_ID, gatewayAccountId)
@@ -234,7 +358,16 @@ public class ProductResource {
     @Path("/v1/api/products/{productExternalId}/regenerate-api-token")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
-    public Response regenerateProductApiToken(@PathParam("productExternalId") String productExternalId) {
+    @Operation(
+            tags = {"Products"},
+            description = "Gets a new API token from Public Auth application and replaces the old API token with the new token if the product exists",
+            summary = "Regenerate API token",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK"),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+            }
+    )
+    public Response regenerateProductApiToken(@Parameter(example = "874h5c87834659q345698495") @PathParam("productExternalId") String productExternalId) {
         return productFactory.productFinder().findByExternalId(productExternalId).map((product) -> {
             productApiTokenManager.replaceApiTokenForAProduct(product, productApiTokenManager.getNewApiTokenFromPublicAuth(product));
             return Response.ok().build();

@@ -1,0 +1,13 @@
+resourceClasses:
+  - uk.gov.pay.products.resources.ProductResource
+readAllResources: true
+sortOutput: true
+prettyPrint: true
+
+openAPI:
+  info:
+    description: 'Products API'
+    title: 'Products API'
+    version: 'v1.0.0'
+  servers:
+    - url: 'http://products_url'

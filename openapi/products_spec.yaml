@@ -6,6 +6,31 @@ info:
 servers:
 - url: http://products_url
 paths:
+  /healthcheck:
+    get:
+      operationId: healthCheck
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+                example:
+                  database:
+                    healthy: true
+                    message: Healthy
+                  ping:
+                    healthy: true
+                    message: Healthy
+                  deadlocks:
+                    healthy: true
+                    message: Healthy
+          description: OK
+        "503":
+          description: Service unavailable. If any healthchecks fail
+      summary: "Healthcheck endpoint for products. Check database, deadlocks and ping"
+      tags:
+      - Other
   /v1/api/gateway-account/{gatewayAccountId}/products:
     get:
       operationId: findProductsByGatewayAccountId
@@ -149,6 +174,57 @@ paths:
           description: default response
       tags:
       - Deprecated
+  /v1/api/payments/{gatewayAccountId}/{referenceNumber}:
+    get:
+      operationId: findPaymentsByGatewayAccountIdAndReferenceNumber
+      parameters:
+      - example: 1
+        in: path
+        name: gatewayAccountId
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - example: RE4R2A6VAP
+        in: path
+        name: referenceNumber
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: OK
+        "404":
+          description: Not found
+      summary: Find payment by gateway account ID and reference number.
+      tags:
+      - Payments
+  /v1/api/payments/{paymentExternalId}:
+    get:
+      operationId: findPaymentByExternalId
+      parameters:
+      - example: h6347634cwb67wii7b6ciueroytw
+        in: path
+        name: paymentExternalId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: OK
+        "404":
+          description: Not found
+      summary: Find payment by payment external ID
+      tags:
+      - Payments
   /v1/api/products:
     get:
       operationId: findProductByProductPath
@@ -254,6 +330,65 @@ paths:
           description: default response
       tags:
       - Deprecated
+  /v1/api/products/{productExternalId}/payments:
+    get:
+      operationId: findPaymentsByProductExternalId
+      parameters:
+      - example: uier837y735n837475y3847534
+        in: path
+        name: productExternalId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+          description: OK
+        "404":
+          description: Not found
+      summary: Find list of payments that belongs to the specified product external
+        ID.
+      tags:
+      - Payments
+    post:
+      operationId: createPayment
+      parameters:
+      - example: uier837y735n837475y3847534
+        in: path
+        name: productExternalId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                price:
+                  type: number
+                  description: Price override for the payment amount. If not present
+                    this will defaults to price of product.
+                  example: 9090
+                  maximum: 10000000
+                  minimum: 1
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: OK
+        "400":
+          description: For invalid payload
+      summary: Creates new payment for a given product
+      tags:
+      - Payments
   /v1/api/products/{productExternalId}/regenerate-api-token:
     post:
       description: Gets a new API token from Public Auth application and replaces
@@ -444,6 +579,52 @@ components:
           - next
           - friendly
           example: self
+    Payment:
+      type: object
+      properties:
+        _links:
+          type: array
+          example:
+          - href: https://govukpay-products.cloudapps.digital/v1/api/payments/h6347634cwb67wii7b6ciueroytw
+            method: GET
+            rel: self
+          - href: https://some.valid.url/paid
+            method: GET
+            rel: next
+          items:
+            $ref: '#/components/schemas/Link'
+        amount:
+          type: integer
+          format: int64
+          example: 1050
+        external_id:
+          type: string
+          example: h6347634cwb67wii7b6ciueroytw
+        govuk_payment_id:
+          type: string
+          example: 7cs487heites2nne5k17j5j9as
+        govuk_status:
+          type: string
+          example: success
+        product_external_id:
+          type: string
+          example: uier837y735n837475y3847534
+        reference_number:
+          type: string
+          example: RE4R2A6VAP
+        status:
+          type: string
+          enum:
+          - CREATED
+          - SUBMITTED
+          - ERROR
+          example: SUBMITTED
+      required:
+      - _links
+      - amount
+      - external_id
+      - product_external_id
+      - status
     Product:
       type: object
       properties:
@@ -451,6 +632,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Link'
+        amount_hint:
+          type: string
+          example: Enter an amount in multiples of £2 for the number of permits required
         description:
           type: string
           example: Description of the product
@@ -519,6 +703,9 @@ components:
     ProductUpdateRequest:
       type: object
       properties:
+        amount_hint:
+          type: string
+          example: Enter an amount in multiples of £2 for the number of permits required
         description:
           type: string
           example: New description of the product

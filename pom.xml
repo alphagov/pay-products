@@ -23,7 +23,7 @@
         <mockito.version>4.5.1</mockito.version>
         <wiremock.version>2.33.2</wiremock.version>
         <pay-java-commons.version>1.0.20220510113332</pay-java-commons.version>
-        <jackson.version>2.13.2</jackson.version>
+        <jackson.version>2.13.3</jackson.version>
         <surefire.version>3.0.0-M6</surefire.version>
         <swaggger-version>2.2.0</swaggger-version>
     </properties>

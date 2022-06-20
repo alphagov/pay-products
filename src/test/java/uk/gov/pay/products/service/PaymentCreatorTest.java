@@ -4,7 +4,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -40,10 +39,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static java.lang.String.format;
+import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -475,14 +476,19 @@ public class PaymentCreatorTest {
         when(randomUuid()).thenReturn(paymentExternalId);
         mockedRandomIdGenerator.when(RandomIdGenerator::randomUserFriendlyReference).thenReturn(referenceNumber);
         when(productsConfiguration.getProductsUiConfirmUrl()).thenReturn(productsUIConfirmUri);
+
+        PublicApiResponseErrorException responseErrorException = mock(PublicApiResponseErrorException.class);
+        when(responseErrorException.getErrorStatus()).thenReturn(FORBIDDEN.getStatusCode());
+        when(responseErrorException.getMessage()).thenReturn("Public API returned an error");
         when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest))))
-                .thenThrow(PublicApiResponseErrorException.class);
+                .thenThrow(responseErrorException);
 
         try {
             paymentCreator.doCreate(productExternalId, null, null);
             fail("Expected an PaymentCreationException to be thrown");
         } catch (PaymentCreationException e) {
             assertThat(e.getProductExternalId(), is(productExternalId));
+            assertThat(e.getErrorStatusCode(), is(FORBIDDEN.getStatusCode()));
             PaymentEntity expectedPaymentEntity = createPaymentEntity(
                     null,
                     null,

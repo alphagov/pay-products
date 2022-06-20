@@ -20,6 +20,7 @@ public class PublicApiResponseErrorException extends RuntimeException {
         response.close();
     }
 
+
     public PublicApiResponseErrorException(Throwable cause) {
         super(cause);
     }

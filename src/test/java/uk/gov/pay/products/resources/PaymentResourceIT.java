@@ -265,7 +265,7 @@ public class PaymentResourceIT extends IntegrationTest {
     }
 
     @Test
-    public void createAPayment_shouldReturn500_whenPublicApiReturnsAccountNotLinked() {
+    public void createAPayment_shouldReturn403_whenPublicApiReturnsAccountNotLinked() {
         Product product = aProductEntity()
                 .withExternalId(randomUuid())
                 .withGatewayAccountId(0)
@@ -280,7 +280,7 @@ public class PaymentResourceIT extends IntegrationTest {
                 .accept(APPLICATION_JSON)
                 .post(format("/v1/api/products/%s/payments", product.getExternalId()))
                 .then()
-                .statusCode(500)
+                .statusCode(403)
                 .body("errors", hasSize(1))
                 .body("errors[0]", is("Downstream system error."));
 

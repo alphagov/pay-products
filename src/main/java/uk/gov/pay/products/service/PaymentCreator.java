@@ -67,7 +67,7 @@ public class PaymentCreator {
                 .complete().get(PaymentEntity.class);
 
         if (paymentEntity.getStatus() == PaymentStatus.ERROR) {
-            throw new PaymentCreationException(paymentEntity.getProductEntity().getExternalId());
+            throw new PaymentCreationException(paymentEntity.getProductEntity().getExternalId(), paymentEntity.getErrorStatusCode());
         }
         return linksDecorator.decorate(paymentEntity.toPayment());
     }
@@ -152,8 +152,9 @@ public class PaymentCreator {
                     );
                 }
             } catch (PublicApiResponseErrorException e) {
-                logger.error("Payment creation for product external id {} failed {}", paymentEntity.getProductEntity().getExternalId(), e);
+                logger.error("Payment creation for product external id {} failed {}", paymentEntity.getProductEntity().getExternalId(), e.getMessage());
                 paymentEntity.setStatus(PaymentStatus.ERROR);
+                paymentEntity.setErrorStatusCode(e.getErrorStatus());
             }
 
             return paymentEntity;

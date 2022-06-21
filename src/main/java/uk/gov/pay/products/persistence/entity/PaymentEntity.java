@@ -12,6 +12,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
@@ -48,6 +49,9 @@ public class PaymentEntity extends AbstractEntity {
 
     @Column(name = "reference_number")
     private String referenceNumber;
+    
+    @Transient
+    private int errorStatusCode;
 
     public PaymentEntity() {
     }
@@ -103,6 +107,14 @@ public class PaymentEntity extends AbstractEntity {
     public PaymentStatus getStatus() { return status; }
 
     public void setStatus(PaymentStatus status) { this.status = status; }
+
+    public int getErrorStatusCode() {
+        return errorStatusCode;
+    }
+
+    public void setErrorStatusCode(int errorStatusCode) {
+        this.errorStatusCode = errorStatusCode;
+    }
 
     public Payment toPayment() {
         Payment payment = new Payment(

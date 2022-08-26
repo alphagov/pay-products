@@ -240,7 +240,7 @@ public class ProductResource {
     @Operation(
             tags = {"Products"},
             summary = "Patch product by gateway account ID and product external ID",
-            description = "Only supports patching `require_captcha` & `new_payment_link_journey_enabled` fields. Use /v1/ to patch other fields",
+            description = "Only supports patching `require_captcha` field. Use /v1/ to patch other fields",
             operationId = "updateProductV2",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Product.class))),

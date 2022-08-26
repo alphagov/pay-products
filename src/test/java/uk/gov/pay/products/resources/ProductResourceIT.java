@@ -61,7 +61,6 @@ public class ProductResourceIT extends IntegrationTest {
     private static final String LANGUAGE = "language";
     private static final String METADATA = "metadata";
     private static final String REQUIRE_CAPTCHA = "require_captcha";
-    private static final String NEW_PAYMENT_LINK_JOURNEY_ENABLED = "new_payment_link_journey_enabled";
 
     @Test
     public void shouldSuccess_whenSavingAValidProduct_withMinimumMandatoryFields() throws Exception {
@@ -230,8 +229,7 @@ public class ProductResourceIT extends IntegrationTest {
                 .body(REFERENCE_HINT, is(referenceHint))
                 .body(AMOUNT_HINT, is(amountHint))
                 .body(LANGUAGE, is(language))
-                .body(REQUIRE_CAPTCHA, is(false))
-                .body(NEW_PAYMENT_LINK_JOURNEY_ENABLED, is(false));
+                .body(REQUIRE_CAPTCHA, is(false));
 
         String externalId = response.extract().path(EXTERNAL_ID);
 
@@ -1376,9 +1374,6 @@ public class ProductResourceIT extends IntegrationTest {
         var payload = List.of(
                 Map.of("path", "require_captcha",
                         "op", "replace",
-                        "value", true),
-                Map.of("path", "new_payment_link_journey_enabled",
-                        "op", "replace",
                         "value", true));
 
         givenSetup()
@@ -1393,7 +1388,6 @@ public class ProductResourceIT extends IntegrationTest {
         Optional<Map<String, Object>> updatedProduct = databaseHelper.findProductEntityByExternalId(externalId);
         assertThat(updatedProduct.isPresent(), is(true));
         assertThat(updatedProduct.get(), hasEntry("require_captcha", true));
-        assertThat(updatedProduct.get(), hasEntry("new_payment_link_journey_enabled", true));
     }
 
     @Test

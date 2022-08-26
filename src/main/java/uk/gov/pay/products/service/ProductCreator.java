@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static uk.gov.pay.products.model.Product.FIELD_NEW_PAYMENT_LINK_JOURNEY_ENABLED;
 import static uk.gov.pay.products.model.Product.FIELD_REQUIRE_CAPTCHA;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
@@ -84,9 +83,6 @@ public class ProductCreator {
                     switch (patchRequest.getPath()) {
                         case FIELD_REQUIRE_CAPTCHA:
                             productEntity.setRequireCaptcha(patchRequest.valueAsBoolean());
-                            break;
-                        case FIELD_NEW_PAYMENT_LINK_JOURNEY_ENABLED:
-                            productEntity.setNewPaymentLinkJourneyEnabled(patchRequest.valueAsBoolean());
                             break;
                         default:
                             throw new BadRequestException("Unexpected path for patch operation: " + patchRequest.getPath());

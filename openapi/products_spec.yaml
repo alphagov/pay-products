@@ -433,8 +433,8 @@ paths:
       - Products
   /v2/api/gateway-account/{gatewayAccountId}/products/{productExternalId}:
     patch:
-      description: Only supports patching `require_captcha` & `new_payment_link_journey_enabled`
-        fields. Use /v1/ to patch other fields
+      description: Only supports patching `require_captcha` field. Use /v1/ to patch
+        other fields
       operationId: updateProductV2
       parameters:
       - example: 1
@@ -457,7 +457,7 @@ paths:
               type: string
               example:
               - op: replace
-                path: new_payment_link_journey_enabled
+                path: require_captcha
                 value: true
       responses:
         "200":
@@ -658,9 +658,6 @@ components:
         name:
           type: string
           example: A name for the product
-        new_payment_link_journey_enabled:
-          type: boolean
-          example: false
         price:
           type: integer
           format: int64

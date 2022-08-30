@@ -255,7 +255,7 @@ public class ProductResource {
                                                   example = "[" +
                                                           "  {" +
                                                           "    \"op\": \"replace\"," +
-                                                          "    \"path\": \"new_payment_link_journey_enabled\"," +
+                                                          "    \"path\": \"require_captcha\"," +
                                                           "    \"value\":true" +
                                                           "  }" +
                                                           "]")))

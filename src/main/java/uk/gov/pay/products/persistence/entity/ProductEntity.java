@@ -82,9 +82,6 @@ public class ProductEntity extends AbstractEntity {
     
     @Column(name = "require_captcha")
     private boolean requireCaptcha;
-    
-    @Column(name = "new_payment_link_journey_enabled")
-    private boolean newPaymentLinkJourneyEnabled;
 
     @OneToMany(mappedBy = "productEntity", targetEntity = ProductMetadataEntity.class, cascade = CascadeType.ALL)
     private List<ProductMetadataEntity> metadataEntityList;
@@ -220,14 +217,6 @@ public class ProductEntity extends AbstractEntity {
         this.requireCaptcha = requireCaptcha;
     }
 
-    public boolean isNewPaymentLinkJourneyEnabled() {
-        return newPaymentLinkJourneyEnabled;
-    }
-
-    public void setNewPaymentLinkJourneyEnabled(boolean newPaymentLinkJourneyEnabled) {
-        this.newPaymentLinkJourneyEnabled = newPaymentLinkJourneyEnabled;
-    }
-
     public void setMetadataEntityList(List<ProductMetadataEntity> metadataEntityList) {
         this.metadataEntityList = metadataEntityList;
     }
@@ -278,7 +267,6 @@ public class ProductEntity extends AbstractEntity {
                 this.amountHint,
                 this.language, 
                 this.requireCaptcha,
-                this.newPaymentLinkJourneyEnabled,
                 this.metadataEntityList == null ? null : this.metadataEntityList
                         .stream()
                         .map(ProductMetadata::from)

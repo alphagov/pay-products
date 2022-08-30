@@ -20,7 +20,6 @@ import java.util.function.Consumer;
 import static uk.gov.pay.products.model.Product.FIELD_GATEWAY_ACCOUNT_ID;
 import static uk.gov.pay.products.model.Product.FIELD_LANGUAGE;
 import static uk.gov.pay.products.model.Product.FIELD_NAME;
-import static uk.gov.pay.products.model.Product.FIELD_NEW_PAYMENT_LINK_JOURNEY_ENABLED;
 import static uk.gov.pay.products.model.Product.FIELD_PAY_API_TOKEN;
 import static uk.gov.pay.products.model.Product.FIELD_PRICE;
 import static uk.gov.pay.products.model.Product.FIELD_PRODUCT_NAME_PATH;
@@ -40,8 +39,7 @@ public class ProductRequestValidator {
     private final ProductsMetadataRequestValidator metadataRequestValidator;
     
     private static final Map<PatchPathOperation, Consumer<JsonPatchRequest>> patchOperationValidators = Map.of(
-            new PatchPathOperation(FIELD_REQUIRE_CAPTCHA, JsonPatchOp.REPLACE), JsonPatchRequestValidator::throwIfValueNotBoolean,
-            new PatchPathOperation(FIELD_NEW_PAYMENT_LINK_JOURNEY_ENABLED, JsonPatchOp.REPLACE), JsonPatchRequestValidator::throwIfValueNotBoolean
+            new PatchPathOperation(FIELD_REQUIRE_CAPTCHA, JsonPatchOp.REPLACE), JsonPatchRequestValidator::throwIfValueNotBoolean
     );
     private final JsonPatchRequestValidator patchRequestValidator = new JsonPatchRequestValidator(patchOperationValidators);
 

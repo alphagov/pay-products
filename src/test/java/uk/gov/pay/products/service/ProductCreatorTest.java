@@ -244,14 +244,9 @@ public class ProductCreatorTest {
                         "op", "replace",
                         "value", true)
         ));
-        JsonPatchRequest replaceNewPaymentLinkJourneyEnabled = JsonPatchRequest.from(objectMapper.valueToTree(
-                Map.of("path", "new_payment_link_journey_enabled",
-                        "op", "replace",
-                        "value", true)
-        ));
-        
+
         Product updatedProduct = productCreator.update(gatewayAccountId, externalId, 
-                List.of(replaceRequireCaptcha, replaceNewPaymentLinkJourneyEnabled));
+                List.of(replaceRequireCaptcha));
         assertThat(updatedProduct.isRequireCaptcha(), is(true));
     }
 

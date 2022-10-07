@@ -3,6 +3,8 @@ package uk.gov.pay.products.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.products.persistence.dao.PaymentDao;
@@ -22,8 +24,8 @@ public class PaymentUpdaterTest {
     @Mock
     private PaymentDao paymentDao;
 
-    @org.mockito.Captor
-    private org.mockito.ArgumentCaptor<PaymentEntity> paymentEntityArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<PaymentEntity> paymentEntityArgumentCaptor;
     
     private PaymentUpdater paymentUpdater;
 

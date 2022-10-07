@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static org.junit.Assert.assertThat;
+import static uk.gov.pay.products.fixtures.PaymentEntityFixture.*;
 import static uk.gov.pay.products.fixtures.PaymentEntityFixture.aPaymentEntity;
 import static uk.gov.pay.products.fixtures.ProductEntityFixture.aProductEntity;
 import static uk.gov.pay.products.service.PaymentUpdater.REDACTED_REFERENCE_NUMBER;
@@ -53,7 +54,7 @@ public class PaymentResourceIT extends IntegrationTest {
         Integer productId = databaseHelper.findProductId(productEntity.getExternalId());
         productEntity.setId(productId);
         
-        PaymentEntity payment = uk.gov.pay.products.fixtures.PaymentEntityFixture.aPaymentEntity()
+        PaymentEntity payment = aPaymentEntity()
                 .withExternalId(randomUuid())
                 .withStatus(uk.gov.pay.products.util.PaymentStatus.CREATED)
                 .withGovukPaymentId("kts8ici6rm")
@@ -61,6 +62,13 @@ public class PaymentResourceIT extends IntegrationTest {
                 .withReferenceNumber("4242424242424242")
                 .build();
         databaseHelper.addPayment(payment.toPayment(), 1);
+        PaymentEntity paymentThatShouldNotRedacted = aPaymentEntity()
+                .withExternalId(randomUuid())
+                .withStatus(uk.gov.pay.products.util.PaymentStatus.CREATED)
+                .withProduct(productEntity)
+                .withReferenceNumber("ABCD1234")
+                .build();
+        databaseHelper.addPayment(paymentThatShouldNotRedacted.toPayment(), 1);
 
         givenSetup()
                 .accept(APPLICATION_JSON)
@@ -74,6 +82,11 @@ public class PaymentResourceIT extends IntegrationTest {
                 .body("reference_number", is(REDACTED_REFERENCE_NUMBER))
                 .body("external_id", is(payment.getExternalId()))
                 .body("govuk_payment_id", is("kts8ici6rm"));
+        
+        givenSetup()
+                .get(format("/v1/api/payments/%s", paymentThatShouldNotRedacted.getExternalId()))
+                .then()
+                .body("reference_number", is("ABCD1234"));
     }
     
     @Test

@@ -1,12 +1,11 @@
 package uk.gov.pay.products.service;
 
 import com.google.inject.persist.Transactional;
-import org.slf4j.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.persistence.dao.PaymentDao;
-import uk.gov.pay.products.persistence.entity.PaymentEntity;
 
 import javax.inject.Inject;
-import java.util.Optional;
 
 import static java.lang.String.format;
 
@@ -14,7 +13,7 @@ public class PaymentUpdater {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PaymentUpdater.class);
     
-    public static final String REDACTED_REFERENCE_NUMBER = "****************";
+    public static final String REDACTED_REFERENCE_NUMBER = "****";
     
     private final PaymentDao paymentDao;
 

@@ -46,6 +46,14 @@ public class PaymentResource {
         this.paymentFactory = paymentFactory;
         this.requestValidator = requestValidator;
     }
+    
+    @Path("/v1/api/payments/redact-reference/{govukPaymentId}")
+    @POST
+    public Response redactReference(@PathParam("govukPaymentId") String govukPaymentId) {
+        logger.info("Redacting reference for payment with govukPaymentId - [ {} ]", govukPaymentId);
+        paymentFactory.paymentUpdater().redactReference(govukPaymentId);
+        return Response.ok().build();
+    }
 
     @Path("/v1/api/payments/{paymentExternalId}")
     @GET

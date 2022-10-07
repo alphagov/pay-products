@@ -44,4 +44,17 @@ public class PaymentDao extends JpaDao<PaymentEntity> {
                 .setParameter("referenceNumber", referenceNumber)
                 .getResultList().stream().findFirst();
     }
+
+    /*
+    The govukPaymentId is equivalent to ledger's resource_external_id
+     */
+    public Optional<PaymentEntity> findByGovukPaymentId(String govukPaymentId) {
+        String query = "SELECT payment FROM PaymentEntity payment " +
+                "WHERE payment.govukPaymentId = :govukPaymentId";
+
+        return entityManager.get()
+                .createQuery(query, PaymentEntity.class)
+                .setParameter("govukPaymentId", govukPaymentId)
+                .getResultList().stream().findFirst();
+    }
 }

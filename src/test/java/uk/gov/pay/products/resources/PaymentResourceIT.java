@@ -22,8 +22,10 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static org.junit.Assert.assertThat;
+import static uk.gov.pay.products.fixtures.PaymentEntityFixture.*;
 import static uk.gov.pay.products.fixtures.PaymentEntityFixture.aPaymentEntity;
 import static uk.gov.pay.products.fixtures.ProductEntityFixture.aProductEntity;
+import static uk.gov.pay.products.service.PaymentUpdater.REDACTED_REFERENCE_NUMBER;
 import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.createErrorPayload;
 import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.createPaymentResponsePayload;
 import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.setupResponseToCreatePaymentRequest;
@@ -36,6 +38,57 @@ public class PaymentResourceIT extends IntegrationTest {
     private final String nextUrl = "www.gov.uk/pay";
     private final int gatewayAccountId = randomInt();
 
+    @Test
+    public void redactPaymentReference() {
+        ProductEntity productEntity = ProductEntityFixture.aProductEntity()
+                .withGatewayAccountId(gatewayAccountId)
+                .withReferenceEnabled(true)
+                .withReferenceLabel("Reference label")
+                .withLanguage(SupportedLanguage.WELSH)
+                .build();
+
+        Product product = productEntity.toProduct();
+
+        databaseHelper.addProduct(product);
+
+        Integer productId = databaseHelper.findProductId(productEntity.getExternalId());
+        productEntity.setId(productId);
+        
+        PaymentEntity payment = aPaymentEntity()
+                .withExternalId(randomUuid())
+                .withStatus(uk.gov.pay.products.util.PaymentStatus.CREATED)
+                .withGovukPaymentId("kts8ici6rm")
+                .withProduct(productEntity)
+                .withReferenceNumber("4242424242424242")
+                .build();
+        databaseHelper.addPayment(payment.toPayment(), 1);
+        PaymentEntity paymentThatShouldNotRedacted = aPaymentEntity()
+                .withExternalId(randomUuid())
+                .withStatus(uk.gov.pay.products.util.PaymentStatus.CREATED)
+                .withProduct(productEntity)
+                .withReferenceNumber("ABCD1234")
+                .build();
+        databaseHelper.addPayment(paymentThatShouldNotRedacted.toPayment(), 1);
+
+        givenSetup()
+                .accept(APPLICATION_JSON)
+                .post(format("/v1/api/payments/redact-reference/%s", payment.getGovukPaymentId()))
+                .then()
+                .statusCode(200);
+        
+        givenSetup()
+                .get(format("/v1/api/payments/%s", payment.getExternalId()))
+                .then()
+                .body("reference_number", is(REDACTED_REFERENCE_NUMBER))
+                .body("external_id", is(payment.getExternalId()))
+                .body("govuk_payment_id", is("kts8ici6rm"));
+        
+        givenSetup()
+                .get(format("/v1/api/payments/%s", paymentThatShouldNotRedacted.getExternalId()))
+                .then()
+                .body("reference_number", is("ABCD1234"));
+    }
+    
     @Test
     public void createAPayment_shouldSucceed() {
         String referenceNumber = randomUuid().substring(1, 10);

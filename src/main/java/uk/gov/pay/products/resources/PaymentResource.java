@@ -31,6 +31,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.CREATED;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
+import static net.logstash.logback.argument.StructuredArguments.kv;
+import static uk.gov.service.payments.logging.LoggingKeys.PAYMENT_EXTERNAL_ID;
 
 @Path("/")
 @Tag(name = "Payments")
@@ -45,6 +47,14 @@ public class PaymentResource {
     public PaymentResource(PaymentFactory paymentFactory, PaymentRequestValidator requestValidator) {
         this.paymentFactory = paymentFactory;
         this.requestValidator = requestValidator;
+    }
+    
+    @Path("/v1/api/payments/redact-reference/{govukPaymentId}")
+    @POST
+    public Response redactReference(@PathParam("govukPaymentId") String govukPaymentId) {
+        logger.info("Redacting reference for payment.", kv(PAYMENT_EXTERNAL_ID, govukPaymentId));
+        paymentFactory.paymentUpdater().redactReference(govukPaymentId);
+        return Response.ok().build();
     }
 
     @Path("/v1/api/payments/{paymentExternalId}")

@@ -11,10 +11,10 @@ import uk.gov.pay.products.util.PaymentStatus;
 import java.util.List;
 import java.util.Optional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
@@ -36,7 +36,42 @@ public class PaymentDaoIT extends DaoTestBase {
     }
 
     @Test
-    public void shouldSuccess_whenFindingAValidPayment() {
+    public void shouldFindAPaymentByGovukPaymentId() {
+        PaymentEntity payment = PaymentEntityFixture.aPaymentEntity()
+                .withGovukPaymentId(randomUuid())
+                .withStatus(PaymentStatus.CREATED)
+                .withProduct(productEntity)
+                .withReferenceNumber("MH2KJY5KPW")
+                .build();
+        databaseHelper.addPayment(payment.toPayment(), 1);
+
+        Optional<PaymentEntity> paymentEntity = paymentDao.findByGovukPaymentId(payment.getGovukPaymentId());
+        assertTrue(paymentEntity.isPresent());
+
+        assertThat(paymentEntity.get().getExternalId(), is(payment.getExternalId()));
+        assertThat(paymentEntity.get().getNextUrl(), is(payment.getNextUrl()));
+        assertThat(paymentEntity.get().getAmount(), is(payment.getAmount()));
+        assertThat(paymentEntity.get().getStatus(), is(payment.getStatus()));
+        assertThat(paymentEntity.get().getGovukPaymentId(), is(payment.getGovukPaymentId()));
+        assertNotNull(paymentEntity.get().getDateCreated());
+    }
+    
+    @Test
+    public void shouldNotFindAPaymentByGovukPaymentId() {
+        PaymentEntity payment = PaymentEntityFixture.aPaymentEntity()
+                .withGovukPaymentId(randomUuid())
+                .withStatus(PaymentStatus.CREATED)
+                .withProduct(productEntity)
+                .withReferenceNumber("MH2KJY5KPW")
+                .build();
+        databaseHelper.addPayment(payment.toPayment(), 1);
+        
+        Optional<PaymentEntity> paymentEntity = paymentDao.findByGovukPaymentId(randomUuid());
+        assertTrue(paymentEntity.isEmpty());
+    }
+    
+    @Test
+    public void shouldFindAPaymentByExternalId() {
         PaymentEntity payment = PaymentEntityFixture.aPaymentEntity()
                 .withExternalId(randomUuid())
                 .withStatus(PaymentStatus.CREATED)
@@ -57,7 +92,7 @@ public class PaymentDaoIT extends DaoTestBase {
     }
 
     @Test
-    public void shouldSuccess_whenSavingAValidPayment() {
+    public void shouldSucceed_whenSavingAValidPayment() {
         String externalId = randomUuid();
 
         PaymentEntity payment = PaymentEntityFixture.aPaymentEntity()
@@ -75,7 +110,7 @@ public class PaymentDaoIT extends DaoTestBase {
     }
 
     @Test
-    public void shouldSuccess_whenSearchingForPaymentsByProductId() {
+    public void shouldSucceed_whenSearchingForPaymentsByProductId() {
         Integer gatewayAccountId = randomInt();
         PaymentEntity payment1 = PaymentEntityFixture.aPaymentEntity()
                 .withExternalId(randomUuid())

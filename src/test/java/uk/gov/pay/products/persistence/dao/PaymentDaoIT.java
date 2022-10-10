@@ -58,6 +58,14 @@ public class PaymentDaoIT extends DaoTestBase {
     
     @Test
     public void shouldNotFindAPaymentByGovukPaymentId() {
+        PaymentEntity payment = PaymentEntityFixture.aPaymentEntity()
+                .withGovukPaymentId(randomUuid())
+                .withStatus(PaymentStatus.CREATED)
+                .withProduct(productEntity)
+                .withReferenceNumber("MH2KJY5KPW")
+                .build();
+        databaseHelper.addPayment(payment.toPayment(), 1);
+        
         Optional<PaymentEntity> paymentEntity = paymentDao.findByGovukPaymentId(randomUuid());
         assertTrue(paymentEntity.isEmpty());
     }

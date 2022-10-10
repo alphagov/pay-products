@@ -13,7 +13,7 @@ public class PaymentUpdater {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PaymentUpdater.class);
     
-    public static final String REDACTED_REFERENCE_NUMBER = "****";
+    public static final String REDACTED_REFERENCE_NUMBER = "****************";
     
     private final PaymentDao paymentDao;
 

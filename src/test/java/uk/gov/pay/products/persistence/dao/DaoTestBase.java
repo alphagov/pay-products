@@ -23,7 +23,7 @@ public class DaoTestBase {
     private static final Logger logger = LoggerFactory.getLogger(DaoTestBase.class);
 
     @ClassRule
-    public static final PostgresDockerRule postgres = new PostgresDockerRule();
+    public static final PostgresDockerRule postgres = new PostgresDockerRule("11.16");
 
     static DatabaseTestHelper databaseHelper;
     static GuicedTestEnvironment env;
@@ -42,7 +42,7 @@ public class DaoTestBase {
         databaseHelper = new DatabaseTestHelper(Jdbi.create(postgres.getConnectionUrl(), postgres.getUsername(), postgres.getPassword()));
 
         try (Connection connection = DriverManager.getConnection(postgres.getConnectionUrl(), postgres.getUsername(), postgres.getPassword())) {
-            Liquibase migrator = new Liquibase("migrations.xml", new ClassLoaderResourceAccessor(), new JdbcConnection(connection));
+            Liquibase migrator = new Liquibase("it-migrations.xml", new ClassLoaderResourceAccessor(), new JdbcConnection(connection));
             migrator.update("");
         }
 
@@ -52,7 +52,7 @@ public class DaoTestBase {
     @AfterClass
     public static void tearDown() {
         try (Connection connection = DriverManager.getConnection(postgres.getConnectionUrl(), postgres.getUsername(), postgres.getPassword())) {
-            Liquibase migrator = new Liquibase("migrations.xml", new ClassLoaderResourceAccessor(), new JdbcConnection(connection));
+            Liquibase migrator = new Liquibase("it-migrations.xml", new ClassLoaderResourceAccessor(), new JdbcConnection(connection));
             migrator.dropAll();
         } catch (Exception e) {
             logger.error("Error reverting migrations", e);

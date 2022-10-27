@@ -17,6 +17,7 @@ import uk.gov.pay.products.ProductsApplication;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.utils.DatabaseTestHelper;
 import uk.gov.service.payments.commons.testing.db.PostgresDockerRule;
+import uk.gov.service.payments.commons.testing.db.PostgresTestHelper;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -43,7 +44,7 @@ public class DropwizardAppWithPostgresRule implements TestRule {
     
     public DropwizardAppWithPostgresRule(String configPath, ConfigOverride... configOverrides) {
         configFilePath = resourceFilePath(configPath);
-        postgres = new PostgresDockerRule();
+        postgres = new PostgresDockerRule("11.16");
         List<ConfigOverride> cfgOverrideList = newArrayList(configOverrides);
         cfgOverrideList.add(config("database.url", postgres.getConnectionUrl()));
         cfgOverrideList.add(config("database.user", postgres.getUsername()));
@@ -77,7 +78,7 @@ public class DropwizardAppWithPostgresRule implements TestRule {
 
     private void doDatabaseMigration() throws SQLException, LiquibaseException {
         try (Connection connection = DriverManager.getConnection(postgres.getConnectionUrl(), postgres.getUsername(), postgres.getPassword())) {
-            Liquibase migrator = new Liquibase("migrations.xml", new ClassLoaderResourceAccessor(), new JdbcConnection(connection));
+            Liquibase migrator = new Liquibase("it-migrations.xml", new ClassLoaderResourceAccessor(), new JdbcConnection(connection));
             migrator.update("");
         }
     }
@@ -95,7 +96,7 @@ public class DropwizardAppWithPostgresRule implements TestRule {
     }
 
     private void registerShutdownHook() {
-        Runtime.getRuntime().addShutdownHook(new Thread(postgres::stop));
+        Runtime.getRuntime().addShutdownHook(new Thread(PostgresTestHelper::stop));
     }
 
     private void restoreDropwizardsLogging() {

@@ -312,7 +312,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.4.0</version>
+                <version>3.4.1</version>
                 <configuration>
                     <outputFile>target/${project.artifactId}-${project.version}-allinone.jar</outputFile>
                     <createDependencyReducedPom>true</createDependencyReducedPom>

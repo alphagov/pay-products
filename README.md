@@ -6,6 +6,12 @@ This microservice manages products (things that a Government Service would like 
 
 These products are integrated with GOV.UK Pay so that a user can make payments using a provided URL. 
 
+## API Specification
+
+The [API Specification](openapi/products_spec.yaml) provides more detail on the paths and operations including examples.
+
+[View the API specification for pay-products in Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/alphagov/pay-products/master/openapi/products_spec.yaml).
+
 ## Environment Variables
 
 | Variable | Description |
@@ -30,12 +36,6 @@ These products are integrated with GOV.UK Pay so that a user can make payments u
 | `RUN_APP`                     | Set to `true` to run the application. Defaults to `true`. |
 | `RUN_MIGRATION`               | Set to `true` to run a database migration. Defaults to `false`. |
 | `SECURE_RETURN_URLS`          | Set to `false` to allow non-HTTPS URLs for the `return_url` field of a product. Defaults to `true`. |
-
-## API Specification
-
-The [API Specification](openapi/products_spec.yaml) provides more detail on the paths and operations including examples.
-
-The JSON naming convention follows Hypertext Application Language (HAL).
  
 ## Vulnerability Disclosure
 

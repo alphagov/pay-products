@@ -22,7 +22,7 @@
         <mainClass>uk.gov.pay.products.ProductsApplication</mainClass>
         <mockito.version>4.8.0</mockito.version>
         <wiremock.version>2.35.0</wiremock.version>
-        <pay-java-commons.version>1.0.20221121110222</pay-java-commons.version>
+        <pay-java-commons.version>1.0.20221128105400</pay-java-commons.version>
         <jackson.version>2.14.1</jackson.version>
         <surefire.version>3.0.0-M7</surefire.version>
         <swaggger-version>2.2.7</swaggger-version>

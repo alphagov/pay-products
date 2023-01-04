@@ -674,6 +674,8 @@ components:
         name:
           type: string
           example: A name for the product
+        pay_api_token:
+          type: string
         price:
           type: integer
           format: int64

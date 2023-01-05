@@ -55,7 +55,6 @@ public class Product {
     @JsonProperty(FIELD_DESCRIPTION)
     private final String description;
     @JsonProperty(FIELD_PAY_API_TOKEN)
-    @Schema(hidden = true)
     private final String payApiToken;
     @Schema(example = "1050")
     @JsonProperty(FIELD_PRICE)

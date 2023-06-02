@@ -25,7 +25,7 @@
         <pay-java-commons.version>1.0.20230516104916</pay-java-commons.version>
         <jackson.version>2.15.2</jackson.version>
         <surefire.version>3.1.0</surefire.version>
-        <swaggger-version>2.2.10</swaggger-version>
+        <swaggger-version>2.2.11</swaggger-version>
     </properties>
 
     <parent>

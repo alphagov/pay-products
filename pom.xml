@@ -14,13 +14,11 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <dropwizard.version>2.1.4</dropwizard.version>
+        <dropwizard.version>2.1.6</dropwizard.version>
         <eclipselink.version>2.7.11</eclipselink.version>
         <guice.version>5.1.0</guice.version>
         <hamcrest.version>2.2</hamcrest.version>
-        <junit5.version>5.9.3</junit5.version>
         <mainClass>uk.gov.pay.products.ProductsApplication</mainClass>
-        <mockito.version>4.8.0</mockito.version>
         <wiremock.version>2.35.0</wiremock.version>
         <pay-java-commons.version>1.0.20230601160155</pay-java-commons.version>
         <jackson.version>2.15.2</jackson.version>
@@ -31,7 +29,7 @@
     <parent>
         <groupId>io.dropwizard</groupId>
         <artifactId>dropwizard-dependencies</artifactId>
-        <version>2.1.4</version>
+        <version>2.1.6</version>
     </parent>
 
     <dependencyManagement>
@@ -205,37 +203,31 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-inline</artifactId>
-            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit5.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit5.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
-            <version>${junit5.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -429,6 +421,10 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <reportsDirectory>${project.build.directory}/test-reports</reportsDirectory>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>io.swagger.core.v3</groupId>
@@ -469,6 +465,8 @@
                                 <exclude>**/*ContractTest.java</exclude>
                                 <exclude>**/*ContractTestSuite.java</exclude>
                             </excludes>
+                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                            <reportsDirectory>${project.build.directory}/test-reports</reportsDirectory>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -490,6 +488,8 @@
                             <includes>
                                 <include>**/*ContractTestSuite.java</include>
                             </includes>
+                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                            <reportsDirectory>${project.build.directory}/test-reports</reportsDirectory>
                         </configuration>
                     </plugin>
                 </plugins>

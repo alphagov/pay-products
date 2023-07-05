@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import static java.lang.String.format;
 import static net.logstash.logback.argument.StructuredArguments.kv;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static uk.gov.pay.products.util.PublicAPIErrorCodes.CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUserFriendlyReference;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 import static uk.gov.service.payments.logging.LoggingKeys.GATEWAY_ACCOUNT_ID;
@@ -46,17 +47,19 @@ public class PaymentCreator {
     private final LinksDecorator linksDecorator;
     private final ProductsConfiguration productsConfiguration;
     private static final int MAX_NUMBER_OF_RETRY_FOR_UNIQUE_REF_NUMBER = 3;
+    private final PaymentFactory paymentFactory;
 
     @Inject
     public PaymentCreator(Provider<TransactionFlow> transactionFlowProvider, ProductDao productDao, PaymentDao paymentDao,
                           PublicApiRestClient publicApiRestClient, LinksDecorator linksDecorator,
-                          ProductsConfiguration productsConfiguration) {
+                          ProductsConfiguration productsConfiguration, PaymentFactory paymentFactory) {
         this.transactionFlowProvider = transactionFlowProvider;
         this.productDao = productDao;
         this.paymentDao = paymentDao;
         this.publicApiRestClient = publicApiRestClient;
         this.linksDecorator = linksDecorator;
         this.productsConfiguration = productsConfiguration;
+        this.paymentFactory = paymentFactory;
     }
 
     public Payment doCreate(String productExternalId, Long priceOverride, String reference) {
@@ -67,7 +70,13 @@ public class PaymentCreator {
                 .complete().get(PaymentEntity.class);
 
         if (paymentEntity.getStatus() == PaymentStatus.ERROR) {
-            throw new PaymentCreationException(paymentEntity.getProductEntity().getExternalId(), paymentEntity.getErrorStatusCode());
+            if (CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE.equals(paymentEntity.getErrorCode())) {
+                paymentFactory.paymentUpdater().redactReferenceByExternalId(paymentEntity.getExternalId());
+            }
+
+            throw new PaymentCreationException(paymentEntity.getProductEntity().getExternalId(),
+                    paymentEntity.getErrorStatusCode(),
+                    paymentEntity.getErrorCode());
         }
         return linksDecorator.decorate(paymentEntity.toPayment());
     }
@@ -83,14 +92,14 @@ public class PaymentCreator {
                 }
                 return mergePaymentEntityWithoutReferenceCheck(setupPaymentEntity(productEntity, userDefinedReference));
             }
-            
+
             PaymentEntity paymentEntity = setupPaymentEntity(productEntity, randomUserFriendlyReference());
-            
+
             return mergePaymentEntityWithReferenceNumberCheck(paymentEntity);
         };
     }
 
-    private PaymentEntity mergePaymentEntityWithoutReferenceCheck(PaymentEntity paymentEntity) { 
+    private PaymentEntity mergePaymentEntityWithoutReferenceCheck(PaymentEntity paymentEntity) {
         paymentDao.persist(paymentEntity);
         return paymentEntity;
     }
@@ -143,7 +152,7 @@ public class PaymentCreator {
                         kv(PAYMENT_EXTERNAL_ID, paymentEntity.getGovukPaymentId()),
                         kv("product_external_id", paymentEntity.getProductEntity().getExternalId())
                 );
-                
+
                 if (PanDetector.isSuspectedPan(paymentEntity.getReferenceNumber())) {
                     logger.warn("Suspected PAN entered by user in reference field",
                             kv(PAYMENT_EXTERNAL_ID, paymentEntity.getGovukPaymentId()),
@@ -155,6 +164,7 @@ public class PaymentCreator {
                 logger.error("Payment creation for product external id {} failed {}", paymentEntity.getProductEntity().getExternalId(), e.getMessage());
                 paymentEntity.setStatus(PaymentStatus.ERROR);
                 paymentEntity.setErrorStatusCode(e.getErrorStatus());
+                paymentEntity.setErrorCode(e.getCode());
             }
 
             return paymentEntity;

@@ -39,18 +39,22 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static java.lang.String.format;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import static uk.gov.pay.products.util.PaymentStatus.ERROR;
 import static uk.gov.pay.products.util.PaymentStatus.SUBMITTED;
+import static uk.gov.pay.products.util.PublicAPIErrorCodes.CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 import static uk.gov.service.payments.commons.model.Source.CARD_AGENT_INITIATED_MOTO;
 import static uk.gov.service.payments.commons.model.Source.CARD_PAYMENT_LINK;
@@ -71,6 +75,12 @@ public class PaymentCreatorTest {
     @Mock
     private ProductsConfiguration productsConfiguration;
 
+    @Mock
+    private PaymentFactory mockPaymentFactory;
+
+    @Mock
+    private PaymentUpdater mockPaymentUpdater;
+
     private PaymentCreator paymentCreator;
 
     @Rule
@@ -81,7 +91,7 @@ public class PaymentCreatorTest {
     @Before
     public void setup() {
         LinksDecorator linksDecorator = new LinksDecorator(PRODUCT_URL, "https://products-ui.url", "https://products-ui.url/payments");
-        paymentCreator = new PaymentCreator(TransactionFlow::new, productDao, paymentDao, publicApiRestClient, linksDecorator, productsConfiguration);
+        paymentCreator = new PaymentCreator(TransactionFlow::new, productDao, paymentDao, publicApiRestClient, linksDecorator, productsConfiguration, mockPaymentFactory);
     }
 
     @After
@@ -497,6 +507,68 @@ public class PaymentCreatorTest {
                     null);
             verify(paymentDao).merge(argThat(PaymentEntityMatcher.isSame(expectedPaymentEntity)));
         }
+        verifyNoInteractions(mockPaymentUpdater);
+    }
+
+    @Test
+    public void shouldCreateAnErrorPayment_whenPublicApiReturnsErrorCodeForCardNumberInReference() {
+        int productId = 1;
+        String productExternalId = "product-external-id";
+        long productPrice = 100L;
+        String productName = "name";
+        String productReturnUrl = "https://return.url";
+        String productApiToken = "api-token";
+        Integer gatewayAccountId = 1;
+        String paymentExternalId = "random-external-id";
+        String referenceNumber = createRandomReferenceNumber();
+        String productsUIConfirmUri = "https://products-ui/payment-complete";
+        String paymentReturnUrl = format("%s/%s", productsUIConfirmUri, paymentExternalId);
+        SupportedLanguage language = SupportedLanguage.WELSH;
+
+        ProductEntity productEntity = createProductEntity(
+                productId,
+                productPrice,
+                productExternalId,
+                productName,
+                productReturnUrl,
+                productApiToken,
+                gatewayAccountId,
+                false,
+                language);
+        PaymentRequest expectedPaymentRequest = createPaymentRequest(
+                productPrice,
+                referenceNumber,
+                productName,
+                paymentReturnUrl,
+                language,
+                false,
+                Map.of(),
+                CARD_PAYMENT_LINK);
+
+        when(productDao.findByExternalId(productExternalId)).thenReturn(Optional.of(productEntity));
+        when(randomUuid()).thenReturn(paymentExternalId);
+        mockedRandomIdGenerator.when(RandomIdGenerator::randomUserFriendlyReference).thenReturn(referenceNumber);
+        when(productsConfiguration.getProductsUiConfirmUrl()).thenReturn(productsUIConfirmUri);
+        when(mockPaymentFactory.paymentUpdater()).thenReturn(mockPaymentUpdater);
+
+        PublicApiResponseErrorException responseErrorException = mock(PublicApiResponseErrorException.class);
+        when(responseErrorException.getErrorStatus()).thenReturn(BAD_REQUEST.getStatusCode());
+        when(responseErrorException.getCode()).thenReturn(CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE);
+        when(responseErrorException.getMessage()).thenReturn("Public API returned an error");
+        when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest))))
+                .thenThrow(responseErrorException);
+
+        var exception = assertThrows(PaymentCreationException.class, () -> {
+            paymentCreator.doCreate(productExternalId, null, null);
+        });
+
+        assertThat(exception.getProductExternalId(), is(productExternalId));
+        assertThat(exception.getErrorStatusCode(), is(BAD_REQUEST.getStatusCode()));
+
+        PaymentEntity expectedPaymentEntity = createPaymentEntity(null, null, productEntity, ERROR, null);
+        verify(paymentDao).merge(argThat(PaymentEntityMatcher.isSame(expectedPaymentEntity)));
+
+        verify(mockPaymentUpdater).redactReferenceByExternalId("random-external-id");
     }
 
     @Test
@@ -513,7 +585,7 @@ public class PaymentCreatorTest {
         }
 
     }
-    
+
     @Test
     public void shouldThrowPaymentCreationException_whenReferenceEnabledAndNoReferencePresent() {
         int productId = 1;

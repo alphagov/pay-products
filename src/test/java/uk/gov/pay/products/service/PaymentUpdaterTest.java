@@ -10,6 +10,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.products.persistence.dao.PaymentDao;
 import uk.gov.pay.products.persistence.entity.PaymentEntity;
 
+import java.util.Optional;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
@@ -45,6 +47,22 @@ public class PaymentUpdaterTest {
 
         paymentUpdater.redactReference(govukPaymentId);
         
+        verify(paymentDao).merge(paymentEntityArgumentCaptor.capture());
+        assertThat(paymentEntityArgumentCaptor.getValue().getReferenceNumber(), is(REDACTED_REFERENCE_NUMBER));
+    }
+
+    @Test
+    public void shouldRedactPaymentReferenceByExternalId() {
+        String externalId = "external-id";
+        PaymentEntity paymentEntity = aPaymentEntity()
+                .withReferenceNumber("referenceNumber")
+                .withExternalId("external-id")
+                .withGovukPaymentId(externalId)
+                .build();
+        when(paymentDao.findByExternalId(externalId)).thenReturn(Optional.of(paymentEntity));
+
+        paymentUpdater.redactReferenceByExternalId(externalId);
+
         verify(paymentDao).merge(paymentEntityArgumentCaptor.capture());
         assertThat(paymentEntityArgumentCaptor.getValue().getReferenceNumber(), is(REDACTED_REFERENCE_NUMBER));
     }

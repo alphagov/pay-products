@@ -22,7 +22,6 @@ import uk.gov.pay.products.service.transaction.TransactionFlow;
 import uk.gov.pay.products.service.transaction.TransactionalOperation;
 import uk.gov.pay.products.util.PaymentStatus;
 import uk.gov.pay.products.util.ProductType;
-import uk.gov.pay.products.validations.PanDetector;
 import uk.gov.service.payments.commons.model.Source;
 
 import javax.inject.Inject;
@@ -33,7 +32,6 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.pay.products.util.PublicAPIErrorCodes.CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUserFriendlyReference;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
-import static uk.gov.service.payments.logging.LoggingKeys.GATEWAY_ACCOUNT_ID;
 import static uk.gov.service.payments.logging.LoggingKeys.PAYMENT_EXTERNAL_ID;
 
 public class PaymentCreator {
@@ -152,14 +150,6 @@ public class PaymentCreator {
                         kv(PAYMENT_EXTERNAL_ID, paymentEntity.getGovukPaymentId()),
                         kv("product_external_id", paymentEntity.getProductEntity().getExternalId())
                 );
-
-                if (PanDetector.isSuspectedPan(paymentEntity.getReferenceNumber())) {
-                    logger.warn("Suspected PAN entered by user in reference field",
-                            kv(PAYMENT_EXTERNAL_ID, paymentEntity.getGovukPaymentId()),
-                            kv(GATEWAY_ACCOUNT_ID, paymentEntity.getGatewayAccountId()),
-                            kv("number_of_digits", PanDetector.cleanedReference(paymentEntity.getReferenceNumber()).length())
-                    );
-                }
             } catch (PublicApiResponseErrorException e) {
                 logger.error("Payment creation for product external id {} failed {}", paymentEntity.getProductEntity().getExternalId(), e.getMessage());
                 paymentEntity.setStatus(PaymentStatus.ERROR);

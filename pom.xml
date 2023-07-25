@@ -21,6 +21,7 @@
         <mainClass>uk.gov.pay.products.ProductsApplication</mainClass>
         <wiremock.version>2.35.0</wiremock.version>
         <pay-java-commons.version>1.0.20230720152355</pay-java-commons.version>
+        <prometheus.version>0.16.0</prometheus.version>
         <jackson.version>2.15.2</jackson.version>
         <surefire.version>3.1.2</surefire.version>
         <swaggger-version>2.2.14</swaggger-version>
@@ -46,10 +47,24 @@
 
     <dependencies>
         <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient</artifactId>
+            <version>${prometheus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_servlet</artifactId>
+            <version>${prometheus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_dropwizard</artifactId>
+            <version>${prometheus.version}</version>
+        </dependency>
+        <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-core</artifactId>
         </dependency>
-
         <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-migrations</artifactId>

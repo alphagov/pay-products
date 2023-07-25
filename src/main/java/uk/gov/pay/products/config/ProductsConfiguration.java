@@ -6,6 +6,8 @@ import io.dropwizard.db.DataSourceFactory;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.net.URI;
+import java.util.Optional;
 
 public class ProductsConfiguration extends Configuration {
 
@@ -54,6 +56,9 @@ public class ProductsConfiguration extends Configuration {
     @NotNull
     @JsonProperty("jerseyClientConfiguration")
     private RestClientConfiguration restClientConfiguration;
+
+    @JsonProperty("ecsContainerMetadataUriV4")
+    private URI ecsContainerMetadataUriV4;
 
     public String getGraphiteHost() {
         return graphiteHost;
@@ -104,5 +109,9 @@ public class ProductsConfiguration extends Configuration {
 
     public String getEmailAddressForReplacingApiTokens() {
         return emailAddressForReplacingApiTokens;
+    }
+
+    public Optional<URI> getEcsContainerMetadataUriV4() {
+        return Optional.ofNullable(ecsContainerMetadataUriV4);
     }
 }

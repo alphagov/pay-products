@@ -13,6 +13,11 @@ import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.dropwizard.DropwizardExports;
+import io.prometheus.client.exporter.MetricsServlet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.config.PersistenceServiceInitialiser;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.config.ProductsModule;
@@ -33,16 +38,21 @@ import uk.gov.pay.products.resources.PaymentResource;
 import uk.gov.pay.products.resources.ProductResource;
 import uk.gov.service.payments.commons.utils.healthchecks.DatabaseHealthCheck;
 import uk.gov.service.payments.commons.utils.metrics.DatabaseMetricsService;
+import uk.gov.service.payments.commons.utils.prometheus.PrometheusDefaultLabelSampleBuilder;
 import uk.gov.service.payments.logging.GovUkPayDropwizardRequestJsonLogLayoutFactory;
 import uk.gov.service.payments.logging.LoggingFilter;
 import uk.gov.service.payments.logging.LogstashConsoleAppenderFactory;
 
+import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.EnumSet.of;
 import static javax.servlet.DispatcherType.REQUEST;
 
 public class ProductsApplication extends Application<ProductsConfiguration> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProductsApplication.class);
+    
     private static final boolean NON_STRICT_VARIABLE_SUBSTITUTOR = false;
     private static final String SERVICE_METRICS_NODE = "pay-products";
     private static final int GRAPHITE_SENDING_PERIOD_SECONDS = 10;
@@ -101,12 +111,23 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
                 .build()
                 .scheduleAtFixedRate(metricsService::updateMetricData, 0, GRAPHITE_SENDING_PERIOD_SECONDS / 2, TimeUnit.SECONDS);
 
+        initialiseGraphiteMetrics(configuration, environment);
+        configuration.getEcsContainerMetadataUriV4().ifPresent(uri -> initialisePrometheusMetrics(environment, uri));
+    }
+
+    private void initialisePrometheusMetrics(Environment environment, URI ecsContainerMetadataUri) {
+        LOGGER.info("Initialising prometheus metrics.");
+        CollectorRegistry collectorRegistry = new CollectorRegistry();
+        collectorRegistry.register(new DropwizardExports(environment.metrics(), new PrometheusDefaultLabelSampleBuilder(ecsContainerMetadataUri)));
+        environment.admin().addServlet("prometheusMetrics", new MetricsServlet(collectorRegistry)).addMapping("/metrics");
+    }
+
+    private static void initialiseGraphiteMetrics(ProductsConfiguration configuration, Environment environment) {
         GraphiteSender graphiteUDP = new GraphiteUDP(configuration.getGraphiteHost(), configuration.getGraphitePort());
         GraphiteReporter.forRegistry(environment.metrics())
                 .prefixedWith(SERVICE_METRICS_NODE)
                 .build(graphiteUDP)
                 .start(GRAPHITE_SENDING_PERIOD_SECONDS, TimeUnit.SECONDS);
-
     }
 
     private void attachExceptionMappersTo(JerseyEnvironment jersey) {

@@ -73,3 +73,5 @@ productsUiPayUrl: https://products-ui.url/pay
 productsUiConfirmUrl: https://products.url/confirm
 friendlyBaseUri: https://products-ui.url/products
 returnUrlMustBeSecure: true
+
+ecsContainerMetadataUriV4: ${ECS_CONTAINER_METADATA_URI_V4:-}

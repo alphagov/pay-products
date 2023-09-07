@@ -11,11 +11,6 @@ import java.util.Optional;
 
 public class ProductsConfiguration extends Configuration {
 
-    @NotNull
-    private String graphiteHost;
-    @NotNull
-    private Integer graphitePort;
-
     @Valid
     @NotNull
     private DataSourceFactory dataSourceFactory;
@@ -59,14 +54,6 @@ public class ProductsConfiguration extends Configuration {
 
     @JsonProperty("ecsContainerMetadataUriV4")
     private URI ecsContainerMetadataUriV4;
-
-    public String getGraphiteHost() {
-        return graphiteHost;
-    }
-
-    public Integer getGraphitePort() {
-        return graphitePort;
-    }
 
     @JsonProperty("database")
     public DataSourceFactory getDataSourceFactory() {

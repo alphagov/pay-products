@@ -18,9 +18,6 @@ logging:
     # Liquibase is very chatty and we only want to hear from it if things go wrong
     "liquibase": WARN
 
-graphiteHost: ${METRICS_HOST:-localhost}
-graphitePort: ${METRICS_PORT:-8092}
-
 database:
   driverClass: org.postgresql.Driver
   user: ${DB_USER}

@@ -35,12 +35,10 @@ import uk.gov.pay.products.resources.PaymentResource;
 import uk.gov.pay.products.resources.ProductResource;
 import uk.gov.service.payments.commons.utils.healthchecks.DatabaseHealthCheck;
 import uk.gov.service.payments.commons.utils.metrics.DatabaseMetricsService;
-import uk.gov.service.payments.commons.utils.prometheus.PrometheusDefaultLabelSampleBuilder;
 import uk.gov.service.payments.logging.GovUkPayDropwizardRequestJsonLogLayoutFactory;
 import uk.gov.service.payments.logging.LoggingFilter;
 import uk.gov.service.payments.logging.LogstashConsoleAppenderFactory;
 
-import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.EnumSet.of;
@@ -108,13 +106,8 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
                 .build()
                 .scheduleAtFixedRate(metricsService::updateMetricData, 0, METRICS_COLLECTION_PERIOD_SECONDS / 2, TimeUnit.SECONDS);
 
-        configuration.getEcsContainerMetadataUriV4().ifPresent(uri -> initialisePrometheusMetrics(environment, uri));
-    }
-
-    private void initialisePrometheusMetrics(Environment environment, URI ecsContainerMetadataUri) {
-        LOGGER.info("Initialising prometheus metrics.");
-        CollectorRegistry collectorRegistry = new CollectorRegistry();
-        collectorRegistry.register(new DropwizardExports(environment.metrics(), new PrometheusDefaultLabelSampleBuilder(ecsContainerMetadataUri)));
+        CollectorRegistry collectorRegistry = CollectorRegistry.defaultRegistry;
+        collectorRegistry.register(new DropwizardExports(environment.metrics()));
         environment.admin().addServlet("prometheusMetrics", new MetricsServlet(collectorRegistry)).addMapping("/metrics");
     }
 

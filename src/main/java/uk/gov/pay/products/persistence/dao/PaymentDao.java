@@ -5,6 +5,7 @@ import com.google.inject.Provider;
 import uk.gov.pay.products.persistence.entity.PaymentEntity;
 
 import javax.persistence.EntityManager;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,5 +57,16 @@ public class PaymentDao extends JpaDao<PaymentEntity> {
                 .createQuery(query, PaymentEntity.class)
                 .setParameter("govukPaymentId", govukPaymentId)
                 .getResultList().stream().findFirst();
+    }
+
+    public List<PaymentEntity> getPaymentsForDeletion(ZonedDateTime maxDate, int maxNumberOfPayments) {
+        String query = "SELECT payment FROM PaymentEntity payment WHERE payment.dateCreated < :maxDate " +
+                "ORDER BY payment.dateCreated";
+        
+        return entityManager.get()
+                .createQuery(query, PaymentEntity.class)
+                .setParameter("maxDate", maxDate)
+                .setMaxResults(maxNumberOfPayments)
+                .getResultList();
     }
 }

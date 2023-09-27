@@ -3,7 +3,6 @@ package uk.gov.pay.products.utils;
 import org.jdbi.v3.core.Jdbi;
 import uk.gov.pay.products.model.Payment;
 import uk.gov.pay.products.model.Product;
-import uk.gov.pay.products.model.ProductMetadata;
 
 import java.util.List;
 import java.util.Map;

@@ -61,7 +61,7 @@ public class PaymentDao extends JpaDao<PaymentEntity> {
 
     public List<PaymentEntity> getPaymentsForDeletion(ZonedDateTime maxDate, int maxNumberOfPayments) {
         String query = "SELECT payment FROM PaymentEntity payment WHERE payment.dateCreated < :maxDate " +
-                "ORDER BY payment.dateCreated";
+                "ORDER BY payment.dateCreated ASC";
         
         return entityManager.get()
                 .createQuery(query, PaymentEntity.class)

@@ -69,4 +69,17 @@ public class PaymentDao extends JpaDao<PaymentEntity> {
                 .setMaxResults(maxNumberOfPayments)
                 .getResultList();
     }
+
+    public int deletePayments(List<String> externalIds) {
+        if (externalIds.isEmpty()) {
+            return 0;
+        }
+        
+        String query = "DELETE FROM PaymentEntity payment WHERE payment.externalId IN :externalIds";
+        
+        return entityManager.get()
+                .createQuery(query, PaymentEntity.class)
+                .setParameter("externalIds", externalIds)
+                .executeUpdate();
+    }
 }

@@ -4,12 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.config.ExpungeHistoricalDataConfig;
 import uk.gov.pay.products.persistence.dao.PaymentDao;
-import uk.gov.pay.products.persistence.entity.PaymentEntity;
 
 import javax.inject.Inject;
 import java.time.Clock;
 import java.time.temporal.ChronoUnit;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.time.ZoneOffset.UTC;
@@ -36,9 +34,7 @@ public class PaymentDeleter {
         }
         
         var maxDate = clock.instant().minus(expungeHistoricalDataConfig.getExpungeDataOlderThanDays(), ChronoUnit.DAYS).atZone(UTC);
-        var forDeletion = paymentDao.getPaymentsForDeletion(maxDate, expungeHistoricalDataConfig.getNumberOfTransactionsToExpunge())
-                .stream().map(PaymentEntity::getExternalId).collect(Collectors.toList());
-        int numberOfDeletedPayments = paymentDao.deletePayments(forDeletion);
+        int numberOfDeletedPayments = paymentDao.deletePayments(maxDate, expungeHistoricalDataConfig.getNumberOfTransactionsToExpunge());
         LOGGER.info(format("%s payments were deleted.", numberOfDeletedPayments));
     }
 }

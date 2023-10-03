@@ -14,12 +14,10 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -214,52 +212,26 @@ public class PaymentDaoIT extends DaoTestBase {
     }
     
     @Test
-    public void shouldGetPaymentsForDeletion() {
+    public void shouldDeletePayments() {
         ZonedDateTime maxDate = ZonedDateTime.ofInstant(Instant.parse("2022-03-03T10:15:30Z"), UTC);
+
         PaymentEntity payment1 = addPaymentToDB.apply(createPaymentEntity(productEntity, maxDate, 1));
         PaymentEntity payment2 = addPaymentToDB.apply(createPaymentEntity(productEntity, maxDate, 2));
         PaymentEntity payment3 = addPaymentToDB.apply(createPaymentEntity(productEntity, maxDate, 3));
         PaymentEntity payment4 = addPaymentToDB.apply(createPaymentEntity(productEntity, maxDate, 4));
 
-        List<String> payments = paymentDao.getPaymentsForDeletion(maxDate, 4)
-                .stream().map(PaymentEntity::getExternalId).collect(Collectors.toList());
-
-        assertThat(payments, containsInAnyOrder(payment1.getExternalId(), payment2.getExternalId(), 
-                payment3.getExternalId(), payment4.getExternalId()));
-        
-    }
-    
-    @Test
-    public void shouldGetOldestPaymentsForDeletion() {
-        ZonedDateTime maxDate = ZonedDateTime.ofInstant(Instant.parse("2022-03-03T10:15:30Z"), UTC);
-        
-        addPaymentToDB.apply(createPaymentEntity(productEntity, maxDate, 1));
-        addPaymentToDB.apply(createPaymentEntity(productEntity, maxDate, 2));
-        PaymentEntity payment3 = addPaymentToDB.apply(createPaymentEntity(productEntity, maxDate, 3));
-        PaymentEntity payment4 = addPaymentToDB.apply(createPaymentEntity(productEntity, maxDate, 4));
-
-        List<String> payments = paymentDao.getPaymentsForDeletion(maxDate, 2)
-                .stream().map(PaymentEntity::getExternalId).collect(Collectors.toList());
-        
-        assertThat(payments, containsInAnyOrder(payment3.getExternalId(), payment4.getExternalId()));
-    }
-
-    @Test
-    public void shouldDeletePayments() {
-        PaymentEntity payment1 = addPaymentToDB.apply(createPaymentEntity(productEntity, ZonedDateTime.now(), 0));
-        PaymentEntity payment2 = addPaymentToDB.apply(createPaymentEntity(productEntity, ZonedDateTime.now(), 0));
-        PaymentEntity payment3 = addPaymentToDB.apply(createPaymentEntity(productEntity, ZonedDateTime.now(), 0));
-
-        int numberOfPaymentsDeleted = paymentDao.deletePayments(List.of(payment1.getExternalId(), payment2.getExternalId()));
-        
+        int numberOfPaymentsDeleted = paymentDao.deletePayments(maxDate, 2);
         assertThat(numberOfPaymentsDeleted, is(2));
         
-        assertThat(paymentDao.findByExternalId(payment3.getExternalId()).isPresent(), is(true));
+        assertThat(paymentDao.findByExternalId(payment1.getExternalId()).isPresent(), is(true));
+        assertThat(paymentDao.findByExternalId(payment2.getExternalId()).isPresent(), is(true));
+        assertThat(paymentDao.findByExternalId(payment3.getExternalId()).isPresent(), is(false));
+        assertThat(paymentDao.findByExternalId(payment4.getExternalId()).isPresent(), is(false));
     }
     
     @Test
     public void shouldDeleteZeroPayments() {
-        int numberOfPaymentsDeleted = paymentDao.deletePayments(List.of());
+        int numberOfPaymentsDeleted = paymentDao.deletePayments(ZonedDateTime.now(), 10);
         assertThat(numberOfPaymentsDeleted, is(0));
     }
 }

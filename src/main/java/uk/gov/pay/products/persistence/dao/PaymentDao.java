@@ -5,6 +5,7 @@ import com.google.inject.Provider;
 import uk.gov.pay.products.persistence.entity.PaymentEntity;
 
 import javax.persistence.EntityManager;
+import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -59,27 +60,14 @@ public class PaymentDao extends JpaDao<PaymentEntity> {
                 .getResultList().stream().findFirst();
     }
 
-    public List<PaymentEntity> getPaymentsForDeletion(ZonedDateTime maxDate, int maxNumberOfPayments) {
-        String query = "SELECT payment FROM PaymentEntity payment WHERE payment.dateCreated < :maxDate " +
-                "ORDER BY payment.dateCreated ASC";
+    public int deletePayments(ZonedDateTime maxDate, int maxNumberOfPayments) {
+        String query = "DELETE FROM payments WHERE external_id IN " +
+                "(SELECT payments.external_id FROM payments WHERE payments.date_created < ?1 " +
+                "ORDER BY payments.date_created ASC LIMIT ?2)";
         
-        return entityManager.get()
-                .createQuery(query, PaymentEntity.class)
-                .setParameter("maxDate", maxDate)
-                .setMaxResults(maxNumberOfPayments)
-                .getResultList();
-    }
-
-    public int deletePayments(List<String> externalIds) {
-        if (externalIds.isEmpty()) {
-            return 0;
-        }
-        
-        String query = "DELETE FROM PaymentEntity payment WHERE payment.externalId IN :externalIds";
-        
-        return entityManager.get()
-                .createQuery(query, PaymentEntity.class)
-                .setParameter("externalIds", externalIds)
+        return entityManager.get().createNativeQuery(query)
+                .setParameter(1, Timestamp.from(maxDate.toInstant()))
+                .setParameter(2, maxNumberOfPayments)
                 .executeUpdate();
     }
 }

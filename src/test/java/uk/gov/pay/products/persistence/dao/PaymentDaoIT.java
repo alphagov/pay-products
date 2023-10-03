@@ -8,30 +8,32 @@ import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.persistence.entity.PaymentEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.PaymentStatus;
-import uk.gov.pay.products.util.RandomIdGenerator;
 
-import java.time.Clock;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 import static java.time.ZoneOffset.UTC;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
+import static uk.gov.pay.products.utils.TestHelpers.createPaymentEntity;
 
 public class PaymentDaoIT extends DaoTestBase {
 
     private PaymentDao paymentDao;
     private ProductEntity productEntity;
+
+    private final Function<PaymentEntity, PaymentEntity> addPaymentToDB = payment -> {
+        databaseHelper.addPayment(payment.toPayment(), payment.getGatewayAccountId());
+        return payment;
+    };
 
     @Before
     public void before(){
@@ -210,43 +212,26 @@ public class PaymentDaoIT extends DaoTestBase {
     }
     
     @Test
-    public void shouldGetPaymentsForDeletion() {
+    public void shouldDeletePayments() {
         ZonedDateTime maxDate = ZonedDateTime.ofInstant(Instant.parse("2022-03-03T10:15:30Z"), UTC);
-        PaymentEntity payment1 = createPaymentEntity(maxDate, 1);
-        PaymentEntity payment2 = createPaymentEntity(maxDate, 2);
-        PaymentEntity payment3 = createPaymentEntity(maxDate, 3);
-        PaymentEntity payment4 = createPaymentEntity(maxDate, 4);
 
-        List<String> payments = paymentDao.getPaymentsForDeletion(maxDate, 4)
-                .stream().map(PaymentEntity::getExternalId).collect(Collectors.toList());
+        PaymentEntity payment1 = addPaymentToDB.apply(createPaymentEntity(productEntity, maxDate, 1));
+        PaymentEntity payment2 = addPaymentToDB.apply(createPaymentEntity(productEntity, maxDate, 2));
+        PaymentEntity payment3 = addPaymentToDB.apply(createPaymentEntity(productEntity, maxDate, 3));
+        PaymentEntity payment4 = addPaymentToDB.apply(createPaymentEntity(productEntity, maxDate, 4));
 
-        assertThat(payments, containsInAnyOrder(payment1.getExternalId(), payment2.getExternalId(), 
-                payment3.getExternalId(), payment4.getExternalId()));
+        int numberOfPaymentsDeleted = paymentDao.deletePayments(maxDate, 2);
+        assertThat(numberOfPaymentsDeleted, is(2));
         
+        assertThat(paymentDao.findByExternalId(payment1.getExternalId()).isPresent(), is(true));
+        assertThat(paymentDao.findByExternalId(payment2.getExternalId()).isPresent(), is(true));
+        assertThat(paymentDao.findByExternalId(payment3.getExternalId()).isPresent(), is(false));
+        assertThat(paymentDao.findByExternalId(payment4.getExternalId()).isPresent(), is(false));
     }
     
     @Test
-    public void shouldGetOldestPaymentsForDeletion() {
-        ZonedDateTime maxDate = ZonedDateTime.ofInstant(Instant.parse("2022-03-03T10:15:30Z"), UTC);
-        createPaymentEntity(maxDate, 1);
-        createPaymentEntity(maxDate, 2);
-        PaymentEntity payment3 = createPaymentEntity(maxDate, 3);
-        PaymentEntity payment4 = createPaymentEntity(maxDate, 4);
-
-        List<String> payments = paymentDao.getPaymentsForDeletion(maxDate, 2)
-                .stream().map(PaymentEntity::getExternalId).collect(Collectors.toList());
-        
-        assertThat(payments, containsInAnyOrder(payment3.getExternalId(), payment4.getExternalId()));
-    }
-
-    private PaymentEntity createPaymentEntity(ZonedDateTime date, int daysToMinusFromDate) {
-        PaymentEntity payment = PaymentEntityFixture.aPaymentEntity()
-                .withProduct(productEntity)
-                .withReferenceNumber(RandomIdGenerator.randomUserFriendlyReference())
-                .withGatewayAccountId(randomInt())
-                .withDateCreated(date.minusDays(daysToMinusFromDate))
-                .build();
-        databaseHelper.addPayment(payment.toPayment(), payment.getGatewayAccountId());
-        return payment;
+    public void shouldDeleteZeroPayments() {
+        int numberOfPaymentsDeleted = paymentDao.deletePayments(ZonedDateTime.now(), 10);
+        assertThat(numberOfPaymentsDeleted, is(0));
     }
 }

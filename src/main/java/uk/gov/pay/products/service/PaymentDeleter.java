@@ -31,12 +31,12 @@ public class PaymentDeleter {
 
     public void deletePayments() {
         if (!expungeHistoricalDataConfig.isExpungeHistoricalDataEnabled()) {
-            LOGGER.info("deletePayments was called but expunging of historical data is not enabled.");
+            LOGGER.info("Expunging of historical data is not enabled.");
             return;
         }
         
         var maxDate = clock.instant().minus(expungeHistoricalDataConfig.getExpungeDataOlderThanDays(), ChronoUnit.DAYS).atZone(UTC);
-        var forDeletion = paymentDao.getPaymentsForDeletion(maxDate, expungeHistoricalDataConfig.getNumberOfTransactionsToRedact())
+        var forDeletion = paymentDao.getPaymentsForDeletion(maxDate, expungeHistoricalDataConfig.getNumberOfTransactionsToExpunge())
                 .stream().map(PaymentEntity::getExternalId).collect(Collectors.toList());
         int numberOfDeletedPayments = paymentDao.deletePayments(forDeletion);
         LOGGER.info(format("%s payments were deleted.", numberOfDeletedPayments));

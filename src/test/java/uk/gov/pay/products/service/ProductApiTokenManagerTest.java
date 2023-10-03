@@ -36,10 +36,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.pay.products.service.ProductApiTokenManager.NEW_API_TOKEN_PATH;
+import static uk.gov.pay.products.utils.TestHelpers.verifyLog;
 
 @ExtendWith(MockitoExtension.class)
 public class ProductApiTokenManagerTest {
@@ -169,16 +168,5 @@ public class ProductApiTokenManagerTest {
         when(builder.post(Entity.entity(request, MediaType.APPLICATION_JSON_TYPE))).thenReturn(publicAuthResponse);
         NewApiTokenFromPublicAuthResponse newApiTokenFromPublicAuthResponse = new NewApiTokenFromPublicAuthResponse(expectedNewApiToken);
         when(publicAuthResponse.readEntity(NewApiTokenFromPublicAuthResponse.class)).thenReturn(newApiTokenFromPublicAuthResponse);
-    }
-
-    private static void verifyLog(
-            final Appender<ILoggingEvent> mockAppender,
-            final ArgumentCaptor<LoggingEvent> captorLoggingEvent,
-            final int expectedNumOfInvocations,
-            final String expectedLogMessage) {
-        verify(mockAppender, times(expectedNumOfInvocations)).doAppend(captorLoggingEvent.capture());
-        final LoggingEvent loggingEvent = captorLoggingEvent.getValue();
-        assertThat(loggingEvent.getLevel(), is(Level.INFO));
-        assertThat(loggingEvent.getFormattedMessage(), is(expectedLogMessage));
     }
 }

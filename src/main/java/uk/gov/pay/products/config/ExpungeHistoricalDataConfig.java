@@ -14,7 +14,7 @@ public class ExpungeHistoricalDataConfig {
     
     @NotNull
     @Min(value = 0L)
-    private int numberOfTransactionsToRedact;
+    private int numberOfTransactionsToExpunge;
 
     public boolean isExpungeHistoricalDataEnabled() {
         return expungeHistoricalDataEnabled;
@@ -24,7 +24,7 @@ public class ExpungeHistoricalDataConfig {
         return expungeDataOlderThanDays;
     }
 
-    public int getNumberOfTransactionsToRedact() {
-        return numberOfTransactionsToRedact;
+    public int getNumberOfTransactionsToExpunge() {
+        return numberOfTransactionsToExpunge;
     }
 }

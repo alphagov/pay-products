@@ -8,6 +8,7 @@ import org.mockito.ArgumentCaptor;
 import uk.gov.pay.products.fixtures.PaymentEntityFixture;
 import uk.gov.pay.products.persistence.entity.PaymentEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
+import uk.gov.pay.products.util.PaymentStatus;
 import uk.gov.pay.products.util.RandomIdGenerator;
 
 import java.time.ZonedDateTime;
@@ -17,6 +18,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
+import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 public class TestHelpers {
 
@@ -26,6 +28,25 @@ public class TestHelpers {
                 .withProduct(productEntity)
                 .withGatewayAccountId(randomInt())
                 .withDateCreated(date.minusDays(daysToMinusFromDate))
+                .build();
+    }
+
+    public static PaymentEntity createPaymentEntity(ProductEntity productEntity, PaymentStatus paymentStatus, String referenceNumber, Integer gatewayAccountId) {
+        return PaymentEntityFixture.aPaymentEntity()
+                .withExternalId(randomUuid())
+                .withStatus(paymentStatus)
+                .withProduct(productEntity)
+                .withReferenceNumber(referenceNumber)
+                .withGatewayAccountId(gatewayAccountId)
+                .build();
+    }
+
+    public static PaymentEntity createPaymentEntity(ProductEntity productEntity, PaymentStatus paymentStatus, String referenceNumber, String govukPaymentId) {
+        return PaymentEntityFixture.aPaymentEntity()
+                .withGovukPaymentId(govukPaymentId)
+                .withStatus(paymentStatus)
+                .withProduct(productEntity)
+                .withReferenceNumber(referenceNumber)
                 .build();
     }
 

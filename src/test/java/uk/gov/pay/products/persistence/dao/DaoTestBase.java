@@ -11,6 +11,7 @@ import org.junit.ClassRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.infra.GuicedTestEnvironment;
+import uk.gov.pay.products.persistence.entity.PaymentEntity;
 import uk.gov.pay.products.utils.DatabaseTestHelper;
 import uk.gov.service.payments.commons.testing.db.PostgresDockerRule;
 
@@ -60,4 +61,8 @@ public class DaoTestBase {
         env.stop();
     }
 
+    protected PaymentEntity addPaymentToDB(PaymentEntity paymentEntity) {
+        databaseHelper.addPayment(paymentEntity.toPayment(), paymentEntity.getGatewayAccountId());
+        return paymentEntity;
+    }
 }

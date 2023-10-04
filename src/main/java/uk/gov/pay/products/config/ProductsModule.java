@@ -2,6 +2,7 @@ package uk.gov.pay.products.config;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.persist.jpa.JpaPersistModule;
@@ -19,6 +20,7 @@ import uk.gov.pay.products.validations.ProductRequestValidator;
 import uk.gov.pay.products.validations.RequestValidations;
 
 import javax.ws.rs.client.Client;
+import java.time.Clock;
 import java.util.Properties;
 
 public class ProductsModule extends AbstractModule {
@@ -83,5 +85,17 @@ public class ProductsModule extends AbstractModule {
         jpaModule.properties(properties);
 
         return jpaModule;
+    }
+
+    @Provides
+    @Singleton
+    public Clock systemUtcClock() {
+        return Clock.systemUTC();
+    }
+
+    @Provides
+    @Singleton
+    public ExpungeHistoricalDataConfig expungeHistoricalDataConfig() {
+        return configuration.getExpungeHistoricalDataConfig();
     }
 }

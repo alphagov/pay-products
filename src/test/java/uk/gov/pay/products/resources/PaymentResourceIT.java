@@ -11,11 +11,14 @@ import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import javax.ws.rs.HttpMethod;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.OK;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasKey;
@@ -31,6 +34,8 @@ import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.setupResponseToC
 import static uk.gov.pay.products.util.PublicAPIErrorCodes.CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
+import static uk.gov.pay.products.utils.TestHelpers.createPaymentEntity;
+import static uk.gov.pay.products.utils.TestHelpers.createProductEntity;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_REJECTED;
 
 public class PaymentResourceIT extends IntegrationTest {
@@ -38,6 +43,25 @@ public class PaymentResourceIT extends IntegrationTest {
     private final String paymentsUrl = "https://products.url/v1/api/payments/";
     private final String nextUrl = "www.gov.uk/pay";
     private final int gatewayAccountId = randomInt();
+    
+    @Test
+    public void deleteHistoricalData() {
+        ProductEntity productEntity = addProductToDB(createProductEntity());
+
+        ZonedDateTime now = ZonedDateTime.now();
+
+        PaymentEntity payment1 = addPaymentToDB(createPaymentEntity(productEntity, now, 2));
+        PaymentEntity payment2 = addPaymentToDB(createPaymentEntity(productEntity, now, 3));
+        PaymentEntity payment3 = addPaymentToDB(createPaymentEntity(productEntity, now, 4));
+        PaymentEntity payment4 = addPaymentToDB(createPaymentEntity(productEntity, now, 5));
+
+        givenSetup().accept(APPLICATION_JSON).post("/v1/tasks/delete-historical-data").then().statusCode(OK.getStatusCode());
+
+        givenSetup().get(format("/v1/api/payments/%s", payment1.getExternalId())).then().statusCode(OK.getStatusCode());
+
+        List.of(payment2.getExternalId(), payment3.getExternalId(), payment4.getExternalId()).forEach(paymentExternalId ->
+                givenSetup().get(format("/v1/api/payments/%s", paymentExternalId)).then().statusCode(NOT_FOUND.getStatusCode()));
+    }
 
     @Test
     public void redactPaymentReference() {

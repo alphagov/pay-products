@@ -447,6 +447,15 @@ paths:
       summary: Get usage stats of non-prototype payment links for a gateway account
       tags:
       - Products
+  /v1/tasks/delete-historical-data:
+    post:
+      operationId: deleteHistoricalData
+      responses:
+        "200":
+          description: OK
+      summary: Deletes historical payment data based on `expungeHistoricalDataConfig`
+      tags:
+      - Payments
   /v2/api/gateway-account/{gatewayAccountId}/products/{productExternalId}:
     patch:
       description: Only supports patching `require_captcha` field. Use /v1/ to patch

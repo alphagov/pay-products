@@ -49,6 +49,19 @@ public class PaymentResource {
         this.requestValidator = requestValidator;
     }
     
+    @Path("/v1/tasks/delete-historical-data")
+    @POST
+    @Operation(
+            summary = "Deletes historical payment data based on `expungeHistoricalDataConfig`",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK"),
+            }
+    )
+    public Response deleteHistoricalData() {
+        paymentFactory.paymentDeleter().deletePayments();
+        return Response.ok().build();
+    }
+    
     @Path("/v1/api/payments/redact-reference/{govukPaymentId}")
     @POST
     public Response redactReference(@PathParam("govukPaymentId") String govukPaymentId) {

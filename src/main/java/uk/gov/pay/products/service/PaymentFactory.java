@@ -7,4 +7,6 @@ public interface PaymentFactory {
     PaymentUpdater paymentUpdater();
 
     PaymentFinder paymentFinder();
+
+    PaymentDeleter paymentDeleter();
 }

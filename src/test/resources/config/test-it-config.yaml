@@ -72,3 +72,8 @@ friendlyBaseUri: https://products-ui.url/products
 returnUrlMustBeSecure: true
 
 ecsContainerMetadataUriV4: ${ECS_CONTAINER_METADATA_URI_V4:-}
+
+expungeHistoricalDataConfig:
+  expungeHistoricalDataEnabled: true
+  expungeDataOlderThanDays: 1
+  numberOfTransactionsToExpunge: 3

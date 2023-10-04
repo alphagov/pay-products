@@ -3,21 +3,17 @@ package uk.gov.pay.products.persistence.dao;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import uk.gov.pay.products.fixtures.PaymentEntityFixture;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.fixtures.ProductMetadataEntityFixture;
 import uk.gov.pay.products.matchers.ProductMatcher;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.model.ProductUsageStat;
-import uk.gov.pay.products.persistence.entity.PaymentEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.persistence.entity.ProductMetadataEntity;
-import uk.gov.pay.products.util.PaymentStatus;
 import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
 
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,6 +25,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
+import static uk.gov.pay.products.utils.TestHelpers.createPaymentEntity;
 
 public class ProductDaoIT extends DaoTestBase {
 
@@ -238,7 +235,7 @@ public class ProductDaoIT extends DaoTestBase {
         databaseHelper.addProduct(product);
 
         Optional<ProductEntity> productEntity = productDao.findByProductPath(serviceNamePath, anotherProductNamePath);
-       assertThat(productEntity.isPresent(), is(false));
+        assertThat(productEntity.isPresent(), is(false));
     }
 
     @Test
@@ -304,37 +301,10 @@ public class ProductDaoIT extends DaoTestBase {
         secondProductEntity = productDao.merge(secondProductEntity);
         ignoredProductEntity = productDao.merge(ignoredProductEntity);
 
-        PaymentEntity payment = PaymentEntityFixture.aPaymentEntity()
-                .withExternalId(randomUuid())
-                .withStatus(PaymentStatus.CREATED)
-                .withProduct(productEntity)
-                .withReferenceNumber("MH2KJY5KPW")
-                .withDateCreated(now)
-                .build();
-        PaymentEntity secondPayment = PaymentEntityFixture.aPaymentEntity()
-                .withExternalId(randomUuid())
-                .withStatus(PaymentStatus.CREATED)
-                .withProduct(productEntity)
-                .withReferenceNumber("MH2KJY5KPW")
-                .withDateCreated(now.minus(2, ChronoUnit.DAYS))
-                .build();
-        PaymentEntity thirdPayment = PaymentEntityFixture.aPaymentEntity()
-                .withExternalId(randomUuid())
-                .withStatus(PaymentStatus.CREATED)
-                .withProduct(secondProductEntity)
-                .withReferenceNumber("MH2KJY5KPW")
-                .build();
-        PaymentEntity ignoredPayment = PaymentEntityFixture.aPaymentEntity()
-                .withExternalId(randomUuid())
-                .withStatus(PaymentStatus.CREATED)
-                .withProduct(ignoredProductEntity)
-                .withReferenceNumber("MH2KJY5KPW")
-                .build();
-
-        databaseHelper.addPayment(payment.toPayment(), 1);
-        databaseHelper.addPayment(secondPayment.toPayment(), 1);
-        databaseHelper.addPayment(thirdPayment.toPayment(), 1);
-        databaseHelper.addPayment(ignoredPayment.toPayment(), 1);
+        addPaymentToDB(createPaymentEntity(productEntity, now, 0));
+        addPaymentToDB(createPaymentEntity(productEntity, now, 1));
+        addPaymentToDB(createPaymentEntity(secondProductEntity, now, 0));
+        addPaymentToDB(createPaymentEntity(ignoredProductEntity, now, 0));
 
         List<ProductUsageStat> usageStats = productDao.findProductsAndUsage(null);
         List<ProductUsageStat> filteredUsageStats = productDao.findProductsAndUsage(2);

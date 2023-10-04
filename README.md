@@ -38,7 +38,7 @@ The [API Specification](openapi/products_spec.yaml) provides more detail on the 
 | `SECURE_RETURN_URLS`                      | Set to `false` to allow non-HTTPS URLs for the `return_url` field of a product. Defaults to `true`.                       |
 | `EXPUNGE_HISTORICAL_DATA_ENABLED`         | Set to `true` to enable deletion of payments. Defaults to `false`.                                                        |
 | `EXPUNGE_DATA_OLDER_THAN_DAYS`            | Minimum age of transactions in days that need to be redacted/expunged. Defaults to 2555 (7 years).                        |
-| `EXPUNGE_NO_OF_TRANSACTIONS_PER_TASK_RUN` | Number of transactions to delete per task run.                                                                            |
+| `EXPUNGE_NO_OF_PAYMENTS_PER_TASK_RUN` | Number of payments to delete per task run.                                                                                |
 
 ## Vulnerability Disclosure
 

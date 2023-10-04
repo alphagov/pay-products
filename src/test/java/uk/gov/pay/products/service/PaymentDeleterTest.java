@@ -61,7 +61,7 @@ public class PaymentDeleterTest {
     public void shouldDeletePayments() {
         when(expungeHistoricalDataConfig.isExpungeHistoricalDataEnabled()).thenReturn(true);
         when(expungeHistoricalDataConfig.getExpungeDataOlderThanDays()).thenReturn(1);
-        when(expungeHistoricalDataConfig.getNumberOfTransactionsToExpunge()).thenReturn(3);
+        when(expungeHistoricalDataConfig.getNumberOfPaymentsToExpunge()).thenReturn(3);
 
         when(paymentDao.deletePayments(any(), anyInt())).thenReturn(3);
         

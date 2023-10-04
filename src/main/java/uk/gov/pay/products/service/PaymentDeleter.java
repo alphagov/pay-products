@@ -12,7 +12,6 @@ import java.time.temporal.ChronoUnit;
 import static java.lang.String.format;
 import static java.time.ZoneOffset.UTC;
 import static net.logstash.logback.argument.StructuredArguments.kv;
-import static uk.gov.service.payments.logging.LoggingKeys.PAYMENT_EXTERNAL_ID;
 
 public class PaymentDeleter {
 
@@ -36,7 +35,7 @@ public class PaymentDeleter {
         }
         
         var maxDate = clock.instant().minus(expungeHistoricalDataConfig.getExpungeDataOlderThanDays(), ChronoUnit.DAYS).atZone(UTC);
-        int numberOfDeletedPayments = paymentDao.deletePayments(maxDate, expungeHistoricalDataConfig.getNumberOfTransactionsToExpunge());
+        int numberOfDeletedPayments = paymentDao.deletePayments(maxDate, expungeHistoricalDataConfig.getNumberOfPaymentsToExpunge());
         LOGGER.info(format("%s payments were deleted.", numberOfDeletedPayments), 
                 kv("no_of_payments_deleted", numberOfDeletedPayments));
     }

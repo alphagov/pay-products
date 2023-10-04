@@ -32,6 +32,15 @@ public class TestHelpers {
                 .withLanguage(SupportedLanguage.WELSH)
                 .build();
     }
+
+    public static ProductEntity createProductEntity(int gatewayAccountId) {
+        return ProductEntityFixture.aProductEntity()
+                .withGatewayAccountId(gatewayAccountId)
+                .withReferenceEnabled(true)
+                .withReferenceLabel("Reference label")
+                .withLanguage(SupportedLanguage.WELSH)
+                .build();
+    }
     
     public static PaymentEntity createPaymentEntity(ProductEntity productEntity, ZonedDateTime date, int daysToMinusFromDate) {
         return PaymentEntityFixture.aPaymentEntity()
@@ -56,6 +65,15 @@ public class TestHelpers {
         return PaymentEntityFixture.aPaymentEntity()
                 .withGovukPaymentId(govukPaymentId)
                 .withStatus(paymentStatus)
+                .withProduct(productEntity)
+                .withReferenceNumber(referenceNumber)
+                .build();
+    }
+
+    public static PaymentEntity createPaymentEntity(ProductEntity productEntity, String referenceNumber, Integer gatewayAccountId, String nextUrl) {
+        return PaymentEntityFixture.aPaymentEntity()
+                .withGatewayAccountId(gatewayAccountId)
+                .withNextUrl(nextUrl)
                 .withProduct(productEntity)
                 .withReferenceNumber(referenceNumber)
                 .build();

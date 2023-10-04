@@ -1,13 +1,12 @@
 package uk.gov.pay.products.resources;
 
-import com.google.common.collect.ImmutableMap;
 import io.restassured.response.ValidatableResponse;
 import org.apache.http.HttpStatus;
 import org.junit.Test;
-import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.entity.PaymentEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
+import uk.gov.pay.products.util.RandomIdGenerator;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import javax.ws.rs.HttpMethod;
@@ -31,6 +30,7 @@ import static uk.gov.pay.products.service.PaymentUpdater.REDACTED_REFERENCE_NUMB
 import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.createErrorPayload;
 import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.createPaymentResponsePayload;
 import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.setupResponseToCreatePaymentRequest;
+import static uk.gov.pay.products.util.PaymentStatus.CREATED;
 import static uk.gov.pay.products.util.PublicAPIErrorCodes.CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
@@ -65,35 +65,9 @@ public class PaymentResourceIT extends IntegrationTest {
 
     @Test
     public void redactPaymentReference() {
-        ProductEntity productEntity = ProductEntityFixture.aProductEntity()
-                .withGatewayAccountId(gatewayAccountId)
-                .withReferenceEnabled(true)
-                .withReferenceLabel("Reference label")
-                .withLanguage(SupportedLanguage.WELSH)
-                .build();
-
-        Product product = productEntity.toProduct();
-
-        databaseHelper.addProduct(product);
-
-        Integer productId = databaseHelper.findProductId(productEntity.getExternalId());
-        productEntity.setId(productId);
-
-        PaymentEntity payment = aPaymentEntity()
-                .withExternalId(randomUuid())
-                .withStatus(uk.gov.pay.products.util.PaymentStatus.CREATED)
-                .withGovukPaymentId("kts8ici6rm")
-                .withProduct(productEntity)
-                .withReferenceNumber("4242424242424242")
-                .build();
-        databaseHelper.addPayment(payment.toPayment(), 1);
-        PaymentEntity paymentThatShouldNotRedacted = aPaymentEntity()
-                .withExternalId(randomUuid())
-                .withStatus(uk.gov.pay.products.util.PaymentStatus.CREATED)
-                .withProduct(productEntity)
-                .withReferenceNumber("ABCD1234")
-                .build();
-        databaseHelper.addPayment(paymentThatShouldNotRedacted.toPayment(), 1);
+        ProductEntity productEntity = addProductToDB(createProductEntity());
+        PaymentEntity payment = addPaymentToDB(createPaymentEntity(productEntity, CREATED, "4242424242424242", "kts8ici6rm"));
+        PaymentEntity paymentThatShouldNotRedacted = addPaymentToDB(createPaymentEntity(productEntity, CREATED, "ABCD1234", "blah"));
 
         givenSetup()
                 .accept(APPLICATION_JSON)
@@ -116,7 +90,6 @@ public class PaymentResourceIT extends IntegrationTest {
 
     @Test
     public void createAPayment_shouldSucceed() {
-        String referenceNumber = randomUuid().substring(1, 10);
         Product product = aProductEntity()
                 .withExternalId(randomUuid())
                 .withGatewayAccountId(0)
@@ -132,7 +105,7 @@ public class PaymentResourceIT extends IntegrationTest {
         setupResponseToCreatePaymentRequest(product.getPayApiToken(), createPaymentResponsePayload(
                 govukPaymentId,
                 product.getPrice(),
-                referenceNumber,
+                RandomIdGenerator.randomUserFriendlyReference(),
                 product.getName(),
                 product.getReturnUrl(),
                 nextUrl,
@@ -178,20 +151,11 @@ public class PaymentResourceIT extends IntegrationTest {
 
     @Test
     public void createAPaymentWithUserDefinedReference_shouldSucceed() throws Exception {
+        ProductEntity product = addProductToDB(createProductEntity());
+
         String referenceNumber = randomUuid().substring(1, 10);
         String userDefinedReference = randomUuid().substring(1, 15);
-        Product product = aProductEntity()
-                .withExternalId(randomUuid())
-                .withGatewayAccountId(7)
-                .withReferenceEnabled(true)
-                .withReferenceLabel("A ref label")
-                .withLanguage(SupportedLanguage.WELSH)
-                .build()
-                .toProduct();
-
         Long priceOverride = 500L;
-        databaseHelper.addProduct(product);
-
         String govukPaymentId = "govukPaymentId";
         String nextUrl = "http://next.url";
 
@@ -205,7 +169,7 @@ public class PaymentResourceIT extends IntegrationTest {
                 product.getLanguage().toString(),
                 null));
 
-        Map<String, String> payload = ImmutableMap.of("price", priceOverride.toString(), "reference_number", userDefinedReference);
+        Map<String, String> payload = Map.of("price", priceOverride.toString(), "reference_number", userDefinedReference);
         ValidatableResponse response = givenSetup()
                 .accept(APPLICATION_JSON)
                 .body(mapper.writeValueAsString(payload))
@@ -229,36 +193,9 @@ public class PaymentResourceIT extends IntegrationTest {
 
     @Test
     public void shouldSucceed_whenUserEnteredReferenceIsEnabled_andReferenceAlreadyExists() throws Exception {
+        ProductEntity productEntity = addProductToDB(createProductEntity());
+        
         String userDefinedReference = randomUuid().substring(1, 15);
-        String productExternalId = randomUuid();
-
-        ProductEntity productEntity = ProductEntityFixture.aProductEntity()
-                .withGatewayAccountId(gatewayAccountId)
-                .withExternalId(productExternalId)
-                .withReferenceEnabled(true)
-                .withReferenceLabel("Reference label")
-                .withLanguage(SupportedLanguage.WELSH)
-                .build();
-
-        Product product = productEntity.toProduct();
-
-        databaseHelper.addProduct(product);
-
-        Integer productId = databaseHelper.findProductId(productExternalId);
-        productEntity.setId(productId);
-
-        String externalId = randomUuid();
-
-        PaymentEntity payment = aPaymentEntity()
-                .withExternalId(externalId)
-                .withProduct(productEntity)
-                .withNextUrl(nextUrl)
-                .withGatewayAccountId(productEntity.getGatewayAccountId())
-                .withReferenceNumber(userDefinedReference)
-                .build();
-
-        databaseHelper.addPayment(payment.toPayment(), productEntity.getGatewayAccountId());
-
         String govukPaymentId = "govukPaymentId";
         String nextUrl = "http://next.url";
         Long priceOverride = 501L;
@@ -273,7 +210,7 @@ public class PaymentResourceIT extends IntegrationTest {
                 productEntity.getLanguage().toString(),
                 null));
 
-        Map<String, String> payload = ImmutableMap.of("price", priceOverride.toString(), "reference_number", userDefinedReference);
+        Map<String, String> payload = Map.of("price", priceOverride.toString(), "reference_number", userDefinedReference);
         givenSetup()
                 .accept(APPLICATION_JSON)
                 .body(mapper.writeValueAsString(payload))
@@ -284,7 +221,6 @@ public class PaymentResourceIT extends IntegrationTest {
 
     @Test
     public void createAPayment_shouldSucceed_whenPriceOverrideIsPresent() throws Exception {
-        String referenceNumber = randomUuid().substring(1, 10);
         Product product = aProductEntity()
                 .withExternalId(randomUuid())
                 .withGatewayAccountId(0)
@@ -292,23 +228,23 @@ public class PaymentResourceIT extends IntegrationTest {
                 .build()
                 .toProduct();
 
-        Long priceOverride = 500L;
         databaseHelper.addProduct(product);
-
+        
+        Long priceOverride = 500L;
         String govukPaymentId = "govukPaymentId";
         String nextUrl = "http://next.url";
 
         setupResponseToCreatePaymentRequest(product.getPayApiToken(), createPaymentResponsePayload(
                 govukPaymentId,
                 priceOverride,
-                referenceNumber,
+                RandomIdGenerator.randomUserFriendlyReference(),
                 product.getName(),
                 product.getReturnUrl(),
                 nextUrl,
                 product.getLanguage().toString(),
                 null));
 
-        Map<String, Long> payload = ImmutableMap.of("price", priceOverride);
+        Map<String, Long> payload = Map.of("price", priceOverride);
         ValidatableResponse response = givenSetup()
                 .accept(APPLICATION_JSON)
                 .body(mapper.writeValueAsString(payload))
@@ -423,7 +359,7 @@ public class PaymentResourceIT extends IntegrationTest {
 
         setupResponseToCreatePaymentRequest(product.getPayApiToken(), createErrorPayload("a-field", CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE, "A description"), HttpStatus.SC_BAD_REQUEST);
 
-        Map<String, Object> payload = ImmutableMap.of("reference_number", "4242424242424242", "price", 100);
+        Map<String, Object> payload = Map.of("reference_number", "4242424242424242", "price", 100);
         givenSetup()
                 .accept(APPLICATION_JSON)
                 .body(payload)
@@ -451,56 +387,30 @@ public class PaymentResourceIT extends IntegrationTest {
 
     @Test
     public void findAPayment_shouldSucceed() {
-
-        String productExternalId = randomUuid();
-
-        ProductEntity productEntity = ProductEntityFixture.aProductEntity()
-                .withGatewayAccountId(gatewayAccountId)
-                .withExternalId(productExternalId)
-                .build();
-
-        Product product = productEntity.toProduct();
-
-        databaseHelper.addProduct(product);
-
-        Integer productId = databaseHelper.findProductId(productExternalId);
-        productEntity.setId(productId);
-
-        String externalId = randomUuid();
-        String referenceNumber = externalId.substring(0, 9);
-
-        PaymentEntity payment = aPaymentEntity()
-                .withExternalId(externalId)
-                .withProduct(productEntity)
-                .withNextUrl(nextUrl)
-                .withGatewayAccountId(productEntity.getGatewayAccountId())
-                .withReferenceNumber(referenceNumber)
-                .build();
-
-        databaseHelper.addPayment(payment.toPayment(), productEntity.getGatewayAccountId());
-
+        ProductEntity productEntity = addProductToDB(createProductEntity());
+        PaymentEntity payment = addPaymentToDB(createPaymentEntity(productEntity, "referenceNumber", productEntity.getGatewayAccountId(), nextUrl));
+        
         ValidatableResponse response = givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
-                .get(format("/v1/api/payments/%s", externalId))
+                .get(format("/v1/api/payments/%s", payment.getExternalId()))
                 .then()
                 .statusCode(200);
 
         response
                 .body("external_id", is(payment.getExternalId()))
                 .body("govuk_payment_id", is(payment.getGovukPaymentId()))
-                .body("product_external_id", is(product.getExternalId()))
+                .body("product_external_id", is(productEntity.getExternalId()))
                 .body("status", is(payment.getStatus().toString()))
                 .body("amount", is(payment.getAmount().intValue()))
-                .body("reference_number", is(referenceNumber))
+                .body("reference_number", is(payment.getReferenceNumber()))
                 .body("_links", hasSize(2))
-                .body("_links[0].href", matchesPattern(paymentsUrl + externalId))
+                .body("_links[0].href", matchesPattern(paymentsUrl + payment.getExternalId()))
                 .body("_links[0].method", is(HttpMethod.GET))
                 .body("_links[0].rel", is("self"))
                 .body("_links[1].href", is(nextUrl))
                 .body("_links[1].method", is(HttpMethod.GET))
                 .body("_links[1].rel", is("next"));
-
     }
 
     @Test
@@ -514,45 +424,14 @@ public class PaymentResourceIT extends IntegrationTest {
 
     @Test
     public void findAllPaymentsOfAProduct_shouldSucceed() {
-
-        String productExternalId = randomUuid();
-        String paymentExternalId1 = randomUuid();
-        String paymentExternalId2 = randomUuid();
-
-        ProductEntity productEntity = ProductEntityFixture.aProductEntity()
-                .withGatewayAccountId(gatewayAccountId)
-                .withExternalId(productExternalId)
-                .build();
-
-        Product product = productEntity.toProduct();
-
-        databaseHelper.addProduct(product);
-
-        Integer productId = databaseHelper.findProductId(productExternalId);
-        productEntity.setId(productId);
-
-        PaymentEntity payment1 = aPaymentEntity()
-                .withExternalId(paymentExternalId1)
-                .withProduct(productEntity)
-                .withNextUrl(nextUrl)
-                .withReferenceNumber(paymentExternalId1.substring(0, 9))
-                .build();
-
-        databaseHelper.addPayment(payment1.toPayment(), gatewayAccountId);
-
-        PaymentEntity payment2 = aPaymentEntity()
-                .withExternalId(paymentExternalId2)
-                .withProduct(productEntity)
-                .withNextUrl(nextUrl)
-                .withReferenceNumber(paymentExternalId2.substring(0, 9))
-                .build();
-
-        databaseHelper.addPayment(payment2.toPayment(), gatewayAccountId);
+        ProductEntity productEntity = addProductToDB(createProductEntity());
+        PaymentEntity payment1 = addPaymentToDB(createPaymentEntity(productEntity, "referenceNumber1", productEntity.getGatewayAccountId(), nextUrl));
+        PaymentEntity payment2 = addPaymentToDB(createPaymentEntity(productEntity, "referenceNumber2", productEntity.getGatewayAccountId(), nextUrl));
 
         ValidatableResponse response = givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
-                .get(format("v1/api/products/%s/payments", productExternalId))
+                .get(format("v1/api/products/%s/payments", productEntity.getExternalId()))
                 .then()
                 .statusCode(200);
 
@@ -560,10 +439,10 @@ public class PaymentResourceIT extends IntegrationTest {
                 .body("", hasSize(2))
                 .body("[0].external_id", is(payment1.getExternalId()))
                 .body("[0].govuk_payment_id", is(payment1.getGovukPaymentId()))
-                .body("[0].product_external_id", is(product.getExternalId()))
+                .body("[0].product_external_id", is(productEntity.getExternalId()))
                 .body("[0].status", is(payment1.getStatus().toString()))
                 .body("[0].amount", is(payment1.getAmount().intValue()))
-                .body("[0].reference_number", is(paymentExternalId1.substring(0, 9)))
+                .body("[0].reference_number", is("referenceNumber1"))
                 .body("[0]._links", hasSize(2))
                 .body("[0]._links[0].href", matchesPattern(paymentsUrl + payment1.getExternalId()))
                 .body("[0]._links[0].method", is(HttpMethod.GET))
@@ -573,10 +452,10 @@ public class PaymentResourceIT extends IntegrationTest {
                 .body("[0]._links[1].rel", is("next"))
                 .body("[1].external_id", is(payment2.getExternalId()))
                 .body("[1].govuk_payment_id", is(payment2.getGovukPaymentId()))
-                .body("[1].product_external_id", is(product.getExternalId()))
+                .body("[1].product_external_id", is(productEntity.getExternalId()))
                 .body("[1].status", is(payment2.getStatus().toString()))
                 .body("[1].amount", is(payment2.getAmount().intValue()))
-                .body("[1].reference_number", is(paymentExternalId2.substring(0, 9)))
+                .body("[1].reference_number", is("referenceNumber2"))
                 .body("[1]._links", hasSize(2))
                 .body("[1]._links[0].href", matchesPattern(paymentsUrl + payment2.getExternalId()))
                 .body("[1]._links[0].method", is(HttpMethod.GET))
@@ -597,49 +476,24 @@ public class PaymentResourceIT extends IntegrationTest {
 
     @Test
     public void findAPaymentByGatewayAccountIdAndReferenceNumber_shouldSucceed() {
-
-        String productExternalId = randomUuid();
-
-        ProductEntity productEntity = ProductEntityFixture.aProductEntity()
-                .withGatewayAccountId(gatewayAccountId)
-                .withExternalId(productExternalId)
-                .build();
-
-        Product product = productEntity.toProduct();
-
-        databaseHelper.addProduct(product);
-
-        Integer productId = databaseHelper.findProductId(productExternalId);
-        productEntity.setId(productId);
-
-        String externalId = randomUuid();
-        String referenceNumber = externalId.substring(0, 9);
-
-        PaymentEntity payment = aPaymentEntity()
-                .withExternalId(externalId)
-                .withProduct(productEntity)
-                .withNextUrl(nextUrl)
-                .withGatewayAccountId(productEntity.getGatewayAccountId())
-                .withReferenceNumber(referenceNumber)
-                .build();
-
-        databaseHelper.addPayment(payment.toPayment(), productEntity.getGatewayAccountId());
-
+        ProductEntity productEntity = addProductToDB(createProductEntity(gatewayAccountId));
+        PaymentEntity payment = addPaymentToDB(createPaymentEntity(productEntity, "referenceNumber", productEntity.getGatewayAccountId(), nextUrl));
+        
         ValidatableResponse response = givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
-                .get(format("/v1/api/payments/%s/%s", gatewayAccountId, referenceNumber))
+                .get(format("/v1/api/payments/%s/%s", gatewayAccountId, "referenceNumber"))
                 .then()
                 .statusCode(200);
         response
                 .body("external_id", is(payment.getExternalId()))
                 .body("govuk_payment_id", is(payment.getGovukPaymentId()))
-                .body("product_external_id", is(product.getExternalId()))
+                .body("product_external_id", is(productEntity.getExternalId()))
                 .body("status", is(payment.getStatus().toString()))
                 .body("amount", is(payment.getAmount().intValue()))
-                .body("reference_number", is(referenceNumber))
+                .body("reference_number", is("referenceNumber"))
                 .body("_links", hasSize(2))
-                .body("_links[0].href", matchesPattern(paymentsUrl + externalId))
+                .body("_links[0].href", matchesPattern(paymentsUrl + payment.getExternalId()))
                 .body("_links[0].method", is(HttpMethod.GET))
                 .body("_links[0].rel", is("self"))
                 .body("_links[1].href", is(nextUrl))
@@ -659,21 +513,11 @@ public class PaymentResourceIT extends IntegrationTest {
 
     @Test
     public void shouldReturn400_whenReferenceEnabledAndNoReferencePresent() {
-        String productExternalId = randomUuid();
-
-        ProductEntity productEntity = ProductEntityFixture.aProductEntity()
-                .withGatewayAccountId(gatewayAccountId)
-                .withExternalId(productExternalId)
-                .withReferenceEnabled(true)
-                .withReferenceLabel("A ref label")
-                .build();
-
-        Product product = productEntity.toProduct();
-        databaseHelper.addProduct(product);
+        ProductEntity productEntity = addProductToDB(createProductEntity(gatewayAccountId));
 
         givenSetup()
                 .accept(APPLICATION_JSON)
-                .post(format("/v1/api/products/%s/payments", product.getExternalId()))
+                .post(format("/v1/api/products/%s/payments", productEntity.getExternalId()))
                 .then()
                 .statusCode(400)
                 .body("errors", hasSize(1))

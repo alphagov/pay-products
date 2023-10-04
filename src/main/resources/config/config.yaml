@@ -82,3 +82,8 @@ friendlyBaseUri: ${PRODUCTS_FRIENDLY_BASE_URI}
 returnUrlMustBeSecure: ${SECURE_RETURN_URLS:-true}
 
 ecsContainerMetadataUriV4: ${ECS_CONTAINER_METADATA_URI_V4:-}
+
+expungeHistoricalDataConfig:
+  expungeHistoricalDataEnabled: ${EXPUNGE_HISTORICAL_DATA_ENABLED:-false}
+  expungeDataOlderThanDays: ${EXPUNGE_DATA_OLDER_THAN_DAYS:-2555}
+  numberOfPaymentsToExpunge: ${EXPUNGE_NO_OF_PAYMENTS_PER_TASK_RUN:-2500}

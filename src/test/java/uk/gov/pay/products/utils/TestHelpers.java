@@ -6,10 +6,12 @@ import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
 import org.mockito.ArgumentCaptor;
 import uk.gov.pay.products.fixtures.PaymentEntityFixture;
+import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.persistence.entity.PaymentEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.PaymentStatus;
 import uk.gov.pay.products.util.RandomIdGenerator;
+import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import java.time.ZonedDateTime;
 
@@ -22,6 +24,15 @@ import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 
 public class TestHelpers {
 
+    public static ProductEntity createProductEntity() {
+        return ProductEntityFixture.aProductEntity()
+                .withGatewayAccountId(randomInt())
+                .withReferenceEnabled(true)
+                .withReferenceLabel("Reference label")
+                .withLanguage(SupportedLanguage.WELSH)
+                .build();
+    }
+    
     public static PaymentEntity createPaymentEntity(ProductEntity productEntity, ZonedDateTime date, int daysToMinusFromDate) {
         return PaymentEntityFixture.aPaymentEntity()
                 .withReferenceNumber(RandomIdGenerator.randomUserFriendlyReference())

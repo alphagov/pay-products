@@ -6,6 +6,9 @@ import io.restassured.specification.RequestSpecification;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import uk.gov.pay.products.infra.DropwizardAppWithPostgresRule;
+import uk.gov.pay.products.model.Product;
+import uk.gov.pay.products.persistence.entity.PaymentEntity;
+import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.utils.DatabaseTestHelper;
 import uk.gov.service.payments.commons.testing.port.PortFactory;
 
@@ -42,5 +45,18 @@ public class IntegrationTest {
     RequestSpecification givenSetup() {
         return given().port(app.getLocalPort())
                 .contentType(JSON);
+    }
+
+    protected PaymentEntity addPaymentToDB(PaymentEntity paymentEntity) {
+        databaseHelper.addPayment(paymentEntity.toPayment(), paymentEntity.getGatewayAccountId());
+        return paymentEntity;
+    }
+    
+    protected ProductEntity addProductToDB(ProductEntity productEntity) {
+        Product product = productEntity.toProduct();
+        databaseHelper.addProduct(product);
+        Integer productId = databaseHelper.findProductId(productEntity.getExternalId());
+        productEntity.setId(productId);
+        return productEntity;
     }
 }

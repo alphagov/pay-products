@@ -13,6 +13,11 @@ public class ProductsConfiguration extends Configuration {
 
     @Valid
     @NotNull
+    @JsonProperty("expungeHistoricalDataConfig")
+    private ExpungeHistoricalDataConfig expungeHistoricalDataConfig;
+    
+    @Valid
+    @NotNull
     private DataSourceFactory dataSourceFactory;
 
     @Valid
@@ -100,5 +105,9 @@ public class ProductsConfiguration extends Configuration {
 
     public Optional<URI> getEcsContainerMetadataUriV4() {
         return Optional.ofNullable(ecsContainerMetadataUriV4);
+    }
+
+    public ExpungeHistoricalDataConfig getExpungeHistoricalDataConfig() {
+        return expungeHistoricalDataConfig;
     }
 }

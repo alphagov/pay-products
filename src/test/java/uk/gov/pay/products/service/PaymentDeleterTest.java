@@ -5,6 +5,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
+import io.prometheus.client.CollectorRegistry;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,8 +20,12 @@ import uk.gov.pay.products.persistence.dao.PaymentDao;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 import static java.time.ZoneOffset.UTC;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.times;
@@ -48,6 +53,8 @@ public class PaymentDeleterTest {
     @Mock
     private Appender<ILoggingEvent> mockAppender;
 
+    private final CollectorRegistry collectorRegistry = CollectorRegistry.defaultRegistry;
+
     @Before
     public void setup() {
         final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
@@ -55,6 +62,20 @@ public class PaymentDeleterTest {
         logger.setLevel(Level.INFO);
         
         paymentDeleter = new PaymentDeleter(expungeHistoricalDataConfig, paymentDao, clock);
+    }
+    
+    @Test
+    public void shouldRecordMetrics() {
+        Double initialDuration = Optional.ofNullable(collectorRegistry.getSampleValue("expunge_historical_data_job_duration_seconds_sum")).orElse(0.0);
+        Double initialNoOfPaymentsDeletedMetric = Optional.ofNullable(collectorRegistry.getSampleValue("expunge_historical_data_job_no_of_payments_deleted_total")).orElse(0.0);
+
+        shouldDeletePayments();
+        
+        Double duration = collectorRegistry.getSampleValue("expunge_historical_data_job_duration_seconds_sum");
+        assertThat(duration, greaterThan(initialDuration));
+
+        Double noOfTxsRedactedMetric = collectorRegistry.getSampleValue("expunge_historical_data_job_no_of_payments_deleted_total");
+        assertThat(noOfTxsRedactedMetric, is(initialNoOfPaymentsDeletedMetric + 3));
     }
     
     @Test
@@ -72,10 +93,14 @@ public class PaymentDeleterTest {
     
     @Test
     public void shouldNotDeletePaymentsIfNotEnabled() {
+        Double initialNoOfPaymentsDeletedMetric = Optional.ofNullable(collectorRegistry.getSampleValue("expunge_historical_data_job_no_of_payments_deleted_total")).orElse(0.0);
+        
         when(expungeHistoricalDataConfig.isExpungeHistoricalDataEnabled()).thenReturn(false);
         paymentDeleter.deletePayments();
         verifyNoMoreInteractions(paymentDao);
-        verifyLog(mockAppender, loggingEventArgumentCaptor, 1,
-                "Expunging of historical data is not enabled.");
+        verifyLog(mockAppender, loggingEventArgumentCaptor, 1,"Expunging of historical data is not enabled.");
+
+        Double noOfTxsRedactedMetric = collectorRegistry.getSampleValue("expunge_historical_data_job_no_of_payments_deleted_total");
+        assertThat(noOfTxsRedactedMetric, is(initialNoOfPaymentsDeletedMetric));
     }
 }

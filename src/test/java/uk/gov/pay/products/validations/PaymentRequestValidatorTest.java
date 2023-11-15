@@ -61,6 +61,15 @@ public class PaymentRequestValidatorTest {
     }
 
     @Test
+    public void shouldError_onCreatePayment_ifJsonPayloadPriceIsZero() {
+        Optional<Errors> errors = requestValidator.validatePriceOverrideRequest(objectMapper.valueToTree(ImmutableMap.of("price", "0")));
+        assertTrue(errors.isPresent());
+
+        assertThat(errors.get().getErrors().size(), is(1));
+        assertThat(errors.get().getErrors(), hasItem("Field [price] must be £0.01 or more"));
+    }
+
+    @Test
     public void shouldError_onCreatePayment_ifJsonPayloadBiggerThanMaxAmount() {
         Optional<Errors> errors = requestValidator.validatePriceOverrideRequest(objectMapper.valueToTree(ImmutableMap.of("price", "100000001")));
         assertTrue(errors.isPresent());

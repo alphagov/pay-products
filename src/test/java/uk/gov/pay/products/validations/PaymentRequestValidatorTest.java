@@ -1,11 +1,11 @@
 package uk.gov.pay.products.validations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.products.util.Errors;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static junit.framework.TestCase.assertFalse;
@@ -38,13 +38,13 @@ public class PaymentRequestValidatorTest {
 
     @Test
     public void shouldSuccess_onCreatePayment_ifJsonPayloadHasValidPrice() {
-        Optional<Errors> errors = requestValidator.validatePriceOverrideRequest(objectMapper.valueToTree(ImmutableMap.of("price", "1900")));
+        Optional<Errors> errors = requestValidator.validatePriceOverrideRequest(objectMapper.valueToTree(Map.of("price", "1900")));
         assertFalse(errors.isPresent());
     }
 
     @Test
     public void shouldError_onCreatePayment_ifJsonPayloadHasInvalidField() {
-        Optional<Errors> errors = requestValidator.validatePriceOverrideRequest(objectMapper.valueToTree(ImmutableMap.of("blah", "1900")));
+        Optional<Errors> errors = requestValidator.validatePriceOverrideRequest(objectMapper.valueToTree(Map.of("blah", "1900")));
         assertTrue(errors.isPresent());
 
         assertThat(errors.get().getErrors().size(), is(1));
@@ -53,7 +53,7 @@ public class PaymentRequestValidatorTest {
 
     @Test
     public void shouldError_onCreatePayment_ifJsonPayloadHasNonNumeric() {
-        Optional<Errors> errors = requestValidator.validatePriceOverrideRequest(objectMapper.valueToTree(ImmutableMap.of("price", "blah")));
+        Optional<Errors> errors = requestValidator.validatePriceOverrideRequest(objectMapper.valueToTree(Map.of("price", "blah")));
         assertTrue(errors.isPresent());
 
         assertThat(errors.get().getErrors().size(), is(1));
@@ -62,7 +62,7 @@ public class PaymentRequestValidatorTest {
 
     @Test
     public void shouldError_onCreatePayment_ifJsonPayloadPriceIsZero() {
-        Optional<Errors> errors = requestValidator.validatePriceOverrideRequest(objectMapper.valueToTree(ImmutableMap.of("price", "0")));
+        Optional<Errors> errors = requestValidator.validatePriceOverrideRequest(objectMapper.valueToTree(Map.of("price", "0")));
         assertTrue(errors.isPresent());
 
         assertThat(errors.get().getErrors().size(), is(1));
@@ -71,7 +71,7 @@ public class PaymentRequestValidatorTest {
 
     @Test
     public void shouldError_onCreatePayment_ifJsonPayloadBiggerThanMaxAmount() {
-        Optional<Errors> errors = requestValidator.validatePriceOverrideRequest(objectMapper.valueToTree(ImmutableMap.of("price", "100000001")));
+        Optional<Errors> errors = requestValidator.validatePriceOverrideRequest(objectMapper.valueToTree(Map.of("price", "100000001")));
         assertTrue(errors.isPresent());
 
         assertThat(errors.get().getErrors().size(), is(1));

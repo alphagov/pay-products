@@ -32,6 +32,10 @@ public class PaymentRequestValidator {
         if (errors.isPresent()) {
             return Optional.of(Errors.from(errors.get()));
         }
+        errors = requestValidations.checkIsGreaterThanZero(payload, FIELD_PRICE);
+        if (errors.isPresent()) {
+            return Optional.of(Errors.from(errors.get()));
+        }
         errors = requestValidations.checkIsBelowMaxAmount(payload, FIELD_PRICE);
         return errors.map(Errors::from);
     }

@@ -24,7 +24,7 @@ public class DaoTestBase {
     private static final Logger logger = LoggerFactory.getLogger(DaoTestBase.class);
 
     @ClassRule
-    public static final PostgresDockerRule postgres = new PostgresDockerRule("11.16");
+    public static final PostgresDockerRule postgres = new PostgresDockerRule("15.2");
 
     static DatabaseTestHelper databaseHelper;
     static GuicedTestEnvironment env;

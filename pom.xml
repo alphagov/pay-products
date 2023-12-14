@@ -23,7 +23,7 @@
         <pay-java-commons.version>1.0.20231204114304</pay-java-commons.version>
         <prometheus.version>0.16.0</prometheus.version>
         <jackson.version>2.16.0</jackson.version>
-        <surefire.version>3.2.2</surefire.version>
+        <surefire.version>3.2.3</surefire.version>
         <swaggger-version>2.2.19</swaggger-version>
     </properties>
 

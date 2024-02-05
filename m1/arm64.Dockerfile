@@ -5,7 +5,7 @@ COPY . .
 
 RUN ["mvn", "clean", "--no-transfer-progress", "package", "-DskipTests"]
 
-FROM eclipse-temurin:11-jre@sha256:3a22f2ebf849ba4f6323c5360d3f79735a2a7fef5e9b9eb656ee3daaac70a4f1 AS final
+FROM eclipse-temurin:11-jre@sha256:185536b1bd94e15190d0eb30bc263955e049626c54eddd805093324852c8d9b7 AS final
 
 ARG DNS_TTL=15
 

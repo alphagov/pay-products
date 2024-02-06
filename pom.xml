@@ -20,7 +20,7 @@
         <hamcrest.version>2.2</hamcrest.version>
         <mainClass>uk.gov.pay.products.ProductsApplication</mainClass>
         <wiremock.version>2.35.1</wiremock.version>
-        <pay-java-commons.version>1.0.20240129154528</pay-java-commons.version>
+        <pay-java-commons.version>1.0.20240205110547</pay-java-commons.version>
         <prometheus.version>0.16.0</prometheus.version>
         <jackson.version>2.16.1</jackson.version>
         <surefire.version>3.2.5</surefire.version>

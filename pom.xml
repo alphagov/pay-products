@@ -14,31 +14,35 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <dropwizard.version>2.1.12</dropwizard.version>
         <eclipselink.version>2.7.13</eclipselink.version>
-        <guice.version>5.1.0</guice.version>
         <hamcrest.version>2.2</hamcrest.version>
         <mainClass>uk.gov.pay.products.ProductsApplication</mainClass>
         <wiremock.version>2.35.1</wiremock.version>
+        <pact.version>3.6.15</pact.version>
         <pay-java-commons.version>1.0.20240205110547</pay-java-commons.version>
         <prometheus.version>0.16.0</prometheus.version>
-        <jackson.version>2.16.1</jackson.version>
         <surefire.version>3.2.5</surefire.version>
         <swaggger-version>2.2.20</swaggger-version>
+        <PACT_BROKER_URL/>
+        <PACT_BROKER_USERNAME/>
+        <PACT_BROKER_PASSWORD/>
+        <PACT_CONSUMER_VERSION/>
+        <PACT_CONSUMER_TAG/>
     </properties>
-
-    <parent>
-        <groupId>io.dropwizard</groupId>
-        <artifactId>dropwizard-dependencies</artifactId>
-        <version>2.1.12</version>
-    </parent>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>io.dropwizard</groupId>
-                <artifactId>dropwizard-bom</artifactId>
-                <version>${dropwizard.version}</version>
+                <artifactId>dropwizard-dependencies</artifactId>
+                <version>3.0.6</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice-bom</artifactId>
+                <version>5.1.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -46,21 +50,8 @@
     </dependencyManagement>
 
     <dependencies>
-        <dependency>
-            <groupId>io.prometheus</groupId>
-            <artifactId>simpleclient</artifactId>
-            <version>${prometheus.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.prometheus</groupId>
-            <artifactId>simpleclient_servlet</artifactId>
-            <version>${prometheus.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.prometheus</groupId>
-            <artifactId>simpleclient_dropwizard</artifactId>
-            <version>${prometheus.version}</version>
-        </dependency>
+        <!-- Main dependencies that are imported from one of the BOMs specified
+             in <dependencyManagement> so no explicit versions needed -->
         <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-core</artifactId>
@@ -79,69 +70,69 @@
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-auth</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-persist</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-assistedinject</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-json-logging</artifactId>
         </dependency>
-
         <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-            <version>4.26.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>jstl</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>io.dropwizard</groupId>
+            <artifactId>dropwizard-migrations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
 
+        <!-- Main dependencies that need explicit versions -->
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient</artifactId>
+            <version>${prometheus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_servlet</artifactId>
+            <version>${prometheus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_dropwizard</artifactId>
+            <version>${prometheus.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.7.1</version>
         </dependency>
-
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>
             <version>${eclipselink.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>${guice.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-persist</artifactId>
-            <version>${guice.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-assistedinject</artifactId>
-            <version>${guice.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.14</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>uk.gov.service.payments</groupId>
@@ -155,13 +146,13 @@
         </dependency>
         <dependency>
             <groupId>uk.gov.service.payments</groupId>
-            <artifactId>logging</artifactId>
+            <artifactId>logging-dropwizard-3</artifactId>
             <version>${pay-java-commons.version}</version>
         </dependency>
         <dependency>
             <groupId>org.dhatim</groupId>
             <artifactId>dropwizard-sentry</artifactId>
-            <version>2.1.2-4</version>
+            <version>2.1.6</version>
         </dependency>
         <dependency>
             <groupId>commons-validator</groupId>
@@ -169,16 +160,55 @@
             <version>1.8.0</version>
         </dependency>
 
-        <!-- testing -->
+        <!-- Test dependencies that are imported from one of the BOMs specified
+             in <dependencyManagement> so no explicit versions needed -->
         <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>2.12.2</version>
+            <groupId>io.dropwizard</groupId>
+            <artifactId>dropwizard-testing</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.dropwizard</groupId>
-            <artifactId>dropwizard-testing</artifactId>
+            <artifactId>dropwizard-jdbi3</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Test dependencies that need explicit versions -->
+        <dependency>
+            <groupId>io.dropwizard.modules</groupId>
+            <artifactId>dropwizard-testing-junit4</artifactId>
+            <version>3.0.6</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.12.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -206,66 +236,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.dropwizard</groupId>
-            <artifactId>dropwizard-jdbi3</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-inline</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock-jre8</artifactId>
-            <version>${wiremock.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.mortbay.jetty</groupId>
-                    <artifactId>servlet-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.eclipse.jetty</groupId>
-                    <artifactId>jetty-server</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.eclipse.jetty</groupId>
-                    <artifactId>jetty-servlet</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.eclipse.jetty</groupId>
-                    <artifactId>jetty-servlets</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.eclipse.jetty</groupId>
-                    <artifactId>jetty-webapp</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock-standalone</artifactId>
+            <version>3.3.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -294,8 +267,8 @@
         </dependency>
         <dependency>
             <groupId>au.com.dius</groupId>
-            <artifactId>pact-jvm-provider-junit_2.12</artifactId>
-            <version>3.6.15</version>
+            <artifactId>pact-jvm-provider-junit</artifactId>
+            <version>4.0.10</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -312,6 +285,22 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>au.com.dius</groupId>
+                <artifactId>pact-jvm-provider-maven_2.12</artifactId>
+                <version>${pact.version}</version>
+                <configuration>
+                    <pactDirectory>target/pacts</pactDirectory>
+                    <pactBrokerUrl>${PACT_BROKER_URL}</pactBrokerUrl>
+                    <pactBrokerUsername>${PACT_BROKER_USERNAME}</pactBrokerUsername>
+                    <pactBrokerPassword>${PACT_BROKER_PASSWORD}</pactBrokerPassword>
+                    <projectVersion>${PACT_CONSUMER_VERSION}</projectVersion>
+                    <tags>
+                        <tag>${PACT_CONSUMER_TAG}</tag>
+                    </tags>
+                    <trimSnapshot>true</trimSnapshot>
+                </configuration>
+            </plugin>
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.5.1</version>

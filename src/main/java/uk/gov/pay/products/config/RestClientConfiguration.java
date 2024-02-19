@@ -1,6 +1,6 @@
 package uk.gov.pay.products.config;
 
-import io.dropwizard.Configuration;
+import io.dropwizard.core.Configuration;
 import io.dropwizard.util.Duration;
 
 import javax.validation.constraints.NotNull;

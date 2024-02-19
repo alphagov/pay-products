@@ -1,6 +1,7 @@
 package uk.gov.pay.products.config;
 
-import io.dropwizard.Configuration;
+
+import io.dropwizard.core.Configuration;
 
 public class JPAConfiguration extends Configuration {
 

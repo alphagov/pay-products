@@ -17,12 +17,11 @@
         <eclipselink.version>2.7.13</eclipselink.version>
         <hamcrest.version>2.2</hamcrest.version>
         <mainClass>uk.gov.pay.products.ProductsApplication</mainClass>
-        <wiremock.version>2.35.1</wiremock.version>
         <pact.version>3.6.15</pact.version>
         <pay-java-commons.version>1.0.20240205110547</pay-java-commons.version>
         <prometheus.version>0.16.0</prometheus.version>
         <surefire.version>3.2.5</surefire.version>
-        <swaggger-version>2.2.20</swaggger-version>
+        <swagger-version>2.2.20</swagger-version>
         <PACT_BROKER_URL/>
         <PACT_BROKER_USERNAME/>
         <PACT_BROKER_PASSWORD/>
@@ -279,7 +278,7 @@
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>${swaggger-version}</version>
+            <version>${swagger-version}</version>
         </dependency>
     </dependencies>
 
@@ -428,7 +427,7 @@
             <plugin>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-maven-plugin</artifactId>
-                <version>${swaggger-version}</version>
+                <version>${swagger-version}</version>
                 <configuration>
                     <outputPath>openapi</outputPath>
                     <outputFileName>products_spec</outputFileName>

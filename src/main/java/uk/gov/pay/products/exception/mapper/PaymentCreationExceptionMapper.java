@@ -23,15 +23,16 @@ public class PaymentCreationExceptionMapper implements ExceptionMapper<PaymentCr
 
     @Override
     public Response toResponse(PaymentCreationException exception) {
-        logger.error("PaymentCreationException thrown.", exception);
-
-        var status = getStatus(exception);
-
-        ErrorIdentifier errorIdentifier = CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE.equals(exception.getErrorCode()) ?
-                CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_REJECTED : GENERIC;
+        ErrorIdentifier errorIdentifier = GENERIC;
+        if (CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE.equals(exception.getErrorCode())) {
+            errorIdentifier = CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_REJECTED;
+            logger.info(PaymentCreationException.class.getName() + " thrown due to " + CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE);
+        } else {
+            logger.error("PaymentCreationException thrown.", exception);
+        }
 
         return Response
-                .status(status)
+                .status(getStatus(exception))
                 .entity(Errors.from("Downstream system error.", errorIdentifier.toString()))
                 .build();
     }

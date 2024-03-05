@@ -190,35 +190,6 @@ paths:
           description: default response
       tags:
       - Payments
-  /v1/api/payments/{gatewayAccountId}/{referenceNumber}:
-    get:
-      operationId: findPaymentsByGatewayAccountIdAndReferenceNumber
-      parameters:
-      - example: 1
-        in: path
-        name: gatewayAccountId
-        required: true
-        schema:
-          type: integer
-          format: int32
-      - example: RE4R2A6VAP
-        in: path
-        name: referenceNumber
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Payment'
-          description: OK
-        "404":
-          description: Not found
-      summary: Find payment by gateway account ID and reference number.
-      tags:
-      - Payments
   /v1/api/payments/{paymentExternalId}:
     get:
       operationId: findPaymentByExternalId

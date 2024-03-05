@@ -1,13 +1,13 @@
 package uk.gov.pay.products.util;
 
-import java.util.Random;
+import java.security.SecureRandom;
 import java.util.UUID;
 
 import static java.util.stream.IntStream.range;
 
 public class RandomIdGenerator {
 
-    private static final Random RANDOM = new Random();
+    private static final SecureRandom RANDOM = new SecureRandom();
     /**
      * source
      */
@@ -32,7 +32,7 @@ public class RandomIdGenerator {
      * @return a user friendly reference of the format XXXXXXXXXX
      */
     public static String randomUserFriendlyReference() {
-        Random random = new Random();
+        SecureRandom random = new SecureRandom();
         StringBuilder sb = new StringBuilder();
         range(0, 10)
                 .forEach(i -> {

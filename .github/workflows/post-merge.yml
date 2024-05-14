@@ -15,6 +15,9 @@ concurrency: products-post-merge
 jobs:
   tests:
     uses: ./.github/workflows/_run-tests.yml
+    secrets:
+      pact_broker_username: ${{ secrets.pact_broker_username }}
+      pact_broker_password: ${{ secrets.pact_broker_password }}
   tag-release:
     needs:
       - tests

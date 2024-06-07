@@ -1211,12 +1211,12 @@ public class ProductResourceIT extends IntegrationTest {
         ValidatableResponse response = givenSetup()
                 .when()
                 .accept(APPLICATION_JSON)
-                .get(format("/v1/api/stats/products"))
+                .get("/v1/api/stats/products")
                 .then()
                 .statusCode(200);
 
         response
-                .body("size", is(2))
+                .body("size()", is(2))
                 .body("[0].payment_count", is(1))
                 .body("[0].product.external_id", is(product.getExternalId()))
                 .body("[1].payment_count", is(1))
@@ -1230,7 +1230,7 @@ public class ProductResourceIT extends IntegrationTest {
                 .then()
                 .statusCode(200);
         filteredResponse
-                .body("size", is(1))
+                .body("size()", is(1))
                 .body("[0].product.external_id", is(product.getExternalId()));
     }
 

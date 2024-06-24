@@ -8,7 +8,7 @@ import uk.gov.pay.products.config.ExpungeHistoricalDataConfig;
 import uk.gov.pay.products.persistence.dao.PaymentDao;
 
 import javax.inject.Inject;
-import java.time.Clock;
+import java.time.InstantSource;
 import java.time.temporal.ChronoUnit;
 
 import static java.lang.String.format;
@@ -21,7 +21,7 @@ public class PaymentDeleter {
     
     private ExpungeHistoricalDataConfig expungeHistoricalDataConfig;
     private PaymentDao paymentDao;
-    private Clock clock;
+    private InstantSource instantSource;
 
     private static final Counter noOfPaymentsDeletedMetric = Counter.build()
             .name("expunge_historical_data_job_no_of_payments_deleted")
@@ -35,10 +35,10 @@ public class PaymentDeleter {
             .register();
 
     @Inject
-    public PaymentDeleter(ExpungeHistoricalDataConfig expungeHistoricalDataConfig, PaymentDao paymentDao, Clock clock) {
+    public PaymentDeleter(ExpungeHistoricalDataConfig expungeHistoricalDataConfig, PaymentDao paymentDao, InstantSource instantSource) {
         this.expungeHistoricalDataConfig = expungeHistoricalDataConfig;
         this.paymentDao = paymentDao;
-        this.clock = clock;
+        this.instantSource = instantSource;
     }
 
     public void deletePayments() {
@@ -50,7 +50,7 @@ public class PaymentDeleter {
                 return;
             }
 
-            var maxDate = clock.instant().minus(expungeHistoricalDataConfig.getExpungeDataOlderThanDays(), ChronoUnit.DAYS).atZone(UTC);
+            var maxDate = instantSource.instant().minus(expungeHistoricalDataConfig.getExpungeDataOlderThanDays(), ChronoUnit.DAYS).atZone(UTC);
             int numberOfDeletedPayments = paymentDao.deletePayments(maxDate, expungeHistoricalDataConfig.getNumberOfPaymentsToExpunge());
             LOGGER.info(format("%s payments were deleted.", numberOfDeletedPayments),
                     kv("no_of_payments_deleted", numberOfDeletedPayments));

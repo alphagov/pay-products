@@ -20,7 +20,7 @@ import uk.gov.pay.products.validations.ProductRequestValidator;
 import uk.gov.pay.products.validations.RequestValidations;
 
 import javax.ws.rs.client.Client;
-import java.time.Clock;
+import java.time.InstantSource;
 import java.util.Properties;
 
 public class ProductsModule extends AbstractModule {
@@ -42,6 +42,7 @@ public class ProductsModule extends AbstractModule {
         bind(DataSourceFactory.class).toInstance(configuration.getDataSourceFactory());
         bind(MetricRegistry.class).toInstance(environment.metrics());
         bind(Environment.class).toInstance(environment);
+        bind(InstantSource.class).toInstance(InstantSource.system());
         bind(RequestValidations.class).in(Singleton.class);
         bind(ProductRequestValidator.class).in(Singleton.class);
         bind(LinksDecorator.class).toInstance(
@@ -85,12 +86,6 @@ public class ProductsModule extends AbstractModule {
         jpaModule.properties(properties);
 
         return jpaModule;
-    }
-
-    @Provides
-    @Singleton
-    public Clock systemUtcClock() {
-        return Clock.systemUTC();
     }
 
     @Provides

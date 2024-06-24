@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.config.ExpungeHistoricalDataConfig;
 import uk.gov.pay.products.persistence.dao.PaymentDao;
 
-import java.time.Clock;
 import java.time.Instant;
+import java.time.InstantSource;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
@@ -45,7 +45,7 @@ public class PaymentDeleterTest {
     @Mock
     private PaymentDao paymentDao;
 
-    private final Clock clock = Clock.fixed(Instant.parse("2022-03-03T10:15:30Z"), UTC);
+    private final InstantSource instantSource = InstantSource.fixed(Instant.parse("2022-03-03T10:15:30Z"));
 
     @Captor
     private ArgumentCaptor<LoggingEvent> loggingEventArgumentCaptor;
@@ -61,7 +61,7 @@ public class PaymentDeleterTest {
         logger.addAppender(mockAppender);
         logger.setLevel(Level.INFO);
         
-        paymentDeleter = new PaymentDeleter(expungeHistoricalDataConfig, paymentDao, clock);
+        paymentDeleter = new PaymentDeleter(expungeHistoricalDataConfig, paymentDao, instantSource);
     }
     
     @Test
@@ -88,7 +88,7 @@ public class PaymentDeleterTest {
         
         paymentDeleter.deletePayments();
         
-        verify(paymentDao, times(1)).deletePayments(ZonedDateTime.now(clock).minusDays(1), 3);
+        verify(paymentDao, times(1)).deletePayments(ZonedDateTime.now(instantSource.withZone(UTC)).minusDays(1), 3);
     }
     
     @Test

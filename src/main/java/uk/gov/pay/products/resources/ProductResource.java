@@ -115,7 +115,6 @@ public class ProductResource {
             }
     )
     public Response findProductByExternalId(@PathParam("productExternalId") @Parameter(example = "874h5c87834659q345698495") String productExternalId) {
-        logger.info("Find a product with externalId - [ {} ]", productExternalId);
         return productFactory.productFinder().findByExternalId(productExternalId)
                 .map(product ->
                         Response.status(OK).entity(product).build())
@@ -139,7 +138,6 @@ public class ProductResource {
     )
     public Response findProductByGatewayAccountIdAndExternalId(@Parameter(example = "1") @PathParam("gatewayAccountId") Integer gatewayAccountId,
                                                                @Parameter(example = "874h5c87834659q345698495") @PathParam("productExternalId") String productExternalId) {
-        logger.info("Find a product with externalId - [ {} ]", productExternalId);
         return productFactory.productFinder().findByGatewayAccountIdAndExternalId(gatewayAccountId, productExternalId)
                 .map(product ->
                         Response.status(OK).entity(product).build())
@@ -328,7 +326,6 @@ public class ProductResource {
     public Response findProductByProductPath(
             @Parameter(example = "some-awesome-government-service") @QueryParam("serviceNamePath") String serviceNamePath,
             @Parameter(example = "name-for-product") @QueryParam("productNamePath") String productNamePath) {
-        logger.info(format("Searching for product with product path - [ serviceNamePath=%s productNamePath=%s ]", serviceNamePath, productNamePath));
         return productFactory.productFinder().findByProductPath(serviceNamePath, productNamePath)
                 .map(product -> Response.status(OK).entity(product).build())
                 .orElseGet(() -> Response.status(NOT_FOUND).build());

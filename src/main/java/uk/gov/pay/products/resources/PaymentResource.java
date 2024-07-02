@@ -82,7 +82,6 @@ public class PaymentResource {
     )
     public Response findPaymentByExternalId(@Parameter(example = "h6347634cwb67wii7b6ciueroytw")
                                             @PathParam("paymentExternalId") String paymentExternalId) {
-        logger.info("Find a payment with externalId - [ {} ]", paymentExternalId);
         return paymentFactory.paymentFinder().findByExternalId(paymentExternalId)
                 .map(payment ->
                         Response.status(OK).entity(payment).build())
@@ -111,7 +110,6 @@ public class PaymentResource {
                                                                   description = "Price override for the payment amount. If not present this will defaults to price of product."))
                                           }))
                                           JsonNode payload) {
-        logger.info("Create a payment for product id - [ {} ]", productExternalId);
         return requestValidator.validatePriceOverrideRequest(payload)
                 .map(errors -> Response.status(Response.Status.BAD_REQUEST).entity(errors).build())
                 .orElseGet(() -> {
@@ -148,7 +146,6 @@ public class PaymentResource {
             }
     )
     public Response findPaymentsByProductExternalId(@Parameter(example = "uier837y735n837475y3847534") @PathParam("productExternalId") String productExternalId) {
-        logger.info("Find a list of payments for product id - [ {} ]", productExternalId);
         List<Payment> payments = paymentFactory.paymentFinder().findByProductExternalId(productExternalId);
         return payments.size() > 0 ? Response.status(OK).entity(payments).build() : Response.status(NOT_FOUND).build();
     }

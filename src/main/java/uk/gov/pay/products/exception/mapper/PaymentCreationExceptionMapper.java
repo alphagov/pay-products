@@ -12,6 +12,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static uk.gov.pay.products.util.PublicAPIErrorCodes.ACCOUNT_NOT_LINKED_WITH_PSP_ERROR_CODE;
 import static uk.gov.pay.products.util.PublicAPIErrorCodes.CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_REJECTED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.GENERIC;
@@ -27,6 +28,8 @@ public class PaymentCreationExceptionMapper implements ExceptionMapper<PaymentCr
         if (CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE.equals(exception.getErrorCode())) {
             errorIdentifier = CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_REJECTED;
             logger.info(PaymentCreationException.class.getName() + " thrown due to " + CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE);
+        } else if (ACCOUNT_NOT_LINKED_WITH_PSP_ERROR_CODE.equals(exception.getErrorCode())) {
+            logger.warn("PaymentCreationException thrown due to " + ACCOUNT_NOT_LINKED_WITH_PSP_ERROR_CODE + ". The account is not fully configured.");
         } else {
             logger.error("PaymentCreationException thrown.", exception);
         }

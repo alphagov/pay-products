@@ -1,8 +1,16 @@
 package uk.gov.pay.products.resources;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.Appender;
 import io.restassured.response.ValidatableResponse;
 import org.apache.http.HttpStatus;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.persistence.entity.PaymentEntity;
 import uk.gov.pay.products.persistence.entity.ProductEntity;
@@ -13,6 +21,7 @@ import javax.ws.rs.HttpMethod;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -20,16 +29,21 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static uk.gov.pay.products.fixtures.ProductEntityFixture.aProductEntity;
 import static uk.gov.pay.products.service.PaymentUpdater.REDACTED_REFERENCE_NUMBER;
 import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.createErrorPayload;
 import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.createPaymentResponsePayload;
 import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.setupResponseToCreatePaymentRequest;
 import static uk.gov.pay.products.util.PaymentStatus.CREATED;
+import static uk.gov.pay.products.util.PublicAPIErrorCodes.ACCOUNT_NOT_LINKED_WITH_PSP_ERROR_CODE;
 import static uk.gov.pay.products.util.PublicAPIErrorCodes.CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
@@ -42,6 +56,16 @@ public class PaymentResourceIT extends IntegrationTest {
     private final String paymentsUrl = "https://products.url/v1/api/payments/";
     private final String nextUrl = "www.gov.uk/pay";
     private final int gatewayAccountId = randomInt();
+    
+    private Appender<ILoggingEvent> mockAppender = mock(Appender.class);;
+    private ArgumentCaptor<LoggingEvent> loggingEventArgumentCaptor = ArgumentCaptor.forClass(LoggingEvent.class);
+
+    @Before
+    public void setup() {
+        final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        logger.addAppender(mockAppender);
+        logger.setLevel(Level.WARN);
+    }
     
     @Test
     public void deleteHistoricalData() {
@@ -296,11 +320,14 @@ public class PaymentResourceIT extends IntegrationTest {
                 .statusCode(403)
                 .body("errors", hasSize(1))
                 .body("errors[0]", is("Downstream system error."));
+        
+        verify(mockAppender, atLeastOnce()).doAppend(loggingEventArgumentCaptor.capture());
+        List<LoggingEvent> loggingEvents = loggingEventArgumentCaptor.getAllValues();
+        assertThat(loggingEvents.stream().filter(logEvent -> logEvent.getLevel() == Level.WARN).map(LoggingEvent::getFormattedMessage).collect(Collectors.toList()),
+                hasItems("PaymentCreationException thrown due to " + ACCOUNT_NOT_LINKED_WITH_PSP_ERROR_CODE + ". The account is not fully configured."));
 
         List<Map<String, Object>> paymentRecords = databaseHelper.getPaymentsByProductExternalId(product.getExternalId());
-
         assertThat(paymentRecords.size(), is(1));
-
         assertThat(paymentRecords.get(0), hasKey("id"));
         assertThat(paymentRecords.get(0), hasKey("external_id"));
         assertThat(paymentRecords.get(0), hasEntry("govuk_payment_id", null));

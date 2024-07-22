@@ -14,7 +14,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <eclipselink.version>2.7.13</eclipselink.version>
+        <eclipselink.version>4.0.4</eclipselink.version>
         <hamcrest.version>2.2</hamcrest.version>
         <mainClass>uk.gov.pay.products.ProductsApplication</mainClass>
         <pact.version>3.6.15</pact.version>

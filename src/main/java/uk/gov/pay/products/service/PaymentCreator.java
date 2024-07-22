@@ -151,7 +151,7 @@ public class PaymentCreator {
                         kv("product_external_id", paymentEntity.getProductEntity().getExternalId())
                 );
             } catch (PublicApiResponseErrorException e) {
-                logger.error("Payment creation for product external id {} failed {}", paymentEntity.getProductEntity().getExternalId(), e.getMessage());
+                logger.warn("Payment creation for product external id {} failed {}", paymentEntity.getProductEntity().getExternalId(), e.getMessage());
                 paymentEntity.setStatus(PaymentStatus.ERROR);
                 paymentEntity.setErrorStatusCode(e.getErrorStatus());
                 paymentEntity.setErrorCode(e.getCode());

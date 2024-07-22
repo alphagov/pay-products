@@ -52,7 +52,7 @@ public class PublicApiRestClient {
         }
 
         PublicApiResponseErrorException publicApiResponseErrorException = new PublicApiResponseErrorException(response);
-        logger.error("Public API client returned an error - [ {} ]", publicApiResponseErrorException.getMessage());
+        logger.warn("Public API client returned an error - [ {} ]", publicApiResponseErrorException.getMessage());
         throw publicApiResponseErrorException;
     }
 

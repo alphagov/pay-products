@@ -40,9 +40,9 @@ public class ProductsMetadataRequestValidatorTest {
     }
 
     @Test
-    public void shouldErrorOnTooMuchKeyValuePairsForProductCreate() {
+    public void shouldErrorOnTooManyKeyValuePairsForProductCreate() {
         Map<String, String> mapToJson = new HashMap<>();
-        for (int count = 1; count < 12; count++) {
+        for (int count = 1; count < 17; count++) {
             mapToJson.put("key" + count, "value" + count);
         }
         JsonNode payload = new ObjectMapper().valueToTree(Map.of("metadata", mapToJson));

@@ -31,7 +31,7 @@ public class ProductsMetadataRequestValidator {
             return Optional.of(Errors.from(EMPTY_METADATA_KEY_ERROR_MESSAGE, "EMPTY_METADATA_KEY"));
         }
 
-        if (metadataLoad.size() >= ExternalMetadata.MAX_KEY_VALUE_PAIRS) {
+        if (metadataLoad.size() > ExternalMetadata.MAX_KEY_VALUE_PAIRS) {
             return Optional.of(Errors.from(MAX_NUMBER_OF_METADATA_ALLOWED_ERROR_MSG, "MAX_METADATA_LENGTH_EXCEEDED"));
         }
 

@@ -17,6 +17,7 @@ The [API Specification](openapi/products_spec.yaml) provides more detail on the 
 | Variable                                  | Description                                                                                                               |
 |-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
 | `ADMIN_PORT`                              | The port number to listen for Dropwizard admin requests on. Defaults to `8081`.                                           |
+| `BIND_HOST`                               | The IP address for the application to bind to. Defaults to `127.0.0.1`.                                                   |
 | `BASE_URL`                                | The base URL of the [products-ui](https://github.com/alphagov/pay-products-ui) microservice.                              |
 | `DB_HOST`                                 | The hostname of the database server. Defaults to `products.db.pymnt.localdomain`                                          |
 | `DB_PASSWORD`                             | The password for the `DB_USER` user.                                                                                      |

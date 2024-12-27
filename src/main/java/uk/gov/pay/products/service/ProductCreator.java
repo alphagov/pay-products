@@ -12,7 +12,7 @@ import uk.gov.pay.products.persistence.entity.ProductMetadataEntity;
 import uk.gov.service.payments.commons.model.jsonpatch.JsonPatchOp;
 import uk.gov.service.payments.commons.model.jsonpatch.JsonPatchRequest;
 
-import javax.ws.rs.BadRequestException;
+import jakarta.ws.rs.BadRequestException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

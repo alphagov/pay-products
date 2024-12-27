@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.exception.ProductNotFoundException;
 import uk.gov.pay.products.util.Errors;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
 
 import static java.lang.String.format;
 

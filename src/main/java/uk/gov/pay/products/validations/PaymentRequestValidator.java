@@ -3,7 +3,7 @@ package uk.gov.pay.products.validations;
 import com.fasterxml.jackson.databind.JsonNode;
 import uk.gov.pay.products.util.Errors;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 

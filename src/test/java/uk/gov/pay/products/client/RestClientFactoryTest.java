@@ -9,7 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.pay.products.config.RestClientConfiguration;
 
 import javax.net.ssl.SSLContext;
-import javax.ws.rs.client.Client;
+import jakarta.ws.rs.client.Client;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;

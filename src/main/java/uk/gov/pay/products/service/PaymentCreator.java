@@ -24,7 +24,7 @@ import uk.gov.pay.products.util.PaymentStatus;
 import uk.gov.pay.products.util.ProductType;
 import uk.gov.service.payments.commons.model.Source;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import static java.lang.String.format;
 import static net.logstash.logback.argument.StructuredArguments.kv;

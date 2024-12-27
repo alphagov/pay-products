@@ -1,9 +1,9 @@
 package uk.gov.pay.products.filters;
 
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerRequestFilter;
 import org.slf4j.MDC;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
 import java.io.IOException;
 import java.util.Optional;
 

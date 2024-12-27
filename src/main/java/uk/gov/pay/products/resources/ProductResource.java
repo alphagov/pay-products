@@ -22,25 +22,25 @@ import uk.gov.pay.products.util.ProductType;
 import uk.gov.pay.products.validations.ProductRequestValidator;
 import uk.gov.service.payments.commons.model.jsonpatch.JsonPatchRequest;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static java.lang.String.format;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static javax.ws.rs.core.Response.Status.NO_CONTENT;
-import static javax.ws.rs.core.Response.Status.OK;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
+import static jakarta.ws.rs.core.Response.Status.NO_CONTENT;
+import static jakarta.ws.rs.core.Response.Status.OK;
 import static net.logstash.logback.argument.StructuredArguments.kv;
 import static uk.gov.pay.products.model.Product.FIELD_GATEWAY_ACCOUNT_ID;
 import static uk.gov.pay.products.model.Product.FIELD_NAME;
@@ -93,7 +93,7 @@ public class ProductResource {
                     try {
                         Product product = productFactory.productCreator().doCreate(Product.from(payload));
                         return Response.status(Status.CREATED).entity(product).build();
-                    } catch (javax.persistence.RollbackException ex) {
+                    } catch (jakarta.persistence.RollbackException ex) {
                         logger.info("Conflict error while persisting product, product path already exists. " + ex.getLocalizedMessage());
                         return Response.status(Status.CONFLICT).build();
                     }

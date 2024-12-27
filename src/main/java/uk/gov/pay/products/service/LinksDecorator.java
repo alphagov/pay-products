@@ -10,8 +10,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 import static java.lang.String.format;
-import static javax.ws.rs.HttpMethod.GET;
-import static javax.ws.rs.core.UriBuilder.fromUri;
+import static jakarta.ws.rs.HttpMethod.GET;
+import static jakarta.ws.rs.core.UriBuilder.fromUri;
 
 public class LinksDecorator {
 

@@ -3,7 +3,7 @@ package uk.gov.pay.products.config;
 import io.dropwizard.core.Configuration;
 import io.dropwizard.util.Duration;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public class RestClientConfiguration extends Configuration {
     private String disabledSecureConnection;

@@ -59,7 +59,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Product'
+                  $ref: "#/components/schemas/Product"
           description: OK
         "400":
           description: Invalid request params
@@ -113,7 +113,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Product'
+                $ref: "#/components/schemas/Product"
           description: OK
         "404":
           description: Not found
@@ -140,7 +140,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProductUpdateRequest'
+              $ref: "#/components/schemas/ProductUpdateRequest"
       responses:
         "200":
           description: No content
@@ -205,7 +205,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Payment'
+                $ref: "#/components/schemas/Payment"
           description: OK
         "404":
           description: Not found
@@ -231,7 +231,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Product'
+                $ref: "#/components/schemas/Product"
           description: OK
         "404":
           description: Not found
@@ -244,13 +244,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateProductRequest'
+              $ref: "#/components/schemas/CreateProductRequest"
       responses:
         "201":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Product'
+                $ref: "#/components/schemas/Product"
           description: OK
         "400":
           description: Invalid payload
@@ -293,7 +293,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Product'
+                $ref: "#/components/schemas/Product"
           description: OK
         "404":
           description: Not found
@@ -334,7 +334,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Payment'
+                  $ref: "#/components/schemas/Payment"
           description: OK
         "404":
           description: Not found
@@ -369,7 +369,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Payment'
+                $ref: "#/components/schemas/Payment"
           description: OK
         "400":
           description: For invalid payload
@@ -413,7 +413,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ProductUsageStat'
+                  $ref: "#/components/schemas/ProductUsageStat"
           description: OK
       summary: Get usage stats of non-prototype payment links for a gateway account
       tags:
@@ -460,7 +460,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Product'
+                $ref: "#/components/schemas/Product"
           description: OK
         "400":
           description: For invalid payload
@@ -588,7 +588,7 @@ components:
             method: GET
             rel: next
           items:
-            $ref: '#/components/schemas/Link'
+            $ref: "#/components/schemas/Link"
         amount:
           type: integer
           format: int64
@@ -627,7 +627,7 @@ components:
         _links:
           type: array
           items:
-            $ref: '#/components/schemas/Link'
+            $ref: "#/components/schemas/Link"
         amount_hint:
           type: string
           example: Enter an amount in multiples of £2 for the number of permits required
@@ -737,4 +737,4 @@ components:
           format: int64
           example: 120
         product:
-          $ref: '#/components/schemas/Product'
+          $ref: "#/components/schemas/Product"

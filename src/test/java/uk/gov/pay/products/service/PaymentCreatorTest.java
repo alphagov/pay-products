@@ -54,7 +54,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import static uk.gov.pay.products.util.PaymentStatus.ERROR;
 import static uk.gov.pay.products.util.PaymentStatus.SUBMITTED;
-import static uk.gov.pay.products.util.PublicAPIErrorCodes.CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE;
+import static uk.gov.pay.products.util.PublicAPIErrorCodes.CREATE_PAYMENT_CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 import static uk.gov.service.payments.commons.model.Source.CARD_AGENT_INITIATED_MOTO;
 import static uk.gov.service.payments.commons.model.Source.CARD_PAYMENT_LINK;
@@ -553,7 +553,7 @@ public class PaymentCreatorTest {
 
         PublicApiResponseErrorException responseErrorException = mock(PublicApiResponseErrorException.class);
         when(responseErrorException.getErrorStatus()).thenReturn(BAD_REQUEST.getStatusCode());
-        when(responseErrorException.getCode()).thenReturn(CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE);
+        when(responseErrorException.getCode()).thenReturn(CREATE_PAYMENT_CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR);
         when(responseErrorException.getMessage()).thenReturn("Public API returned an error");
         when(publicApiRestClient.createPayment(argThat(is(productApiToken)), argThat(PaymentRequestMatcher.isSame(expectedPaymentRequest))))
                 .thenThrow(responseErrorException);

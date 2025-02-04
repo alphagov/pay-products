@@ -54,6 +54,8 @@ public class PaymentEntity extends AbstractEntity {
     private int errorStatusCode;
     @Transient
     private String errorCode;
+    @Transient
+    private String errorDescription;
 
     public PaymentEntity() {
     }
@@ -168,5 +170,13 @@ public class PaymentEntity extends AbstractEntity {
 
     public String getErrorCode() {
         return errorCode;
+    }
+
+    public void setErrorDescription(String errorDescription) {
+        this.errorDescription = errorDescription;
+    }
+
+    public String getErrorDescription() {
+        return errorDescription;
     }
 }

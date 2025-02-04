@@ -27,6 +27,7 @@ import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItems;
@@ -43,12 +44,14 @@ import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.createErrorPaylo
 import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.createPaymentResponsePayload;
 import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.setupResponseToCreatePaymentRequest;
 import static uk.gov.pay.products.util.PaymentStatus.CREATED;
-import static uk.gov.pay.products.util.PublicAPIErrorCodes.ACCOUNT_NOT_LINKED_WITH_PSP_ERROR_CODE;
-import static uk.gov.pay.products.util.PublicAPIErrorCodes.CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE;
+import static uk.gov.pay.products.util.PublicAPIErrorCodes.ACCOUNT_NOT_LINKED_WITH_PSP;
+import static uk.gov.pay.products.util.PublicAPIErrorCodes.CREATE_PAYMENT_CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR;
+import static uk.gov.pay.products.util.PublicAPIErrorCodes.CREATE_PAYMENT_VALIDATION_ERROR;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 import static uk.gov.pay.products.utils.TestHelpers.createPaymentEntity;
 import static uk.gov.pay.products.utils.TestHelpers.createProductEntity;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.AMOUNT_BELOW_MINIMUM;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_REJECTED;
 
 public class PaymentResourceIT extends IntegrationTest {
@@ -57,8 +60,8 @@ public class PaymentResourceIT extends IntegrationTest {
     private final String nextUrl = "www.gov.uk/pay";
     private final int gatewayAccountId = randomInt();
     
-    private Appender<ILoggingEvent> mockAppender = mock(Appender.class);;
-    private ArgumentCaptor<LoggingEvent> loggingEventArgumentCaptor = ArgumentCaptor.forClass(LoggingEvent.class);
+    private final Appender<ILoggingEvent> mockAppender = mock(Appender.class);;
+    private final ArgumentCaptor<LoggingEvent> loggingEventArgumentCaptor = ArgumentCaptor.forClass(LoggingEvent.class);
 
     @Before
     public void setup() {
@@ -319,12 +322,12 @@ public class PaymentResourceIT extends IntegrationTest {
                 .then()
                 .statusCode(403)
                 .body("errors", hasSize(1))
-                .body("errors[0]", is("Downstream system error."));
+                .body("errors[0]", is("Upstream system error."));
         
         verify(mockAppender, atLeastOnce()).doAppend(loggingEventArgumentCaptor.capture());
         List<LoggingEvent> loggingEvents = loggingEventArgumentCaptor.getAllValues();
         assertThat(loggingEvents.stream().filter(logEvent -> logEvent.getLevel() == Level.WARN).map(LoggingEvent::getFormattedMessage).collect(Collectors.toList()),
-                hasItems("PaymentCreationException thrown due to " + ACCOUNT_NOT_LINKED_WITH_PSP_ERROR_CODE + ". The account is not fully configured."));
+                hasItems("PaymentCreationException thrown due to " + ACCOUNT_NOT_LINKED_WITH_PSP + ". The account is not fully configured."));
 
         List<Map<String, Object>> paymentRecords = databaseHelper.getPaymentsByProductExternalId(product.getExternalId());
         assertThat(paymentRecords.size(), is(1));
@@ -339,7 +342,7 @@ public class PaymentResourceIT extends IntegrationTest {
     }
 
     @Test
-    public void createAPayment_shouldFail_whenDownstreamError() {
+    public void createAPayment_shouldFail_whenUpstreamError() {
         Product product = aProductEntity()
                 .withExternalId(randomUuid())
                 .withGatewayAccountId(0)
@@ -348,7 +351,8 @@ public class PaymentResourceIT extends IntegrationTest {
 
         databaseHelper.addProduct(product);
 
-        setupResponseToCreatePaymentRequest(product.getPayApiToken(), createErrorPayload("a-field", "a-code", "A description"), HttpStatus.SC_BAD_REQUEST);
+        setupResponseToCreatePaymentRequest(product.getPayApiToken(), 
+                createErrorPayload(null, "a-code", "A description"), SC_BAD_REQUEST);
 
         givenSetup()
                 .accept(APPLICATION_JSON)
@@ -356,7 +360,7 @@ public class PaymentResourceIT extends IntegrationTest {
                 .then()
                 .statusCode(500)
                 .body("errors", hasSize(1))
-                .body("errors[0]", is("Downstream system error."));
+                .body("errors[0]", is("Upstream system error."));
 
         List<Map<String, Object>> paymentRecords = databaseHelper.getPaymentsByProductExternalId(product.getExternalId());
 
@@ -383,7 +387,9 @@ public class PaymentResourceIT extends IntegrationTest {
 
         databaseHelper.addProduct(product);
 
-        setupResponseToCreatePaymentRequest(product.getPayApiToken(), createErrorPayload("a-field", CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE, "A description"), HttpStatus.SC_BAD_REQUEST);
+        setupResponseToCreatePaymentRequest(product.getPayApiToken(), 
+                createErrorPayload(null, CREATE_PAYMENT_CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR, "A description"), 
+                SC_BAD_REQUEST);
 
         Map<String, Object> payload = Map.of("reference_number", "4242424242424242", "price", 100);
         givenSetup()
@@ -394,7 +400,7 @@ public class PaymentResourceIT extends IntegrationTest {
                 .statusCode(400)
                 .body("errors", hasSize(1))
                 .body("error_identifier", is(CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_REJECTED.toString()))
-                .body("errors[0]", is("Downstream system error."));
+                .body("errors[0]", is("Upstream system error."));
 
         List<Map<String, Object>> paymentRecords = databaseHelper.getPaymentsByProductExternalId(product.getExternalId());
 

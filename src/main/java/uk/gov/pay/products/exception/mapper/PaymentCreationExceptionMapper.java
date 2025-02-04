@@ -1,5 +1,6 @@
 package uk.gov.pay.products.exception.mapper;
 
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.exception.PaymentCreationException;
@@ -9,42 +10,59 @@ import uk.gov.service.payments.commons.model.ErrorIdentifier;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.FORBIDDEN;
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static uk.gov.pay.products.util.PublicAPIErrorCodes.ACCOUNT_NOT_LINKED_WITH_PSP_ERROR_CODE;
-import static uk.gov.pay.products.util.PublicAPIErrorCodes.CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE;
+import static java.lang.String.format;
+import static uk.gov.pay.products.util.PublicAPIErrorCodes.ACCOUNT_NOT_LINKED_WITH_PSP;
+import static uk.gov.pay.products.util.PublicAPIErrorCodes.CREATE_PAYMENT_CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR;
+import static uk.gov.pay.products.util.PublicAPIErrorCodes.CREATE_PAYMENT_VALIDATION_ERROR;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.AMOUNT_BELOW_MINIMUM;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_REJECTED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.GENERIC;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.ZERO_AMOUNT_NOT_ALLOWED;
 
 public class PaymentCreationExceptionMapper implements ExceptionMapper<PaymentCreationException> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
-
+    
     @Override
     public Response toResponse(PaymentCreationException exception) {
         ErrorIdentifier errorIdentifier = GENERIC;
-        if (CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE.equals(exception.getErrorCode())) {
-            errorIdentifier = CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_REJECTED;
-            logger.info(PaymentCreationException.class.getName() + " thrown due to " + CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE);
-        } else if (ACCOUNT_NOT_LINKED_WITH_PSP_ERROR_CODE.equals(exception.getErrorCode())) {
-            logger.warn("PaymentCreationException thrown due to " + ACCOUNT_NOT_LINKED_WITH_PSP_ERROR_CODE + ". The account is not fully configured.");
-        } else {
-            logger.error("PaymentCreationException thrown.", exception);
+        
+        switch (exception.getErrorCode()) {
+            case ACCOUNT_NOT_LINKED_WITH_PSP -> 
+                logger.warn(format("PaymentCreationException thrown due to %s. The account is not fully configured.", 
+                        ACCOUNT_NOT_LINKED_WITH_PSP));
+            case CREATE_PAYMENT_CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR -> {
+                errorIdentifier = CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_REJECTED;
+                logger.info(format("%s thrown due to %s. Reason: %s", PaymentCreationException.class.getName(), 
+                        CREATE_PAYMENT_CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR, exception.getMessage()));
+            }
+            case CREATE_PAYMENT_VALIDATION_ERROR -> {
+                /* 
+                The following is rather dirty, but differentiating between the two cases requires deeper thinking
+                about amending the response from publicapi 
+                */
+                if (exception.getMessage().contains("Must be greater than or equal to 30")) {
+                    errorIdentifier = AMOUNT_BELOW_MINIMUM;
+                } else {
+                    errorIdentifier = ZERO_AMOUNT_NOT_ALLOWED;    
+                }
+                logger.info(format("%s thrown due to %s. Reason: %s", PaymentCreationException.class.getName(), 
+                        CREATE_PAYMENT_VALIDATION_ERROR, exception.getMessage()));
+            }
+            default -> logger.error("PaymentCreationException thrown.", exception);
         }
 
         return Response
                 .status(getStatus(exception))
-                .entity(Errors.from("Downstream system error.", errorIdentifier.toString()))
+                .entity(Errors.from("Upstream system error.", errorIdentifier.toString()))
                 .build();
     }
 
-    private Response.Status getStatus(PaymentCreationException exception) {
-        if (CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE.equals(exception.getErrorCode())) {
-            return BAD_REQUEST;
-        }
-
-        return exception.getErrorStatusCode() == FORBIDDEN.getStatusCode() ? FORBIDDEN : INTERNAL_SERVER_ERROR;
+    private int getStatus(PaymentCreationException exception) {
+        return switch (exception.getErrorCode()) {
+            case CREATE_PAYMENT_CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR -> HttpStatus.SC_BAD_REQUEST;
+            case CREATE_PAYMENT_VALIDATION_ERROR -> HttpStatus.SC_UNPROCESSABLE_ENTITY;
+            default -> exception.getErrorStatusCode() == HttpStatus.SC_FORBIDDEN ? HttpStatus.SC_FORBIDDEN : HttpStatus.SC_INTERNAL_SERVER_ERROR;
+        };
     }
 }

@@ -19,6 +19,11 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
+/**
+ * @deprecated See {@link uk.gov.pay.products.resources.CreatePaymentResourceIT}. That class's 
+ * stubPublicApiCreatePaymentResponse constructs a Map object and use an ObjectMapper to serialise it to a json string
+ * which is easier. It also uses junit5. 
+ */
 public class PublicApiStub {
     private static final String PAYMENTS_PATH = "/v1/payments";
     private static final String PAYMENT_PATH = PAYMENTS_PATH + "/%s";

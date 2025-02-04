@@ -50,7 +50,6 @@ public class ProductsApplication extends Application<ProductsConfiguration> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductsApplication.class);
     
     private static final boolean NON_STRICT_VARIABLE_SUBSTITUTOR = false;
-    private static final String SERVICE_METRICS_NODE = "pay-products";
     private static final int METRICS_COLLECTION_PERIOD_SECONDS = 30;
 
     @Override

@@ -29,7 +29,7 @@ import javax.inject.Inject;
 import static java.lang.String.format;
 import static net.logstash.logback.argument.StructuredArguments.kv;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static uk.gov.pay.products.util.PublicAPIErrorCodes.CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE;
+import static uk.gov.pay.products.util.PublicAPIErrorCodes.CREATE_PAYMENT_CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUserFriendlyReference;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 import static uk.gov.service.payments.logging.LoggingKeys.PAYMENT_EXTERNAL_ID;
@@ -68,13 +68,14 @@ public class PaymentCreator {
                 .complete().get(PaymentEntity.class);
 
         if (paymentEntity.getStatus() == PaymentStatus.ERROR) {
-            if (CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR_CODE.equals(paymentEntity.getErrorCode())) {
+            if (CREATE_PAYMENT_CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR.equals(paymentEntity.getErrorCode())) {
                 paymentFactory.paymentUpdater().redactReferenceByExternalId(paymentEntity.getExternalId());
             }
 
             throw new PaymentCreationException(paymentEntity.getProductEntity().getExternalId(),
                     paymentEntity.getErrorStatusCode(),
-                    paymentEntity.getErrorCode());
+                    paymentEntity.getErrorCode(),
+                    paymentEntity.getErrorDescription());
         }
         return linksDecorator.decorate(paymentEntity.toPayment());
     }
@@ -155,6 +156,7 @@ public class PaymentCreator {
                 paymentEntity.setStatus(PaymentStatus.ERROR);
                 paymentEntity.setErrorStatusCode(e.getErrorStatus());
                 paymentEntity.setErrorCode(e.getCode());
+                paymentEntity.setErrorDescription(e.getDescription());
             }
 
             return paymentEntity;

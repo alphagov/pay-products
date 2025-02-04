@@ -6,7 +6,8 @@ public class PaymentCreationException extends RuntimeException {
     private final int errorStatusCode;
     private final String errorCode;
 
-    public PaymentCreationException(String productExternalId, int errorStatusCode, String errorCode) {
+    public PaymentCreationException(String productExternalId, int errorStatusCode, String errorCode, String errorDescription) {
+        super(errorDescription);
         this.productExternalId = productExternalId;
         this.errorStatusCode = errorStatusCode;
         this.errorCode = errorCode;
@@ -22,5 +23,15 @@ public class PaymentCreationException extends RuntimeException {
 
     public String getErrorCode() {
         return errorCode;
+    }
+
+    @Override
+    public String toString() {
+        return "PaymentCreationException{" +
+                "productExternalId='" + productExternalId + '\'' +
+                ", errorStatusCode=" + errorStatusCode +
+                ", errorCode='" + errorCode + '\'' +
+                ", message='" + getMessage() + '\'' +
+                '}';
     }
 }

@@ -1,5 +1,6 @@
 package uk.gov.pay.products.exception.mapper;
 
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.exception.PaymentCreationException;
@@ -10,7 +11,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
 import static java.lang.String.format;
-import static org.apache.http.HttpStatus.*;
 import static uk.gov.pay.products.util.PublicAPIErrorCodes.ACCOUNT_NOT_LINKED_WITH_PSP;
 import static uk.gov.pay.products.util.PublicAPIErrorCodes.CREATE_PAYMENT_CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR;
 import static uk.gov.pay.products.util.PublicAPIErrorCodes.CREATE_PAYMENT_VALIDATION_ERROR;
@@ -60,9 +60,9 @@ public class PaymentCreationExceptionMapper implements ExceptionMapper<PaymentCr
 
     private int getStatus(PaymentCreationException exception) {
         return switch (exception.getErrorCode()) {
-            case CREATE_PAYMENT_CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR -> SC_BAD_REQUEST;
-            case CREATE_PAYMENT_VALIDATION_ERROR -> SC_UNPROCESSABLE_ENTITY;
-            default -> exception.getErrorStatusCode() == SC_FORBIDDEN ? SC_FORBIDDEN : SC_INTERNAL_SERVER_ERROR;
+            case CREATE_PAYMENT_CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR -> HttpStatus.SC_BAD_REQUEST;
+            case CREATE_PAYMENT_VALIDATION_ERROR -> HttpStatus.SC_UNPROCESSABLE_ENTITY;
+            default -> exception.getErrorStatusCode() == HttpStatus.SC_FORBIDDEN ? HttpStatus.SC_FORBIDDEN : HttpStatus.SC_INTERNAL_SERVER_ERROR;
         };
     }
 }

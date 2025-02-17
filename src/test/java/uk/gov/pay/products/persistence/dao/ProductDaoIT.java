@@ -2,6 +2,7 @@ package uk.gov.pay.products.persistence.dao;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.fixtures.ProductMetadataEntityFixture;
@@ -32,6 +33,11 @@ public class ProductDaoIT extends DaoTestBase {
     private ProductDao productDao;
     private ProductMetadataDao productMetadataDao;
 
+    @BeforeClass
+    public static void beforeClass() {
+        databaseHelper.truncateAllData();
+    }
+    
     @Before
     public void before() {
         productDao = env.getInstance(ProductDao.class);
@@ -317,5 +323,43 @@ public class ProductDaoIT extends DaoTestBase {
         assertThat(filteredUsageStats.size(), is(1));
         assertThat(filteredUsageStats.get(0).getPaymentCount(), is(1L));
         assertThat(filteredUsageStats.get(0).getProduct().getExternalId(), is(secondProductEntity.getExternalId()));
+    }
+    
+    @Test
+    public void findUnusedProducts_shouldReturnUnusedProducts () {
+        ZonedDateTime now = ZonedDateTime.parse("2020-04-01T12:05:05.073Z");
+        ProductEntity unusedProductEntity = ProductEntityFixture.aProductEntity()
+                .withExternalId(randomUuid())
+                .withType(ProductType.ADHOC)
+                .withGatewayAccountId(1)
+                .build();
+        ProductEntity secondUnusedProductEntity = ProductEntityFixture.aProductEntity()
+                .withExternalId(randomUuid())
+                .withType(ProductType.ADHOC)
+                .withGatewayAccountId(2)
+                .build();
+        ProductEntity usedProductEntity = ProductEntityFixture.aProductEntity()
+                .withExternalId(randomUuid())
+                .withType(ProductType.DEMO)
+                .withGatewayAccountId(1)
+                .build();
+
+        unusedProductEntity = productDao.merge(unusedProductEntity);
+        secondUnusedProductEntity = productDao.merge(secondUnusedProductEntity);
+        usedProductEntity = productDao.merge(usedProductEntity);
+
+        addPaymentToDB(createPaymentEntity(usedProductEntity, now, 0));
+
+        List<ProductUsageStat> usageStats = productDao.findUnusedProductsQuery(null);
+        List<ProductUsageStat> filteredUsageStats = productDao.findUnusedProductsQuery(2);
+
+        // used product is ignored resulting in only two products reported on
+        assertThat(usageStats.size(), is(2));
+        assertThat(usageStats.get(0).getPaymentCount(), is(0L));
+        assertThat(usageStats.get(1).getPaymentCount(), is(0L));
+
+        assertThat(filteredUsageStats.size(), is(1));
+        assertThat(filteredUsageStats.get(0).getPaymentCount(), is(0L));
+        assertThat(filteredUsageStats.get(0).getProduct().getExternalId(), is(secondUnusedProductEntity.getExternalId()));
     }
 }

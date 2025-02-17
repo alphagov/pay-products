@@ -342,12 +342,16 @@ public class ProductResource {
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ProductUsageStat.class))))
             }
     )
-    public Response findProductsAndStats(@Parameter(example = "1") @QueryParam("gatewayAccountId") Integer gatewayAccountId) {
+    public Response findProductsAndStats(@Parameter(example = "1") @QueryParam("gatewayAccountId") Integer gatewayAccountId, 
+            @Parameter(example = "false") @QueryParam("used") Boolean used) {
         logger.info(
                 format("Listing usage stats on all non-prototype payment links for gateway account [%s=%s]", GATEWAY_ACCOUNT_ID, gatewayAccountId),
                 kv(GATEWAY_ACCOUNT_ID, gatewayAccountId)
         );
-        List<ProductUsageStat> usageStats = productFactory.productFinder().findProductsAndUsage(gatewayAccountId);
+        List<ProductUsageStat> usageStats = used == null || used ?
+                productFactory.productFinder().findProductsAndUsage(gatewayAccountId): 
+                productFactory.productFinder().findUnusedProducts(gatewayAccountId);
+                        
         return Response.status(OK).entity(usageStats).build();
     }
 

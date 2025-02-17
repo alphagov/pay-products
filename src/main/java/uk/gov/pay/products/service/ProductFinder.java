@@ -122,4 +122,12 @@ public class ProductFinder {
                 .peek(productUsageStat -> productUsageStat.setProduct(linksDecorator.decorate(productUsageStat.getProduct())))
                 .collect(Collectors.toUnmodifiableList());
     }
+
+    @Transactional
+    public List<ProductUsageStat> findUnusedProducts(Integer gatewayAccountId) {
+        return productDao.findUnusedProducts(gatewayAccountId)
+                .stream()
+                .peek(productUsageStat -> productUsageStat.setProduct(linksDecorator.decorate(productUsageStat.getProduct())))
+                .collect(Collectors.toUnmodifiableList());
+    }
 }

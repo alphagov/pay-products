@@ -116,4 +116,33 @@ public class ProductDao extends JpaDao<ProductEntity> {
         }
         return queryBuilder.getResultList();
     }
+
+    public List<ProductUsageStat> findUnusedProducts(Integer gatewayAccountId) {
+        return findUnusedProductsQuery(gatewayAccountId);
+    }
+
+    public List<ProductUsageStat> findUnusedProductsQuery(Integer gatewayAccountId) {
+        boolean shouldFilterGatewayAccount = gatewayAccountId != null;
+
+        String conditionalFilter = shouldFilterGatewayAccount ?
+                "AND product.gateway_account_id = ?1 " :
+                "";
+
+        String query = "SELECT product.* FROM products product " +
+                "LEFT JOIN payments payment ON product.id = payment.product_id " +
+                "WHERE payment.product_id IS NULL " +
+                conditionalFilter;
+
+        var queryBuilder = entityManager.get()
+                .createNativeQuery(query, ProductEntity.class);
+
+        if (shouldFilterGatewayAccount) {
+            queryBuilder = queryBuilder.setParameter(1, gatewayAccountId);
+        }
+        
+        return queryBuilder
+                .getResultStream()
+                .map(product -> new ProductUsageStat(0L, null, (ProductEntity) product))
+                .toList();
+    }
 }

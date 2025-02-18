@@ -406,6 +406,11 @@ paths:
         schema:
           type: integer
           format: int32
+      - example: false
+        in: query
+        name: used
+        schema:
+          type: boolean
       responses:
         "200":
           content:

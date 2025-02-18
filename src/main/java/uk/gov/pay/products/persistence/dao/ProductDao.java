@@ -139,9 +139,10 @@ public class ProductDao extends JpaDao<ProductEntity> {
         if (shouldFilterGatewayAccount) {
             queryBuilder = queryBuilder.setParameter(1, gatewayAccountId);
         }
-
-        List<ProductEntity> products = queryBuilder.getResultList();
-
-        return products.stream().map(product -> new ProductUsageStat(0L, null, product)).toList();
+        
+        return queryBuilder
+                .getResultStream()
+                .map(product -> new ProductUsageStat(0L, null, (ProductEntity) product))
+                .toList();
     }
 }

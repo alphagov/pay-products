@@ -9,11 +9,11 @@ import uk.gov.pay.products.exception.FailToGetNewApiTokenException;
 import uk.gov.pay.products.exception.FailToReplaceApiTokenException;
 import uk.gov.pay.products.model.Product;
 
-import javax.inject.Inject;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.Optional;
 
 import static uk.gov.pay.products.client.publicauth.model.TokenSource.PRODUCTS;

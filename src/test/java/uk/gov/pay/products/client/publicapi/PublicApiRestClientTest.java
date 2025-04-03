@@ -12,8 +12,8 @@ import uk.gov.pay.products.stubs.publicapi.PublicApiStub;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.testing.port.PortFactory;
 
-import javax.json.JsonObject;
-import javax.ws.rs.client.Client;
+import jakarta.json.JsonObject;
+import jakarta.ws.rs.client.Client;
 import java.util.Map;
 import java.util.Optional;
 

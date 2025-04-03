@@ -7,8 +7,8 @@ import uk.gov.pay.products.exception.PaymentCreationException;
 import uk.gov.pay.products.util.Errors;
 import uk.gov.service.payments.commons.model.ErrorIdentifier;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
 
 import static java.lang.String.format;
 import static uk.gov.pay.products.util.PublicAPIErrorCodes.ACCOUNT_NOT_LINKED_WITH_PSP;

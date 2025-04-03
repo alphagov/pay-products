@@ -1,6 +1,6 @@
 package uk.gov.pay.products.matchers;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -11,7 +11,7 @@ import uk.gov.pay.products.client.publicapi.model.PaymentState;
 import uk.gov.pay.products.client.publicapi.model.RefundSummary;
 import uk.gov.pay.products.client.publicapi.model.SettlementSummary;
 
-import javax.json.JsonObject;
+import jakarta.json.JsonObject;
 
 public class PaymentResponseMatcher {
     public static Matcher<PaymentResponse> hasAllPaymentProperties(final JsonObject expectedPaymentResponse) {

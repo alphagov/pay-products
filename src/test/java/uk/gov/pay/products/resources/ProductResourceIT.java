@@ -2,6 +2,8 @@ package uk.gov.pay.products.resources;
 
 import com.google.common.collect.ImmutableMap;
 import io.restassured.response.ValidatableResponse;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import org.junit.Test;
 import uk.gov.pay.products.fixtures.ProductEntityFixture;
 import uk.gov.pay.products.model.Product;
@@ -11,10 +13,9 @@ import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.core.Response;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,9 +27,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
-import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
+import static jakarta.ws.rs.core.HttpHeaders.CONTENT_TYPE;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;

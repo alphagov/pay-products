@@ -19,7 +19,7 @@ import uk.gov.pay.products.service.ProductFinder;
 import uk.gov.pay.products.validations.ProductRequestValidator;
 import uk.gov.pay.products.validations.RequestValidations;
 
-import javax.ws.rs.client.Client;
+import jakarta.ws.rs.client.Client;
 import java.time.InstantSource;
 import java.util.Properties;
 
@@ -65,13 +65,13 @@ public class ProductsModule extends AbstractModule {
     private JpaPersistModule jpaModule(ProductsConfiguration configuration) {
         DataSourceFactory dbConfig = configuration.getDataSourceFactory();
         final Properties properties = new Properties();
-        properties.put("javax.persistence.jdbc.driver", dbConfig.getDriverClass());
-        properties.put("javax.persistence.jdbc.url", dbConfig.getUrl());
+        properties.put("jakarta.persistence.jdbc.driver", dbConfig.getDriverClass());
+        properties.put("jakarta.persistence.jdbc.url", dbConfig.getUrl());
         if (dbConfig.getUser() != null) {
-            properties.put("javax.persistence.jdbc.user", dbConfig.getUser());
+            properties.put("jakarta.persistence.jdbc.user", dbConfig.getUser());
         }
         if (dbConfig.getPassword() != null) {
-            properties.put("javax.persistence.jdbc.password", dbConfig.getPassword());
+            properties.put("jakarta.persistence.jdbc.password", dbConfig.getPassword());
         }
 
         JPAConfiguration jpaConfiguration = configuration.getJpaConfiguration();

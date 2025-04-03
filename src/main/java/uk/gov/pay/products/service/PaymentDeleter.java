@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.config.ExpungeHistoricalDataConfig;
 import uk.gov.pay.products.persistence.dao.PaymentDao;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.time.InstantSource;
 import java.time.temporal.ChronoUnit;
 

@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import uk.gov.pay.products.persistence.entity.PaymentEntity;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.List;

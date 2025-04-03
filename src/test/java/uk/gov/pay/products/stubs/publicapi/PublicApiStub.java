@@ -2,9 +2,9 @@ package uk.gov.pay.products.stubs.publicapi;
 
 import org.apache.http.HttpStatus;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -15,9 +15,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static java.lang.String.format;
-import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static jakarta.ws.rs.core.HttpHeaders.CONTENT_TYPE;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
  * @deprecated See {@link uk.gov.pay.products.resources.CreatePaymentResourceIT}. That class's 

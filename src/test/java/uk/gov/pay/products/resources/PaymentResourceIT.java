@@ -6,6 +6,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
 import io.restassured.response.ValidatableResponse;
+import jakarta.ws.rs.HttpMethod;
 import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,16 +18,15 @@ import uk.gov.pay.products.persistence.entity.ProductEntity;
 import uk.gov.pay.products.util.RandomIdGenerator;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 
-import javax.ws.rs.HttpMethod;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
+import static jakarta.ws.rs.core.Response.Status.OK;
 import static java.lang.String.format;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static javax.ws.rs.core.Response.Status.OK;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
@@ -46,12 +46,10 @@ import static uk.gov.pay.products.stubs.publicapi.PublicApiStub.setupResponseToC
 import static uk.gov.pay.products.util.PaymentStatus.CREATED;
 import static uk.gov.pay.products.util.PublicAPIErrorCodes.ACCOUNT_NOT_LINKED_WITH_PSP;
 import static uk.gov.pay.products.util.PublicAPIErrorCodes.CREATE_PAYMENT_CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR;
-import static uk.gov.pay.products.util.PublicAPIErrorCodes.CREATE_PAYMENT_VALIDATION_ERROR;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
 import static uk.gov.pay.products.utils.TestHelpers.createPaymentEntity;
 import static uk.gov.pay.products.utils.TestHelpers.createProductEntity;
-import static uk.gov.service.payments.commons.model.ErrorIdentifier.AMOUNT_BELOW_MINIMUM;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_REJECTED;
 
 public class PaymentResourceIT extends IntegrationTest {

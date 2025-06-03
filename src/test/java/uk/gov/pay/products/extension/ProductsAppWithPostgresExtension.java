@@ -4,6 +4,8 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.dropwizard.testing.junit5.DropwizardAppExtension;
+import io.restassured.specification.RequestSpecification;
+import org.jdbi.v3.core.Jdbi;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -16,6 +18,7 @@ import uk.gov.pay.products.ProductsApplication;
 import uk.gov.pay.products.config.PersistenceServiceInitialiser;
 import uk.gov.pay.products.config.ProductsConfiguration;
 import uk.gov.pay.products.config.ProductsModule;
+import uk.gov.pay.products.utils.DatabaseTestHelper;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -23,6 +26,8 @@ import java.sql.SQLException;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
+import static io.restassured.RestAssured.given;
+import static io.restassured.http.ContentType.JSON;
 import static java.sql.DriverManager.getConnection;
 
 public class ProductsAppWithPostgresExtension implements BeforeEachCallback, BeforeAllCallback, AfterEachCallback, AfterAllCallback {
@@ -34,20 +39,20 @@ public class ProductsAppWithPostgresExtension implements BeforeEachCallback, Bef
     
     private final DropwizardAppExtension<ProductsConfiguration> dropwizardAppExtension;
     public final WireMockServer publicApi = new WireMockServer(wireMockConfig().dynamicPort().bindAddress("localhost"));
-    public final WireMockServer publicAuth = new WireMockServer(wireMockConfig().dynamicPort().bindAddress("localhost"));
     private Injector injector;
+    private static final Jdbi jdbi;
+    private static final DatabaseTestHelper databaseTestHelper;
 
     public ProductsAppWithPostgresExtension() {
         publicApi.start();
-        publicAuth.start();
         this.dropwizardAppExtension = new DropwizardAppExtension<>(
                 ProductsApplication.class,
                 resourceFilePath("config/test-it-config.yaml"),
                 config("database.url", postgresContainer.getJdbcUrl()),
                 config("database.user", DB_USERNAME),
                 config("database.password", DB_PASSWORD),
-                config("publicApiUrl", "http://localhost:" + publicApi.port()),
-                config("publicAuthUrl", "http://localhost:" + publicAuth.port()));
+                config("publicApiUrl", "http://localhost:" + publicApi.port())
+        );
 
         try {
             // starts dropwizard application. This is required as we don't use DropwizardExtensionsSupport (which starts application)
@@ -70,14 +75,12 @@ public class ProductsAppWithPostgresExtension implements BeforeEachCallback, Bef
     public void afterAll(ExtensionContext context) throws Exception {
         if (context.getRequiredTestClass().getEnclosingClass() == null) {
             publicApi.stop();
-            publicAuth.stop();
             dropwizardAppExtension.after();
         }
     }
 
     @Override
     public void afterEach(ExtensionContext context) throws Exception {
-        publicAuth.resetAll();
         publicApi.resetAll();
     }
 
@@ -94,6 +97,15 @@ public class ProductsAppWithPostgresExtension implements BeforeEachCallback, Bef
 
     public int getPort() {
         return dropwizardAppExtension.getLocalPort();
+    }
+    
+    public RequestSpecification givenSetup () {
+        return given().port(this.getPort())
+                .contentType(JSON);
+    }
+    
+    public DatabaseTestHelper getDatabaseTestHelper () {
+        return databaseTestHelper;
     }
 
     static {
@@ -113,5 +125,8 @@ public class ProductsAppWithPostgresExtension implements BeforeEachCallback, Bef
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
+        jdbi = Jdbi.create(postgresContainer.getJdbcUrl(), DB_USERNAME, DB_PASSWORD);
+        databaseTestHelper = new DatabaseTestHelper(jdbi);
     }
 }

@@ -16,7 +16,6 @@ import uk.gov.pay.products.model.Product;
 import uk.gov.pay.products.model.ProductUpdateRequest;
 import uk.gov.pay.products.model.ProductUsageStat;
 import uk.gov.pay.products.model.product.CreateProductRequest;
-import uk.gov.pay.products.service.ProductApiTokenManager;
 import uk.gov.pay.products.service.ProductFactory;
 import uk.gov.pay.products.util.ProductType;
 import uk.gov.pay.products.validations.ProductRequestValidator;
@@ -53,15 +52,12 @@ public class ProductResource {
 
     private final ProductRequestValidator requestValidator;
     private final ProductFactory productFactory;
-    private final ProductApiTokenManager productApiTokenManager;
 
     @Inject
     public ProductResource(ProductRequestValidator requestValidator,
-                           ProductFactory productFactory,
-                           ProductApiTokenManager productApiTokenManager) {
+                           ProductFactory productFactory) {
         this.requestValidator = requestValidator;
         this.productFactory = productFactory;
-        this.productApiTokenManager = productApiTokenManager;
     }
 
     @POST
@@ -353,25 +349,5 @@ public class ProductResource {
                 productFactory.productFinder().findUnusedProducts(gatewayAccountId);
                         
         return Response.status(OK).entity(usageStats).build();
-    }
-
-    @POST
-    @Path("/v1/api/products/{productExternalId}/regenerate-api-token")
-    @Produces(APPLICATION_JSON)
-    @Consumes(APPLICATION_JSON)
-    @Operation(
-            tags = {"Products"},
-            description = "Gets a new API token from Public Auth application and replaces the old API token with the new token if the product exists",
-            summary = "Regenerate API token",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK"),
-                    @ApiResponse(responseCode = "404", description = "Not found"),
-            }
-    )
-    public Response regenerateProductApiToken(@Parameter(example = "874h5c87834659q345698495") @PathParam("productExternalId") String productExternalId) {
-        return productFactory.productFinder().findByExternalId(productExternalId).map((product) -> {
-            productApiTokenManager.replaceApiTokenForAProduct(product, productApiTokenManager.getNewApiTokenFromPublicAuth(product));
-            return Response.ok().build();
-        }).orElseGet(() -> Response.status(NOT_FOUND).build());
     }
 }

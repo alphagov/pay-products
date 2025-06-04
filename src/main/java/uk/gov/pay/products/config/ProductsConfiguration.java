@@ -31,9 +31,6 @@ public class ProductsConfiguration extends Configuration {
     private String publicApiUrl;
 
     @NotNull
-    private String publicAuthUrl;
-
-    @NotNull
     private String productsUiPayUrl;
 
     @NotNull
@@ -76,10 +73,6 @@ public class ProductsConfiguration extends Configuration {
 
     public String getPublicApiUrl() {
         return publicApiUrl;
-    }
-
-    public String getPublicAuthUrl() {
-        return publicAuthUrl;
     }
 
     public String getProductsUiPayUrl() {

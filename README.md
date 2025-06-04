@@ -32,7 +32,6 @@ The [API Specification](openapi/products_spec.yaml) provides more detail on the 
 | `PRODUCTSUI_PAY_URL`                      | The URL of the `pay` endpoint in the [products-ui](https://github.com/alphagov/pay-products-ui) microservice.             |
 | `PRODUCTS_FRIENDLY_BASE_URI`              | The URL of the products endpoint in the [products-ui](https://github.com/alphagov/pay-products-ui) microservice.          |
 | `PUBLICAPI_URL`                           | The URL to the [publicapi](https://github.com/alphagov/pay-publicapi) microservice                                        |
-| `PUBLICAUTH_URL`                          | The URL to the [publicauth](https://github.com/alphagov/pay-publicauth) microservice                                      |
 | `EMAIL_ADDRESS_FOR_REPLACING_API_TOKENS`  | The email address used in a request to Public Auth application for generating an API token.                               |
 | `RUN_APP`                                 | Set to `true` to run the application. Defaults to `true`.                                                                 |
 | `RUN_MIGRATION`                           | Set to `true` to run a database migration. Defaults to `false`.                                                           |

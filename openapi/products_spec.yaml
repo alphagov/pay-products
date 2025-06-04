@@ -376,26 +376,6 @@ paths:
       summary: Creates new payment for a given product
       tags:
       - Payments
-  /v1/api/products/{productExternalId}/regenerate-api-token:
-    post:
-      description: Gets a new API token from Public Auth application and replaces
-        the old API token with the new token if the product exists
-      operationId: regenerateProductApiToken
-      parameters:
-      - example: 874h5c87834659q345698495
-        in: path
-        name: productExternalId
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-        "404":
-          description: Not found
-      summary: Regenerate API token
-      tags:
-      - Products
   /v1/api/stats/products:
     get:
       operationId: findProductsAndStats

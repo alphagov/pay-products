@@ -13,7 +13,6 @@ import uk.gov.pay.products.client.publicapi.PublicApiRestClient;
 import uk.gov.pay.products.service.LinksDecorator;
 import uk.gov.pay.products.service.PaymentFactory;
 import uk.gov.pay.products.service.PaymentFinder;
-import uk.gov.pay.products.service.ProductApiTokenManager;
 import uk.gov.pay.products.service.ProductFactory;
 import uk.gov.pay.products.service.ProductFinder;
 import uk.gov.pay.products.validations.ProductRequestValidator;
@@ -52,7 +51,6 @@ public class ProductsModule extends AbstractModule {
                         configuration.getFriendlyBaseUri()));
         bind(ProductFinder.class).in(Singleton.class);
         bind(PaymentFinder.class).in(Singleton.class);
-        bind(ProductApiTokenManager.class).in(Singleton.class);
 
         bind(PublicApiRestClient.class).toInstance(
                 new PublicApiRestClient(client, configuration.getPublicApiUrl()));

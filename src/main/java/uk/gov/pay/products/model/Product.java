@@ -15,7 +15,6 @@ import uk.gov.service.payments.commons.api.json.IsoInstantMillisecondSerializer;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -103,7 +102,7 @@ public class Product {
     @JsonIgnore
     private List<ProductMetadata> metadata;
     @JsonSerialize(using = IsoInstantMillisecondSerializer.class)
-    private Instant dateCreated;
+    private final Instant dateCreated;
 
     public Product(String externalId,
                    String name,

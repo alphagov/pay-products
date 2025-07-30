@@ -2,8 +2,6 @@ package uk.gov.pay.products.resources;
 
 import io.restassured.response.ValidatableResponse;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.hamcrest.Matcher;
-import org.hamcrest.core.CombinableMatcher;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -18,9 +16,6 @@ import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import jakarta.ws.rs.HttpMethod;
 
-import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.time.chrono.ChronoZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,12 +24,9 @@ import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
@@ -1392,9 +1384,5 @@ public class ProductResourceIT {
                     .body("size()", is(1))
                     .body("[0].product.external_id", is(product.getExternalId()));
         }
-    }
-
-    private CombinableMatcher<ChronoZonedDateTime<?>> isCloseTo(ZonedDateTime now) {
-        return both(greaterThan(now.minusSeconds(30))).and(lessThan(now.plusSeconds(30)));
     }
 }

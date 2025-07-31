@@ -11,10 +11,10 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
-import uk.gov.service.payments.commons.api.json.IsoInstantMillisecondSerializer;
+import uk.gov.service.payments.commons.api.json.ApiResponseDateTimeSerializer;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 
-import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -101,8 +101,8 @@ public class Product {
     private final Boolean requireCaptcha;
     @JsonIgnore
     private List<ProductMetadata> metadata;
-    @JsonSerialize(using = IsoInstantMillisecondSerializer.class)
-    private final Instant dateCreated;
+    @JsonSerialize(using = ApiResponseDateTimeSerializer.class)
+    private final ZonedDateTime dateCreated;
 
     public Product(String externalId,
                    String name,
@@ -141,7 +141,7 @@ public class Product {
             SupportedLanguage language,
             Boolean requireCaptcha,
             List<ProductMetadata> metadata,
-            Instant dateCreated) {
+            ZonedDateTime dateCreated) {
         this.externalId = externalId;
         this.name = name;
         this.description = description;

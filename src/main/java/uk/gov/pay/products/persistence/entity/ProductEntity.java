@@ -271,7 +271,7 @@ public class ProductEntity extends AbstractEntity {
                         .stream()
                         .map(ProductMetadata::from)
                         .collect(Collectors.toList()),
-                this.dateCreated.toInstant());
+                this.dateCreated);
     }
 
     public Map<String, String> toProductMetadataMap() {

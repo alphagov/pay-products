@@ -27,12 +27,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static uk.gov.pay.products.fixtures.PaymentEntityFixture.aPaymentEntity;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
+import static uk.gov.service.payments.commons.model.CommonDateTimeFormatters.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class ProductResourceIT {
 
@@ -516,7 +516,7 @@ public class ProductResourceIT {
                     .body(DESCRIPTION, is(product.getDescription()))
                     .body(RETURN_URL, is(product.getReturnUrl()))
                     .body(LANGUAGE, is("en"))
-                    .body(DATE_CREATED, is(notNullValue()));
+                    .body(DATE_CREATED, is(app.getDatabaseTestHelper().getFixedDateTime().format(ISO_INSTANT_MILLISECOND_PRECISION)));
 
             String productsUrl = "https://products.url/v1/api/products/";
             String productsUIPayUrl = "https://products-ui.url/pay/";

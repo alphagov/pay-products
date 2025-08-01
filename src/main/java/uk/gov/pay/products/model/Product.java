@@ -11,8 +11,10 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.products.util.ProductStatus;
 import uk.gov.pay.products.util.ProductType;
+import uk.gov.service.payments.commons.api.json.ApiResponseDateTimeSerializer;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -99,6 +101,8 @@ public class Product {
     private final Boolean requireCaptcha;
     @JsonIgnore
     private List<ProductMetadata> metadata;
+    @JsonSerialize(using = ApiResponseDateTimeSerializer.class)
+    private final ZonedDateTime dateCreated;
 
     public Product(String externalId,
                    String name,
@@ -115,7 +119,7 @@ public class Product {
                    List<ProductMetadata> metadata) {
         this(externalId, name, description, payApiToken, price, status, gatewayAccountId, type, returnUrl,
                 serviceNamePath, productNamePath, false, null, null,
-                null, language, false, metadata);
+                null, language, false, metadata, null);
     }
 
     public Product(
@@ -136,7 +140,8 @@ public class Product {
             String amountHint,
             SupportedLanguage language,
             Boolean requireCaptcha,
-            List<ProductMetadata> metadata) {
+            List<ProductMetadata> metadata,
+            ZonedDateTime dateCreated) {
         this.externalId = externalId;
         this.name = name;
         this.description = description;
@@ -155,6 +160,7 @@ public class Product {
         this.language = language;
         this.requireCaptcha = requireCaptcha;
         this.metadata = metadata;
+        this.dateCreated = dateCreated;
     }
 
     public static Product from(JsonNode jsonPayload) {
@@ -180,7 +186,7 @@ public class Product {
 
         return new Product(externalId, name, description, payApiToken, price, ProductStatus.ACTIVE, gatewayAccountId,
                 type, returnUrl, serviceNamePath, productNamePath, referenceEnabled, referenceLabel, referenceHint,
-                amountHint, language, false, metadataList);
+                amountHint, language, false, metadataList, null);
     }
 
     public String getName() {

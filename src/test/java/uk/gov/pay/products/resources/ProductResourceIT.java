@@ -32,6 +32,7 @@ import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static uk.gov.pay.products.fixtures.PaymentEntityFixture.aPaymentEntity;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomInt;
 import static uk.gov.pay.products.util.RandomIdGenerator.randomUuid;
+import static uk.gov.service.payments.commons.model.CommonDateTimeFormatters.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class ProductResourceIT {
 
@@ -52,11 +53,12 @@ public class ProductResourceIT {
     private static final String LANGUAGE = "language";
     private static final String METADATA = "metadata";
     private static final String REQUIRE_CAPTCHA = "require_captcha";
+    private static final String DATE_CREATED = "date_created";
     private static final RandomStringUtils randomStringUtils = RandomStringUtils.insecure();
 
     @RegisterExtension
     private static final ProductsAppWithPostgresExtension app = new ProductsAppWithPostgresExtension();
-    
+
     @Nested
     class CreateProduct {
 
@@ -513,7 +515,8 @@ public class ProductResourceIT {
                     .body(TYPE, is(product.getType().name()))
                     .body(DESCRIPTION, is(product.getDescription()))
                     .body(RETURN_URL, is(product.getReturnUrl()))
-                    .body(LANGUAGE, is("en"));
+                    .body(LANGUAGE, is("en"))
+                    .body(DATE_CREATED, is(app.getDatabaseTestHelper().getFixedDateTime().format(ISO_INSTANT_MILLISECOND_PRECISION)));
 
             String productsUrl = "https://products.url/v1/api/products/";
             String productsUIPayUrl = "https://products-ui.url/pay/";
@@ -1381,5 +1384,5 @@ public class ProductResourceIT {
                     .body("size()", is(1))
                     .body("[0].product.external_id", is(product.getExternalId()));
         }
-    }    
+    }
 }

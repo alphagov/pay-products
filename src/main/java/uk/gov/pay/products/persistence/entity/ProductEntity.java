@@ -270,7 +270,8 @@ public class ProductEntity extends AbstractEntity {
                 this.metadataEntityList == null ? null : this.metadataEntityList
                         .stream()
                         .map(ProductMetadata::from)
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList()),
+                this.dateCreated);
     }
 
     public Map<String, String> toProductMetadataMap() {

@@ -4,9 +4,14 @@ import org.jdbi.v3.core.Jdbi;
 import uk.gov.pay.products.model.Payment;
 import uk.gov.pay.products.model.Product;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static java.time.ZoneOffset.UTC;
 
 public class DatabaseTestHelper {
 
@@ -21,12 +26,12 @@ public class DatabaseTestHelper {
                 "(external_id, name, description, pay_api_token, price, " +
                 "status, return_url, type, gateway_account_id, " +
                 "service_name_path, product_name_path, reference_enabled, " +
-                "reference_label, reference_hint, language, require_captcha) " +
+                "reference_label, reference_hint, language, require_captcha, date_created) " +
                 "VALUES " +
                 "(:external_id, :name, :description, :pay_api_token, :price, " +
                 ":status, :return_url, :type, :gateway_account_id, " +
                 ":service_name_path, :product_name_path, :reference_enabled, " +
-                ":reference_label, :reference_hint, :language, :require_captcha" +
+                ":reference_label, :reference_hint, :language, :require_captcha, :date_created" +
                 ")")
                 .bind("external_id", product.getExternalId())
                 .bind("name", product.getName())
@@ -44,8 +49,14 @@ public class DatabaseTestHelper {
                 .bind("reference_hint", product.getReferenceHint())
                 .bind("language", product.getLanguage().toString())
                 .bind("require_captcha", product.isRequireCaptcha())
+                .bind("date_created", getFixedDateTime())
                 .execute());
 
+    }
+
+    public ZonedDateTime getFixedDateTime() {
+        Clock clock = Clock.fixed(Instant.parse("2025-01-01T10:00:00.00Z"), UTC);
+        return ZonedDateTime.ofInstant(clock.instant(), UTC);
     }
 
     public void addPayment(Payment payment, Integer gatewayAccountId) {

@@ -616,6 +616,9 @@ components:
         amount_hint:
           type: string
           example: Enter an amount in multiples of £2 for the number of permits required
+        date_created:
+          type: string
+          format: date-time
         description:
           type: string
           example: Description of the product

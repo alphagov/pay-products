@@ -141,7 +141,7 @@
         <dependency>
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
-            <version>1.10.0</version>
+            <version>1.10.1</version>
         </dependency>
 
         <!-- Test dependencies that are imported from one of the BOMs specified

@@ -8,6 +8,8 @@ import uk.gov.pay.products.util.ProductType;
 
 import java.util.Map;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 /**
  * Class for OpenAPI specs only. Currently create product resource uses JsonNode payload which can potentially be replaced by this class.
  */
@@ -15,20 +17,20 @@ import java.util.Map;
 public class CreateProductRequest {
 
     @JsonProperty("gateway_account_id")
-    @Schema(example = "1", required = true, description = "gateway account id of the Gateway Account as identified by adminusers.")
+    @Schema(example = "1", requiredMode = REQUIRED, description = "gateway account id of the Gateway Account as identified by adminusers.")
     private String gatewayAccountId;
 
     @JsonProperty("pay_api_token")
-    @Schema(example = "api_test_5meusgv5ufclsbvde78mdf35bfdhnhm1307euq94kcf0lcqcqrovbjovib", required = true,
+    @Schema(example = "api_test_5meusgv5ufclsbvde78mdf35bfdhnhm1307euq94kcf0lcqcqrovbjovib", requiredMode = REQUIRED,
             description = "valid api token for the gateway account of above service which this product takes payments for")
     private String payApiToken;
 
     @JsonProperty("name")
-    @Schema(example = "A name for the product", required = true, description = "Name of the product. This will be passed as the name when creating the charge")
+    @Schema(example = "A name for the product", requiredMode = REQUIRED, description = "Name of the product. This will be passed as the name when creating the charge")
     private String name;
 
     @JsonProperty("type")
-    @Schema(example = "DEMO", required = true, description = "Type of the product")
+    @Schema(example = "DEMO", requiredMode = REQUIRED, description = "Type of the product")
     private ProductType type;
 
     @Schema(example = "1050", description = "Price for the product in pence. This will be passed as the amount when creating charge. Mandatory for Non-ADHOC and Non-AGENT_INITIATED_MOTO products")

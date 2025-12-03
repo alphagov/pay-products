@@ -12,6 +12,8 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Payment {
@@ -25,18 +27,18 @@ public class Payment {
     private static final String FIELD_GOVUK_STATUS = "govuk_status";
     private static final String FIELD_REFERENCE_NUMBER = "reference_number";
 
-    @Schema(example = "h6347634cwb67wii7b6ciueroytw", required = true)
+    @Schema(example = "h6347634cwb67wii7b6ciueroytw", requiredMode = REQUIRED)
     private final String externalId;
     @Schema(example = "7cs487heites2nne5k17j5j9as")
     private final String govukPaymentId;
     @JsonIgnore
     private final String nextUrl;
-    @Schema(example = "uier837y735n837475y3847534", required = true)
+    @Schema(example = "uier837y735n837475y3847534", requiredMode = REQUIRED)
     private final String productExternalId;
     private List<Link> links = new ArrayList<>();
     @JsonIgnore
     private final Integer productId;
-    @Schema(example = "1050", required = true)
+    @Schema(example = "1050", requiredMode = REQUIRED)
     private Long amount;
     @JsonProperty(FIELD_GOVUK_STATUS)
     @Schema(hidden = true)
@@ -45,7 +47,7 @@ public class Payment {
     private final String referenceNumber;
     @JsonIgnore
     private ZonedDateTime dateCreated;
-    @Schema(example = "SUBMITTED", required = true)
+    @Schema(example = "SUBMITTED", requiredMode = REQUIRED)
     private PaymentStatus status;
 
     public Payment(
@@ -103,7 +105,7 @@ public class Payment {
             "                \"method\": \"GET\"," +
             "                \"href\": \"https://some.valid.url/paid\"" +
             "            } " +
-            "        ]", required = true)
+            "        ]", requiredMode = REQUIRED)
     public List<Link> getLinks() {
         return links;
     }

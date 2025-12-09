@@ -1,10 +1,9 @@
 # pay-products
 
-Products integrating with GOV.UK Pay in Java(Dropwizard)
+The GOV.UK Pay products service in Java (Dropwizard).
 
-This microservice manages products (things that a Government Service would like to take payments for).
-
-These products are integrated with GOV.UK Pay so that a user can make payments using a provided URL.
+This microservice is used to manage payment links, prototype links, demo payments, agent-initiated MOTO payments etc.
+for government services.
 
 ## API Specification
 
@@ -23,7 +22,7 @@ The [API Specification](openapi/products_spec.yaml) provides more detail on the 
 | `DB_PASSWORD`                            | The password for the `DB_USER` user.                                                                                      |
 | `DB_SSL_OPTION`                          | To turn TLS on this value must be set as `ssl=true`. Otherwise must be empty.                                             |
 | `DB_USER`                                | The username to log into the database as.                                                                                 |
-| `JAVA_HOME`                              | The location of the JRE. Set to `/opt/java/openjdk` in the `Dockerfile`.                                                  |
+| `JAVA_HOME`                              | The location of the JRE.                                                                                                  |
 | `JAVA_OPTS`                              | Commandline arguments to pass to the java runtime. Optional.                                                              |
 | `JPA_LOG_LEVEL`                          | The logging level to set for JPA. Defaults to `WARNING`.                                                                  |
 | `JPA_SQL_LOG_LEVEL`                      | The logging level to set for JPA SQL logging. Defaults to `WARNING`.                                                      |
@@ -38,7 +37,7 @@ The [API Specification](openapi/products_spec.yaml) provides more detail on the 
 | `SECURE_RETURN_URLS`                     | Set to `false` to allow non-HTTPS URLs for the `return_url` field of a product. Defaults to `true`.                       |
 | `EXPUNGE_HISTORICAL_DATA_ENABLED`        | Set to `true` to enable deletion of payments. Defaults to `false`.                                                        |
 | `EXPUNGE_DATA_OLDER_THAN_DAYS`           | Minimum age of transactions in days that need to be redacted/expunged. Defaults to 2555 (7 years).                        |
-| `EXPUNGE_NO_OF_PAYMENTS_PER_TASK_RUN`    | Number of payments to delete per task run.                                                                                |
+| `EXPUNGE_NO_OF_PAYMENTS_PER_TASK_RUN`    | Number of payments to delete per task run. Defaults to `2500`                                                             |
 
 ## Vulnerability Disclosure
 

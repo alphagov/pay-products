@@ -34,7 +34,7 @@
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-dependencies</artifactId>
-                <version>5.0.0</version>
+                <version>4.0.16</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -125,17 +125,17 @@
         </dependency>
         <dependency>
             <groupId>uk.gov.service.payments</groupId>
-            <artifactId>utils-dropwizard-5</artifactId>
+            <artifactId>utils-dropwizard-4</artifactId>
             <version>${pay-java-commons.version}</version>
         </dependency>
         <dependency>
             <groupId>uk.gov.service.payments</groupId>
-            <artifactId>model-dropwizard-5</artifactId>
+            <artifactId>model-dropwizard-4</artifactId>
             <version>${pay-java-commons.version}</version>
         </dependency>
         <dependency>
             <groupId>uk.gov.service.payments</groupId>
-            <artifactId>logging-dropwizard-5</artifactId>
+            <artifactId>logging-dropwizard-4</artifactId>
             <version>${pay-java-commons.version}</version>
         </dependency>
         <dependency>
@@ -181,7 +181,7 @@
         <dependency>
             <groupId>io.dropwizard.modules</groupId>
             <artifactId>dropwizard-testing-junit4</artifactId>
-            <version>5.0.0</version>
+            <version>4.0.16</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -210,7 +210,7 @@
         </dependency>
         <dependency>
             <groupId>uk.gov.service.payments</groupId>
-            <artifactId>testing-dropwizard-5</artifactId>
+            <artifactId>testing-dropwizard-4</artifactId>
             <version>${pay-java-commons.version}</version>
             <scope>test</scope>
         </dependency>

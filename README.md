@@ -1,6 +1,5 @@
 # The GOV.UK Pay products microservice
 
-The GOV.UK Pay products service in Java (Dropwizard).
 
 The GOV.UK Pay products microservice manages the functionality that lets government services use GOV.UK Pay to take payments with URLs. This includes:
 

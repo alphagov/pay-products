@@ -1,4 +1,4 @@
-# pay-products
+# The GOV.UK Pay products microservice
 
 The GOV.UK Pay products service in Java (Dropwizard).
 

@@ -2,8 +2,14 @@
 
 The GOV.UK Pay products service in Java (Dropwizard).
 
-This microservice is used to manage payment links, prototype links, demo payments, agent-initiated MOTO payments etc.
-for government services.
+The GOV.UK Pay products microservice manages the functionality that lets government services use GOV.UK Pay to take payments with URLs. This includes:
+
+ * payment links
+ * prototype links
+ * demo payments
+ * agent-initiated MOTO payments
+ 
+ This microservice was developed in Java using the Dropwizard framework.
 
 ## API Specification
 

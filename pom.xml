@@ -18,7 +18,7 @@
         <hamcrest.version>3.0</hamcrest.version>
         <mainClass>uk.gov.pay.products.ProductsApplication</mainClass>
         <pact.version>3.6.15</pact.version>
-        <pay-java-commons.version>1.0.20260216092839</pay-java-commons.version>
+        <pay-java-commons.version>1.0.20260223113205</pay-java-commons.version>
         <prometheus.version>0.16.0</prometheus.version>
         <surefire.version>3.5.5</surefire.version>
         <swagger-version>2.2.42</swagger-version>

@@ -119,11 +119,6 @@
             <version>${eclipselink.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.14</version>
-        </dependency>
-        <dependency>
             <groupId>uk.gov.service.payments</groupId>
             <artifactId>utils-dropwizard-5</artifactId>
             <version>${pay-java-commons.version}</version>

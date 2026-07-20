@@ -1,10 +1,10 @@
 package uk.gov.pay.products.stubs.publicapi;
 
+import org.apache.http.HttpStatus;
+
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
-import org.apache.hc.core5.http.HttpStatus;
-
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;

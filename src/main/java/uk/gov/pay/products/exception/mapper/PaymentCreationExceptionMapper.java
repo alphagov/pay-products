@@ -1,6 +1,6 @@
 package uk.gov.pay.products.exception.mapper;
 
-import org.eclipse.jetty.http.HttpStatus;
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.products.exception.PaymentCreationException;
@@ -60,9 +60,9 @@ public class PaymentCreationExceptionMapper implements ExceptionMapper<PaymentCr
 
     private int getStatus(PaymentCreationException exception) {
         return switch (exception.getErrorCode()) {
-            case CREATE_PAYMENT_CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR -> HttpStatus.BAD_REQUEST_400;
-            case CREATE_PAYMENT_VALIDATION_ERROR -> HttpStatus.UNPROCESSABLE_ENTITY_422;
-            default -> exception.getErrorStatusCode() == HttpStatus.FORBIDDEN_403 ? HttpStatus.FORBIDDEN_403 : HttpStatus.INTERNAL_SERVER_ERROR_500;
+            case CREATE_PAYMENT_CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR -> HttpStatus.SC_BAD_REQUEST;
+            case CREATE_PAYMENT_VALIDATION_ERROR -> HttpStatus.SC_UNPROCESSABLE_ENTITY;
+            default -> exception.getErrorStatusCode() == HttpStatus.SC_FORBIDDEN ? HttpStatus.SC_FORBIDDEN : HttpStatus.SC_INTERNAL_SERVER_ERROR;
         };
     }
 }

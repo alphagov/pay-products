@@ -2,7 +2,7 @@ package uk.gov.pay.products.client.publicapi;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.dropwizard.util.Duration;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 import org.junit.ClassRule;
 import org.junit.Test;
 import uk.gov.pay.products.client.RestClientFactory;
@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static junit.framework.TestCase.assertTrue;
-import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.hc.core5.http.HttpStatus.SC_BAD_REQUEST;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;

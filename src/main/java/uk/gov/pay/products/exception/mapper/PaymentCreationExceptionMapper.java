@@ -1,5 +1,7 @@
 package uk.gov.pay.products.exception.mapper;
 
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,14 +9,12 @@ import uk.gov.pay.products.exception.PaymentCreationException;
 import uk.gov.pay.products.util.Errors;
 import uk.gov.service.payments.commons.model.ErrorIdentifier;
 
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.ext.ExceptionMapper;
-
 import static java.lang.String.format;
 import static uk.gov.pay.products.util.PublicAPIErrorCodes.ACCOUNT_NOT_LINKED_WITH_PSP;
 import static uk.gov.pay.products.util.PublicAPIErrorCodes.CREATE_PAYMENT_CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR;
 import static uk.gov.pay.products.util.PublicAPIErrorCodes.CREATE_PAYMENT_VALIDATION_ERROR;
-import static uk.gov.service.payments.commons.model.ErrorIdentifier.AMOUNT_BELOW_MINIMUM;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.AMOUNT_BELOW_MINIMUM_FOR_ADYEN;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.AMOUNT_BELOW_MINIMUM_FOR_STRIPE;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_REJECTED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.GENERIC;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.ZERO_AMOUNT_NOT_ALLOWED;
@@ -42,7 +42,9 @@ public class PaymentCreationExceptionMapper implements ExceptionMapper<PaymentCr
                 about amending the response from publicapi 
                 */
                 if (exception.getMessage().contains("Must be greater than or equal to 30")) {
-                    errorIdentifier = AMOUNT_BELOW_MINIMUM;
+                    errorIdentifier = AMOUNT_BELOW_MINIMUM_FOR_STRIPE;
+                } else if (exception.getMessage().contains("Must be greater than or equal to 21")) {
+                    errorIdentifier = AMOUNT_BELOW_MINIMUM_FOR_ADYEN;
                 } else {
                     errorIdentifier = ZERO_AMOUNT_NOT_ALLOWED;    
                 }

@@ -61,7 +61,8 @@ public class CreatePaymentResourceIT {
 
     @ParameterizedTest
     @CsvSource({
-            "AMOUNT_BELOW_MINIMUM, \"Invalid attribute value: amount. Must be greater than or equal to 30. Refer to https://docs.payments.service.gov.uk/making_payments/#amount\"", 
+            "AMOUNT_BELOW_MINIMUM_FOR_STRIPE, \"Invalid attribute value: amount. Must be greater than or equal to 30. Refer to https://docs.payments.service.gov.uk/making_payments/#amount\"",
+            "AMOUNT_BELOW_MINIMUM_FOR_ADYEN, \"Invalid attribute value: amount. Must be greater than or equal to 21. Refer to https://docs.payments.service.gov.uk/making_payments/#amount\"",
             "ZERO_AMOUNT_NOT_ALLOWED, \"Invalid attribute value: amount. Must be greater than or equal to 1. Refer to https://docs.payments.service.gov.uk/making_payments/#amount\""
     })
     void create_payment_should_fail_when_publicapi_returns_P0102_error_code(String expectedIdentifier, String publicApiErrorDescription) throws Exception {

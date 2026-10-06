@@ -13,8 +13,8 @@
         <eclipselink.version>4.0.9</eclipselink.version>
         <hamcrest.version>3.0</hamcrest.version>
         <mainClass>uk.gov.pay.products.ProductsApplication</mainClass>
-        <pact.version>3.6.15</pact.version>
         <pay-java-commons.version>1.0.20261005081209</pay-java-commons.version>
+        <pact.version>4.7.5</pact.version>
         <prometheus.version>0.16.0</prometheus.version>
         <surefire.version>3.6.0</surefire.version>
         <swagger-version>2.2.55</swagger-version>
@@ -210,11 +210,21 @@
             <artifactId>testing-dropwizard-5</artifactId>
             <version>${pay-java-commons.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>au.com.dius</groupId>
+                    <artifactId>pact-jvm-provider-junit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>au.com.dius</groupId>
+                    <artifactId>pact-jvm-consumer-junit</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>au.com.dius</groupId>
-            <artifactId>pact-jvm-provider-junit</artifactId>
-            <version>4.0.10</version>
+            <groupId>au.com.dius.pact.provider</groupId>
+            <artifactId>junit</artifactId>
+            <version>${pact.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -233,8 +243,8 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>au.com.dius</groupId>
-                <artifactId>pact-jvm-provider-maven_2.12</artifactId>
+                <groupId>au.com.dius.pact.provider</groupId>
+                <artifactId>maven</artifactId>
                 <version>${pact.version}</version>
                 <configuration>
                     <pactDirectory>target/pacts</pactDirectory>
